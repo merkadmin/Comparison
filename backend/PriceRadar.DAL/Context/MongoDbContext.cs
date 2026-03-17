@@ -24,4 +24,16 @@ public class MongoDbContext
 
     public IMongoCollection<PriceHistoryDocument> PriceHistories =>
         _database.GetCollection<PriceHistoryDocument>("priceHistories");
+
+    public IMongoCollection<ItemCategoryDocument> ItemCategories =>
+        _database.GetCollection<ItemCategoryDocument>("ItemCategory_sc");
+
+    public IMongoCollection<ItemBrandDocument> ItemBrands =>
+        _database.GetCollection<ItemBrandDocument>("Item_Brand_sc");
+
+    public IMongoCollection<ItemDocument> Items =>
+        _database.GetCollection<ItemDocument>("Item_sc");
+
+    public IMongoCollection<ItemPackageDocument> ItemPackages =>
+        _database.GetCollection<ItemPackageDocument>("ItemPackage_sc");
 }

@@ -1,0 +1,50 @@
+<div class="page">
+  <div class="page-header">
+    <h2>Offers / Packages</h2>
+    <button class="btn-toggle" (click)="toggleActive()">
+      {{ showActiveOnly ? 'Show All' : 'Active Only' }}
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="!loading && packages.length > 0">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Items Count</th>
+        <th>Original Price</th>
+        <th>Offer Price</th>
+        <th>Discount</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pkg of packages; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ pkg.name }}</td>
+        <td>{{ pkg.items.length }}</td>
+        <td>{{ pkg.originalPrice | currency }}</td>
+        <td class="offer-price">{{ pkg.offerPrice | currency }}</td>
+        <td class="discount">{{ pkg.discountPercentage | number:'1.0-1' }}%</td>
+        <td>{{ pkg.startDate | date:'shortDate' }}</td>
+        <td>{{ pkg.endDate ? (pkg.endDate | date:'shortDate') : 'No expiry' }}</td>
+        <td>
+          <span class="badge" [class.active]="pkg.isActive" [class.inactive]="!pkg.isActive">
+            {{ pkg.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td>
+          <button class="btn-delete" (click)="delete(pkg.id!)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && packages.length === 0" class="empty">No packages found.</div>
+</div>

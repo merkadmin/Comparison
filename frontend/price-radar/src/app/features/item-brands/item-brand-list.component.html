@@ -1,0 +1,38 @@
+<div class="page">
+  <div class="page-header">
+    <h2>Item Brands</h2>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="!loading && brands.length > 0">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Logo</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let brand of brands; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>
+          <img *ngIf="brand.logoUrl" [src]="brand.logoUrl" [alt]="brand.name" class="logo" />
+          <span *ngIf="!brand.logoUrl">—</span>
+        </td>
+        <td>{{ brand.name }}</td>
+        <td>{{ brand.country || '—' }}</td>
+        <td>{{ brand.createdAt | date:'shortDate' }}</td>
+        <td>
+          <button class="btn-delete" (click)="delete(brand.id!)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && brands.length === 0" class="empty">No brands found.</div>
+</div>

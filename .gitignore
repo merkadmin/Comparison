@@ -117,3 +117,7 @@ frontend/price-radar/.vscode/extensions.json
 frontend/price-radar/.vscode/launch.json
 frontend/price-radar/.vscode/mcp.json
 frontend/price-radar/.vscode/tasks.json
+*.vsidx
+/backend/PriceRadar.API/obj
+/backend/PriceRadar.Core/obj
+/backend/PriceRadar.DAL/obj

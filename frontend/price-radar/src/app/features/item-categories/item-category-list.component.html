@@ -1,0 +1,35 @@
+<div class="page">
+  <div class="page-header">
+    <h2>Item Categories</h2>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="!loading && categories.length > 0">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cat of categories; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ cat.name }}</td>
+        <td>{{ cat.description || '—' }}</td>
+        <td>{{ cat.createdAt | date:'shortDate' }}</td>
+        <td>
+          <button class="btn-delete" (click)="delete(cat.id!)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && categories.length === 0" class="empty">
+    No categories found.
+  </div>
+</div>
