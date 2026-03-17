@@ -1,20 +1,151 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslateService } from '../../core/services/translate.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink, RouterLinkActive],
-  templateUrl: './sidebar.component.html',
+  standalone: true,
+  imports: [RouterLink, RouterLinkActive, TranslatePipe],
+  template: `
+    <div id="kt_app_sidebar" class="app-sidebar flex-column"
+         data-kt-drawer="true"
+         data-kt-drawer-name="app-sidebar"
+         data-kt-drawer-activate="{default: true, lg: false}"
+         data-kt-drawer-overlay="true"
+         data-kt-drawer-width="225px"
+         data-kt-drawer-direction="start"
+         data-kt-drawer-toggle="#kt_app_sidebar_mobile_toggle">
+
+      <div class="app-sidebar-logo px-6" id="kt_app_sidebar_logo">
+        <a routerLink="/">
+          <img alt="Logo" src="assets/media/logos/default-dark.svg" class="h-25px app-sidebar-logo-default" />
+          <img alt="Logo" src="assets/media/logos/default-small.svg" class="h-20px app-sidebar-logo-minimize" />
+        </a>
+      </div>
+
+      <div class="app-sidebar-wrapper">
+        <div id="kt_app_sidebar_menu_scroll" class="scroll-y my-5 mx-3"
+             data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-height="auto"
+             data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_footer"
+             data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px">
+
+          <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6"
+               id="kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
+
+            <!-- Dashboard -->
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+              <span class="menu-link">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-element-11 fs-2">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
+                  </i>
+                </span>
+                <span class="menu-title">{{ 'nav.dashboard' | translate }}</span>
+                <span class="menu-arrow"></span>
+              </span>
+              <div class="menu-sub menu-sub-accordion">
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/dashboard" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">{{ 'nav.home' | translate }}</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Items -->
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+              <span class="menu-link">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-basket fs-2">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
+                  </i>
+                </span>
+                <span class="menu-title">{{ 'nav.items' | translate }}</span>
+                <span class="menu-arrow"></span>
+              </span>
+              <div class="menu-sub menu-sub-accordion">
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/items" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">{{ 'nav.itemList' | translate }}</span>
+                  </a>
+                </div>
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/item-categories" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">{{ 'nav.itemCategories' | translate }}</span>
+                  </a>
+                </div>
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/item-brands" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">{{ 'nav.itemBrands' | translate }}</span>
+                  </a>
+                </div>
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/item-packages" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">{{ 'nav.itemPackages' | translate }}</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price Comparison -->
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+              <span class="menu-link">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-chart-simple fs-2">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
+                  </i>
+                </span>
+                <span class="menu-title">{{ 'nav.prices' | translate }}</span>
+                <span class="menu-arrow"></span>
+              </span>
+              <div class="menu-sub menu-sub-accordion">
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/prices" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">{{ 'nav.prices' | translate }}</span>
+                  </a>
+                </div>
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/prices/history" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title">{{ 'nav.priceHistory' | translate }}</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stores -->
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/stores" routerLinkActive="active">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-shop fs-2">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                  </i>
+                </span>
+                <span class="menu-title">{{ 'nav.stores' | translate }}</span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="app-sidebar-footer flex-column-auto pt-2 pb-6 px-6" id="kt_app_sidebar_footer">
+        <span class="text-muted fw-semibold fs-7">PriceRadar &copy; 2026</span>
+      </div>
+    </div>
+  `,
 })
 export class SidebarComponent {
-  isRtl = signal(document.documentElement.getAttribute('dir') === 'rtl');
-
-  // In RTL: drawer slides from the right ("start" = right in RTL)
-  // In LTR: drawer slides from the left ("start" = left in LTR)
-  drawerDirection = computed(() => 'start');
-
-  /** Called by header when language is toggled */
-  updateDirection(): void {
-    this.isRtl.set(document.documentElement.getAttribute('dir') === 'rtl');
-  }
+  translate = inject(TranslateService);
 }

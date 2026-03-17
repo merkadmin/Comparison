@@ -1,3 +1,4 @@
+using PriceRadar.API.Seeder;
 using PriceRadar.Core.Interfaces;
 using PriceRadar.DAL.Context;
 using PriceRadar.DAL.Repositories;
@@ -29,6 +30,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+builder.Services.AddSingleton<DataSeeder>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -38,6 +40,20 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+// Auto-seed on startup (skips if data already exists)
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+    await seeder.SeedAsync();
+}
+
+// Manual re-seed endpoint (dev only) — POST /api/seed
+app.MapPost("/api/seed", async (DataSeeder seeder) =>
+{
+    await seeder.SeedAsync();
+    return Results.Ok(new { message = "Seeding complete." });
+}).WithTags("Seed");
 
 app.UseHttpsRedirection();
 app.UseCors("AngularPolicy");
