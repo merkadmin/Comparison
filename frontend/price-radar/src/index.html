@@ -28,27 +28,24 @@
       data-kt-app-toolbar-enabled="true"
       class="app-default">
 
-  <!--begin::Theme mode setup on page load-->
+  <!--begin::Theme and language setup on page load-->
   <script>
-    var defaultThemeMode = "dark";
-    var themeMode;
-    if (document.documentElement) {
-      if (document.documentElement.hasAttribute("data-bs-theme-mode")) {
-        themeMode = document.documentElement.getAttribute("data-bs-theme-mode");
-      } else {
-        if (localStorage.getItem("data-bs-theme") !== null) {
-          themeMode = localStorage.getItem("data-bs-theme");
-        } else {
-          themeMode = defaultThemeMode;
-        }
+    (function () {
+      // Theme
+      var defaultTheme = "dark";
+      var theme = localStorage.getItem("data-bs-theme") || defaultTheme;
+      if (theme === "system") {
+        theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       }
-      if (themeMode === "system") {
-        themeMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      }
-      document.documentElement.setAttribute("data-bs-theme", themeMode);
-    }
+      document.documentElement.setAttribute("data-bs-theme", theme);
+
+      // Language / direction
+      var lang = localStorage.getItem("app-lang") || "ar";
+      document.documentElement.setAttribute("lang", lang);
+      document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    })();
   </script>
-  <!--end::Theme mode setup on page load-->
+  <!--end::Theme and language setup on page load-->
 
   <app-root></app-root>
 

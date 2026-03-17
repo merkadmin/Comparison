@@ -5,3 +5,81 @@ html, body {
   height: 100%;
   margin: 0;
 }
+
+/* =====================================================
+   RTL overrides for Metronic layout
+   Metronic hardcodes left-side positioning, so we flip
+   everything when dir="rtl" is active.
+   ===================================================== */
+
+html[dir="rtl"] {
+
+  /* 1. Sidebar: move from left:0 to right:0 */
+  [data-kt-app-sidebar-fixed="true"] .app-sidebar {
+    left: auto !important;
+    right: 0 !important;
+  }
+
+  /* 2. App wrapper: flip margin from left to right */
+  @media (min-width: 992px) {
+    [data-kt-app-sidebar-fixed="true"] .app-wrapper {
+      margin-left: 0 !important;
+      margin-right: calc(
+        var(--bs-app-sidebar-width) +
+        var(--bs-app-sidebar-gap-start, 0px) +
+        var(--bs-app-sidebar-gap-end, 0px)
+      ) !important;
+    }
+  }
+
+  /* 3. Header: flip left offset to right offset */
+  @media (min-width: 992px) {
+    [data-kt-app-header-fixed="true"][data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-header="true"] .app-header {
+      left: 0 !important;
+      right: calc(
+        var(--bs-app-sidebar-width) +
+        var(--bs-app-sidebar-gap-start, 0px) +
+        var(--bs-app-sidebar-gap-end, 0px)
+      ) !important;
+    }
+  }
+
+  /* 4. Footer: flip left offset to right offset */
+  @media (min-width: 992px) {
+    [data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-footer="true"] .app-footer {
+      left: 0 !important;
+      right: calc(
+        var(--bs-app-sidebar-width) +
+        var(--bs-app-sidebar-gap-start, 0px) +
+        var(--bs-app-sidebar-gap-end, 0px)
+      ) !important;
+    }
+  }
+
+  /* 5. Toolbar: flip left offset to right offset */
+  @media (min-width: 992px) {
+    [data-kt-app-toolbar-fixed="true"][data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-toolbar="true"] .app-toolbar {
+      left: 0 !important;
+      right: calc(
+        var(--bs-app-sidebar-width) +
+        var(--bs-app-sidebar-gap-start, 0px) +
+        var(--bs-app-sidebar-gap-end, 0px)
+      ) !important;
+    }
+  }
+
+  /* 6. Sidebar collapse (hidden state): flip negative margin */
+  [data-kt-app-sidebar-collapse="on"] .app-sidebar {
+    margin-left: 0 !important;
+    margin-right: calc(-1 * var(--bs-app-sidebar-width-actual)) !important;
+  }
+
+  /* 7. Sidebar toggle button: move from start-100 side to end-100 */
+  .app-sidebar-toggle {
+    left: auto !important;
+    right: auto !important;
+    /* Bootstrap's start-100 + translate-middle becomes correct on RTL automatically */
+    transform: translateX(50%) translateY(-50%) !important;
+  }
+
+}
