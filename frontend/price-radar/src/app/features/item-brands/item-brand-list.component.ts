@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemBrand } from '../../core/models/item-brand.model';
@@ -23,16 +23,16 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       </div>
 
       <div class="card-body py-4">
-        @if (loading) {
+        @if (loading()) {
           <div class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary"></span>
             <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
           </div>
         }
-        @if (!loading && error) {
-          <div class="alert alert-danger">{{ error }}</div>
+        @if (!loading() && error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
         }
-        @if (!loading && !error) {
+        @if (!loading() && !error()) {
           <table class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
               <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
@@ -45,12 +45,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
-              @if (brands.length === 0) {
+              @if (brands().length === 0) {
                 <tr>
                   <td colspan="6" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
-              @for (brand of brands; track brand.id; let i = $index) {
+              @for (brand of brands(); track brand.id; let i = $index) {
                 <tr>
                   <td>{{ i + 1 }}</td>
                   <td>
@@ -92,18 +92,18 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class ItemBrandListComponent implements OnInit {
   private service = inject(ItemBrandService);
 
-  brands: ItemBrand[] = [];
-  loading = false;
-  error: string | null = null;
+  brands = signal<ItemBrand[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   ngOnInit(): void { this.load(); }
 
   load(): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
     this.service.getAll().subscribe({
-      next: data => { this.brands = data; this.loading = false; },
-      error: () => { this.error = 'Failed to load brands.'; this.loading = false; }
+      next: data => { this.brands.set(data); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load brands.'); this.loading.set(false); }
     });
   }
 

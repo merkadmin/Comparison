@@ -55,7 +55,10 @@ app.MapPost("/api/seed", async (DataSeeder seeder) =>
 	return Results.Ok(new { message = "Seeding complete." });
 }).WithTags("Seed");
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+	app.UseHttpsRedirection();
+}
 app.UseCors("AngularPolicy");
 app.UseAuthorization();
 app.MapControllers();

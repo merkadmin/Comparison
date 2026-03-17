@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ItemPackageService } from '../../core/services/item-package.service';
 import { ItemPackage } from '../../core/models/item-package.model';
@@ -16,26 +16,26 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         </div>
         <div class="card-toolbar">
           <button class="btn btn-sm me-3"
-                  [class.btn-light-primary]="!showActiveOnly"
-                  [class.btn-primary]="showActiveOnly"
+                  [class.btn-light-primary]="!showActiveOnly()"
+                  [class.btn-primary]="showActiveOnly()"
                   (click)="toggleActive()">
             <i class="ki-duotone ki-filter fs-2"><span class="path1"></span><span class="path2"></span></i>
-            {{ (showActiveOnly ? 'package.showAll' : 'package.activeOnly') | translate }}
+            {{ (showActiveOnly() ? 'package.showAll' : 'package.activeOnly') | translate }}
           </button>
         </div>
       </div>
 
       <div class="card-body py-4">
-        @if (loading) {
+        @if (loading()) {
           <div class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary"></span>
             <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
           </div>
         }
-        @if (!loading && error) {
-          <div class="alert alert-danger">{{ error }}</div>
+        @if (!loading() && error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
         }
-        @if (!loading && !error) {
+        @if (!loading() && !error()) {
           <table class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
               <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
@@ -52,12 +52,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
-              @if (packages.length === 0) {
+              @if (packages().length === 0) {
                 <tr>
                   <td colspan="10" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
-              @for (pkg of packages; track pkg.id; let i = $index) {
+              @for (pkg of packages(); track pkg.id; let i = $index) {
                 <tr>
                   <td>{{ i + 1 }}</td>
                   <td>
@@ -114,25 +114,25 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class ItemPackageListComponent implements OnInit {
   private service = inject(ItemPackageService);
 
-  packages: ItemPackage[] = [];
-  loading = false;
-  error: string | null = null;
-  showActiveOnly = false;
+  packages = signal<ItemPackage[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  showActiveOnly = signal(false);
 
   ngOnInit(): void { this.load(); }
 
   load(): void {
-    this.loading = true;
-    this.error = null;
-    const obs = this.showActiveOnly ? this.service.getActive() : this.service.getAll();
+    this.loading.set(true);
+    this.error.set(null);
+    const obs = this.showActiveOnly() ? this.service.getActive() : this.service.getAll();
     obs.subscribe({
-      next: data => { this.packages = data; this.loading = false; },
-      error: () => { this.error = 'Failed to load packages.'; this.loading = false; }
+      next: data => { this.packages.set(data); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load packages.'); this.loading.set(false); }
     });
   }
 
   toggleActive(): void {
-    this.showActiveOnly = !this.showActiveOnly;
+    this.showActiveOnly.set(!this.showActiveOnly());
     this.load();
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemCategory } from '../../core/models/item-category.model';
@@ -23,16 +23,16 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       </div>
 
       <div class="card-body py-4">
-        @if (loading) {
+        @if (loading()) {
           <div class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary"></span>
             <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
           </div>
         }
-        @if (!loading && error) {
-          <div class="alert alert-danger">{{ error }}</div>
+        @if (!loading() && error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
         }
-        @if (!loading && !error) {
+        @if (!loading() && !error()) {
           <table class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
               <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
@@ -44,12 +44,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
-              @if (categories.length === 0) {
+              @if (categories().length === 0) {
                 <tr>
                   <td colspan="5" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
-              @for (cat of categories; track cat.id; let i = $index) {
+              @for (cat of categories(); track cat.id; let i = $index) {
                 <tr>
                   <td>{{ i + 1 }}</td>
                   <td>
@@ -78,18 +78,18 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class ItemCategoryListComponent implements OnInit {
   private service = inject(ItemCategoryService);
 
-  categories: ItemCategory[] = [];
-  loading = false;
-  error: string | null = null;
+  categories = signal<ItemCategory[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   ngOnInit(): void { this.load(); }
 
   load(): void {
-    this.loading = true;
-    this.error = null;
+    this.loading.set(true);
+    this.error.set(null);
     this.service.getAll().subscribe({
-      next: data => { this.categories = data; this.loading = false; },
-      error: () => { this.error = 'Failed to load categories.'; this.loading = false; }
+      next: data => { this.categories.set(data); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load categories.'); this.loading.set(false); }
     });
   }
 

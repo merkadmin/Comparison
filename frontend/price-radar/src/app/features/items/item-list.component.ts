@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ItemService } from '../../core/services/item.service';
@@ -21,18 +21,18 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
         </div>
         <div class="card-toolbar d-flex gap-3">
           <select class="form-select form-select-sm w-auto"
-                  [(ngModel)]="selectedCategoryId"
-                  (change)="selectedBrandId = ''; loadItems()">
+                  [ngModel]="selectedCategoryId()"
+                  (ngModelChange)="selectedCategoryId.set($event); selectedBrandId.set(''); loadItems()">
             <option value="">{{ 'item.allCategories' | translate }}</option>
-            @for (c of categories; track c.id) {
+            @for (c of categories(); track c.id) {
               <option [value]="c.id">{{ c.name }}</option>
             }
           </select>
           <select class="form-select form-select-sm w-auto"
-                  [(ngModel)]="selectedBrandId"
-                  (change)="selectedCategoryId = ''; loadItems()">
+                  [ngModel]="selectedBrandId()"
+                  (ngModelChange)="selectedBrandId.set($event); selectedCategoryId.set(''); loadItems()">
             <option value="">{{ 'item.allBrands' | translate }}</option>
-            @for (b of brands; track b.id) {
+            @for (b of brands(); track b.id) {
               <option [value]="b.id">{{ b.name }}</option>
             }
           </select>
@@ -44,16 +44,16 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
       </div>
 
       <div class="card-body py-4">
-        @if (loading) {
+        @if (loading()) {
           <div class="d-flex justify-content-center py-10">
             <span class="spinner-border text-primary"></span>
             <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
           </div>
         }
-        @if (!loading && error) {
-          <div class="alert alert-danger">{{ error }}</div>
+        @if (!loading() && error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
         }
-        @if (!loading && !error) {
+        @if (!loading() && !error()) {
           <table class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
               <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
@@ -67,12 +67,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
-              @if (items.length === 0) {
+              @if (items().length === 0) {
                 <tr>
                   <td colspan="7" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
-              @for (item of items; track item.id; let i = $index) {
+              @for (item of items(); track item.id; let i = $index) {
                 <tr>
                   <td>{{ i + 1 }}</td>
                   <td>
@@ -128,47 +128,47 @@ export class ItemListComponent implements OnInit {
   private categoryService = inject(ItemCategoryService);
   private brandService    = inject(ItemBrandService);
 
-  items:      Item[]         = [];
-  categories: ItemCategory[] = [];
-  brands:     ItemBrand[]    = [];
-  loading  = false;
-  error: string | null = null;
-  selectedCategoryId = '';
-  selectedBrandId    = '';
+  items      = signal<Item[]>([]);
+  categories = signal<ItemCategory[]>([]);
+  brands     = signal<ItemBrand[]>([]);
+  loading    = signal(false);
+  error      = signal<string | null>(null);
+  selectedCategoryId = signal('');
+  selectedBrandId    = signal('');
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe({ next: c => this.categories = c, error: () => {} });
-    this.brandService.getAll().subscribe({ next: b => this.brands = b, error: () => {} });
+    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
+    this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
     this.loadItems();
   }
 
   loadItems(): void {
-    this.loading = true;
-    this.error = null;
-    const obs = this.selectedCategoryId
-      ? this.itemService.getByCategory(this.selectedCategoryId)
-      : this.selectedBrandId
-        ? this.itemService.getByBrand(this.selectedBrandId)
+    this.loading.set(true);
+    this.error.set(null);
+    const obs = this.selectedCategoryId()
+      ? this.itemService.getByCategory(this.selectedCategoryId())
+      : this.selectedBrandId()
+        ? this.itemService.getByBrand(this.selectedBrandId())
         : this.itemService.getAll();
 
     obs.subscribe({
-      next: data => { this.items = data; this.loading = false; },
-      error: () => { this.error = 'Failed to load items.'; this.loading = false; }
+      next: data => { this.items.set(data); this.loading.set(false); },
+      error: () => { this.error.set('Failed to load items.'); this.loading.set(false); }
     });
   }
 
   resetFilters(): void {
-    this.selectedCategoryId = '';
-    this.selectedBrandId = '';
+    this.selectedCategoryId.set('');
+    this.selectedBrandId.set('');
     this.loadItems();
   }
 
   getBrandName(brandId: string): string {
-    return this.brands.find(b => b.id === brandId)?.name ?? brandId;
+    return this.brands().find(b => b.id === brandId)?.name ?? brandId;
   }
 
   getCategoryName(id: string): string {
-    return this.categories.find(c => c.id === id)?.name ?? id;
+    return this.categories().find(c => c.id === id)?.name ?? id;
   }
 
   delete(id: string): void {
