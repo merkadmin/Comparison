@@ -15,6 +15,12 @@ public class PriceListingRepository : IPriceListingRepository
         _context = context;
     }
 
+    public async Task<IEnumerable<PriceListing>> GetAllAsync()
+    {
+        var docs = await _context.PriceListings.Find(_ => true).ToListAsync();
+        return docs.Select(d => d.ToModel());
+    }
+
     public async Task<IEnumerable<PriceListing>> GetByProductIdAsync(string productId)
     {
         var docs = await _context.PriceListings.Find(l => l.ProductId == productId).ToListAsync();

@@ -2,13 +2,9 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.Core.Interfaces;
 
-public interface IItemRepository
+public interface IItemRepository : IBaseRepository<Item>
 {
-    Task<IEnumerable<Item>> GetAllAsync();
-    Task<Item?> GetByIdAsync(string id);
+    // Extra query methods beyond standard CRUD
     Task<IEnumerable<Item>> GetByCategoryAsync(string categoryId);
     Task<IEnumerable<Item>> GetByBrandAsync(string brandId);
-    Task<Item> CreateAsync(Item item);
-    Task UpdateAsync(string id, Item item);
-    Task DeleteAsync(string id);
 }

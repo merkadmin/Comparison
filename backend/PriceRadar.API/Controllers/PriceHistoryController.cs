@@ -7,14 +7,14 @@ namespace PriceRadar.API.Controllers;
 [Route("api/[controller]")]
 public class PriceHistoryController : ControllerBase
 {
-    private readonly IPriceHistoryRepository _history;
+	private readonly IPriceHistoryRepository _history;
 
-    public PriceHistoryController(IPriceHistoryRepository history)
-    {
-        _history = history;
-    }
+	public PriceHistoryController(IPriceHistoryRepository history)
+	{
+		_history = history;
+	}
 
-    [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] string productId, [FromQuery] string storeId) =>
-        Ok(await _history.GetByProductAndStoreAsync(productId, storeId));
+	[HttpGet]
+	public async Task<IActionResult> Get([FromQuery] string productId, [FromQuery] string storeId) =>
+		Ok(await _history.GetByProductAndStoreAsync(productId, storeId));
 }

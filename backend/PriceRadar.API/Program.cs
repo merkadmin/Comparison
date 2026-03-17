@@ -24,10 +24,10 @@ builder.Services.AddScoped<IItemPackageRepository, ItemPackageRepository>();
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()!;
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AngularPolicy", policy =>
-        policy.WithOrigins(allowedOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+	options.AddPolicy("AngularPolicy", policy =>
+		policy.WithOrigins(allowedOrigins)
+			  .AllowAnyHeader()
+			  .AllowAnyMethod());
 });
 
 builder.Services.AddSingleton<DataSeeder>();
@@ -38,21 +38,21 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+	app.MapOpenApi();
 }
 
 // Auto-seed on startup (skips if data already exists)
 using (var scope = app.Services.CreateScope())
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
-    await seeder.SeedAsync();
+	var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+	await seeder.SeedAsync();
 }
 
 // Manual re-seed endpoint (dev only) — POST /api/seed
 app.MapPost("/api/seed", async (DataSeeder seeder) =>
 {
-    await seeder.SeedAsync();
-    return Results.Ok(new { message = "Seeding complete." });
+	await seeder.SeedAsync();
+	return Results.Ok(new { message = "Seeding complete." });
 }).WithTags("Seed");
 
 app.UseHttpsRedirection();

@@ -2,11 +2,7 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.Core.Interfaces;
 
-public interface IItemBrandRepository
+public interface IItemBrandRepository : IBaseRepository<ItemBrand>
 {
-    Task<IEnumerable<ItemBrand>> GetAllAsync();
-    Task<ItemBrand?> GetByIdAsync(string id);
-    Task<ItemBrand> CreateAsync(ItemBrand brand);
-    Task UpdateAsync(string id, ItemBrand brand);
-    Task DeleteAsync(string id);
+	// All CRUD inherited from IBaseRepository<ItemBrand>
 }
