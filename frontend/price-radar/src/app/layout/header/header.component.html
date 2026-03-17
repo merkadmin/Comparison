@@ -43,15 +43,63 @@
       <!--begin::Navbar-->
       <div class="app-navbar flex-shrink-0" id="kt_app_header_navbar">
 
-        <!--begin::Language toggle — cycles EN → AR → FR → EN -->
+        <!--begin::Language selector-->
         <div class="app-navbar-item ms-1 ms-md-3">
-          <button class="btn btn-sm btn-light btn-active-light-primary fw-bold px-3"
-                  (click)="cycleLanguage()"
-                  title="Switch language">
-            <span class="fs-7">{{ translate.langLabel() }}</span>
-          </button>
+          <div class="btn btn-icon btn-custom btn-icon-muted btn-active-light w-35px h-35px"
+               data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+               data-kt-menu-attach="parent"
+               data-kt-menu-placement="bottom-end">
+            <img [src]="currentFlag" class="w-20px h-20px rounded-1 object-fit-cover" alt="lang" />
+          </div>
+
+          <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-3 fs-7 w-175px"
+               data-kt-menu="true">
+
+            <!--begin::English-->
+            <div class="menu-item px-3">
+              <a class="menu-link d-flex px-3 gap-3"
+                 [class.active]="translate.currentLang() === 'en'"
+                 (click)="translate.setLanguage('en')">
+                <img src="assets/media/flags/united-states.svg" class="w-20px h-20px rounded-1 object-fit-cover" alt="EN" />
+                <span class="menu-title">English</span>
+                @if (translate.currentLang() === 'en') {
+                  <i class="ki-duotone ki-check fs-5 text-success ms-auto"><span class="path1"></span><span class="path2"></span></i>
+                }
+              </a>
+            </div>
+            <!--end::English-->
+
+            <!--begin::Arabic-->
+            <div class="menu-item px-3">
+              <a class="menu-link d-flex px-3 gap-3"
+                 [class.active]="translate.currentLang() === 'ar'"
+                 (click)="translate.setLanguage('ar')">
+                <img src="assets/media/flags/saudi-arabia.svg" class="w-20px h-20px rounded-1 object-fit-cover" alt="AR" />
+                <span class="menu-title">العربية</span>
+                @if (translate.currentLang() === 'ar') {
+                  <i class="ki-duotone ki-check fs-5 text-success ms-auto"><span class="path1"></span><span class="path2"></span></i>
+                }
+              </a>
+            </div>
+            <!--end::Arabic-->
+
+            <!--begin::French-->
+            <div class="menu-item px-3">
+              <a class="menu-link d-flex px-3 gap-3"
+                 [class.active]="translate.currentLang() === 'fr'"
+                 (click)="translate.setLanguage('fr')">
+                <img src="assets/media/flags/france.svg" class="w-20px h-20px rounded-1 object-fit-cover" alt="FR" />
+                <span class="menu-title">Français</span>
+                @if (translate.currentLang() === 'fr') {
+                  <i class="ki-duotone ki-check fs-5 text-success ms-auto"><span class="path1"></span><span class="path2"></span></i>
+                }
+              </a>
+            </div>
+            <!--end::French-->
+
+          </div>
         </div>
-        <!--end::Language toggle-->
+        <!--end::Language selector-->
 
         <!--begin::Theme mode toggle-->
         <div class="app-navbar-item ms-1 ms-md-3">
