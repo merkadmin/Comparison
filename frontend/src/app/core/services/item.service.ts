@@ -34,4 +34,14 @@ export class ItemService {
   delete(id: number): Observable<void> {
     return this.api.delete<void>(`/items/${id}`);
   }
+
+  importExcel(file: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.api.postFile<void>('/items/import', formData);
+  }
+
+  exportTemplate(): Observable<Blob> {
+    return this.api.getBlob('/items/export-template');
+  }
 }

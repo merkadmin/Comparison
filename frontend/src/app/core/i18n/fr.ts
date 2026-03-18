@@ -8,6 +8,8 @@ export const fr: Record<string, string> = {
   'common.save':        'Enregistrer',
   'common.cancel':      'Annuler',
   'common.search':      'Rechercher',
+  'common.import':          'Importer',
+  'common.exportTemplate':  'Exporter le modèle',
   'common.loading':     'Chargement...',
   'common.noData':      'Aucun enregistrement trouvé.',
   'common.created':     'Créé le',
@@ -60,6 +62,8 @@ export const fr: Record<string, string> = {
   'item.allCategories':     'Toutes les catégories',
   'item.allBrands':         'Toutes les marques',
   'item.deleteConfirm':     'Supprimer cet article ?',
+  'item.importSuccess':     'Articles importés avec succès.',
+  'item.importError':       'Échec de l\'importation des articles.',
 
   // Item Packages / Offers
   'package.title':         'Offres & Packs',

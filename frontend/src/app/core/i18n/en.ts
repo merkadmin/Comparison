@@ -8,6 +8,8 @@ export const en: Record<string, string> = {
   'common.save':        'Save',
   'common.cancel':      'Cancel',
   'common.search':      'Search',
+  'common.import':          'Import',
+  'common.exportTemplate':  'Export Template',
   'common.loading':     'Loading...',
   'common.noData':      'No records found.',
   'common.created':     'Created',
@@ -60,6 +62,8 @@ export const en: Record<string, string> = {
   'item.allCategories':     'All Categories',
   'item.allBrands':         'All Brands',
   'item.deleteConfirm':     'Delete this item?',
+  'item.importSuccess':     'Items imported successfully.',
+  'item.importError':       'Failed to import items.',
 
   // Item Packages / Offers
   'package.title':         'Offers & Packages',

@@ -4,28 +4,63 @@
           <h3 class="fw-bold m-0">{{ 'item.title' | translate }}</h3>
         </div>
         <div class="card-toolbar d-flex gap-3">
-          <select class="form-select form-select-sm w-auto"
-                  [ngModel]="selectedCategoryId()"
-                  (ngModelChange)="selectedCategoryId.set($event); selectedBrandId.set(null); loadItems()">
-            <option [ngValue]="null">{{ 'item.allCategories' | translate }}</option>
-            @for (c of categories(); track c.id) {
-              <option [ngValue]="c.id">{{ localize(c.name) }}</option>
-            }
-          </select>
-          <select class="form-select form-select-sm w-auto"
-                  [ngModel]="selectedBrandId()"
-                  (ngModelChange)="selectedBrandId.set($event); selectedCategoryId.set(null); loadItems()">
-            <option [ngValue]="null">{{ 'item.allBrands' | translate }}</option>
-            @for (b of brands(); track b.id) {
-              <option [ngValue]="b.id">{{ b.name }}</option>
-            }
-          </select>
-          <button class="btn btn-sm btn-light-primary" (click)="resetFilters()">
-            <i class="ki-duotone ki-filter-search fs-2"><span class="path1"></span><span class="path2"></span></i>
-            {{ 'common.all' | translate }}
-          </button>
+          <div class="d-flex align-items-center position-relative">
+            <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-3">
+              <span class="path1"></span><span class="path2"></span>
+            </i>
+            <input
+              type="text"
+              class="form-control form-control-sm ps-9 w-200px"
+              [placeholder]="'common.search' | translate"
+              [value]="searchQuery()"
+              (input)="searchQuery.set($any($event.target).value)" />
+          </div>
+          <app-common-select
+            [options]="categoryOptions()"
+            [placeholder]="'item.allCategories' | translate"
+            [selected]="selectedCategoryId()"
+            (selectedChange)="selectedCategoryId.set($event); selectedBrandId.set(null); loadItems()">
+          </app-common-select>
+          <app-common-select
+            [options]="brandOptions()"
+            [placeholder]="'item.allBrands' | translate"
+            [selected]="selectedBrandId()"
+            (selectedChange)="selectedBrandId.set($event); selectedCategoryId.set(null); loadItems()">
+          </app-common-select>
+          <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
+          <div class="dropdown">
+            <button class="btn btn-sm btn-light-success dropdown-toggle" data-bs-toggle="dropdown" [disabled]="importing()">
+              @if (importing()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              } @else {
+                <i class="ki-duotone ki-file-up fs-2"><span class="path1"></span><span class="path2"></span></i>
+              }
+              {{ 'common.import' | translate }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" (click)="exportTemplate()">
+                  <i class="ki-duotone ki-file-down fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                  {{ 'common.exportTemplate' | translate }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" (click)="fileInput.click()">
+                  <i class="ki-duotone ki-file-up fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                  {{ 'common.import' | translate }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+
+      @if (importSuccess()) {
+        <div class="alert alert-success mx-6 mt-4 mb-0">{{ 'item.importSuccess' | translate }}</div>
+      }
+      @if (importError()) {
+        <div class="alert alert-danger mx-6 mt-4 mb-0">{{ importError() }}</div>
+      }
 
       <div class="card-body py-4">
         @if (loading()) {
@@ -46,17 +81,16 @@
                 <th class="min-w-175px">{{ 'common.name' | translate }}</th>
                 <th class="min-w-125px">{{ 'item.brand' | translate }}</th>
                 <th class="min-w-200px">{{ 'item.category' | translate }}</th>
-                <th class="min-w-100px">{{ 'common.barcode' | translate }}</th>
                 <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
               </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
-              @if (items().length === 0) {
+              @if (filteredItems().length === 0) {
                 <tr>
-                  <td colspan="7" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+                  <td colspan="6" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
-              @for (item of items(); track item.id; let i = $index) {
+              @for (item of filteredItems(); track item.id; let i = $index) {
                 <tr>
                   <td>{{ i + 1 }}</td>
                   <td>
@@ -84,7 +118,6 @@
                   <td>
                     <span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span>
                   </td>
-                  <td class="text-muted">{{ item.barcode || '—' }}</td>
                   <td class="text-end">
                     <button class="btn btn-sm btn-light-danger" (click)="delete(item.id!)">
                       <i class="ki-duotone ki-trash fs-5">

@@ -26,4 +26,12 @@ export class ApiService {
   delete<T>(path: string): Observable<T> {
     return this.http.delete<T>(`${this.base}${path}`).pipe(timeout(REQUEST_TIMEOUT_MS));
   }
+
+  postFile<T>(path: string, formData: FormData): Observable<T> {
+    return this.http.post<T>(`${this.base}${path}`, formData).pipe(timeout(60000));
+  }
+
+  getBlob(path: string): Observable<Blob> {
+    return this.http.get(`${this.base}${path}`, { responseType: 'blob' }).pipe(timeout(30000));
+  }
 }

@@ -8,6 +8,8 @@ export const ar: Record<string, string> = {
   'common.save':        'حفظ',
   'common.cancel':      'إلغاء',
   'common.search':      'بحث',
+  'common.import':          'استيراد',
+  'common.exportTemplate':  'تصدير القالب',
   'common.loading':     'جارٍ التحميل...',
   'common.noData':      'لا توجد سجلات.',
   'common.created':     'تاريخ الإنشاء',
@@ -60,6 +62,8 @@ export const ar: Record<string, string> = {
   'item.allCategories':     'كل التصنيفات',
   'item.allBrands':         'كل الماركات',
   'item.deleteConfirm':     'هل تريد حذف هذا المنتج؟',
+  'item.importSuccess':     'تم استيراد المنتجات بنجاح.',
+  'item.importError':       'فشل استيراد المنتجات.',
 
   // Item Packages / Offers
   'package.title':         'العروض والباقات',

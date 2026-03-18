@@ -4,6 +4,13 @@
 html, body {
   height: 100%;
   margin: 0;
+  font-size: 17px;  /* enlarge base from default 16px — scales all rem-based Metronic sizes */
+}
+
+/* Larger table headers — Metronic's fs-7 (0.75rem) is too small for dense data tables */
+.table thead tr th {
+  font-size: 0.9rem !important;
+  letter-spacing: 0.03em;
 }
 
 /* =====================================================

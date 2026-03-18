@@ -1,0 +1,8 @@
+<select class="form-select form-select-sm w-auto"
+        [ngModel]="selected"
+        (ngModelChange)="selectedChange.emit($event)">
+  <option [ngValue]="null">{{ placeholder }}</option>
+  @for (opt of options; track opt.value) {
+    <option [ngValue]="opt.value">{{ opt.label }}</option>
+  }
+</select>
