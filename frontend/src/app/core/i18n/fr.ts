@@ -8,7 +8,7 @@ export const fr: Record<string, string> = {
   'common.save':        'Enregistrer',
   'common.cancel':      'Annuler',
   'common.search':      'Rechercher',
-  'common.import':          'Importer',
+  'common.importTemplate':          'Importer',
   'common.exportTemplate':  'Exporter le modèle',
   'common.loading':     'Chargement...',
   'common.noData':      'Aucun enregistrement trouvé.',

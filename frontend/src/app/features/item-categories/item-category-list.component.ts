@@ -1,15 +1,16 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { CommonDropDownMenuComponent, DropDownMenuItem } from '../../shared/components/common-drop-down-menu/common-drop-down-menu.component';
 
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, CommonDropDownMenuComponent],
   templateUrl: './item-category-list.component.html',
 })
 export class ItemCategoryListComponent implements OnInit {
@@ -42,6 +43,21 @@ export class ItemCategoryListComponent implements OnInit {
   importError   = signal<string | null>(null);
   importSuccess = signal(false);
   selectedIds   = signal<Set<number>>(new Set());
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  importMenuItems: DropDownMenuItem[] = [
+    { 
+      labelKey: 'common.importTemplate',
+      iconClass: 'ki-file-up',
+      action: () => this.fileInput.nativeElement.click() 
+    },
+    { 
+      labelKey: 'common.exportTemplate', 
+      iconClass: 'ki-file-down', 
+      action: () => this.exportTemplate() 
+    },
+  ];
 
   ngOnInit(): void { this.load(); }
 

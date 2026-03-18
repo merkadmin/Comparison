@@ -3,7 +3,7 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.DAL.Documents;
 
-[BsonCollection("ItemPackage_sc")]
+[BsonCollection("ItemPackage")]
 public class ItemPackageDocument
 {
     [BsonId]

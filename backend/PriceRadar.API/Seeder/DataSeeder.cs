@@ -156,13 +156,13 @@ public class DataSeeder
 
 		// Load already-seeded categories and brands so we can reference their IDs
 		var categories = await _context.ItemCategories.Find(_ => true).ToListAsync();
-		var brands     = await _context.ItemBrands.Find(_ => true).ToListAsync();
+		var brands = await _context.ItemBrands.Find(_ => true).ToListAsync();
 
 		// Helper functions to look up the long ID by name
 		long CategoryId(string name) => categories.FirstOrDefault(c => c.Name.En == name)?.Id
 			?? throw new InvalidOperationException($"[Seeder] Category '{name}' not found. Drop the ItemCategory collection and restart.");
 		long BrandId(string name) => brands.FirstOrDefault(b => b.Name == name)?.Id
-			?? throw new InvalidOperationException($"[Seeder] Brand '{name}' not found. Drop the Item_Brand_sc collection and restart.");
+			?? throw new InvalidOperationException($"[Seeder] Brand '{name}' not found. Drop the ItemBrand collection and restart.");
 
 		// Each item is linked to a brand and a category via their long IDs (foreign keys)
 		var items = new List<ItemDocument>

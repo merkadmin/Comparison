@@ -23,10 +23,10 @@ public class ItemCategoryDocument
 
 	public static ItemCategoryDocument FromModel(ItemCategory itemCategory) => new()
 	{
-		Id               = itemCategory.Id,
-		Name             = itemCategory.Name,
+		Id = itemCategory.Id,
+		Name = itemCategory.Name,
 		ParentCategoryId = itemCategory.ParentCategoryId,
-		Description      = itemCategory.Description,
-		CreatedAt        = itemCategory.CreatedAt == default ? DateTime.UtcNow : itemCategory.CreatedAt,
+		Description = itemCategory.Description,
+		CreatedAt = itemCategory.CreatedAt == default ? DateTime.UtcNow : itemCategory.CreatedAt,
 	};
 }

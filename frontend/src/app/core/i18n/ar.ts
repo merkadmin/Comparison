@@ -8,7 +8,7 @@ export const ar: Record<string, string> = {
   'common.save':        'حفظ',
   'common.cancel':      'إلغاء',
   'common.search':      'بحث',
-  'common.import':          'استيراد',
+  'common.importTemplate':          'استيراد',
   'common.exportTemplate':  'تصدير القالب',
   'common.loading':     'جارٍ التحميل...',
   'common.noData':      'لا توجد سجلات.',

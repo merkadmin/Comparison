@@ -8,7 +8,7 @@ export const en: Record<string, string> = {
   'common.save':        'Save',
   'common.cancel':      'Cancel',
   'common.search':      'Search',
-  'common.import':          'Import',
+  'common.importTemplate': 'Import Template',
   'common.exportTemplate':  'Export Template',
   'common.loading':     'Loading...',
   'common.noData':      'No records found.',
