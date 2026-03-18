@@ -4,7 +4,6 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.DAL.Documents;
 
-[BsonCollection("Item_sc")]
 public class ItemDocument
 {
 	[BsonId]
@@ -20,31 +19,31 @@ public class ItemDocument
 	public string BrandId { get; set; } = string.Empty;
 
 	[BsonRepresentation(BsonType.ObjectId)]
-	public List<string> CategoryIds { get; set; } = new();
+	public string ItemCategoryId { get; set; } = string.Empty;
 
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 	public Item ToModel() => new()
 	{
-		Id = Id,
-		Name = Name,
-		Description = Description,
-		Barcode = Barcode,
-		ImageUrl = ImageUrl,
-		BrandId = BrandId,
-		CategoryIds = CategoryIds,
-		CreatedAt = CreatedAt
+		Id             = Id,
+		Name           = Name,
+		Description    = Description,
+		Barcode        = Barcode,
+		ImageUrl       = ImageUrl,
+		BrandId        = BrandId,
+		ItemCategoryId = ItemCategoryId,
+		CreatedAt      = CreatedAt
 	};
 
 	public static ItemDocument FromModel(Item i) => new()
 	{
-		Id = i.Id,
-		Name = i.Name,
-		Description = i.Description,
-		Barcode = i.Barcode,
-		ImageUrl = i.ImageUrl,
-		BrandId = i.BrandId,
-		CategoryIds = i.CategoryIds,
-		CreatedAt = i.CreatedAt
+		Id             = i.Id,
+		Name           = i.Name,
+		Description    = i.Description,
+		Barcode        = i.Barcode,
+		ImageUrl       = i.ImageUrl,
+		BrandId        = i.BrandId,
+		ItemCategoryId = i.ItemCategoryId,
+		CreatedAt      = i.CreatedAt
 	};
 }

@@ -1,12 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateService } from '../../core/services/translate.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { ItemCategoryService } from '../../core/services/item-category.service';
+import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslatePipe],
   template: `
     <div id="kt_app_sidebar" class="app-sidebar flex-column"
          data-kt-drawer="true"
@@ -123,6 +126,36 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
               </div>
             </div>
 
+            <!-- Shop by Category -->
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+              <span class="menu-link">
+                <span class="menu-icon">
+                  <i class="ki-duotone ki-category fs-2">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
+                  </i>
+                </span>
+                <span class="menu-title">{{ 'nav.shopByCategory' | translate }}</span>
+                <span class="menu-arrow"></span>
+              </span>
+              <div class="menu-sub menu-sub-accordion">
+                @for (cat of categories(); track cat.id) {
+                  <div class="menu-item">
+                    <a class="menu-link" [routerLink]="['/items']" [queryParams]="{ categoryId: cat.id }" routerLinkActive="active">
+                      <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                      <span class="menu-title">{{ localize(cat.name) }}</span>
+                    </a>
+                  </div>
+                }
+                <div class="menu-item">
+                  <a class="menu-link" routerLink="/item-categories" routerLinkActive="active">
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                    <span class="menu-title fw-bold text-primary">{{ 'nav.showAll' | translate }}</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <!-- Stores -->
             <div class="menu-item">
               <a class="menu-link" routerLink="/stores" routerLinkActive="active">
@@ -146,6 +179,20 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
     </div>
   `,
 })
-export class SidebarComponent {
-  translate = inject(TranslateService);
+export class SidebarComponent implements OnInit {
+  translate        = inject(TranslateService);
+  private catSvc   = inject(ItemCategoryService);
+
+  categories = signal<ItemCategory[]>([]);
+
+  ngOnInit(): void {
+    this.catSvc.getAll().subscribe({
+      next: data => this.categories.set(data.slice(0, 10)),
+      error: () => {}
+    });
+  }
+
+  localize(ls: LocalizedString): string {
+    return ls[this.translate.currentLang()] || ls.en;
+  }
 }

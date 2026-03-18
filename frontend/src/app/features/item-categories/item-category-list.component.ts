@@ -1,8 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ItemCategoryService } from '../../core/services/item-category.service';
-import { ItemCategory } from '../../core/models/item-category.model';
+import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { TranslateService } from '../../core/services/translate.service';
 
 @Component({
   selector: 'app-item-category-list',
@@ -53,9 +54,9 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 <tr>
                   <td>{{ i + 1 }}</td>
                   <td>
-                    <span class="text-gray-800 fw-bold text-hover-primary fs-6">{{ cat.name }}</span>
+                    <span class="text-gray-800 fw-bold text-hover-primary fs-6">{{ localize(cat.name) }}</span>
                   </td>
-                  <td class="text-muted">{{ cat.description || '—' }}</td>
+                  <td class="text-muted">{{ cat.description ? localize(cat.description) : '—' }}</td>
                   <td>{{ cat.createdAt | date:'mediumDate' }}</td>
                   <td class="text-end">
                     <button class="btn btn-sm btn-light-danger" (click)="delete(cat.id!)">
@@ -76,7 +77,13 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   `,
 })
 export class ItemCategoryListComponent implements OnInit {
-  private service = inject(ItemCategoryService);
+  private service   = inject(ItemCategoryService);
+  private translate = inject(TranslateService);
+
+  localize(ls: LocalizedString): string {
+    const lang = this.translate.currentLang();
+    return ls[lang] || ls.en;
+  }
 
   categories = signal<ItemCategory[]>([]);
   loading = signal(false);

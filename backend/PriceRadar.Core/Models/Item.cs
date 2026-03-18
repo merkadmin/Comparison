@@ -12,9 +12,9 @@ public class Item
     public string BrandId { get; set; } = string.Empty;
     public ItemBrand? Brand { get; set; }
 
-    // Many-to-Many: each item belongs to many categories
-    public List<string> CategoryIds { get; set; } = new();
-    public List<ItemCategory>? Categories { get; set; }
+    // Many-to-One: each item belongs to one category
+    public string ItemCategoryId { get; set; } = string.Empty;
+    public ItemCategory? Category { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

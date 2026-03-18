@@ -9,7 +9,7 @@ export interface Item {
   imageUrl?: string;
   brandId: string;
   brand?: ItemBrand;
-  categoryIds: string[];
-  categories?: ItemCategory[];
+  itemCategoryId: string;
+  category?: ItemCategory;
   createdAt?: Date;
 }

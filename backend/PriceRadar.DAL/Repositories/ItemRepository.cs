@@ -26,8 +26,7 @@ public class ItemRepository : IItemRepository
 
     public async Task<IEnumerable<Item>> GetByCategoryAsync(string categoryId)
     {
-        var filter = Builders<ItemDocument>.Filter.AnyEq(i => i.CategoryIds, categoryId);
-        var docs = await _context.Items.Find(filter).ToListAsync();
+        var docs = await _context.Items.Find(i => i.ItemCategoryId == categoryId).ToListAsync();
         return docs.Select(d => d.ToModel());
     }
 

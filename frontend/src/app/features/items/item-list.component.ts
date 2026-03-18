@@ -1,13 +1,15 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { ItemService } from '../../core/services/item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { Item } from '../../core/models/item.model';
-import { ItemCategory } from '../../core/models/item-category.model';
+import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { ItemBrand } from '../../core/models/item-brand.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { TranslateService } from '../../core/services/translate.service';
 
 @Component({
   selector: 'app-item-list',
@@ -25,7 +27,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                   (ngModelChange)="selectedCategoryId.set($event); selectedBrandId.set(''); loadItems()">
             <option value="">{{ 'item.allCategories' | translate }}</option>
             @for (c of categories(); track c.id) {
-              <option [value]="c.id">{{ c.name }}</option>
+              <option [value]="c.id">{{ localize(c.name) }}</option>
             }
           </select>
           <select class="form-select form-select-sm w-auto"
@@ -61,7 +63,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                 <th class="w-50px">{{ 'common.image' | translate }}</th>
                 <th class="min-w-175px">{{ 'common.name' | translate }}</th>
                 <th class="min-w-125px">{{ 'item.brand' | translate }}</th>
-                <th class="min-w-200px">{{ 'item.categories' | translate }}</th>
+                <th class="min-w-200px">{{ 'item.category' | translate }}</th>
                 <th class="min-w-100px">{{ 'common.barcode' | translate }}</th>
                 <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
               </tr>
@@ -98,11 +100,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
                     <span class="badge badge-light-primary">{{ getBrandName(item.brandId) }}</span>
                   </td>
                   <td>
-                    <div class="d-flex flex-wrap gap-1">
-                      @for (id of item.categoryIds; track id) {
-                        <span class="badge badge-light-success">{{ getCategoryName(id) }}</span>
-                      }
-                    </div>
+                    <span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span>
                   </td>
                   <td class="text-muted">{{ item.barcode || '—' }}</td>
                   <td class="text-end">
@@ -127,6 +125,13 @@ export class ItemListComponent implements OnInit {
   private itemService     = inject(ItemService);
   private categoryService = inject(ItemCategoryService);
   private brandService    = inject(ItemBrandService);
+  private translate       = inject(TranslateService);
+  private route           = inject(ActivatedRoute);
+
+  localize(ls: LocalizedString): string {
+    const lang = this.translate.currentLang();
+    return ls[lang] || ls.en;
+  }
 
   items      = signal<Item[]>([]);
   categories = signal<ItemCategory[]>([]);
@@ -137,6 +142,8 @@ export class ItemListComponent implements OnInit {
   selectedBrandId    = signal('');
 
   ngOnInit(): void {
+    const categoryId = this.route.snapshot.queryParamMap.get('categoryId');
+    if (categoryId) this.selectedCategoryId.set(categoryId);
     this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
     this.loadItems();
@@ -168,7 +175,8 @@ export class ItemListComponent implements OnInit {
   }
 
   getCategoryName(id: string): string {
-    return this.categories().find(c => c.id === id)?.name ?? id;
+    const cat = this.categories().find(c => c.id === id);
+    return cat ? this.localize(cat.name) : id;
   }
 
   delete(id: string): void {

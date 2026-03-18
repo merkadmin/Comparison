@@ -30,11 +30,26 @@ public class DataSeeder
 
 		var categories = new List<ItemCategoryDocument>
 		{
-			new() { Name = "Laptops",     Description = "Portable computers" },
-			new() { Name = "Smartphones", Description = "Mobile phones and smart devices" },
-			new() { Name = "Tablets",     Description = "Tablet computers and e-readers" },
-			new() { Name = "Accessories", Description = "Cables, bags, chargers, and more" },
-			new() { Name = "Audio",       Description = "Headphones, speakers, and earbuds" },
+			new() {
+				Name        = new() { En = "Laptops",      Ar = "أجهزة لابتوب",     Fr = "Ordinateurs portables" },
+				Description = new() { En = "Portable computers", Ar = "حواسيب محمولة", Fr = "Ordinateurs portables" }
+			},
+			new() {
+				Name        = new() { En = "Smartphones",  Ar = "الهواتف الذكية",    Fr = "Smartphones" },
+				Description = new() { En = "Mobile phones and smart devices", Ar = "الهواتف المحمولة والأجهزة الذكية", Fr = "Téléphones mobiles et appareils intelligents" }
+			},
+			new() {
+				Name        = new() { En = "Tablets",      Ar = "الأجهزة اللوحية",   Fr = "Tablettes" },
+				Description = new() { En = "Tablet computers and e-readers", Ar = "الحواسيب اللوحية وأجهزة القراءة الإلكترونية", Fr = "Tablettes et liseuses" }
+			},
+			new() {
+				Name        = new() { En = "Accessories",  Ar = "الإكسسوارات",       Fr = "Accessoires" },
+				Description = new() { En = "Cables, bags, chargers, and more", Ar = "كابلات وحقائب وشواحن والمزيد", Fr = "Câbles, sacs, chargeurs et plus" }
+			},
+			new() {
+				Name        = new() { En = "Audio",        Ar = "الصوتيات",          Fr = "Audio" },
+				Description = new() { En = "Headphones, speakers, and earbuds", Ar = "سماعات الرأس والمكبرات وسماعات الأذن", Fr = "Casques, enceintes et écouteurs" }
+			},
 		};
 
 		await _context.ItemCategories.InsertManyAsync(categories);
@@ -69,74 +84,74 @@ public class DataSeeder
 		var categories = await _context.ItemCategories.Find(_ => true).ToListAsync();
 		var brands = await _context.ItemBrands.Find(_ => true).ToListAsync();
 
-		string CategoryId(string name) => categories.First(c => c.Name == name).Id!;
+		string CategoryId(string name) => categories.First(c => c.Name.En == name).Id!;
 		string BrandId(string name) => brands.First(b => b.Name == name).Id!;
 
 		var items = new List<ItemDocument>
 		{
 			new()
 			{
-				Name        = "MacBook Pro 14\"",
-				Description = "Apple M3 Pro chip, 18GB RAM, 512GB SSD",
-				BrandId     = BrandId("Apple"),
-				CategoryIds = new() { CategoryId("Laptops") },
-				Barcode     = "APL-MBP14-M3",
+				Name           = "MacBook Pro 14\"",
+				Description    = "Apple M3 Pro chip, 18GB RAM, 512GB SSD",
+				BrandId        = BrandId("Apple"),
+				ItemCategoryId = CategoryId("Laptops"),
+				Barcode        = "APL-MBP14-M3",
 			},
 			new()
 			{
-				Name        = "iPhone 15 Pro",
-				Description = "A17 Pro chip, 256GB, Titanium",
-				BrandId     = BrandId("Apple"),
-				CategoryIds = new() { CategoryId("Smartphones"), CategoryId("Accessories") },
-				Barcode     = "APL-IP15PRO",
+				Name           = "iPhone 15 Pro",
+				Description    = "A17 Pro chip, 256GB, Titanium",
+				BrandId        = BrandId("Apple"),
+				ItemCategoryId = CategoryId("Smartphones"),
+				Barcode        = "APL-IP15PRO",
 			},
 			new()
 			{
-				Name        = "Samsung Galaxy S24 Ultra",
-				Description = "Snapdragon 8 Gen 3, 12GB RAM, 256GB",
-				BrandId     = BrandId("Samsung"),
-				CategoryIds = new() { CategoryId("Smartphones") },
-				Barcode     = "SAM-S24U-256",
+				Name           = "Samsung Galaxy S24 Ultra",
+				Description    = "Snapdragon 8 Gen 3, 12GB RAM, 256GB",
+				BrandId        = BrandId("Samsung"),
+				ItemCategoryId = CategoryId("Smartphones"),
+				Barcode        = "SAM-S24U-256",
 			},
 			new()
 			{
-				Name        = "Galaxy Tab S9",
-				Description = "11\" AMOLED, Snapdragon 8 Gen 2, 128GB",
-				BrandId     = BrandId("Samsung"),
-				CategoryIds = new() { CategoryId("Tablets") },
-				Barcode     = "SAM-TABS9-128",
+				Name           = "Galaxy Tab S9",
+				Description    = "11\" AMOLED, Snapdragon 8 Gen 2, 128GB",
+				BrandId        = BrandId("Samsung"),
+				ItemCategoryId = CategoryId("Tablets"),
+				Barcode        = "SAM-TABS9-128",
 			},
 			new()
 			{
-				Name        = "Dell XPS 15",
-				Description = "Intel Core i7, 16GB RAM, 512GB SSD, OLED",
-				BrandId     = BrandId("Dell"),
-				CategoryIds = new() { CategoryId("Laptops") },
-				Barcode     = "DELL-XPS15-I7",
+				Name           = "Dell XPS 15",
+				Description    = "Intel Core i7, 16GB RAM, 512GB SSD, OLED",
+				BrandId        = BrandId("Dell"),
+				ItemCategoryId = CategoryId("Laptops"),
+				Barcode        = "DELL-XPS15-I7",
 			},
 			new()
 			{
-				Name        = "Sony WH-1000XM5",
-				Description = "Industry-leading noise cancelling headphones",
-				BrandId     = BrandId("Sony"),
-				CategoryIds = new() { CategoryId("Audio"), CategoryId("Accessories") },
-				Barcode     = "SNY-WH1000XM5",
+				Name           = "Sony WH-1000XM5",
+				Description    = "Industry-leading noise cancelling headphones",
+				BrandId        = BrandId("Sony"),
+				ItemCategoryId = CategoryId("Audio"),
+				Barcode        = "SNY-WH1000XM5",
 			},
 			new()
 			{
-				Name        = "Lenovo ThinkPad X1 Carbon",
-				Description = "Intel Core i7, 16GB, 512GB, 14\" FHD",
-				BrandId     = BrandId("Lenovo"),
-				CategoryIds = new() { CategoryId("Laptops") },
-				Barcode     = "LNV-X1C-GEN11",
+				Name           = "Lenovo ThinkPad X1 Carbon",
+				Description    = "Intel Core i7, 16GB, 512GB, 14\" FHD",
+				BrandId        = BrandId("Lenovo"),
+				ItemCategoryId = CategoryId("Laptops"),
+				Barcode        = "LNV-X1C-GEN11",
 			},
 			new()
 			{
-				Name        = "HP Spectre x360",
-				Description = "2-in-1 laptop, Intel Core i7, 16GB, 512GB OLED",
-				BrandId     = BrandId("HP"),
-				CategoryIds = new() { CategoryId("Laptops"), CategoryId("Tablets") },
-				Barcode     = "HP-SPCX360-14",
+				Name           = "HP Spectre x360",
+				Description    = "2-in-1 laptop, Intel Core i7, 16GB, 512GB OLED",
+				BrandId        = BrandId("HP"),
+				ItemCategoryId = CategoryId("Laptops"),
+				Barcode        = "HP-SPCX360-14",
 			},
 		};
 
