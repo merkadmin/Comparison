@@ -53,6 +53,7 @@ export const en: Record<string, string> = {
   'category.deleteSelected':      'Delete Selected',
   'category.importSuccess': 'Categories imported successfully.',
   'category.importError':   'Failed to import categories.',
+  'category.searchPlaceholder': 'Search categories...',
 
   // Item Brands
   'brand.title':         'Item Brands',

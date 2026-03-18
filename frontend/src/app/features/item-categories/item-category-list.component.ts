@@ -6,15 +6,17 @@ import { ItemCategory, LocalizedString } from '../../core/models/item-category.m
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuComponent, DropDownMenuItem } from '../../shared/components/common-drop-down-menu/common-drop-down-menu.component';
+import { CommonSearchComponent } from '../../shared/components/common-search/common-search.component';
 
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, CommonDropDownMenuComponent],
+  imports: [CommonModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent],
   templateUrl: './item-category-list.component.html',
+  styles: [`thead th { font-size: 13px; font-weight: 700; }`],
 })
 export class ItemCategoryListComponent implements OnInit {
-  private service   = inject(ItemCategoryService);
+  private service = inject(ItemCategoryService);
   private translate = inject(TranslateService);
 
   localize(ls: LocalizedString): string {
@@ -22,12 +24,12 @@ export class ItemCategoryListComponent implements OnInit {
     return ls[lang] || ls.en;
   }
 
-  categories    = signal<ItemCategory[]>([]);
+  categories = signal<ItemCategory[]>([]);
 
   sortedCategories = computed<ItemCategory[]>(() => {
-    const all  = this.categories();
+    const all = this.categories();
     const lang = this.translate.currentLang();
-    const loc  = (ls: LocalizedString) => ls[lang] || ls.en;
+    const loc = (ls: LocalizedString) => ls[lang] || ls.en;
 
     const flatten = (parentId: number | null): ItemCategory[] =>
       all
@@ -37,25 +39,35 @@ export class ItemCategoryListComponent implements OnInit {
 
     return flatten(null);
   });
-  loading       = signal(false);
-  error         = signal<string | null>(null);
-  importing     = signal(false);
-  importError   = signal<string | null>(null);
+  searchTerm = signal('');
+
+  visibleCategories = computed<ItemCategory[]>(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.sortedCategories();
+    return this.sortedCategories().filter(cat =>
+      Object.values(cat.name).some(v => typeof v === 'string' && v.toLowerCase().includes(term))
+    );
+  });
+
+  loading = signal(false);
+  error = signal<string | null>(null);
+  importing = signal(false);
+  importError = signal<string | null>(null);
   importSuccess = signal(false);
-  selectedIds   = signal<Set<number>>(new Set());
+  selectedIds = signal<Set<number>>(new Set());
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   importMenuItems: DropDownMenuItem[] = [
-    { 
+    {
       labelKey: 'common.importTemplate',
       iconClass: 'ki-file-up',
-      action: () => this.fileInput.nativeElement.click() 
+      action: () => this.fileInput.nativeElement.click()
     },
-    { 
-      labelKey: 'common.exportTemplate', 
-      iconClass: 'ki-file-down', 
-      action: () => this.exportTemplate() 
+    {
+      labelKey: 'common.exportTemplate',
+      iconClass: 'ki-file-down',
+      action: () => this.exportTemplate()
     },
   ];
 
@@ -92,8 +104,8 @@ export class ItemCategoryListComponent implements OnInit {
   }
 
   isAllSelected(): boolean {
-    const all = this.sortedCategories();
-    return all.length > 0 && all.every(c => this.selectedIds().has(c.id!));
+    const visible = this.visibleCategories();
+    return visible.length > 0 && visible.every(c => this.selectedIds().has(c.id!));
   }
 
   toggleOne(id: number): void {
@@ -107,7 +119,7 @@ export class ItemCategoryListComponent implements OnInit {
     if (this.isAllSelected()) {
       this.selectedIds.set(new Set());
     } else {
-      this.selectedIds.set(new Set(this.sortedCategories().map(c => c.id!)));
+      this.selectedIds.set(new Set(this.visibleCategories().map(c => c.id!)));
     }
   }
 
@@ -124,7 +136,7 @@ export class ItemCategoryListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#f1416c',
       confirmButtonText: this.translate.translate('common.delete'),
-      cancelButtonText:  this.translate.translate('common.cancel'),
+      cancelButtonText: this.translate.translate('common.cancel'),
     }).then(result => {
       if (!result.isConfirmed) return;
       this.service.delete(id).subscribe({
@@ -161,7 +173,7 @@ export class ItemCategoryListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#f1416c',
       confirmButtonText: this.translate.translate('common.delete'),
-      cancelButtonText:  this.translate.translate('common.cancel'),
+      cancelButtonText: this.translate.translate('common.cancel'),
     }).then(result => {
       if (!result.isConfirmed) return;
       this.service.deleteMany(ids).subscribe({
@@ -183,7 +195,7 @@ export class ItemCategoryListComponent implements OnInit {
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: () => {}
+      error: () => { }
     });
   }
 

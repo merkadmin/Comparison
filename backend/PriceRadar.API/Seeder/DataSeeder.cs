@@ -24,17 +24,18 @@ public class DataSeeder
 	// categories and brands must exist before items, items before packages.
 	public async Task SeedAsync()
 	{
-		await SeedCategoriesAsync();
-		await SeedBrandsAsync();
-		await SeedItemsAsync();
-		await SeedPackagesAsync();
+		await SeedTableNames();
+		//await SeedCategoriesAsync();
+		//await SeedBrandsAsync();
+		//await SeedItemsAsync();
+		//await SeedPackagesAsync();
 	}
 
 	// ─── Categories ───────────────────────────────────────────────────────────
 	private async Task SeedCategoriesAsync()
 	{
 		// Skip if the collection already has data (idempotent guard)
-		if (await _context.ItemCategories.CountDocumentsAsync(_ => true) > 0) return;
+		//if (await _context.ItemCategories.CountDocumentsAsync(_ => true) > 0) return;
 
 		// ── Pass 1: top-level (root) categories — ParentCategoryId = null ──────
 		/*
@@ -310,5 +311,34 @@ public class DataSeeder
 
 		await _context.ItemPackages.InsertManyAsync(packages);
 		Console.WriteLine($"[Seeder] Inserted {packages.Count} packages/offers.");
+	}
+
+	private async Task SeedTableNames()
+	{
+		if (await _context.TableNames.CountDocumentsAsync(_ => true) > 0) return;
+
+		// Discover all concrete document types that implement IDocument<T>,
+		// excluding TableNameDocument itself (it's the target collection).
+		var genericDocInterface = typeof(IDocument<>);
+
+		var names = typeof(ItemBrandDocument).Assembly.GetTypes()
+			.Where(t => t is { IsClass: true, IsAbstract: false, DeclaringType: null } &&
+						t != typeof(TableNameDocument) &&
+						t.GetInterfaces().Any(i => i.IsGenericType &&
+							i.GetGenericTypeDefinition() == genericDocInterface))
+			.Select(t => t.Name.EndsWith("Document") ? t.Name[..^"Document".Length] : t.Name)
+			.OrderBy(n => n)
+			.ToList();
+
+		var docs = new List<TableNameDocument>();
+		foreach (var name in names)
+			docs.Add(new TableNameDocument
+			{
+				Id   = await _context.GetNextSequenceAsync("tablenames"),
+				Name = name
+			});
+
+		await _context.TableNames.InsertManyAsync(docs);
+		Console.WriteLine($"[Seeder] Inserted {docs.Count} table names.");
 	}
 }

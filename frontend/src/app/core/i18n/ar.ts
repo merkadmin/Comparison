@@ -53,6 +53,7 @@ export const ar: Record<string, string> = {
   'category.deleteSelected':      'حذف المحدد',
   'category.importSuccess': 'تم استيراد التصنيفات بنجاح.',
   'category.importError':   'فشل استيراد التصنيفات.',
+  'category.searchPlaceholder': 'ابحث في التصنيفات...',
 
   // Item Brands
   'brand.title':         'ماركات المنتجات',

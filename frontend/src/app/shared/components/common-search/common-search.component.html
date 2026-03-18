@@ -1,0 +1,18 @@
+<div class="d-flex align-items-center position-relative">
+  <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-3">
+    <span class="path1"></span><span class="path2"></span>
+  </i>
+  <input
+    type="text"
+    class="form-control form-control-sm ps-9"
+    [placeholder]="placeholderKey | translate"
+    [(ngModel)]="value"
+    (ngModelChange)="onInput()"
+  />
+  @if (value) {
+    <i class="ki-duotone ki-cross fs-4 position-absolute end-0 me-2 cursor-pointer text-muted"
+       (click)="clear()">
+      <span class="path1"></span><span class="path2"></span>
+    </i>
+  }
+</div>
