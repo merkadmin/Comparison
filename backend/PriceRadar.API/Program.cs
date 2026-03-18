@@ -15,7 +15,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IStoreRepository, StoreRepository>();
 builder.Services.AddScoped<IPriceListingRepository, PriceListingRepository>();
 builder.Services.AddScoped<IPriceHistoryRepository, PriceHistoryRepository>();
-builder.Services.AddScoped<IItemCategoryRepository, ItemCategoryRepository>();
+builder.Services.AddScoped<IBaseRepository<ItemCategory>, ItemCategoryRepository>();
 builder.Services.AddScoped<IItemBrandRepository, ItemBrandRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IItemPackageRepository, ItemPackageRepository>();

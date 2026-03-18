@@ -5,9 +5,9 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.API.Controllers;
 
-public class ItemCategoriesController : BaseController<ItemCategory, IItemCategoryRepository>
+public class ItemCategoriesController : BaseController<ItemCategory, IBaseRepository<ItemCategory>>
 {
-	public ItemCategoriesController(IItemCategoryRepository repo) : base(repo) { }
+	public ItemCategoriesController(IBaseRepository<ItemCategory> repo) : base(repo) { }
 
 	[HttpGet("export-template")]
 	public IActionResult ExportTemplate()

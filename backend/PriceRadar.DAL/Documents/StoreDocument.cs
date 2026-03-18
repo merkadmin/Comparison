@@ -3,7 +3,7 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.DAL.Documents;
 
-public class StoreDocument
+public class StoreDocument : IDocument<Store>
 {
 	[BsonId]
 	public long Id { get; set; }

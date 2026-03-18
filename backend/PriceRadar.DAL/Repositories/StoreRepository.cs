@@ -1,4 +1,3 @@
-using MongoDB.Driver;
 using PriceRadar.Core.Interfaces;
 using PriceRadar.Core.Models;
 using PriceRadar.DAL.Context;
@@ -6,39 +5,8 @@ using PriceRadar.DAL.Documents;
 
 namespace PriceRadar.DAL.Repositories;
 
-public class StoreRepository : IStoreRepository
+public class StoreRepository : BaseRepository<Store, StoreDocument>, IStoreRepository
 {
-    private readonly MongoDbContext _context;
-
-    public StoreRepository(MongoDbContext context) => _context = context;
-
-    public async Task<IEnumerable<Store>> GetAllAsync()
-    {
-        var docs = await _context.Stores.Find(_ => true).ToListAsync();
-        return docs.Select(d => d.ToModel());
-    }
-
-    public async Task<Store?> GetByIdAsync(long id)
-    {
-        var doc = await _context.Stores.Find(s => s.Id == id).FirstOrDefaultAsync();
-        return doc?.ToModel();
-    }
-
-    public async Task<Store> CreateAsync(Store store)
-    {
-        var doc = StoreDocument.FromModel(store);
-        doc.Id = await _context.GetNextSequenceAsync("stores");
-        await _context.Stores.InsertOneAsync(doc);
-        return doc.ToModel();
-    }
-
-    public async Task UpdateAsync(long id, Store store)
-    {
-        var doc = StoreDocument.FromModel(store);
-        doc.Id = id;
-        await _context.Stores.ReplaceOneAsync(s => s.Id == id, doc);
-    }
-
-    public async Task DeleteAsync(long id) =>
-        await _context.Stores.DeleteOneAsync(s => s.Id == id);
+    public StoreRepository(MongoDbContext context)
+        : base(context, context.Stores, "stores", StoreDocument.FromModel) { }
 }

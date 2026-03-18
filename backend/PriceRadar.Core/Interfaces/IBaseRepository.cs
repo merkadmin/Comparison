@@ -10,4 +10,5 @@ public interface IBaseRepository<T>
 	Task<T> CreateAsync(T entity);
 	Task UpdateAsync(long id, T entity);
 	Task DeleteAsync(long id);
+	Task DeleteManyAsync(IEnumerable<long> ids);
 }

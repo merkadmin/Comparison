@@ -4,7 +4,7 @@ using PriceRadar.Core.Models;
 namespace PriceRadar.DAL.Documents;
 
 [BsonIgnoreExtraElements]
-public class ItemDocument
+public class ItemDocument : IDocument<Item>
 {
     [BsonId]
     public long Id { get; set; }
