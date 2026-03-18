@@ -1,5 +1,6 @@
 using PriceRadar.API.Seeder;
 using PriceRadar.Core.Interfaces;
+using PriceRadar.Core.Models;
 using PriceRadar.DAL.Context;
 using PriceRadar.DAL.Repositories;
 
@@ -10,15 +11,27 @@ var mongoConnectionString = builder.Configuration["MongoDB:ConnectionString"]!;
 var mongoDatabaseName = builder.Configuration["MongoDB:DatabaseName"]!;
 builder.Services.AddSingleton(new MongoDbContext(mongoConnectionString, mongoDatabaseName));
 
-// Repositories (DAL)
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IStoreRepository, StoreRepository>();
-builder.Services.AddScoped<IPriceListingRepository, PriceListingRepository>();
-builder.Services.AddScoped<IPriceHistoryRepository, PriceHistoryRepository>();
-builder.Services.AddScoped<IBaseRepository<ItemCategory>, ItemCategoryRepository>();
-builder.Services.AddScoped<IItemBrandRepository, ItemBrandRepository>();
-builder.Services.AddScoped<IItemRepository, ItemRepository>();
-builder.Services.AddScoped<IItemPackageRepository, ItemPackageRepository>();
+// Repositories (DAL) — auto-registered via reflection
+var baseRepoType = typeof(IBaseRepository<>);
+bool IsOrExtendsBaseRepo(Type i) =>
+	(i.IsGenericType && i.GetGenericTypeDefinition() == baseRepoType) ||
+	i.GetInterfaces().Any(ii => ii.IsGenericType && ii.GetGenericTypeDefinition() == baseRepoType);
+
+foreach (var impl in typeof(ItemCategoryRepository).Assembly.GetTypes()
+	.Where(t => t is { IsClass: true, IsAbstract: false, DeclaringType: null } &&
+				t.Namespace == "PriceRadar.DAL.Repositories"))
+{
+	// Interfaces declared directly on this class (not inherited from its base)
+	var ownInterfaces = impl.GetInterfaces()
+		.Except(impl.BaseType?.GetInterfaces() ?? Array.Empty<Type>())
+		.ToList();
+
+	if (ownInterfaces.Count > 0)
+		foreach (var iface in ownInterfaces)
+			builder.Services.AddScoped(iface, impl);
+	else if (impl.GetInterfaces().FirstOrDefault(IsOrExtendsBaseRepo) is { } baseService)
+		builder.Services.AddScoped(baseService, impl);
+}
 
 // CORS for Angular dev server
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()!;
