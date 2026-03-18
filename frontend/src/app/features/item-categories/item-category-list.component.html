@@ -3,13 +3,47 @@
         <div class="card-title">
           <h3 class="fw-bold m-0">{{ 'category.title' | translate }}</h3>
         </div>
-        <div class="card-toolbar">
-          <button class="btn btn-sm btn-primary" (click)="load()">
-            <i class="ki-duotone ki-arrows-circle fs-2"><span class="path1"></span><span class="path2"></span></i>
-            {{ 'common.search' | translate }}
-          </button>
+        <div class="card-toolbar d-flex gap-3">
+          @if (selectedIds().size > 0) {
+            <button class="btn btn-sm btn-danger" (click)="deleteSelected()">
+              <i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+              {{ 'category.deleteSelected' | translate }} ({{ selectedIds().size }})
+            </button>
+          }
+          <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
+          <div class="dropdown">
+            <button class="btn btn-sm btn-light-success dropdown-toggle" data-bs-toggle="dropdown" [disabled]="importing()">
+              @if (importing()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              } @else {
+                <i class="ki-duotone ki-file-up fs-2"><span class="path1"></span><span class="path2"></span></i>
+              }
+              {{ 'common.import' | translate }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item cursor-pointer" (click)="fileInput.click()">
+                    <i class="ki-duotone ki-file-up fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                    {{ 'common.import' | translate }}
+                  </a>
+              </li>
+              <li>
+                <a class="dropdown-item cursor-pointer" (click)="exportTemplate()">
+                  <i class="ki-duotone ki-file-down fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                  {{ 'common.exportTemplate' | translate }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+
+      @if (importSuccess()) {
+        <div class="alert alert-success mx-6 mt-4 mb-0">{{ 'category.importSuccess' | translate }}</div>
+      }
+      @if (importError()) {
+        <div class="alert alert-danger mx-6 mt-4 mb-0">{{ importError() }}</div>
+      }
 
       <div class="card-body py-4">
         @if (loading()) {
@@ -25,24 +59,49 @@
           <table class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
               <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                <th class="w-30px">
+                  <div class="form-check form-check-sm form-check-custom form-check-solid">
+                    <input class="form-check-input" type="checkbox"
+                      [checked]="isAllSelected()"
+                      (change)="toggleAll()" />
+                  </div>
+                </th>
                 <th class="w-30px">{{ 'common.number' | translate }}</th>
                 <th class="min-w-200px">{{ 'common.name' | translate }}</th>
+                <th class="min-w-175px">{{ 'category.parentCategory' | translate }}</th>
                 <th class="min-w-250px">{{ 'common.description' | translate }}</th>
                 <th class="min-w-125px">{{ 'common.created' | translate }}</th>
                 <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
               </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
-              @if (categories().length === 0) {
+              @if (sortedCategories().length === 0) {
                 <tr>
-                  <td colspan="5" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+                  <td colspan="7" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
-              @for (cat of categories(); track cat.id; let i = $index) {
-                <tr>
-                  <td>{{ i + 1 }}</td>
+              @for (cat of sortedCategories(); track cat.id; let i = $index) {
+                <tr [class.table-active]="isSelected(cat.id!)">
                   <td>
+                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+                      <input class="form-check-input" type="checkbox"
+                        [checked]="isSelected(cat.id!)"
+                        (change)="toggleOne(cat.id!)" />
+                    </div>
+                  </td>
+                  <td>{{ i + 1 }}</td>
+                  <td [style.padding-left.px]="16 + getDepth(cat) * 24">
+                    @if (cat.parentCategoryId) {
+                      <i class="ki-duotone ki-arrow-right fs-6 text-muted me-1"><span class="path1"></span><span class="path2"></span></i>
+                    }
                     <span class="text-gray-800 fw-bold text-hover-primary fs-6">{{ localize(cat.name) }}</span>
+                  </td>
+                  <td>
+                    @if (cat.parentCategoryId) {
+                      <span class="badge badge-light-info">{{ getParentName(cat.parentCategoryId) }}</span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
                   </td>
                   <td class="text-muted">{{ cat.description ? localize(cat.description) : '—' }}</td>
                   <td>{{ cat.createdAt | date:'mediumDate' }}</td>

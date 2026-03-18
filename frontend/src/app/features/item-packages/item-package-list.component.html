@@ -3,16 +3,48 @@
         <div class="card-title">
           <h3 class="fw-bold m-0">{{ 'package.title' | translate }}</h3>
         </div>
-        <div class="card-toolbar">
-          <button class="btn btn-sm me-3"
+        <div class="card-toolbar d-flex gap-3">
+          <button class="btn btn-sm"
                   [class.btn-light-primary]="!showActiveOnly()"
                   [class.btn-primary]="showActiveOnly()"
                   (click)="toggleActive()">
             <i class="ki-duotone ki-filter fs-2"><span class="path1"></span><span class="path2"></span></i>
             {{ (showActiveOnly() ? 'package.showAll' : 'package.activeOnly') | translate }}
           </button>
+          <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
+          <div class="dropdown">
+            <button class="btn btn-sm btn-light-success dropdown-toggle" data-bs-toggle="dropdown" [disabled]="importing()">
+              @if (importing()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              } @else {
+                <i class="ki-duotone ki-file-up fs-2"><span class="path1"></span><span class="path2"></span></i>
+              }
+              {{ 'common.import' | translate }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item cursor-pointer" (click)="exportTemplate()">
+                  <i class="ki-duotone ki-file-down fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                  {{ 'common.exportTemplate' | translate }}
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item cursor-pointer" (click)="fileInput.click()">
+                  <i class="ki-duotone ki-file-up fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
+                  {{ 'common.import' | translate }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
+
+      @if (importSuccess()) {
+        <div class="alert alert-success mx-6 mt-4 mb-0">{{ 'package.importSuccess' | translate }}</div>
+      }
+      @if (importError()) {
+        <div class="alert alert-danger mx-6 mt-4 mb-0">{{ importError() }}</div>
+      }
 
       <div class="card-body py-4">
         @if (loading()) {

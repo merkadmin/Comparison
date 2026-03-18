@@ -44,12 +44,22 @@ export const fr: Record<string, string> = {
   // Item Categories
   'category.title':         'Catégories d\'articles',
   'category.single':        'Catégorie',
-  'category.deleteConfirm': 'Supprimer cette catégorie ?',
+  'category.parentCategory':      'Catégorie parente',
+  'category.deleteConfirm':       'Supprimer cette catégorie ?',
+  'category.deleteConfirmText':        'Cette action est irréversible.',
+  'category.deleteWithChildrenText':   'Cette catégorie a {count} enfant(s) qui seront également supprimés. Cette action est irréversible.',
+  'category.deleteBulkConfirm':   'Supprimer les catégories sélectionnées ?',
+  'category.deleteBulkText':      'Vous êtes sur le point de supprimer {count} catégories. Cette action est irréversible.',
+  'category.deleteSelected':      'Supprimer la sélection',
+  'category.importSuccess': 'Catégories importées avec succès.',
+  'category.importError':   'Échec de l\'importation des catégories.',
 
   // Item Brands
   'brand.title':         'Marques d\'articles',
   'brand.single':        'Marque',
   'brand.deleteConfirm': 'Supprimer cette marque ?',
+  'brand.importSuccess': 'Marques importées avec succès.',
+  'brand.importError':   'Échec de l\'importation des marques.',
 
   // Items
   'item.title':             'Articles',
@@ -78,4 +88,6 @@ export const fr: Record<string, string> = {
   'package.activeOnly':    'Actifs seulement',
   'package.showAll':       'Tout afficher',
   'package.deleteConfirm': 'Supprimer ce pack/offre ?',
+  'package.importSuccess': 'Packs importés avec succès.',
+  'package.importError':   'Échec de l\'importation des packs.',
 };

@@ -27,6 +27,10 @@ export class ApiService {
     return this.http.delete<T>(`${this.base}${path}`).pipe(timeout(REQUEST_TIMEOUT_MS));
   }
 
+  deleteWithBody<T>(path: string, body: unknown): Observable<T> {
+    return this.http.delete<T>(`${this.base}${path}`, { body }).pipe(timeout(REQUEST_TIMEOUT_MS));
+  }
+
   postFile<T>(path: string, formData: FormData): Observable<T> {
     return this.http.post<T>(`${this.base}${path}`, formData).pipe(timeout(60000));
   }

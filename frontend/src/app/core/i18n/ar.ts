@@ -44,12 +44,22 @@ export const ar: Record<string, string> = {
   // Item Categories
   'category.title':         'تصنيفات المنتجات',
   'category.single':        'تصنيف',
-  'category.deleteConfirm': 'هل تريد حذف هذا التصنيف؟',
+  'category.parentCategory':      'التصنيف الأب',
+  'category.deleteConfirm':       'هل تريد حذف هذا التصنيف؟',
+  'category.deleteConfirmText':        'لا يمكن التراجع عن هذا الإجراء.',
+  'category.deleteWithChildrenText':   'يحتوي هذا التصنيف على {count} تصنيف(ات) فرعية ستُحذف أيضاً. لا يمكن التراجع عن ذلك.',
+  'category.deleteBulkConfirm':   'حذف التصنيفات المحددة؟',
+  'category.deleteBulkText':      'أنت على وشك حذف {count} تصنيفات. لا يمكن التراجع عن ذلك.',
+  'category.deleteSelected':      'حذف المحدد',
+  'category.importSuccess': 'تم استيراد التصنيفات بنجاح.',
+  'category.importError':   'فشل استيراد التصنيفات.',
 
   // Item Brands
   'brand.title':         'ماركات المنتجات',
   'brand.single':        'ماركة',
   'brand.deleteConfirm': 'هل تريد حذف هذه الماركة؟',
+  'brand.importSuccess': 'تم استيراد الماركات بنجاح.',
+  'brand.importError':   'فشل استيراد الماركات.',
 
   // Items
   'item.title':             'المنتجات',
@@ -78,4 +88,6 @@ export const ar: Record<string, string> = {
   'package.activeOnly':    'النشطة فقط',
   'package.showAll':       'عرض الكل',
   'package.deleteConfirm': 'هل تريد حذف هذه الباقة/العرض؟',
+  'package.importSuccess': 'تم استيراد الباقات بنجاح.',
+  'package.importError':   'فشل استيراد الباقات.',
 };

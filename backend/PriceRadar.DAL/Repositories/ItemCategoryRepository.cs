@@ -41,4 +41,7 @@ public class ItemCategoryRepository : IItemCategoryRepository
 
     public async Task DeleteAsync(long id) =>
         await _context.ItemCategories.DeleteOneAsync(c => c.Id == id);
+
+    public async Task DeleteManyAsync(IEnumerable<long> ids) =>
+        await _context.ItemCategories.DeleteManyAsync(c => ids.Contains(c.Id));
 }

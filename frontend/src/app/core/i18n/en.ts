@@ -44,12 +44,22 @@ export const en: Record<string, string> = {
   // Item Categories
   'category.title':         'Item Categories',
   'category.single':        'Category',
-  'category.deleteConfirm': 'Delete this category?',
+  'category.parentCategory':      'Parent Category',
+  'category.deleteConfirm':       'Delete this category?',
+  'category.deleteConfirmText':        'This action cannot be undone.',
+  'category.deleteWithChildrenText':   'This category has {count} child(ren) that will also be deleted. This action cannot be undone.',
+  'category.deleteBulkConfirm':   'Delete selected categories?',
+  'category.deleteBulkText':      'You are about to delete {count} categories. This cannot be undone.',
+  'category.deleteSelected':      'Delete Selected',
+  'category.importSuccess': 'Categories imported successfully.',
+  'category.importError':   'Failed to import categories.',
 
   // Item Brands
   'brand.title':         'Item Brands',
   'brand.single':        'Brand',
   'brand.deleteConfirm': 'Delete this brand?',
+  'brand.importSuccess': 'Brands imported successfully.',
+  'brand.importError':   'Failed to import brands.',
 
   // Items
   'item.title':             'Items',
@@ -78,4 +88,6 @@ export const en: Record<string, string> = {
   'package.activeOnly':    'Active Only',
   'package.showAll':       'Show All',
   'package.deleteConfirm': 'Delete this package/offer?',
+  'package.importSuccess': 'Packages imported successfully.',
+  'package.importError':   'Failed to import packages.',
 };
