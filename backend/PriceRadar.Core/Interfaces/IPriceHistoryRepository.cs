@@ -4,6 +4,6 @@ namespace PriceRadar.Core.Interfaces;
 
 public interface IPriceHistoryRepository
 {
-    Task<IEnumerable<PriceHistory>> GetByProductAndStoreAsync(string productId, string storeId);
+    Task<IEnumerable<PriceHistory>> GetByProductAndStoreAsync(long productId, long storeId);
     Task<PriceHistory> CreateAsync(PriceHistory history);
 }

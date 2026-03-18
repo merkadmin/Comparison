@@ -18,7 +18,7 @@ public class ItemCategoryRepository : IItemCategoryRepository
         return docs.Select(d => d.ToModel());
     }
 
-    public async Task<ItemCategory?> GetByIdAsync(string id)
+    public async Task<ItemCategory?> GetByIdAsync(long id)
     {
         var doc = await _context.ItemCategories.Find(c => c.Id == id).FirstOrDefaultAsync();
         return doc?.ToModel();
@@ -27,16 +27,18 @@ public class ItemCategoryRepository : IItemCategoryRepository
     public async Task<ItemCategory> CreateAsync(ItemCategory category)
     {
         var doc = ItemCategoryDocument.FromModel(category);
+        doc.Id = await _context.GetNextSequenceAsync("itemcategories");
         await _context.ItemCategories.InsertOneAsync(doc);
         return doc.ToModel();
     }
 
-    public async Task UpdateAsync(string id, ItemCategory category)
+    public async Task UpdateAsync(long id, ItemCategory category)
     {
         var doc = ItemCategoryDocument.FromModel(category);
+        doc.Id = id;
         await _context.ItemCategories.ReplaceOneAsync(c => c.Id == id, doc);
     }
 
-    public async Task DeleteAsync(string id) =>
+    public async Task DeleteAsync(long id) =>
         await _context.ItemCategories.DeleteOneAsync(c => c.Id == id);
 }

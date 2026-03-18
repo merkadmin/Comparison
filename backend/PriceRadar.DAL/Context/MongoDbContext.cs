@@ -36,4 +36,20 @@ public class MongoDbContext
 
     public IMongoCollection<ItemPackageDocument> ItemPackages =>
         _database.GetCollection<ItemPackageDocument>("ItemPackage_sc");
+
+    private IMongoCollection<SequenceDocument> Sequences =>
+        _database.GetCollection<SequenceDocument>("_sequences");
+
+    public async Task<long> GetNextSequenceAsync(string name)
+    {
+        var filter = Builders<SequenceDocument>.Filter.Eq(s => s.Name, name);
+        var update = Builders<SequenceDocument>.Update.Inc(s => s.Seq, 1L);
+        var options = new FindOneAndUpdateOptions<SequenceDocument>
+        {
+            ReturnDocument = ReturnDocument.After,
+            IsUpsert = true
+        };
+        var result = await Sequences.FindOneAndUpdateAsync(filter, update, options);
+        return result.Seq;
+    }
 }

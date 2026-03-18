@@ -11,7 +11,7 @@ export class ItemCategoryService {
     return this.api.get<ItemCategory[]>('/itemcategories');
   }
 
-  getById(id: string): Observable<ItemCategory> {
+  getById(id: number): Observable<ItemCategory> {
     return this.api.get<ItemCategory>(`/itemcategories/${id}`);
   }
 
@@ -19,11 +19,11 @@ export class ItemCategoryService {
     return this.api.post<ItemCategory>('/itemcategories', category);
   }
 
-  update(id: string, category: ItemCategory): Observable<void> {
+  update(id: number, category: ItemCategory): Observable<void> {
     return this.api.put<void>(`/itemcategories/${id}`, category);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: number): Observable<void> {
     return this.api.delete<void>(`/itemcategories/${id}`);
   }
 }

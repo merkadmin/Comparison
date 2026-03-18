@@ -11,7 +11,7 @@ export class ItemBrandService {
     return this.api.get<ItemBrand[]>('/itembrands');
   }
 
-  getById(id: string): Observable<ItemBrand> {
+  getById(id: number): Observable<ItemBrand> {
     return this.api.get<ItemBrand>(`/itembrands/${id}`);
   }
 
@@ -19,11 +19,11 @@ export class ItemBrandService {
     return this.api.post<ItemBrand>('/itembrands', brand);
   }
 
-  update(id: string, brand: ItemBrand): Observable<void> {
+  update(id: number, brand: ItemBrand): Observable<void> {
     return this.api.put<void>(`/itembrands/${id}`, brand);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: number): Observable<void> {
     return this.api.delete<void>(`/itembrands/${id}`);
   }
 }

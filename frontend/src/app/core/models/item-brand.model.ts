@@ -1,5 +1,5 @@
 export interface ItemBrand {
-  id?: string;
+  id?: number;
   name: string;
   logoUrl?: string;
   country?: string;

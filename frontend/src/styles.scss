@@ -14,6 +14,9 @@ html, body {
 
 html[dir="rtl"] {
 
+  /* Slightly larger font for Arabic — Arabic script reads better at a larger size */
+  font-size: 106.25%;  /* ~17px base instead of the default 16px */
+
   /* 1. Sidebar: move from left:0 to right:0 */
   [data-kt-app-sidebar-fixed="true"] .app-sidebar {
     left: auto !important;

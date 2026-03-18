@@ -10,10 +10,7 @@ public class ProductRepository : IProductRepository
 {
     private readonly MongoDbContext _context;
 
-    public ProductRepository(MongoDbContext context)
-    {
-        _context = context;
-    }
+    public ProductRepository(MongoDbContext context) => _context = context;
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
@@ -21,7 +18,7 @@ public class ProductRepository : IProductRepository
         return docs.Select(d => d.ToModel());
     }
 
-    public async Task<Product?> GetByIdAsync(string id)
+    public async Task<Product?> GetByIdAsync(long id)
     {
         var doc = await _context.Products.Find(p => p.Id == id).FirstOrDefaultAsync();
         return doc?.ToModel();
@@ -40,16 +37,18 @@ public class ProductRepository : IProductRepository
     public async Task<Product> CreateAsync(Product product)
     {
         var doc = ProductDocument.FromModel(product);
+        doc.Id = await _context.GetNextSequenceAsync("products");
         await _context.Products.InsertOneAsync(doc);
         return doc.ToModel();
     }
 
-    public async Task UpdateAsync(string id, Product product)
+    public async Task UpdateAsync(long id, Product product)
     {
         var doc = ProductDocument.FromModel(product);
+        doc.Id = id;
         await _context.Products.ReplaceOneAsync(p => p.Id == id, doc);
     }
 
-    public async Task DeleteAsync(string id) =>
+    public async Task DeleteAsync(long id) =>
         await _context.Products.DeleteOneAsync(p => p.Id == id);
 }

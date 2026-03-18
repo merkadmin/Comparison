@@ -9,7 +9,7 @@ public class PriceListingsController : BaseController<PriceListing, IPriceListin
 {
 	public PriceListingsController(IPriceListingRepository repo) : base(repo) { }
 
-	[HttpGet("product/{productId}")]
-	public async Task<IActionResult> GetByProduct(string productId) =>
+	[HttpGet("product/{productId:long}")]
+	public async Task<IActionResult> GetByProduct(long productId) =>
 		Ok(await Repo.GetByProductIdAsync(productId));
 }

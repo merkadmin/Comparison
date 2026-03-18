@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -24,18 +25,18 @@ import { TranslateService } from '../../core/services/translate.service';
         <div class="card-toolbar d-flex gap-3">
           <select class="form-select form-select-sm w-auto"
                   [ngModel]="selectedCategoryId()"
-                  (ngModelChange)="selectedCategoryId.set($event); selectedBrandId.set(''); loadItems()">
-            <option value="">{{ 'item.allCategories' | translate }}</option>
+                  (ngModelChange)="selectedCategoryId.set($event); selectedBrandId.set(null); loadItems()">
+            <option [ngValue]="null">{{ 'item.allCategories' | translate }}</option>
             @for (c of categories(); track c.id) {
-              <option [value]="c.id">{{ localize(c.name) }}</option>
+              <option [ngValue]="c.id">{{ localize(c.name) }}</option>
             }
           </select>
           <select class="form-select form-select-sm w-auto"
                   [ngModel]="selectedBrandId()"
-                  (ngModelChange)="selectedBrandId.set($event); selectedCategoryId.set(''); loadItems()">
-            <option value="">{{ 'item.allBrands' | translate }}</option>
+                  (ngModelChange)="selectedBrandId.set($event); selectedCategoryId.set(null); loadItems()">
+            <option [ngValue]="null">{{ 'item.allBrands' | translate }}</option>
             @for (b of brands(); track b.id) {
-              <option [value]="b.id">{{ b.name }}</option>
+              <option [ngValue]="b.id">{{ b.name }}</option>
             }
           </select>
           <button class="btn btn-sm btn-light-primary" (click)="resetFilters()">
@@ -121,7 +122,7 @@ import { TranslateService } from '../../core/services/translate.service';
     </div>
   `,
 })
-export class ItemListComponent implements OnInit {
+export class ItemListComponent implements OnInit, OnDestroy {
   private itemService     = inject(ItemService);
   private categoryService = inject(ItemCategoryService);
   private brandService    = inject(ItemBrandService);
@@ -138,24 +139,35 @@ export class ItemListComponent implements OnInit {
   brands     = signal<ItemBrand[]>([]);
   loading    = signal(false);
   error      = signal<string | null>(null);
-  selectedCategoryId = signal('');
-  selectedBrandId    = signal('');
+  selectedCategoryId = signal<number | null>(null);
+  selectedBrandId    = signal<number | null>(null);
+  private querySub!: Subscription;
 
   ngOnInit(): void {
-    const categoryId = this.route.snapshot.queryParamMap.get('categoryId');
-    if (categoryId) this.selectedCategoryId.set(categoryId);
     this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
-    this.loadItems();
+
+    // Subscribe to query param changes so clicking a sidebar category
+    // reloads items even when already on the /items route
+    this.querySub = this.route.queryParamMap.subscribe(params => {
+      const categoryId = params.get('categoryId');
+      this.selectedCategoryId.set(categoryId ? +categoryId : null);
+      this.selectedBrandId.set(null);
+      this.loadItems();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.querySub.unsubscribe();
   }
 
   loadItems(): void {
     this.loading.set(true);
     this.error.set(null);
-    const obs = this.selectedCategoryId()
-      ? this.itemService.getByCategory(this.selectedCategoryId())
-      : this.selectedBrandId()
-        ? this.itemService.getByBrand(this.selectedBrandId())
+    const obs = this.selectedCategoryId() !== null
+      ? this.itemService.getByCategory(this.selectedCategoryId()!)
+      : this.selectedBrandId() !== null
+        ? this.itemService.getByBrand(this.selectedBrandId()!)
         : this.itemService.getAll();
 
     obs.subscribe({
@@ -165,21 +177,21 @@ export class ItemListComponent implements OnInit {
   }
 
   resetFilters(): void {
-    this.selectedCategoryId.set('');
-    this.selectedBrandId.set('');
+    this.selectedCategoryId.set(null);
+    this.selectedBrandId.set(null);
     this.loadItems();
   }
 
-  getBrandName(brandId: string): string {
-    return this.brands().find(b => b.id === brandId)?.name ?? brandId;
+  getBrandName(brandId: number): string {
+    return this.brands().find(b => b.id === brandId)?.name ?? String(brandId);
   }
 
-  getCategoryName(id: string): string {
+  getCategoryName(id: number): string {
     const cat = this.categories().find(c => c.id === id);
-    return cat ? this.localize(cat.name) : id;
+    return cat ? this.localize(cat.name) : String(id);
   }
 
-  delete(id: string): void {
+  delete(id: number): void {
     if (!confirm('Delete this item?')) return;
     this.itemService.delete(id).subscribe({ next: () => this.loadItems() });
   }

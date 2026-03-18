@@ -1,13 +1,13 @@
 import { Item } from './item.model';
 
 export interface ItemPackageItem {
-  itemId: string;
+  itemId: number;
   item?: Item;
   quantity: number;
 }
 
 export interface ItemPackage {
-  id?: string;
+  id?: number;
   name: string;
   description?: string;
   items: ItemPackageItem[];

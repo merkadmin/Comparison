@@ -6,6 +6,11 @@ using PriceRadar.DAL.Documents;
 
 namespace PriceRadar.API.Seeder;
 
+// DataSeeder runs once at startup to populate the database with initial data.
+// Each method checks if the collection already has documents before inserting,
+// so re-seeding only happens on a fresh/empty database.
+// IDs are generated using a MongoDB counter collection (_sequences) that
+// atomically increments a long value per entity type, replacing ObjectId.
 public class DataSeeder
 {
 	private readonly MongoDbContext _context;
@@ -15,6 +20,8 @@ public class DataSeeder
 		_context = context;
 	}
 
+	// Entry point — runs all seed methods in dependency order:
+	// categories and brands must exist before items, items before packages.
 	public async Task SeedAsync()
 	{
 		await SeedCategoriesAsync();
@@ -26,8 +33,10 @@ public class DataSeeder
 	// ─── Categories ───────────────────────────────────────────────────────────
 	private async Task SeedCategoriesAsync()
 	{
+		// Skip if the collection already has data (idempotent guard)
 		if (await _context.ItemCategories.CountDocumentsAsync(_ => true) > 0) return;
 
+		// Each category has a localized name and description (En / Ar / Fr)
 		var categories = new List<ItemCategoryDocument>
 		{
 			new() {
@@ -52,6 +61,11 @@ public class DataSeeder
 			},
 		};
 
+		// Assign auto-increment long IDs before bulk insert
+		// (MongoDB does not auto-generate long IDs like it does for ObjectId)
+		foreach (var cat in categories)
+			cat.Id = await _context.GetNextSequenceAsync("itemcategories");
+
 		await _context.ItemCategories.InsertManyAsync(categories);
 		Console.WriteLine($"[Seeder] Inserted {categories.Count} categories.");
 	}
@@ -59,6 +73,7 @@ public class DataSeeder
 	// ─── Brands ───────────────────────────────────────────────────────────────
 	private async Task SeedBrandsAsync()
 	{
+		// Skip if the collection already has data (idempotent guard)
 		if (await _context.ItemBrands.CountDocumentsAsync(_ => true) > 0) return;
 
 		var brands = new List<ItemBrandDocument>
@@ -69,7 +84,12 @@ public class DataSeeder
 			new() { Name = "Sony",    Country = "Japan" },
 			new() { Name = "Lenovo",  Country = "China" },
 			new() { Name = "HP",      Country = "USA" },
+			new() { Name = "Sharp",      Country = "USA" },
 		};
+
+		// Assign auto-increment long IDs before bulk insert
+		foreach (var brand in brands)
+			brand.Id = await _context.GetNextSequenceAsync("itembrands");
 
 		await _context.ItemBrands.InsertManyAsync(brands);
 		Console.WriteLine($"[Seeder] Inserted {brands.Count} brands.");
@@ -78,15 +98,20 @@ public class DataSeeder
 	// ─── Items ────────────────────────────────────────────────────────────────
 	private async Task SeedItemsAsync()
 	{
+		// Skip if the collection already has data (idempotent guard)
 		if (await _context.Items.CountDocumentsAsync(_ => true) > 0) return;
 
-		// Fetch IDs after seeding categories and brands
+		// Load already-seeded categories and brands so we can reference their IDs
 		var categories = await _context.ItemCategories.Find(_ => true).ToListAsync();
-		var brands = await _context.ItemBrands.Find(_ => true).ToListAsync();
+		var brands     = await _context.ItemBrands.Find(_ => true).ToListAsync();
 
-		string CategoryId(string name) => categories.First(c => c.Name.En == name).Id!;
-		string BrandId(string name) => brands.First(b => b.Name == name).Id!;
+		// Helper functions to look up the long ID by name
+		long CategoryId(string name) => categories.FirstOrDefault(c => c.Name.En == name)?.Id
+			?? throw new InvalidOperationException($"[Seeder] Category '{name}' not found. Drop the ItemCategory collection and restart.");
+		long BrandId(string name) => brands.FirstOrDefault(b => b.Name == name)?.Id
+			?? throw new InvalidOperationException($"[Seeder] Brand '{name}' not found. Drop the Item_Brand_sc collection and restart.");
 
+		// Each item is linked to a brand and a category via their long IDs (foreign keys)
 		var items = new List<ItemDocument>
 		{
 			new()
@@ -155,6 +180,10 @@ public class DataSeeder
 			},
 		};
 
+		// Assign auto-increment long IDs before bulk insert
+		foreach (var item in items)
+			item.Id = await _context.GetNextSequenceAsync("items");
+
 		await _context.Items.InsertManyAsync(items);
 		Console.WriteLine($"[Seeder] Inserted {items.Count} items.");
 	}
@@ -162,12 +191,18 @@ public class DataSeeder
 	// ─── Packages / Offers ────────────────────────────────────────────────────
 	private async Task SeedPackagesAsync()
 	{
+		// Skip if the collection already has data (idempotent guard)
 		if (await _context.ItemPackages.CountDocumentsAsync(_ => true) > 0) return;
 
+		// Load already-seeded items so we can reference their IDs inside packages
 		var items = await _context.Items.Find(_ => true).ToListAsync();
 
-		string ItemId(string name) => items.First(i => i.Name.Contains(name)).Id!;
+		// Helper function to look up an item's long ID by a name substring
+		long ItemId(string name) => items.FirstOrDefault(i => i.Name.Contains(name))?.Id
+			?? throw new InvalidOperationException($"[Seeder] Item containing '{name}' not found. Drop the ProductItem collection and restart.");
 
+		// Each package groups multiple items with a discounted offer price.
+		// DiscountPercentage is computed on the fly from OriginalPrice and OfferPrice.
 		var packages = new List<ItemPackageDocument>
 		{
 			new()
@@ -181,7 +216,7 @@ public class DataSeeder
 				IsActive      = true,
 				Items         = new()
 				{
-					new() { ItemId = ItemId("MacBook"),  Quantity = 1 },
+					new() { ItemId = ItemId("MacBook"),   Quantity = 1 },
 					new() { ItemId = ItemId("iPhone 15"), Quantity = 1 },
 				}
 			},
@@ -196,7 +231,7 @@ public class DataSeeder
 				Items         = new()
 				{
 					new() { ItemId = ItemId("Galaxy S24"), Quantity = 1 },
-					new() { ItemId = ItemId("Galaxy Tab"),  Quantity = 1 },
+					new() { ItemId = ItemId("Galaxy Tab"), Quantity = 1 },
 				}
 			},
 			new()
@@ -207,7 +242,7 @@ public class DataSeeder
 				OfferPrice    = 1_755m,
 				StartDate     = DateTime.UtcNow.AddDays(-10),
 				EndDate       = DateTime.UtcNow.AddDays(-1), // already expired
-                IsActive      = false,
+				IsActive      = false,
 				Items         = new()
 				{
 					new() { ItemId = ItemId("Dell XPS"), Quantity = 1 },
@@ -215,6 +250,10 @@ public class DataSeeder
 				}
 			},
 		};
+
+		// Assign auto-increment long IDs before bulk insert
+		foreach (var pkg in packages)
+			pkg.Id = await _context.GetNextSequenceAsync("itempackages");
 
 		await _context.ItemPackages.InsertManyAsync(packages);
 		Console.WriteLine($"[Seeder] Inserted {packages.Count} packages/offers.");

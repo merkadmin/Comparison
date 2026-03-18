@@ -107,7 +107,7 @@ export class ItemBrandListComponent implements OnInit {
     });
   }
 
-  delete(id: string): void {
+  delete(id: number): void {
     if (!confirm('Delete this brand?')) return;
     this.service.delete(id).subscribe({ next: () => this.load() });
   }

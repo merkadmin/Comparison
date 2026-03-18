@@ -32,7 +32,7 @@ public class ItemPackageRepository : IItemPackageRepository
         return docs.Select(d => d.ToModel());
     }
 
-    public async Task<ItemPackage?> GetByIdAsync(string id)
+    public async Task<ItemPackage?> GetByIdAsync(long id)
     {
         var doc = await _context.ItemPackages.Find(p => p.Id == id).FirstOrDefaultAsync();
         return doc?.ToModel();
@@ -41,16 +41,18 @@ public class ItemPackageRepository : IItemPackageRepository
     public async Task<ItemPackage> CreateAsync(ItemPackage package)
     {
         var doc = ItemPackageDocument.FromModel(package);
+        doc.Id = await _context.GetNextSequenceAsync("itempackages");
         await _context.ItemPackages.InsertOneAsync(doc);
         return doc.ToModel();
     }
 
-    public async Task UpdateAsync(string id, ItemPackage package)
+    public async Task UpdateAsync(long id, ItemPackage package)
     {
         var doc = ItemPackageDocument.FromModel(package);
+        doc.Id = id;
         await _context.ItemPackages.ReplaceOneAsync(p => p.Id == id, doc);
     }
 
-    public async Task DeleteAsync(string id) =>
+    public async Task DeleteAsync(long id) =>
         await _context.ItemPackages.DeleteOneAsync(p => p.Id == id);
 }

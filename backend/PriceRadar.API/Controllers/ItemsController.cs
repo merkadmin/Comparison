@@ -9,11 +9,11 @@ public class ItemsController : BaseController<Item, IItemRepository>
 {
 	public ItemsController(IItemRepository repo) : base(repo) { }
 
-	[HttpGet("by-category/{categoryId}")]
-	public async Task<IActionResult> GetByCategory(string categoryId) =>
+	[HttpGet("by-category/{categoryId:long}")]
+	public async Task<IActionResult> GetByCategory(long categoryId) =>
 		Ok(await Repo.GetByCategoryAsync(categoryId));
 
-	[HttpGet("by-brand/{brandId}")]
-	public async Task<IActionResult> GetByBrand(string brandId) =>
+	[HttpGet("by-brand/{brandId:long}")]
+	public async Task<IActionResult> GetByBrand(long brandId) =>
 		Ok(await Repo.GetByBrandAsync(brandId));
 }

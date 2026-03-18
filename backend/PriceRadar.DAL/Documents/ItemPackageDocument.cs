@@ -1,4 +1,3 @@
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using PriceRadar.Core.Models;
 
@@ -8,8 +7,7 @@ namespace PriceRadar.DAL.Documents;
 public class ItemPackageDocument
 {
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public long Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
@@ -23,29 +21,29 @@ public class ItemPackageDocument
 
     public ItemPackage ToModel() => new()
     {
-        Id = Id,
-        Name = Name,
-        Description = Description,
-        Items = Items.Select(i => i.ToModel()).ToList(),
+        Id            = Id,
+        Name          = Name,
+        Description   = Description,
+        Items         = Items.Select(i => i.ToModel()).ToList(),
         OriginalPrice = OriginalPrice,
-        OfferPrice = OfferPrice,
-        StartDate = StartDate,
-        EndDate = EndDate,
-        IsActive = IsActive,
-        CreatedAt = CreatedAt
+        OfferPrice    = OfferPrice,
+        StartDate     = StartDate,
+        EndDate       = EndDate,
+        IsActive      = IsActive,
+        CreatedAt     = CreatedAt
     };
 
     public static ItemPackageDocument FromModel(ItemPackage p) => new()
     {
-        Id = p.Id,
-        Name = p.Name,
-        Description = p.Description,
-        Items = p.Items.Select(ItemPackageItemDocument.FromModel).ToList(),
+        Id            = p.Id,
+        Name          = p.Name,
+        Description   = p.Description,
+        Items         = p.Items.Select(ItemPackageItemDocument.FromModel).ToList(),
         OriginalPrice = p.OriginalPrice,
-        OfferPrice = p.OfferPrice,
-        StartDate = p.StartDate,
-        EndDate = p.EndDate,
-        IsActive = p.IsActive,
-        CreatedAt = p.CreatedAt
+        OfferPrice    = p.OfferPrice,
+        StartDate     = p.StartDate,
+        EndDate       = p.EndDate,
+        IsActive      = p.IsActive,
+        CreatedAt     = p.CreatedAt
     };
 }

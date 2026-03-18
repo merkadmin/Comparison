@@ -10,12 +10,9 @@ public class PriceHistoryRepository : IPriceHistoryRepository
 {
     private readonly MongoDbContext _context;
 
-    public PriceHistoryRepository(MongoDbContext context)
-    {
-        _context = context;
-    }
+    public PriceHistoryRepository(MongoDbContext context) => _context = context;
 
-    public async Task<IEnumerable<PriceHistory>> GetByProductAndStoreAsync(string productId, string storeId)
+    public async Task<IEnumerable<PriceHistory>> GetByProductAndStoreAsync(long productId, long storeId)
     {
         var docs = await _context.PriceHistories
             .Find(h => h.ProductId == productId && h.StoreId == storeId)
@@ -27,6 +24,7 @@ public class PriceHistoryRepository : IPriceHistoryRepository
     public async Task<PriceHistory> CreateAsync(PriceHistory history)
     {
         var doc = PriceHistoryDocument.FromModel(history);
+        doc.Id = await _context.GetNextSequenceAsync("pricehistories");
         await _context.PriceHistories.InsertOneAsync(doc);
         return doc.ToModel();
     }

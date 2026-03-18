@@ -2,9 +2,9 @@ namespace PriceRadar.Core.Models;
 
 public class PriceListing
 {
-    public string? Id { get; set; }
-    public string ProductId { get; set; } = string.Empty;
-    public string StoreId { get; set; } = string.Empty;
+    public long Id { get; set; }
+    public long ProductId { get; set; }
+    public long StoreId { get; set; }
     public decimal Price { get; set; }
     public string Currency { get; set; } = "USD";
     public string? ProductUrl { get; set; }

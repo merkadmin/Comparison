@@ -2,14 +2,14 @@ import { ItemBrand } from './item-brand.model';
 import { ItemCategory } from './item-category.model';
 
 export interface Item {
-  id?: string;
+  id?: number;
   name: string;
   description?: string;
   barcode?: string;
   imageUrl?: string;
-  brandId: string;
+  brandId: number;
   brand?: ItemBrand;
-  itemCategoryId: string;
+  itemCategoryId: number;
   category?: ItemCategory;
   createdAt?: Date;
 }

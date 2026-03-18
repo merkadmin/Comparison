@@ -4,7 +4,7 @@ public enum StoreType { Online, Physical }
 
 public class Store
 {
-    public string? Id { get; set; }
+    public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public StoreType Type { get; set; }
     public string? WebsiteUrl { get; set; }

@@ -15,6 +15,6 @@ public class PriceHistoryController : ControllerBase
 	}
 
 	[HttpGet]
-	public async Task<IActionResult> Get([FromQuery] string productId, [FromQuery] string storeId) =>
+	public async Task<IActionResult> Get([FromQuery] long productId, [FromQuery] long storeId) =>
 		Ok(await _history.GetByProductAndStoreAsync(productId, storeId));
 }

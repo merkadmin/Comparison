@@ -15,7 +15,7 @@ export class ItemPackageService {
     return this.api.get<ItemPackage[]>('/itempackages/active');
   }
 
-  getById(id: string): Observable<ItemPackage> {
+  getById(id: number): Observable<ItemPackage> {
     return this.api.get<ItemPackage>(`/itempackages/${id}`);
   }
 
@@ -23,11 +23,11 @@ export class ItemPackageService {
     return this.api.post<ItemPackage>('/itempackages', pkg);
   }
 
-  update(id: string, pkg: ItemPackage): Observable<void> {
+  update(id: number, pkg: ItemPackage): Observable<void> {
     return this.api.put<void>(`/itempackages/${id}`, pkg);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: number): Observable<void> {
     return this.api.delete<void>(`/itempackages/${id}`);
   }
 }

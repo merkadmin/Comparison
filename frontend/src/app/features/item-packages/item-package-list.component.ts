@@ -136,7 +136,7 @@ export class ItemPackageListComponent implements OnInit {
     this.load();
   }
 
-  delete(id: string): void {
+  delete(id: number): void {
     if (!confirm('Delete this package/offer?')) return;
     this.service.delete(id).subscribe({ next: () => this.load() });
   }

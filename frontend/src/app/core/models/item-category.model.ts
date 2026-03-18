@@ -5,7 +5,7 @@ export interface LocalizedString {
 }
 
 export interface ItemCategory {
-  id?: string;
+  id?: number;
   name: LocalizedString;
   description?: LocalizedString;
   createdAt?: Date;

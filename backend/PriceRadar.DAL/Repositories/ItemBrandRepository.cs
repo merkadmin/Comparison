@@ -18,7 +18,7 @@ public class ItemBrandRepository : IItemBrandRepository
         return docs.Select(d => d.ToModel());
     }
 
-    public async Task<ItemBrand?> GetByIdAsync(string id)
+    public async Task<ItemBrand?> GetByIdAsync(long id)
     {
         var doc = await _context.ItemBrands.Find(b => b.Id == id).FirstOrDefaultAsync();
         return doc?.ToModel();
@@ -27,16 +27,18 @@ public class ItemBrandRepository : IItemBrandRepository
     public async Task<ItemBrand> CreateAsync(ItemBrand brand)
     {
         var doc = ItemBrandDocument.FromModel(brand);
+        doc.Id = await _context.GetNextSequenceAsync("itembrands");
         await _context.ItemBrands.InsertOneAsync(doc);
         return doc.ToModel();
     }
 
-    public async Task UpdateAsync(string id, ItemBrand brand)
+    public async Task UpdateAsync(long id, ItemBrand brand)
     {
         var doc = ItemBrandDocument.FromModel(brand);
+        doc.Id = id;
         await _context.ItemBrands.ReplaceOneAsync(b => b.Id == id, doc);
     }
 
-    public async Task DeleteAsync(string id) =>
+    public async Task DeleteAsync(long id) =>
         await _context.ItemBrands.DeleteOneAsync(b => b.Id == id);
 }

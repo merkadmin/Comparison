@@ -1,4 +1,3 @@
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using PriceRadar.Core.Models;
 
@@ -7,8 +6,7 @@ namespace PriceRadar.DAL.Documents;
 public class ItemCategoryDocument
 {
     [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public long Id { get; set; }
 
     public LocalizedString Name { get; set; } = new();
     public LocalizedString? Description { get; set; }

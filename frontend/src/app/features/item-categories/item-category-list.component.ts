@@ -100,7 +100,7 @@ export class ItemCategoryListComponent implements OnInit {
     });
   }
 
-  delete(id: string): void {
+  delete(id: number): void {
     if (!confirm('Delete this category?')) return;
     this.service.delete(id).subscribe({ next: () => this.load() });
   }

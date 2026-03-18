@@ -11,15 +11,15 @@ export class ItemService {
     return this.api.get<Item[]>('/items');
   }
 
-  getById(id: string): Observable<Item> {
+  getById(id: number): Observable<Item> {
     return this.api.get<Item>(`/items/${id}`);
   }
 
-  getByCategory(categoryId: string): Observable<Item[]> {
+  getByCategory(categoryId: number): Observable<Item[]> {
     return this.api.get<Item[]>(`/items/by-category/${categoryId}`);
   }
 
-  getByBrand(brandId: string): Observable<Item[]> {
+  getByBrand(brandId: number): Observable<Item[]> {
     return this.api.get<Item[]>(`/items/by-brand/${brandId}`);
   }
 
@@ -27,11 +27,11 @@ export class ItemService {
     return this.api.post<Item>('/items', item);
   }
 
-  update(id: string, item: Item): Observable<void> {
+  update(id: number, item: Item): Observable<void> {
     return this.api.put<void>(`/items/${id}`, item);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: number): Observable<void> {
     return this.api.delete<void>(`/items/${id}`);
   }
 }

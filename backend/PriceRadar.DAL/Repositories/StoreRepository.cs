@@ -10,10 +10,7 @@ public class StoreRepository : IStoreRepository
 {
     private readonly MongoDbContext _context;
 
-    public StoreRepository(MongoDbContext context)
-    {
-        _context = context;
-    }
+    public StoreRepository(MongoDbContext context) => _context = context;
 
     public async Task<IEnumerable<Store>> GetAllAsync()
     {
@@ -21,7 +18,7 @@ public class StoreRepository : IStoreRepository
         return docs.Select(d => d.ToModel());
     }
 
-    public async Task<Store?> GetByIdAsync(string id)
+    public async Task<Store?> GetByIdAsync(long id)
     {
         var doc = await _context.Stores.Find(s => s.Id == id).FirstOrDefaultAsync();
         return doc?.ToModel();
@@ -30,16 +27,18 @@ public class StoreRepository : IStoreRepository
     public async Task<Store> CreateAsync(Store store)
     {
         var doc = StoreDocument.FromModel(store);
+        doc.Id = await _context.GetNextSequenceAsync("stores");
         await _context.Stores.InsertOneAsync(doc);
         return doc.ToModel();
     }
 
-    public async Task UpdateAsync(string id, Store store)
+    public async Task UpdateAsync(long id, Store store)
     {
         var doc = StoreDocument.FromModel(store);
+        doc.Id = id;
         await _context.Stores.ReplaceOneAsync(s => s.Id == id, doc);
     }
 
-    public async Task DeleteAsync(string id) =>
+    public async Task DeleteAsync(long id) =>
         await _context.Stores.DeleteOneAsync(s => s.Id == id);
 }
