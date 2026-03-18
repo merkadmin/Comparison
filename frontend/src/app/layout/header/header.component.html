@@ -34,11 +34,43 @@
     <div class="d-flex align-items-stretch justify-content-between flex-lg-grow-1"
          id="kt_app_header_wrapper">
 
-      <!--begin::Page title-->
-      <div class="app-navbar-item d-flex align-items-center fw-bold fs-3 text-gray-800 ms-5">
-        {{ 'nav.dashboard' | translate }}
+      <!--begin::Breadcrumb-->
+      <div class="app-navbar-item d-flex align-items-center ms-5">
+        <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-4 my-0">
+
+          <!--begin::Home-->
+          <li class="breadcrumb-item">
+            <a routerLink="/dashboard" class="text-muted text-hover-primary">
+              <i class="ki-duotone ki-home fs-6"><span class="path1"></span><span class="path2"></span></i>
+            </a>
+          </li>
+          <!--end::Home-->
+
+          @for (crumb of breadcrumbs(); track crumb.labelKey; let last = $last) {
+            <!--begin::Separator-->
+            <li class="breadcrumb-item">
+              <span class="bullet bg-gray-400 w-5px h-2px mx-2"></span>
+            </li>
+            <!--end::Separator-->
+
+            <!--begin::Item-->
+            @if (!last && crumb.link) {
+              <li class="breadcrumb-item">
+                <a [routerLink]="crumb.link" class="text-muted text-hover-primary">
+                  {{ crumb.label ?? (crumb.labelKey! | translate) }}
+                </a>
+              </li>
+            } @else {
+              <li class="breadcrumb-item text-gray-900 fw-bold">
+                {{ crumb.label ?? (crumb.labelKey! | translate) }}
+              </li>
+            }
+            <!--end::Item-->
+          }
+
+        </ul>
       </div>
-      <!--end::Page title-->
+      <!--end::Breadcrumb-->
 
       <!--begin::Navbar-->
       <div class="app-navbar flex-shrink-0" id="kt_app_header_navbar">

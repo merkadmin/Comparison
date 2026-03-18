@@ -1,50 +1,100 @@
-<div class="page">
-  <div class="page-header">
-    <h2>Offers / Packages</h2>
-    <button class="btn-toggle" (click)="toggleActive()">
-      {{ showActiveOnly ? 'Show All' : 'Active Only' }}
-    </button>
-  </div>
+<div class="card">
+      <div class="card-header border-0 pt-6">
+        <div class="card-title">
+          <h3 class="fw-bold m-0">{{ 'package.title' | translate }}</h3>
+        </div>
+        <div class="card-toolbar">
+          <button class="btn btn-sm me-3"
+                  [class.btn-light-primary]="!showActiveOnly()"
+                  [class.btn-primary]="showActiveOnly()"
+                  (click)="toggleActive()">
+            <i class="ki-duotone ki-filter fs-2"><span class="path1"></span><span class="path2"></span></i>
+            {{ (showActiveOnly() ? 'package.showAll' : 'package.activeOnly') | translate }}
+          </button>
+        </div>
+      </div>
 
-  <div *ngIf="loading" class="loading">Loading...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
-
-  <table *ngIf="!loading && packages.length > 0">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Name</th>
-        <th>Items Count</th>
-        <th>Original Price</th>
-        <th>Offer Price</th>
-        <th>Discount</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let pkg of packages; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ pkg.name }}</td>
-        <td>{{ pkg.items.length }}</td>
-        <td>{{ pkg.originalPrice | currency }}</td>
-        <td class="offer-price">{{ pkg.offerPrice | currency }}</td>
-        <td class="discount">{{ pkg.discountPercentage | number:'1.0-1' }}%</td>
-        <td>{{ pkg.startDate | date:'shortDate' }}</td>
-        <td>{{ pkg.endDate ? (pkg.endDate | date:'shortDate') : 'No expiry' }}</td>
-        <td>
-          <span class="badge" [class.active]="pkg.isActive" [class.inactive]="!pkg.isActive">
-            {{ pkg.isActive ? 'Active' : 'Inactive' }}
-          </span>
-        </td>
-        <td>
-          <button class="btn-delete" (click)="delete(pkg.id!)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div *ngIf="!loading && packages.length === 0" class="empty">No packages found.</div>
-</div>
+      <div class="card-body py-4">
+        @if (loading()) {
+          <div class="d-flex justify-content-center py-10">
+            <span class="spinner-border text-primary"></span>
+            <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
+          </div>
+        }
+        @if (!loading() && error()) {
+          <div class="alert alert-danger">{{ error() }}</div>
+        }
+        @if (!loading() && !error()) {
+          <table class="table align-middle table-row-dashed fs-6 gy-5">
+            <thead>
+              <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                <th class="w-30px">{{ 'common.number' | translate }}</th>
+                <th class="min-w-175px">{{ 'common.name' | translate }}</th>
+                <th class="min-w-60px">{{ 'package.itemsCount' | translate }}</th>
+                <th class="min-w-100px">{{ 'package.originalPrice' | translate }}</th>
+                <th class="min-w-100px">{{ 'package.offerPrice' | translate }}</th>
+                <th class="min-w-80px">{{ 'package.discount' | translate }}</th>
+                <th class="min-w-100px">{{ 'package.startDate' | translate }}</th>
+                <th class="min-w-100px">{{ 'package.endDate' | translate }}</th>
+                <th class="min-w-80px">{{ 'common.status' | translate }}</th>
+                <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 fw-semibold">
+              @if (packages().length === 0) {
+                <tr>
+                  <td colspan="10" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+                </tr>
+              }
+              @for (pkg of packages(); track pkg.id; let i = $index) {
+                <tr>
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <span class="text-gray-800 fw-bold text-hover-primary d-block fs-6">{{ pkg.name }}</span>
+                    @if (pkg.description) {
+                      <span class="text-muted fw-semibold fs-7">{{ pkg.description }}</span>
+                    }
+                  </td>
+                  <td>
+                    <span class="badge badge-light-primary">{{ pkg.items.length }}</span>
+                  </td>
+                  <td class="text-muted text-decoration-line-through">
+                    {{ pkg.originalPrice | currency }}
+                  </td>
+                  <td class="text-success fw-bold">{{ pkg.offerPrice | currency }}</td>
+                  <td>
+                    <span class="badge badge-light-danger fw-bold">
+                      {{ pkg.discountPercentage | number:'1.0-1' }}%
+                    </span>
+                  </td>
+                  <td>{{ pkg.startDate | date:'mediumDate' }}</td>
+                  <td>
+                    @if (pkg.endDate) {
+                      {{ pkg.endDate | date:'mediumDate' }}
+                    } @else {
+                      <span class="text-muted">{{ 'package.noExpiry' | translate }}</span>
+                    }
+                  </td>
+                  <td>
+                    @if (pkg.isActive) {
+                      <span class="badge badge-light-success">{{ 'common.active' | translate }}</span>
+                    } @else {
+                      <span class="badge badge-light-danger">{{ 'common.inactive' | translate }}</span>
+                    }
+                  </td>
+                  <td class="text-end">
+                    <button class="btn btn-sm btn-light-danger" (click)="delete(pkg.id!)">
+                      <i class="ki-duotone ki-trash fs-5">
+                        <span class="path1"></span><span class="path2"></span>
+                        <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                      </i>
+                      {{ 'common.delete' | translate }}
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
