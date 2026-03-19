@@ -1,20 +1,14 @@
 <div class="btn-group btn-group-sm" role="group">
-  <button type="button" class="btn"
-    [class.btn-primary]="viewMode === 'list'"
-    [class.btn-light]="viewMode !== 'list'"
-    (click)="viewModeChange.emit('list')"
-    title="List view">
-    <i class="ki-duotone ki-row-horizontal fs-4">
-      <span class="path1"></span><span class="path2"></span>
-    </i>
-  </button>
-  <button type="button" class="btn"
-    [class.btn-primary]="viewMode === 'cards'"
-    [class.btn-light]="viewMode !== 'cards'"
-    (click)="viewModeChange.emit('cards')"
-    title="Cards view">
-    <i class="ki-duotone ki-element-11 fs-4">
-      <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
-    </i>
-  </button>
+    <button type="button" class="btn" [class.btn-primary]="viewMode === 'list'" [class.btn-light]="viewMode !== 'list'"
+        (click)="viewModeChange.emit('list')" title="List view">
+        <i class="ki-duotone ki-row-horizontal fs-4">
+            <span class="path1"></span><span class="path2"></span>
+        </i>
+    </button>
+    <button type="button" class="btn" [class.btn-primary]="viewMode === 'cards'"
+        [class.btn-light]="viewMode !== 'cards'" (click)="viewModeChange.emit('cards')" title="Cards view">
+        <i class="ki-duotone ki-element-11 fs-4">
+            <span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span>
+        </i>
+    </button>
 </div>
