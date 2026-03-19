@@ -1,15 +1,21 @@
 <div [class]="'btn-group btn-group-sm' + (groupClass ? ' ' + groupClass : '')">
   <button [class]="'btn btn-' + mainColor + (mainButtonClass ? ' ' + mainButtonClass : '')"
+    [disabled]="disabled || loading"
     (click)="mainClick.emit()">
-    <i [class]="'ki-duotone ' + mainIconClass + ' fs-' + mainIconSize">
-      @for (p of getPathRange(mainIconPaths); track p) {
-        <span [class]="'path' + p"></span>
-      }
-    </i>
+    @if (loading) {
+      <span class="spinner-border spinner-border-sm me-1"></span>
+    } @else {
+      <i [class]="'ki-duotone ' + mainIconClass + ' fs-' + mainIconSize">
+        @for (p of getPathRange(mainIconPaths); track p) {
+          <span [class]="'path' + p"></span>
+        }
+      </i>
+    }
     {{ mainLabelKey | translate }}
     @if (count > 0) { ({{ count }}) }
   </button>
   <button type="button" [class]="'btn btn-' + mainColor + ' dropdown-toggle dropdown-toggle-split'"
+    [disabled]="disabled || loading"
     data-bs-toggle="dropdown" aria-expanded="false"></button>
   <ul [class]="'dropdown-menu' + (menuEnd ? ' dropdown-menu-end' : '')">
     @for (item of menuItems; track item.labelKey) {

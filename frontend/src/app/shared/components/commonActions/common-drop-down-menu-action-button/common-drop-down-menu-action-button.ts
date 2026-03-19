@@ -27,6 +27,8 @@ export class CommonDropDownMenuActionButton {
   @Input() count: number = 0;
   @Input() menuEnd: boolean = false;
   @Input() groupClass: string = '';
+  @Input() disabled: boolean = false;
+  @Input() loading: boolean = false;
   @Output() mainClick = new EventEmitter<void>();
   @Input() menuItems: ActionMenuItem[] = [];
 

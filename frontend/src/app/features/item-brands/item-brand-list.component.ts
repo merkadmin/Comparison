@@ -47,6 +47,10 @@ export class ItemBrandListComponent implements OnInit {
   importSuccess = signal(false);
   selectedIds   = signal<Set<number>>(new Set());
 
+  importMenuItems: ActionMenuItem[] = [
+    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
+  ];
+
   bulkMenuItems: ActionMenuItem[] = [
     { labelKey: 'brand.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
   ];

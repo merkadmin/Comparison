@@ -40,30 +40,14 @@
         (selectedChange)="selectedBrandId.set($event); selectedCategoryId.set(null); loadItems()">
       </app-common-select>
       <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
-      <div class="dropdown">
-        <button class="btn btn-sm btn-light-success dropdown-toggle" data-bs-toggle="dropdown" [disabled]="importing()">
-          @if (importing()) {
-          <span class="spinner-border spinner-border-sm me-1"></span>
-          } @else {
-          <i class="ki-duotone ki-file-up fs-2"><span class="path1"></span><span class="path2"></span></i>
-          }
-          {{ 'common.importTemplate' | translate }}
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-          <li>
-            <a class="dropdown-item" (click)="exportTemplate()">
-              <i class="ki-duotone ki-file-down fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
-              {{ 'common.exportTemplate' | translate }}
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" (click)="fileInput.click()">
-              <i class="ki-duotone ki-file-up fs-3 me-2"><span class="path1"></span><span class="path2"></span></i>
-              {{ 'common.importTemplate' | translate }}
-            </a>
-          </li>
-        </ul>
-      </div>
+      <app-common-drop-down-menu-action-button
+        mainLabelKey="common.importTemplate"
+        mainIconClass="ki-file-up"
+        mainColor="light-success"
+        [loading]="importing()"
+        [menuEnd]="true"
+        (mainClick)="fileInput.click()"
+        [menuItems]="importMenuItems" />
     </div>
   </div>
 

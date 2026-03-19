@@ -68,8 +68,18 @@ export class ItemListComponent implements OnInit, OnDestroy {
   importError = signal<string | null>(null);
   importSuccess = signal(false);
   selectedIds = signal<Set<number>>(new Set());
+
+  importMenuItems: ActionMenuItem[] = [
+    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
+  ];
   viewMode = signal<'list' | 'cards'>('cards');
   private querySub!: Subscription;
+
+  allSelectedInactive = computed<boolean>(() => {
+    const ids = this.selectedIds();
+    if (ids.size === 0) return false;
+    return this.items().filter(i => ids.has(i.id!)).every(i => i.isActive === false);
+  });
 
   bulkMenuItems: ActionMenuItem[] = [
     { labelKey: 'item.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
@@ -188,6 +198,16 @@ export class ItemListComponent implements OnInit, OnDestroy {
     }).then(result => {
       if (!result.isConfirmed) return;
       this.itemService.deleteMany(ids).subscribe({ next: () => { this.selectedIds.set(new Set()); this.loadItems(); } });
+    });
+  }
+
+  activateSelected(): void {
+    const ids = [...this.selectedIds()];
+    this.itemService.setActiveMany(ids, true).subscribe({
+      next: () => {
+        this.items.update(list => list.map(i => ids.includes(i.id!) ? { ...i, isActive: true } : i));
+        this.selectedIds.set(new Set());
+      }
     });
   }
 
