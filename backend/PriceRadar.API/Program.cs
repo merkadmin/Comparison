@@ -1,4 +1,8 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using PriceRadar.API.Seeder;
+using PriceRadar.API.Services;
 using PriceRadar.Core.Interfaces;
 using PriceRadar.Core.Models;
 using PriceRadar.DAL.Context;
@@ -43,6 +47,24 @@ builder.Services.AddCors(options =>
 			  .AllowAnyMethod());
 });
 
+// JWT Authentication
+var jwtSecret = builder.Configuration["Jwt:Secret"]!;
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+	.AddJwtBearer(options =>
+	{
+		options.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer           = true,
+			ValidateAudience         = true,
+			ValidateLifetime         = true,
+			ValidateIssuerSigningKey = true,
+			ValidIssuer              = builder.Configuration["Jwt:Issuer"],
+			ValidAudience            = builder.Configuration["Jwt:Audience"],
+			IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+		};
+	});
+
+builder.Services.AddSingleton<JwtService>();
 builder.Services.AddSingleton<DataSeeder>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -73,6 +95,7 @@ if (!app.Environment.IsDevelopment())
 	app.UseHttpsRedirection();
 }
 app.UseCors("AngularPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

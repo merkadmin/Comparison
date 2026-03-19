@@ -5,11 +5,15 @@ import { ItemCategoryListComponent } from './features/item-categories/item-categ
 import { ItemBrandListComponent } from './features/item-brands/item-brand-list.component';
 import { ItemListComponent } from './features/items/item-list.component';
 import { ItemPackageListComponent } from './features/item-packages/item-package-list.component';
+import { LoginComponent } from './features/auth/login/login.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
   {
     path: '',
     component: LayoutComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },

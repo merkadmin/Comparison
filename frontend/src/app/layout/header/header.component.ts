@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { TranslateService } from '../../core/services/translate.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ItemCategoryService } from '../../core/services/item-category.service';
+import { AuthService } from '../../core/services/auth.service';
 
 export interface BreadcrumbItem {
   labelKey?: string;   // translation key
@@ -30,6 +31,7 @@ const breadcrumbMap: Record<string, BreadcrumbItem[]> = {
 })
 export class HeaderComponent {
   translate        = inject(TranslateService);
+  auth             = inject(AuthService);
   private router   = inject(Router);
   private catSvc   = inject(ItemCategoryService);
 

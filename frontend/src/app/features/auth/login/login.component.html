@@ -1,0 +1,110 @@
+<div class="d-flex flex-column flex-root min-vh-100 auth-bg" id="kt_app_root">
+  <div class="d-flex flex-column flex-center flex-column-fluid p-10">
+
+    <!--begin::Logo-->
+    <a routerLink="/" class="mb-10">
+      <img alt="Logo" src="assets/media/logos/default.svg" class="h-45px" onerror="this.style.display='none'" />
+      <h2 class="fw-bold text-primary mb-0">PriceRadar</h2>
+    </a>
+    <!--end::Logo-->
+
+    <!--begin::Card-->
+    <div class="card w-100 w-sm-400px shadow-sm">
+      <div class="card-body p-10">
+
+        <!--begin::Tabs-->
+        <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0 mb-8">
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link fw-semibold cursor-pointer" [class.active]="mode() === 'login'" (click)="mode.set('login'); error.set(null)">
+              {{ 'auth.login' | translate }}
+            </a>
+          </li>
+          <li class="nav-item flex-fill text-center">
+            <a class="nav-link fw-semibold cursor-pointer" [class.active]="mode() === 'signup'" (click)="mode.set('signup'); error.set(null)">
+              {{ 'auth.signup' | translate }}
+            </a>
+          </li>
+        </ul>
+        <!--end::Tabs-->
+
+        <!--begin::Error-->
+        @if (error()) {
+          <div class="alert alert-danger d-flex align-items-center mb-6 py-3">
+            <i class="ki-duotone ki-shield-cross fs-2 me-3 text-danger">
+              <span class="path1"></span><span class="path2"></span>
+            </i>
+            <span>{{ error()! | translate }}</span>
+          </div>
+        }
+        <!--end::Error-->
+
+        <!--begin::Login Form-->
+        @if (mode() === 'login') {
+          <div class="mb-5">
+            <label class="form-label fw-semibold required">{{ 'auth.email' | translate }}</label>
+            <input type="email" class="form-control form-control-lg bg-transparent"
+                   [(ngModel)]="loginEmail"
+                   [placeholder]="'auth.emailPlaceholder' | translate"
+                   (keyup.enter)="onLogin()" />
+          </div>
+          <div class="mb-8">
+            <label class="form-label fw-semibold required">{{ 'auth.password' | translate }}</label>
+            <input type="password" class="form-control form-control-lg bg-transparent"
+                   [(ngModel)]="loginPassword"
+                   [placeholder]="'auth.passwordPlaceholder' | translate"
+                   (keyup.enter)="onLogin()" />
+          </div>
+          <button class="btn btn-primary w-100 mb-5" [disabled]="loading()" (click)="onLogin()">
+            @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            {{ 'auth.signIn' | translate }}
+          </button>
+        }
+        <!--end::Login Form-->
+
+        <!--begin::Signup Form-->
+        @if (mode() === 'signup') {
+          <div class="mb-4">
+            <label class="form-label fw-semibold required">{{ 'auth.userName' | translate }}</label>
+            <input type="text" class="form-control form-control-lg bg-transparent" [(ngModel)]="signupUserName" />
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold required">{{ 'auth.loginName' | translate }}</label>
+            <input type="text" class="form-control form-control-lg bg-transparent" [(ngModel)]="signupLogin" />
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold required">{{ 'auth.email' | translate }}</label>
+            <input type="email" class="form-control form-control-lg bg-transparent" [(ngModel)]="signupEmail" />
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold required">{{ 'auth.password' | translate }}</label>
+            <input type="password" class="form-control form-control-lg bg-transparent" [(ngModel)]="signupPassword" />
+          </div>
+          <div class="mb-8">
+            <label class="form-label fw-semibold required">{{ 'auth.confirmPassword' | translate }}</label>
+            <input type="password" class="form-control form-control-lg bg-transparent"
+                   [(ngModel)]="signupConfirm"
+                   (keyup.enter)="onSignup()" />
+          </div>
+          <button class="btn btn-primary w-100 mb-5" [disabled]="loading()" (click)="onSignup()">
+            @if (loading()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+            {{ 'auth.createAccount' | translate }}
+          </button>
+        }
+        <!--end::Signup Form-->
+
+        <!--begin::Separator-->
+        <div class="separator separator-content my-6">
+          <span class="fw-semibold text-muted fs-7 ls-1">{{ 'auth.orContinueWith' | translate }}</span>
+        </div>
+        <!--end::Separator-->
+
+        <!--begin::Google Button-->
+        <div #googleBtn class="d-flex justify-content-center w-100"></div>
+        <!--end::Google Button-->
+
+      </div>
+    </div>
+    <!--end::Card-->
+
+  </div>
+</div>
