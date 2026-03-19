@@ -66,6 +66,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   importError        = signal<string | null>(null);
   importSuccess      = signal(false);
   selectedIds        = signal<Set<number>>(new Set());
+  viewMode           = signal<'list' | 'cards'>('list');
   private querySub!: Subscription;
 
   categoryOptions = computed<SelectOption[]>(() =>
@@ -155,6 +156,12 @@ export class ItemListComponent implements OnInit, OnDestroy {
     this.itemService.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.loadItems(); } });
   }
 
+  setActive(id: number, isActive: boolean): void {
+    this.itemService.setActive(id, isActive).subscribe({
+      next: () => this.items.update(list => list.map(i => i.id === id ? { ...i, isActive } : i))
+    });
+  }
+
   deleteSelected(): void {
     const ids = [...this.selectedIds()];
     const text = this.translate.translate('item.deleteBulkText').replace('{count}', String(ids.length));
@@ -169,6 +176,27 @@ export class ItemListComponent implements OnInit, OnDestroy {
     }).then(result => {
       if (!result.isConfirmed) return;
       this.itemService.deleteMany(ids).subscribe({ next: () => { this.selectedIds.set(new Set()); this.loadItems(); } });
+    });
+  }
+
+  deactivateSelected(): void {
+    const ids = [...this.selectedIds()];
+    Swal.fire({
+      title: this.translate.translate('item.deactivateBulkConfirm'),
+      text: this.translate.translate('item.deactivateBulkText').replace('{count}', String(ids.length)),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      confirmButtonText: this.translate.translate('common.deactivate'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.itemService.setActiveMany(ids, false).subscribe({
+        next: () => {
+          this.items.update(list => list.map(i => ids.includes(i.id!) ? { ...i, isActive: false } : i));
+          this.selectedIds.set(new Set());
+        }
+      });
     });
   }
 

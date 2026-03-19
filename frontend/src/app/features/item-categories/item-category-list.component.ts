@@ -220,6 +220,27 @@ export class ItemCategoryListComponent implements OnInit {
     });
   }
 
+  deactivateSelected(): void {
+    const ids = [...this.selectedIds()];
+    Swal.fire({
+      title: this.translate.translate('category.deactivateBulkConfirm'),
+      text: this.translate.translate('category.deactivateBulkText').replace('{count}', String(ids.length)),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      confirmButtonText: this.translate.translate('common.deactivate'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.setActiveMany(ids, false).subscribe({
+        next: () => {
+          this.categories.update(list => list.map(c => ids.includes(c.id!) ? { ...c, isActive: false } : c));
+          this.selectedIds.set(new Set());
+        }
+      });
+    });
+  }
+
   setActive(id: number, isActive: boolean): void {
     if (!isActive) {
       this.service.getDescendantCount(id).subscribe(childCount => {

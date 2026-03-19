@@ -7,6 +7,7 @@ export interface Item {
   description?: string;
   barcode?: string;
   imageUrl?: string;
+  isActive?: boolean;
   brandId: number;
   brand?: ItemBrand;
   itemCategoryId: number;

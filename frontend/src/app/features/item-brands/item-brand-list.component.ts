@@ -78,6 +78,12 @@ export class ItemBrandListComponent implements OnInit {
     this.service.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.load(); } });
   }
 
+  setActive(id: number, isActive: boolean): void {
+    this.service.setActive(id, isActive).subscribe({
+      next: () => this.brands.update(list => list.map(b => b.id === id ? { ...b, isActive } : b))
+    });
+  }
+
   deleteSelected(): void {
     const ids = [...this.selectedIds()];
     const text = this.translate.translate('brand.deleteBulkText').replace('{count}', String(ids.length));
@@ -92,6 +98,27 @@ export class ItemBrandListComponent implements OnInit {
     }).then(result => {
       if (!result.isConfirmed) return;
       this.service.deleteMany(ids).subscribe({ next: () => { this.selectedIds.set(new Set()); this.load(); } });
+    });
+  }
+
+  deactivateSelected(): void {
+    const ids = [...this.selectedIds()];
+    Swal.fire({
+      title: this.translate.translate('brand.deactivateBulkConfirm'),
+      text: this.translate.translate('brand.deactivateBulkText').replace('{count}', String(ids.length)),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f39c12',
+      confirmButtonText: this.translate.translate('common.deactivate'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.setActiveMany(ids, false).subscribe({
+        next: () => {
+          this.brands.update(list => list.map(b => ids.includes(b.id!) ? { ...b, isActive: false } : b));
+          this.selectedIds.set(new Set());
+        }
+      });
     });
   }
 

@@ -31,6 +31,14 @@ export class ItemBrandService {
     return this.api.deleteWithBody<void>('/itembrands/bulk', ids);
   }
 
+  setActive(id: number, isActive: boolean): Observable<void> {
+    return this.api.patch<void>(`/itembrands/${id}/active`, isActive);
+  }
+
+  setActiveMany(ids: number[], isActive: boolean): Observable<void> {
+    return this.api.patch<void>('/itembrands/bulk/active', { ids, isActive });
+  }
+
   exportTemplate(): Observable<Blob> {
     return this.api.getBlob('/itembrands/export-template');
   }

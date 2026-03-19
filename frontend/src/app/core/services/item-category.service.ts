@@ -35,6 +35,10 @@ export class ItemCategoryService {
     return this.api.patch<void>(`/itemcategories/${id}/active`, isActive);
   }
 
+  setActiveMany(ids: number[], isActive: boolean): Observable<void> {
+    return this.api.patch<void>('/itemcategories/bulk/active', { ids, isActive });
+  }
+
   getDescendantCount(id: number): Observable<number> {
     return this.api.get<number>(`/itemcategories/${id}/descendant-count`);
   }

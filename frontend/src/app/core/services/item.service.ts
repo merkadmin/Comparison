@@ -39,6 +39,14 @@ export class ItemService {
     return this.api.deleteWithBody<void>('/items/bulk', ids);
   }
 
+  setActive(id: number, isActive: boolean): Observable<void> {
+    return this.api.patch<void>(`/items/${id}/active`, isActive);
+  }
+
+  setActiveMany(ids: number[], isActive: boolean): Observable<void> {
+    return this.api.patch<void>('/items/bulk/active', { ids, isActive });
+  }
+
   importExcel(file: File): Observable<void> {
     const formData = new FormData();
     formData.append('file', file);

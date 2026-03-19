@@ -3,5 +3,6 @@ export interface ItemBrand {
   name: string;
   logoUrl?: string;
   country?: string;
+  isActive?: boolean;
   createdAt?: Date;
 }
