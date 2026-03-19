@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { SelectOption } from '../../shared/components/common-select/common-select.component';
 import { Subscription } from 'rxjs';
+import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ItemService } from '../../core/services/item.service';
@@ -43,6 +44,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   importing          = signal(false);
   importError        = signal<string | null>(null);
   importSuccess      = signal(false);
+  selectedIds        = signal<Set<number>>(new Set());
   private querySub!: Subscription;
 
   categoryOptions = computed<SelectOption[]>(() =>
@@ -111,9 +113,42 @@ export class ItemListComponent implements OnInit, OnDestroy {
     return cat ? this.localize(cat.name) : String(id);
   }
 
+  isSelected(id: number): boolean { return this.selectedIds().has(id); }
+  isAllSelected(): boolean {
+    const all = this.filteredItems();
+    return all.length > 0 && all.every(i => this.selectedIds().has(i.id!));
+  }
+  toggleOne(id: number): void {
+    const s = new Set(this.selectedIds());
+    s.has(id) ? s.delete(id) : s.add(id);
+    this.selectedIds.set(s);
+  }
+  toggleAll(): void {
+    this.selectedIds.set(
+      this.isAllSelected() ? new Set() : new Set(this.filteredItems().map(i => i.id!))
+    );
+  }
+
   delete(id: number): void {
     if (!confirm('Delete this item?')) return;
-    this.itemService.delete(id).subscribe({ next: () => this.loadItems() });
+    this.itemService.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.loadItems(); } });
+  }
+
+  deleteSelected(): void {
+    const ids = [...this.selectedIds()];
+    const text = this.translate.translate('item.deleteBulkText').replace('{count}', String(ids.length));
+    Swal.fire({
+      title: this.translate.translate('item.deleteBulkConfirm'),
+      text,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f1416c',
+      confirmButtonText: this.translate.translate('common.delete'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.itemService.deleteMany(ids).subscribe({ next: () => { this.selectedIds.set(new Set()); this.loadItems(); } });
+    });
   }
 
   exportTemplate(): void {

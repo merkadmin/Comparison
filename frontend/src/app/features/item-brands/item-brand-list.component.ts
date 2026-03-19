@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemBrand } from '../../core/models/item-brand.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -22,6 +23,23 @@ export class ItemBrandListComponent implements OnInit {
   importing     = signal(false);
   importError   = signal<string | null>(null);
   importSuccess = signal(false);
+  selectedIds   = signal<Set<number>>(new Set());
+
+  isSelected(id: number): boolean { return this.selectedIds().has(id); }
+  isAllSelected(): boolean {
+    const all = this.brands();
+    return all.length > 0 && all.every(b => this.selectedIds().has(b.id!));
+  }
+  toggleOne(id: number): void {
+    const s = new Set(this.selectedIds());
+    s.has(id) ? s.delete(id) : s.add(id);
+    this.selectedIds.set(s);
+  }
+  toggleAll(): void {
+    this.selectedIds.set(
+      this.isAllSelected() ? new Set() : new Set(this.brands().map(b => b.id!))
+    );
+  }
 
   ngOnInit(): void { this.load(); }
 
@@ -36,7 +54,24 @@ export class ItemBrandListComponent implements OnInit {
 
   delete(id: number): void {
     if (!confirm('Delete this brand?')) return;
-    this.service.delete(id).subscribe({ next: () => this.load() });
+    this.service.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.load(); } });
+  }
+
+  deleteSelected(): void {
+    const ids = [...this.selectedIds()];
+    const text = this.translate.translate('brand.deleteBulkText').replace('{count}', String(ids.length));
+    Swal.fire({
+      title: this.translate.translate('brand.deleteBulkConfirm'),
+      text,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f1416c',
+      confirmButtonText: this.translate.translate('common.delete'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.deleteMany(ids).subscribe({ next: () => { this.selectedIds.set(new Set()); this.load(); } });
+    });
   }
 
   exportTemplate(): void {

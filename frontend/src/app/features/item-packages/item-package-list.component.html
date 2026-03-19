@@ -3,7 +3,13 @@
         <div class="card-title">
           <h3 class="fw-bold m-0">{{ 'package.title' | translate }}</h3>
         </div>
-        <div class="card-toolbar d-flex gap-3">
+        <div class="card-toolbar d-flex align-items-center gap-3">
+          @if (selectedIds().size > 0) {
+            <button class="btn btn-sm btn-danger" (click)="deleteSelected()">
+              <i class="ki-duotone ki-trash fs-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+              {{ 'package.deleteSelected' | translate }} ({{ selectedIds().size }})
+            </button>
+          }
           <button class="btn btn-sm"
                   [class.btn-light-primary]="!showActiveOnly()"
                   [class.btn-primary]="showActiveOnly()"
@@ -60,6 +66,13 @@
           <table class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
               <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                <th class="w-30px">
+                  <div class="form-check form-check-sm form-check-custom form-check-solid">
+                    <input class="form-check-input" type="checkbox"
+                      [checked]="isAllSelected()"
+                      (change)="toggleAll()" />
+                  </div>
+                </th>
                 <th class="w-30px">{{ 'common.number' | translate }}</th>
                 <th class="min-w-175px">{{ 'common.name' | translate }}</th>
                 <th class="min-w-60px">{{ 'package.itemsCount' | translate }}</th>
@@ -75,11 +88,18 @@
             <tbody class="text-gray-600 fw-semibold">
               @if (packages().length === 0) {
                 <tr>
-                  <td colspan="10" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+                  <td colspan="11" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
               @for (pkg of packages(); track pkg.id; let i = $index) {
-                <tr>
+                <tr [class.table-active]="isSelected(pkg.id!)">
+                  <td>
+                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+                      <input class="form-check-input" type="checkbox"
+                        [checked]="isSelected(pkg.id!)"
+                        (change)="toggleOne(pkg.id!)" />
+                    </div>
+                  </td>
                   <td>{{ i + 1 }}</td>
                   <td>
                     <span class="text-gray-800 fw-bold text-hover-primary d-block fs-6">{{ pkg.name }}</span>

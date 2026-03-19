@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 import { ItemPackageService } from '../../core/services/item-package.service';
 import { ItemPackage } from '../../core/models/item-package.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -23,6 +24,7 @@ export class ItemPackageListComponent implements OnInit {
   importing     = signal(false);
   importError   = signal<string | null>(null);
   importSuccess = signal(false);
+  selectedIds   = signal<Set<number>>(new Set());
 
   ngOnInit(): void { this.load(); }
 
@@ -41,9 +43,42 @@ export class ItemPackageListComponent implements OnInit {
     this.load();
   }
 
+  isSelected(id: number): boolean { return this.selectedIds().has(id); }
+  isAllSelected(): boolean {
+    const all = this.packages();
+    return all.length > 0 && all.every(p => this.selectedIds().has(p.id!));
+  }
+  toggleOne(id: number): void {
+    const s = new Set(this.selectedIds());
+    s.has(id) ? s.delete(id) : s.add(id);
+    this.selectedIds.set(s);
+  }
+  toggleAll(): void {
+    this.selectedIds.set(
+      this.isAllSelected() ? new Set() : new Set(this.packages().map(p => p.id!))
+    );
+  }
+
   delete(id: number): void {
     if (!confirm('Delete this package/offer?')) return;
-    this.service.delete(id).subscribe({ next: () => this.load() });
+    this.service.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.load(); } });
+  }
+
+  deleteSelected(): void {
+    const ids = [...this.selectedIds()];
+    const text = this.translate.translate('package.deleteBulkText').replace('{count}', String(ids.length));
+    Swal.fire({
+      title: this.translate.translate('package.deleteBulkConfirm'),
+      text,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f1416c',
+      confirmButtonText: this.translate.translate('common.delete'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.deleteMany(ids).subscribe({ next: () => { this.selectedIds.set(new Set()); this.load(); } });
+    });
   }
 
   exportTemplate(): void {

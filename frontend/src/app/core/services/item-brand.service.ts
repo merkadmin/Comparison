@@ -27,6 +27,10 @@ export class ItemBrandService {
     return this.api.delete<void>(`/itembrands/${id}`);
   }
 
+  deleteMany(ids: number[]): Observable<void> {
+    return this.api.deleteWithBody<void>('/itembrands/bulk', ids);
+  }
+
   exportTemplate(): Observable<Blob> {
     return this.api.getBlob('/itembrands/export-template');
   }

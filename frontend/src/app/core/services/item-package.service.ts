@@ -31,6 +31,10 @@ export class ItemPackageService {
     return this.api.delete<void>(`/itempackages/${id}`);
   }
 
+  deleteMany(ids: number[]): Observable<void> {
+    return this.api.deleteWithBody<void>('/itempackages/bulk', ids);
+  }
+
   exportTemplate(): Observable<Blob> {
     return this.api.getBlob('/itempackages/export-template');
   }

@@ -35,6 +35,10 @@ export class ItemService {
     return this.api.delete<void>(`/items/${id}`);
   }
 
+  deleteMany(ids: number[]): Observable<void> {
+    return this.api.deleteWithBody<void>('/items/bulk', ids);
+  }
+
   importExcel(file: File): Observable<void> {
     const formData = new FormData();
     formData.append('file', file);

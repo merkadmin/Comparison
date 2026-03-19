@@ -56,6 +56,13 @@ public abstract class BaseController<TModel, TRepo> : ControllerBase
 		return NoContent();
 	}
 
+	[HttpDelete("bulk")]
+	public virtual async Task<IActionResult> DeleteMany([FromBody] IEnumerable<long> ids)
+	{
+		await Repo.DeleteManyAsync(ids);
+		return NoContent();
+	}
+
 	[HttpPatch("{id:long}/active")]
 	public virtual async Task<IActionResult> SetActive(long id, [FromBody] bool isActive)
 	{
