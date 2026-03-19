@@ -132,7 +132,10 @@
           </td>
           <td class="text-end d-flex justify-content-end gap-2">
             <button class="btn btn-sm btn-light-primary" (click)="openEdit(item)">
-              <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+              <i class="ki-duotone ki-pencil fs-5"><span class="path1">
+
+              </span><span class="path2"></span>
+            </i>
               {{ 'common.edit' | translate }}
             </button>
             <button class="btn btn-sm btn-light-danger" (click)="delete(item.id!)">
@@ -161,7 +164,9 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
+            <label class="form-label fw-semibold">
+              {{ 'common.name' | translate }} 
+              <span class="text-danger">*</span></label>
             <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
           </div>
           <div class="mb-3">
