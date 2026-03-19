@@ -12,7 +12,7 @@ import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemImageService } from '../../core/services/item-image.service';
 import { ProductItemTypeService } from '../../core/services/product-item-type.service';
 import { ProductInformationService } from '../../core/services/product-information.service';
-import { Item, StorePrice } from '../../core/models/item.model';
+import { Item } from '../../core/models/item.model';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { ItemBrand } from '../../core/models/item-brand.model';
 import { ProductItemType } from '../../core/models/product-item-type.model';
@@ -145,8 +145,9 @@ export class ItemListComponent implements OnInit, OnDestroy {
   importSuccess      = signal(false);
   selectedIds        = signal<Set<number>>(new Set());
   viewMode           = signal<'list' | 'cards'>('cards');
-  colsPerRow         = signal<GridColumns>(4);
+  colsPerRow         = signal<GridColumns>(5);
   colClass           = computed(() => ({
+    1: 'col-12',
     2: 'col-6',
     3: 'col-4',
     4: 'col-3',
