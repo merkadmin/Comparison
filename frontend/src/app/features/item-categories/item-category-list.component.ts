@@ -30,6 +30,12 @@ export class ItemCategoryListComponent implements OnInit {
     { labelKey: 'category.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
   ];
 
+  getRowMenuItems(id: number): ActionMenuItem[] {
+    return [
+      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) }
+    ];
+  }
+
   openEdit(cat: ItemCategory): void {
     this.editDraft = {
       ...cat,

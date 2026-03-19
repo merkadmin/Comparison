@@ -51,6 +51,12 @@ export class ItemBrandListComponent implements OnInit {
     { labelKey: 'brand.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
   ];
 
+  getRowMenuItems(id: number): ActionMenuItem[] {
+    return [
+      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) }
+    ];
+  }
+
   isSelected(id: number): boolean { return this.selectedIds().has(id); }
   isAllSelected(): boolean {
     const all = this.brands();

@@ -75,6 +75,12 @@ export class ItemListComponent implements OnInit, OnDestroy {
     { labelKey: 'item.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
   ];
 
+  getRowMenuItems(id: number): ActionMenuItem[] {
+    return [
+      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) }
+    ];
+  }
+
   categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map(c => ({ value: c.id, label: this.localize(c.name) }))
   );

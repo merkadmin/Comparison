@@ -21,8 +21,12 @@ export class CommonDropDownMenuActionButton {
   @Input() mainLabelKey: string = '';
   @Input() mainIconClass: string = 'ki-minus-circle';
   @Input() mainIconPaths: number = 2;
+  @Input() mainIconSize: string = '2';
   @Input() mainColor: string = 'warning';
+  @Input() mainButtonClass: string = '';
   @Input() count: number = 0;
+  @Input() menuEnd: boolean = false;
+  @Input() groupClass: string = '';
   @Output() mainClick = new EventEmitter<void>();
   @Input() menuItems: ActionMenuItem[] = [];
 

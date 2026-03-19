@@ -90,32 +90,16 @@
               <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
               {{ 'common.edit' | translate }}
             </button>
-            <div class="btn-group btn-group-sm flex-fill">
-              @if (cat.isActive !== false) {
-              <button class="btn btn-light-warning w-100" (click)="setActive(cat.id!, false)">
-                <i class="ki-duotone ki-minus-circle fs-6"><span class="path1"></span><span class="path2"></span></i>
-                {{ 'common.deactivate' | translate }}
-              </button>
-              <button type="button" class="btn btn-light-warning dropdown-toggle dropdown-toggle-split"
-                data-bs-toggle="dropdown" aria-expanded="false"></button>
-              } @else {
-              <button class="btn btn-light-success w-100" (click)="setActive(cat.id!, true)">
-                <i class="ki-duotone ki-check-circle fs-6"><span class="path1"></span><span class="path2"></span></i>
-                {{ 'common.activate' | translate }}
-              </button>
-              <button type="button" class="btn btn-light-success dropdown-toggle dropdown-toggle-split"
-                data-bs-toggle="dropdown" aria-expanded="false"></button>
-              }
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                  <a class="dropdown-item text-danger cursor-pointer" (click)="delete(cat.id!)">
-                    <i class="ki-duotone ki-trash fs-6 me-2"><span class="path1"></span><span class="path2"></span><span
-                        class="path3"></span><span class="path4"></span><span class="path5"></span></i>
-                    {{ 'common.delete' | translate }}
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <app-common-drop-down-menu-action-button
+              [mainLabelKey]="cat.isActive !== false ? 'common.deactivate' : 'common.activate'"
+              [mainIconClass]="cat.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+              [mainColor]="cat.isActive !== false ? 'light-warning' : 'light-success'"
+              mainIconSize="6"
+              mainButtonClass="w-100"
+              groupClass="flex-fill"
+              [menuEnd]="true"
+              (mainClick)="setActive(cat.id!, cat.isActive === false)"
+              [menuItems]="getRowMenuItems(cat.id!)" />
           </div>
         </div>
       </div>
@@ -178,33 +162,14 @@
                 <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
                 {{ 'common.edit' | translate }}
               </button>
-              <div class="btn-group btn-group-sm">
-                @if (cat.isActive !== false) {
-                <button class="btn btn-light-warning" (click)="setActive(cat.id!, false)">
-                  <i class="ki-duotone ki-minus-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
-                  {{ 'common.deactivate' | translate }}
-                </button>
-                <button type="button" class="btn btn-light-warning dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-expanded="false"></button>
-                } @else {
-                <button class="btn btn-light-success" (click)="setActive(cat.id!, true)">
-                  <i class="ki-duotone ki-check-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
-                  {{ 'common.activate' | translate }}
-                </button>
-                <button type="button" class="btn btn-light-success dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-expanded="false"></button>
-                }
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item text-danger cursor-pointer" (click)="delete(cat.id!)">
-                      <i class="ki-duotone ki-trash fs-5 me-2"><span class="path1"></span><span
-                          class="path2"></span><span class="path3"></span><span class="path4"></span><span
-                          class="path5"></span></i>
-                      {{ 'common.delete' | translate }}
-                    </a>
-                  </li>
-                </ul>
-              </div>
+              <app-common-drop-down-menu-action-button
+                [mainLabelKey]="cat.isActive !== false ? 'common.deactivate' : 'common.activate'"
+                [mainIconClass]="cat.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+                [mainColor]="cat.isActive !== false ? 'light-warning' : 'light-success'"
+                mainIconSize="5"
+                [menuEnd]="true"
+                (mainClick)="setActive(cat.id!, cat.isActive === false)"
+                [menuItems]="getRowMenuItems(cat.id!)" />
             </div>
           </td>
         </tr>
