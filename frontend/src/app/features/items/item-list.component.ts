@@ -67,7 +67,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   importError = signal<string | null>(null);
   importSuccess = signal(false);
   selectedIds = signal<Set<number>>(new Set());
-  viewMode = signal<'list' | 'cards'>('list');
+  viewMode = signal<'list' | 'cards'>('cards');
   private querySub!: Subscription;
 
   categoryOptions = computed<SelectOption[]>(() =>

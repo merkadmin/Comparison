@@ -23,7 +23,7 @@ export class ItemCategoryListComponent implements OnInit {
 
   editingId = signal<number | null>(null);
   editDraft: ItemCategory = { name: { en: '', ar: '', fr: '' } };
-  viewMode = signal<'list' | 'cards'>('list');
+  viewMode = signal<'list' | 'cards'>('cards');
 
   openEdit(cat: ItemCategory): void {
     this.editDraft = {
