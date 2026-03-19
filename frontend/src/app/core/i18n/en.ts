@@ -29,6 +29,9 @@ export const en: Record<string, string> = {
   'common.deactivate': 'Deactivate',
   'common.activate':   'Activate',
   'common.confirm':    'Confirm',
+  'common.add':          'Add',
+  'common.images':       'Images',
+  'common.uploadImages': 'Upload',
 
   // Navigation
   'nav.dashboard':        'Dashboard',
@@ -59,8 +62,10 @@ export const en: Record<string, string> = {
   'category.deactivateConfirm':        'Deactivate this category?',
   'category.deactivateConfirmText':    'This category will be deactivated.',
   'category.deactivateWithChildrenText': 'This category has {count} child(ren) that will also be deactivated.',
-  'category.importSuccess': 'Categories imported successfully.',
-  'category.importError':   'Failed to import categories.',
+  'category.importSuccess':         'Categories imported successfully.',
+  'category.importError':           'Failed to import categories.',
+  'category.deactivateBulkConfirm': 'Deactivate selected categories?',
+  'category.deactivateBulkText':    'You are about to deactivate {count} categories.',
   'category.searchPlaceholder': 'Search categories...',
   'category.noParent': 'Select Parent Category',
 
@@ -71,8 +76,10 @@ export const en: Record<string, string> = {
   'brand.deleteBulkConfirm': 'Delete selected brands?',
   'brand.deleteBulkText':   'You are about to delete {count} brands. This cannot be undone.',
   'brand.deleteSelected':   'Delete Selected',
-  'brand.importSuccess':    'Brands imported successfully.',
-  'brand.importError':      'Failed to import brands.',
+  'brand.importSuccess':         'Brands imported successfully.',
+  'brand.importError':           'Failed to import brands.',
+  'brand.deactivateBulkConfirm': 'Deactivate selected brands?',
+  'brand.deactivateBulkText':    'You are about to deactivate {count} brands.',
 
   // Items
   'item.title':             'Items',
@@ -88,8 +95,10 @@ export const en: Record<string, string> = {
   'item.deleteBulkConfirm': 'Delete selected items?',
   'item.deleteBulkText':    'You are about to delete {count} items. This cannot be undone.',
   'item.deleteSelected':    'Delete Selected',
-  'item.importSuccess':     'Items imported successfully.',
-  'item.importError':       'Failed to import items.',
+  'item.importSuccess':          'Items imported successfully.',
+  'item.importError':            'Failed to import items.',
+  'item.deactivateBulkConfirm':  'Deactivate selected items?',
+  'item.deactivateBulkText':     'You are about to deactivate {count} items.',
 
   // Item Packages / Offers
   'package.title':            'Offers & Packages',

@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "PriceRadar.API\\PriceRadar.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "PriceRadar.FileStorage\\PriceRadar.FileStorage.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

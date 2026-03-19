@@ -391,11 +391,12 @@ public class DataSeeder
 		("Item", "/items",
 		[
 			new() { Field = "name",          LabelKey = "common.name",        Type = "text",    Order = 1 },
-			new() { Field = "imageUrl",      LabelKey = "common.image",       Type = "image",   Order = 2 },
-			new() { Field = "description",   LabelKey = "common.description", Type = "text",    Order = 3 },
-			new() { Field = "barcode",       LabelKey = "common.barcode",     Type = "text",    Order = 4 },
-			new() { Field = "createdAt",     LabelKey = "common.created",     Type = "date",    Order = 5 },
-			new() { Field = "isActive",      LabelKey = "common.status",      Type = "boolean", Order = 6 },
+			new() { Field = "images",        LabelKey = "common.images",      Type = "images",  Order = 2 },
+			new() { Field = "imageUrl",      LabelKey = "common.imageUrl",    Type = "image",   Order = 3, Visible = false },
+			new() { Field = "description",   LabelKey = "common.description", Type = "text",    Order = 4 },
+			new() { Field = "barcode",       LabelKey = "common.barcode",     Type = "text",    Order = 5 },
+			new() { Field = "createdAt",     LabelKey = "common.created",     Type = "date",    Order = 6 },
+			new() { Field = "isActive",      LabelKey = "common.status",      Type = "boolean", Order = 7 },
 		]),
 		("ItemPackage", "/itempackages",
 		[

@@ -13,6 +13,24 @@ public static class ExcelService
 		var ws = wb.AddWorksheet("Items");
 		string[] headers = { "Name*", "Description", "Barcode", "ImageUrl", "BrandId*", "ItemCategoryId*" };
 		WriteHeaders(ws, headers);
+
+		// Example row
+		ws.Cell(2, 1).Value = "iPhone 15 Pro";
+		ws.Cell(2, 2).Value = "A17 Pro chip, 256GB";
+		ws.Cell(2, 3).Value = "APL-IP15PRO-256";
+		ws.Cell(2, 4).Value = "https://store.storeimages.cdn-apple.com/iphone15pro.jpg";
+		ws.Cell(2, 5).Value = 1;   // BrandId
+		ws.Cell(2, 6).Value = 1;   // ItemCategoryId
+		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
+		ws.Row(2).Style.Font.Italic = true;
+
+		// Note row
+		ws.Cell(3, 1).Value = "↑ Example row — delete before importing";
+		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
+		ws.Cell(3, 1).Style.Font.Italic = true;
+		ws.Range(3, 1, 3, headers.Length).Merge();
+
+		ws.Columns().AdjustToContents();
 		using var ms = new MemoryStream();
 		wb.SaveAs(ms);
 		return ms.ToArray();

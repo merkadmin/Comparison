@@ -14,6 +14,7 @@ public class ItemDocument : IDocument<Item>
     public string?  Description    { get; set; }
     public string?  Barcode        { get; set; }
     public string?  ImageUrl       { get; set; }
+    public List<string> Images     { get; set; } = new();
     public long     BrandId        { get; set; }
     public long     ItemCategoryId { get; set; }
     public DateTime CreatedAt      { get; set; } = DateTime.UtcNow;
@@ -27,6 +28,7 @@ public class ItemDocument : IDocument<Item>
         Description    = Description,
         Barcode        = Barcode,
         ImageUrl       = ImageUrl,
+        Images         = Images,
         BrandId        = BrandId,
         ItemCategoryId = ItemCategoryId,
         CreatedAt      = CreatedAt,
@@ -41,6 +43,7 @@ public class ItemDocument : IDocument<Item>
         Description    = i.Description,
         Barcode        = i.Barcode,
         ImageUrl       = i.ImageUrl,
+        Images         = i.Images,
         BrandId        = i.BrandId,
         ItemCategoryId = i.ItemCategoryId,
         CreatedAt      = i.CreatedAt,

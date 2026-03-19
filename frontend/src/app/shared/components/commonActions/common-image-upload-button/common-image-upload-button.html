@@ -1,0 +1,12 @@
+<input #fileInput type="file" accept="image/*" multiple class="d-none" (change)="onFilesSelected($event)" />
+<button type="button" [class]="'btn btn-' + size + ' btn-' + color" [disabled]="uploading()"
+  (click)="fileInput.click()">
+  @if (uploading()) {
+  <span class="spinner-border spinner-border-sm me-1"></span>
+  } @else {
+  <i [class]="'ki-duotone ki-' + iconClass + ' fs-5 me-1'">
+    <span class="path1"></span><span class="path2"></span>
+  </i>
+  }
+  {{ labelKey | translate }}
+</button>

@@ -29,6 +29,9 @@ export const fr: Record<string, string> = {
   'common.deactivate': 'Désactiver',
   'common.activate':   'Activer',
   'common.confirm':    'Confirmer',
+  'common.add':          'Ajouter',
+  'common.images':       'Images',
+  'common.uploadImages': 'Télécharger des images',
 
   // Navigation
   'nav.dashboard':        'Tableau de bord',
@@ -59,8 +62,10 @@ export const fr: Record<string, string> = {
   'category.deactivateConfirm':          'Désactiver cette catégorie ?',
   'category.deactivateConfirmText':      'Cette catégorie sera désactivée.',
   'category.deactivateWithChildrenText': 'Cette catégorie a {count} enfant(s) qui seront également désactivés.',
-  'category.importSuccess': 'Catégories importées avec succès.',
-  'category.importError':   'Échec de l\'importation des catégories.',
+  'category.importSuccess':         'Catégories importées avec succès.',
+  'category.importError':           'Échec de l\'importation des catégories.',
+  'category.deactivateBulkConfirm': 'Désactiver les catégories sélectionnées ?',
+  'category.deactivateBulkText':    'Vous êtes sur le point de désactiver {count} catégories.',
   'category.searchPlaceholder': 'Rechercher des catégories...',
   'category.noParent': 'Sélectionnez la catégorie parente',
 
@@ -71,8 +76,10 @@ export const fr: Record<string, string> = {
   'brand.deleteBulkConfirm': 'Supprimer les marques sélectionnées ?',
   'brand.deleteBulkText':   'Vous êtes sur le point de supprimer {count} marques. Cette action est irréversible.',
   'brand.deleteSelected':   'Supprimer la sélection',
-  'brand.importSuccess':    'Marques importées avec succès.',
-  'brand.importError':      'Échec de l\'importation des marques.',
+  'brand.importSuccess':         'Marques importées avec succès.',
+  'brand.importError':           'Échec de l\'importation des marques.',
+  'brand.deactivateBulkConfirm': 'Désactiver les marques sélectionnées ?',
+  'brand.deactivateBulkText':    'Vous êtes sur le point de désactiver {count} marques.',
 
   // Items
   'item.title':             'Articles',
@@ -88,8 +95,10 @@ export const fr: Record<string, string> = {
   'item.deleteBulkConfirm': 'Supprimer les articles sélectionnés ?',
   'item.deleteBulkText':    'Vous êtes sur le point de supprimer {count} articles. Cette action est irréversible.',
   'item.deleteSelected':    'Supprimer la sélection',
-  'item.importSuccess':     'Articles importés avec succès.',
-  'item.importError':       'Échec de l\'importation des articles.',
+  'item.importSuccess':          'Articles importés avec succès.',
+  'item.importError':            'Échec de l\'importation des articles.',
+  'item.deactivateBulkConfirm':  'Désactiver les articles sélectionnés ?',
+  'item.deactivateBulkText':     'Vous êtes sur le point de désactiver {count} articles.',
 
   // Item Packages / Offers
   'package.title':            'Offres & Packs',

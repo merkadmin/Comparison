@@ -5,9 +5,15 @@
     </div>
     <div class="card-toolbar d-flex align-items-center gap-3">
 
-      <!--START::View Mode Toggele-->
+      <!--START::View Mode Toggle-->
       <app-common-view-mode [viewMode]="viewMode()" (viewModeChange)="viewMode.set($event)" />
-      <!--END::View Mode Toggele-->
+      <!--END::View Mode Toggle-->
+
+      <!--START::Grid Columns-->
+      @if (viewMode() === 'cards') {
+        <app-common-grid-columns-button [columns]="colsPerRow()" (columnsChange)="colsPerRow.set($event)" />
+      }
+      <!--END::Grid Columns-->
 
       <!--START::Bulk Actions-->
       @if (selectedIds().size > 0) {
@@ -76,10 +82,15 @@
     }
     <div class="row g-4">
       @for (item of filteredItems(); track item.id) {
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+      <div [class]="colClass()">
         <div class="item-card card h-100 shadow-sm border-0">
-          <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center">
-            @if (item.imageUrl) {
+          <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center position-relative">
+            @if (item.images && item.images.length > 0) {
+            <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
+            @if (item.images.length > 1) {
+            <span class="position-absolute bottom-0 end-0 badge badge-dark m-1 fs-8">+{{ item.images.length - 1 }}</span>
+            }
+            } @else if (item.imageUrl) {
             <img [src]="item.imageUrl" [alt]="item.name" class="item-card__img" />
             } @else {
             <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
@@ -100,6 +111,10 @@
               <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
               {{ 'common.edit' | translate }}
             </button>
+            <app-common-image-upload-button
+              [itemId]="item.id!"
+              [categoryId]="item.itemCategoryId"
+              (uploaded)="onImagesUploaded(item.id!, $event)" />
             <app-common-drop-down-menu-action-button
               [mainLabelKey]="item.isActive !== false ? 'common.deactivate' : 'common.activate'"
               [mainIconClass]="item.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
@@ -149,7 +164,16 @@
           </td>
           <td>{{ i + 1 }}</td>
           <td>
-            @if (item.imageUrl) {
+            @if (item.images && item.images.length > 0) {
+            <div class="d-flex align-items-center gap-1">
+              <div class="symbol symbol-40px">
+                <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="object-fit-contain" />
+              </div>
+              @if (item.images.length > 1) {
+              <span class="badge badge-light-info fs-8">+{{ item.images.length - 1 }}</span>
+              }
+            </div>
+            } @else if (item.imageUrl) {
             <div class="symbol symbol-40px">
               <img [src]="item.imageUrl" [alt]="item.name" class="object-fit-contain" />
             </div>
@@ -179,6 +203,10 @@
                 <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
                 {{ 'common.edit' | translate }}
               </button>
+              <app-common-image-upload-button
+                [itemId]="item.id!"
+                [categoryId]="item.itemCategoryId"
+                (uploaded)="onImagesUploaded(item.id!, $event)" />
               <app-common-drop-down-menu-action-button
                 [mainLabelKey]="item.isActive !== false ? 'common.deactivate' : 'common.activate'"
                 [mainIconClass]="item.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
@@ -222,8 +250,33 @@
           <input type="text" class="form-control" [(ngModel)]="editDraft.barcode" />
         </div>
         <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'common.imageUrl' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.imageUrl" />
+          <label class="form-label fw-semibold">{{ 'common.images' | translate }}</label>
+          <div class="d-flex gap-2 mb-2">
+            <input #imgFileInput type="file" accept="image/*" multiple class="d-none" (change)="onImageFilesSelected($event)" />
+            <button type="button" class="btn btn-light-primary btn-sm"
+              [disabled]="uploadingImages()"
+              (click)="imgFileInput.click()">
+              @if (uploadingImages()) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              } @else {
+                <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+              }
+              {{ 'common.uploadImages' | translate }}
+            </button>
+          </div>
+          @if (editDraft.images && editDraft.images.length > 0) {
+          <div class="d-flex flex-wrap gap-3 mt-2">
+            @for (img of editDraft.images; track img; let i = $index) {
+            <div class="position-relative">
+              <img [src]="imgUrl(img)" style="width:80px;height:80px;object-fit:contain;border-radius:8px;border:1px solid #e4e6ef;" />
+              <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0"
+                style="width:18px;height:18px;padding:0;font-size:10px;" (click)="removeImage(i)">
+                <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+              </button>
+            </div>
+            }
+          </div>
+          }
         </div>
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'item.brand' | translate }}</label>

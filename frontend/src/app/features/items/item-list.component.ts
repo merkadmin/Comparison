@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { SelectOption } from '../../shared/components/common-select/common-select.component';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin, of } from 'rxjs';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ItemService } from '../../core/services/item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
+import { ItemImageService } from '../../core/services/item-image.service';
 import { Item } from '../../core/models/item.model';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { ItemBrand } from '../../core/models/item-brand.model';
@@ -16,32 +17,34 @@ import { TranslateService } from '../../core/services/translate.service';
 import { CommonSelectComponent } from '../../shared/components/common-select/common-select.component';
 import { CommonViewModeComponent } from '../../shared/components/commonActions/common-view-mode/common-view-mode';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { CommonImageUploadButton } from '../../shared/components/commonActions/common-image-upload-button/common-image-upload-button';
+import { CommonGridColumnsButton, GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonViewModeComponent, CommonDropDownMenuActionButton],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonViewModeComponent, CommonDropDownMenuActionButton, CommonImageUploadButton, CommonGridColumnsButton],
   templateUrl: './item-list.component.html',
   styleUrl: './item-list.component.less',
 })
 export class ItemListComponent implements OnInit, OnDestroy {
-  private itemService = inject(ItemService);
+  private itemService  = inject(ItemService);
   private categoryService = inject(ItemCategoryService);
   private brandService = inject(ItemBrandService);
-  private translate = inject(TranslateService);
-  private route = inject(ActivatedRoute);
+  private imageService = inject(ItemImageService);
+  private translate    = inject(TranslateService);
+  private route        = inject(ActivatedRoute);
 
-  editingId = signal<number | null>(null);
-  editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0 };
+  editingId    = signal<number | null>(null);
+  editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0, images: [] };
+  uploadingImages = signal(false);
 
   openEdit(item: Item): void {
-    this.editDraft = { ...item };
+    this.editDraft = { ...item, images: [...(item.images ?? [])] };
     this.editingId.set(item.id!);
   }
 
-  closeEdit(): void {
-    this.editingId.set(null);
-  }
+  closeEdit(): void { this.editingId.set(null); }
 
   saveEdit(): void {
     const id = this.editingId();
@@ -51,29 +54,80 @@ export class ItemListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** Resolve a stored relative path to a full URL for display. */
+  imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
+
+  onImageFilesSelected(event: Event): void {
+    const id = this.editingId();
+    if (id === null) return;
+    const files = Array.from((event.target as HTMLInputElement).files ?? []);
+    if (!files.length) return;
+
+    this.uploadingImages.set(true);
+    this.imageService.upload(id, this.editDraft.itemCategoryId, files).subscribe({
+      next: (paths) => {
+        this.editDraft.images = [...(this.editDraft.images ?? []), ...paths];
+        this.uploadingImages.set(false);
+        (event.target as HTMLInputElement).value = '';
+      },
+      error: () => {
+        this.uploadingImages.set(false);
+        (event.target as HTMLInputElement).value = '';
+      }
+    });
+  }
+
+  onImagesUploaded(itemId: number, newPaths: string[]): void {
+    const item = this.items().find(i => i.id === itemId);
+    if (!item) return;
+    const updated = { ...item, images: [...(item.images ?? []), ...newPaths] };
+    this.itemService.update(itemId, updated).subscribe({
+      next: () => this.items.update(list => list.map(i => i.id === itemId ? updated : i))
+    });
+  }
+
+  removeImage(index: number): void {
+    const id   = this.editingId();
+    const path = this.editDraft.images?.[index];
+    if (!path) return;
+
+    if (id !== null) {
+      this.imageService.delete(id, path).subscribe({ error: () => {} });
+    }
+    this.editDraft.images = (this.editDraft.images ?? []).filter((_, i) => i !== index);
+  }
+
   localize(ls: LocalizedString): string {
     const lang = this.translate.currentLang();
     return ls[lang] || ls.en;
   }
 
-  items = signal<Item[]>([]);
-  categories = signal<ItemCategory[]>([]);
-  brands = signal<ItemBrand[]>([]);
-  loading = signal(false);
-  error = signal<string | null>(null);
+  items       = signal<Item[]>([]);
+  categories  = signal<ItemCategory[]>([]);
+  brands      = signal<ItemBrand[]>([]);
+  loading     = signal(false);
+  error       = signal<string | null>(null);
   selectedCategoryId = signal<number | null>(null);
-  selectedBrandId = signal<number | null>(null);
-  searchQuery = signal('');
-  importing = signal(false);
-  importError = signal<string | null>(null);
-  importSuccess = signal(false);
-  selectedIds = signal<Set<number>>(new Set());
+  selectedBrandId    = signal<number | null>(null);
+  searchQuery        = signal('');
+  importing          = signal(false);
+  importError        = signal<string | null>(null);
+  importSuccess      = signal(false);
+  selectedIds        = signal<Set<number>>(new Set());
+  viewMode           = signal<'list' | 'cards'>('cards');
+  colsPerRow         = signal<GridColumns>(4);
+  colClass           = computed(() => ({
+    2: 'col-6',
+    3: 'col-4',
+    4: 'col-3',
+    5: 'col-grid-5',
+    6: 'col-2',
+  })[this.colsPerRow()]);
+  private querySub!: Subscription;
 
   importMenuItems: ActionMenuItem[] = [
     { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
   ];
-  viewMode = signal<'list' | 'cards'>('cards');
-  private querySub!: Subscription;
 
   allSelectedInactive = computed<boolean>(() => {
     const ids = this.selectedIds();
@@ -109,11 +163,9 @@ export class ItemListComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => { } });
-    this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => { } });
+    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
+    this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
 
-    // Subscribe to query param changes so clicking a sidebar category
-    // reloads items even when already on the /items route
     this.querySub = this.route.queryParamMap.subscribe(params => {
       const categoryId = params.get('categoryId');
       this.selectedCategoryId.set(categoryId ? +categoryId : null);
@@ -122,9 +174,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.querySub.unsubscribe();
-  }
+  ngOnDestroy(): void { this.querySub.unsubscribe(); }
 
   loadItems(): void {
     this.loading.set(true);
@@ -136,7 +186,19 @@ export class ItemListComponent implements OnInit, OnDestroy {
         : this.itemService.getAll();
 
     obs.subscribe({
-      next: data => { this.items.set(data); this.loading.set(false); },
+      next: data => {
+        this.loading.set(false);
+        // Parallel-fetch images from file storage and merge into each item
+        const imageRequests = data.map(item =>
+          item.images?.length ? of(item.images) : this.imageService.getImages(item.id!)
+        );
+        forkJoin(imageRequests.length ? imageRequests : [of([])]).subscribe({
+          next: results => {
+            this.items.set(data.map((item, i) => ({ ...item, images: results[i] })));
+          },
+          error: () => { this.items.set(data); }  // fall back to DB data if file server is down
+        });
+      },
       error: () => { this.error.set('Failed to load items.'); this.loading.set(false); }
     });
   }
@@ -148,8 +210,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   }
 
   getBrandName(brandId: number): string {
-    const brand = this.brandMap().get(+brandId);
-    return brand ? brand.name : String(brandId);
+    return this.brandMap().get(+brandId)?.name ?? String(brandId);
   }
 
   getCategoryName(id: number): string {
@@ -175,7 +236,13 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
   delete(id: number): void {
     if (!confirm('Delete this item?')) return;
-    this.itemService.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.loadItems(); } });
+    this.itemService.delete(id).subscribe({
+      next: () => {
+        this.imageService.deleteAll(id).subscribe({ error: () => {} });
+        const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
+        this.loadItems();
+      }
+    });
   }
 
   setActive(id: number, isActive: boolean): void {
@@ -197,7 +264,13 @@ export class ItemListComponent implements OnInit, OnDestroy {
       cancelButtonText: this.translate.translate('common.cancel'),
     }).then(result => {
       if (!result.isConfirmed) return;
-      this.itemService.deleteMany(ids).subscribe({ next: () => { this.selectedIds.set(new Set()); this.loadItems(); } });
+      this.itemService.deleteMany(ids).subscribe({
+        next: () => {
+          ids.forEach(id => this.imageService.deleteAll(id).subscribe({ error: () => {} }));
+          this.selectedIds.set(new Set());
+          this.loadItems();
+        }
+      });
     });
   }
 
@@ -242,7 +315,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: () => { }
+      error: () => {}
     });
   }
 

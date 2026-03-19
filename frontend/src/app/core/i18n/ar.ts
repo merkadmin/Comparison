@@ -29,6 +29,9 @@ export const ar: Record<string, string> = {
   'common.deactivate': 'تعطيل',
   'common.activate':   'تفعيل',
   'common.confirm':    'تأكيد',
+  'common.add':          'إضافة',
+  'common.images':       'الصور',
+  'common.uploadImages': 'رفع الصور',
 
   // Navigation
   'nav.dashboard':        'لوحة التحكم',
@@ -59,8 +62,10 @@ export const ar: Record<string, string> = {
   'category.deactivateConfirm':          'هل تريد تعطيل هذا التصنيف؟',
   'category.deactivateConfirmText':      'سيتم تعطيل هذا التصنيف.',
   'category.deactivateWithChildrenText': 'يحتوي هذا التصنيف على {count} تصنيف(ات) فرعية ستُعطَّل أيضاً.',
-  'category.importSuccess': 'تم استيراد التصنيفات بنجاح.',
-  'category.importError':   'فشل استيراد التصنيفات.',
+  'category.importSuccess':         'تم استيراد التصنيفات بنجاح.',
+  'category.importError':           'فشل استيراد التصنيفات.',
+  'category.deactivateBulkConfirm': 'تعطيل التصنيفات المحددة؟',
+  'category.deactivateBulkText':    'أنت على وشك تعطيل {count} تصنيفات.',
   'category.searchPlaceholder': 'ابحث في التصنيفات...',
   'category.noParent': 'اختر التصنيف الأب',
 
@@ -71,8 +76,10 @@ export const ar: Record<string, string> = {
   'brand.deleteBulkConfirm': 'حذف الماركات المحددة؟',
   'brand.deleteBulkText':   'أنت على وشك حذف {count} ماركات. لا يمكن التراجع عن ذلك.',
   'brand.deleteSelected':   'حذف المحدد',
-  'brand.importSuccess':    'تم استيراد الماركات بنجاح.',
-  'brand.importError':      'فشل استيراد الماركات.',
+  'brand.importSuccess':         'تم استيراد الماركات بنجاح.',
+  'brand.importError':           'فشل استيراد الماركات.',
+  'brand.deactivateBulkConfirm': 'تعطيل الماركات المحددة؟',
+  'brand.deactivateBulkText':    'أنت على وشك تعطيل {count} ماركات.',
 
   // Items
   'item.title':             'المنتجات',
@@ -88,8 +95,10 @@ export const ar: Record<string, string> = {
   'item.deleteBulkConfirm': 'حذف المنتجات المحددة؟',
   'item.deleteBulkText':    'أنت على وشك حذف {count} منتجات. لا يمكن التراجع عن ذلك.',
   'item.deleteSelected':    'حذف المحدد',
-  'item.importSuccess':     'تم استيراد المنتجات بنجاح.',
-  'item.importError':       'فشل استيراد المنتجات.',
+  'item.importSuccess':          'تم استيراد المنتجات بنجاح.',
+  'item.importError':            'فشل استيراد المنتجات.',
+  'item.deactivateBulkConfirm':  'تعطيل المنتجات المحددة؟',
+  'item.deactivateBulkText':     'أنت على وشك تعطيل {count} منتجات.',
 
   // Item Packages / Offers
   'package.title':            'العروض والباقات',

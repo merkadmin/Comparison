@@ -9,6 +9,7 @@ public class Item
     public string?       Description    { get; set; }
     public string?       Barcode        { get; set; }
     public string?       ImageUrl       { get; set; }
+    public List<string>  Images         { get; set; } = new();
     public long          BrandId        { get; set; }
     public ItemBrand?    Brand          { get; set; }
     public long          ItemCategoryId { get; set; }
