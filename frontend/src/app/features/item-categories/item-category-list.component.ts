@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -11,13 +12,46 @@ import { CommonSearchComponent } from '../../shared/components/common-search/com
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent],
   templateUrl: './item-category-list.component.html',
   styleUrl: './item-category-list.component.less',
 })
 export class ItemCategoryListComponent implements OnInit {
   private service = inject(ItemCategoryService);
   private translate = inject(TranslateService);
+
+  editingId = signal<number | null>(null);
+  editDraft: ItemCategory = { name: { en: '', ar: '', fr: '' } };
+
+  openEdit(cat: ItemCategory): void {
+    this.editDraft = {
+      ...cat,
+      name: { ...cat.name },
+      description: cat.description ? { ...cat.description } : { en: '', ar: '', fr: '' }
+    };
+    this.editingId.set(cat.id!);
+  }
+
+  closeEdit(): void {
+    this.editingId.set(null);
+  }
+
+  saveEdit(): void {
+    const id = this.editingId();
+    if (id === null) return;
+    const payload: ItemCategory = {
+      ...this.editDraft,
+      parentCategoryId: this.editDraft.parentCategoryId || null
+    };
+    this.service.update(id, payload).subscribe({
+      next: () => { this.load(); this.closeEdit(); }
+    });
+  }
+
+  editableCategoryOptions = computed<ItemCategory[]>(() => {
+    const id = this.editingId();
+    return this.categories().filter(c => c.id !== id);
+  });
 
   localize(ls: LocalizedString): string {
     const lang = this.translate.currentLang();

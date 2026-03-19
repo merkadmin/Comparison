@@ -24,6 +24,8 @@ export const ar: Record<string, string> = {
   'common.country':     'الدولة',
   'common.image':       'الصورة',
   'common.barcode':     'الباركود',
+  'common.logoUrl':     'رابط الشعار',
+  'common.imageUrl':    'رابط الصورة',
   'common.deactivate': 'تعطيل',
   'common.activate':   'تفعيل',
   'common.confirm':    'تأكيد',
@@ -60,6 +62,7 @@ export const ar: Record<string, string> = {
   'category.importSuccess': 'تم استيراد التصنيفات بنجاح.',
   'category.importError':   'فشل استيراد التصنيفات.',
   'category.searchPlaceholder': 'ابحث في التصنيفات...',
+  'category.noParent': 'اختر التصنيف الأب',
 
   // Item Brands
   'brand.title':            'ماركات المنتجات',

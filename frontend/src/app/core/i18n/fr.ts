@@ -24,6 +24,8 @@ export const fr: Record<string, string> = {
   'common.country':     'Pays',
   'common.image':       'Image',
   'common.barcode':     'Code-barres',
+  'common.logoUrl':     'URL du logo',
+  'common.imageUrl':    'URL de l\'image',
   'common.deactivate': 'Désactiver',
   'common.activate':   'Activer',
   'common.confirm':    'Confirmer',
@@ -60,6 +62,7 @@ export const fr: Record<string, string> = {
   'category.importSuccess': 'Catégories importées avec succès.',
   'category.importError':   'Échec de l\'importation des catégories.',
   'category.searchPlaceholder': 'Rechercher des catégories...',
+  'category.noParent': 'Sélectionnez la catégorie parente',
 
   // Item Brands
   'brand.title':            'Marques d\'articles',

@@ -1,21 +1,84 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ItemPackageService } from '../../core/services/item-package.service';
 import { ItemPackage } from '../../core/models/item-package.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 
+interface PackageEditDraft {
+  name: string;
+  description?: string;
+  originalPrice: number;
+  offerPrice: number;
+  startDateStr: string;
+  endDateStr: string;
+  isActive: boolean;
+}
+
 @Component({
   selector: 'app-item-package-list',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './item-package-list.component.html',
   styleUrl: './item-package-list.component.less',
 })
 export class ItemPackageListComponent implements OnInit {
   private service   = inject(ItemPackageService);
   private translate = inject(TranslateService);
+
+  editingId = signal<number | null>(null);
+  editDraft: PackageEditDraft = {
+    name: '', originalPrice: 0, offerPrice: 0,
+    startDateStr: '', endDateStr: '', isActive: false
+  };
+
+  private toDateStr(d: Date | undefined | null): string {
+    if (!d) return '';
+    const dt = new Date(d);
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  openEdit(pkg: ItemPackage): void {
+    this.editDraft = {
+      name: pkg.name,
+      description: pkg.description,
+      originalPrice: pkg.originalPrice,
+      offerPrice: pkg.offerPrice,
+      startDateStr: this.toDateStr(pkg.startDate),
+      endDateStr: this.toDateStr(pkg.endDate),
+      isActive: pkg.isActive
+    };
+    this.editingId.set(pkg.id!);
+  }
+
+  closeEdit(): void {
+    this.editingId.set(null);
+  }
+
+  saveEdit(): void {
+    const id = this.editingId();
+    if (id === null) return;
+    const existing = this.packages().find(p => p.id === id);
+    if (!existing) return;
+    const payload: ItemPackage = {
+      ...existing,
+      name: this.editDraft.name,
+      description: this.editDraft.description,
+      originalPrice: this.editDraft.originalPrice,
+      offerPrice: this.editDraft.offerPrice,
+      startDate: this.editDraft.startDateStr ? new Date(this.editDraft.startDateStr) : existing.startDate,
+      endDate: this.editDraft.endDateStr ? new Date(this.editDraft.endDateStr) : undefined,
+      isActive: this.editDraft.isActive
+    };
+    this.service.update(id, payload).subscribe({
+      next: () => { this.load(); this.closeEdit(); }
+    });
+  }
 
   packages      = signal<ItemPackage[]>([]);
   loading       = signal(false);

@@ -95,6 +95,10 @@
                   <td class="text-muted">{{ cat.description ? localize(cat.description) : '—' }}</td>
                   <td>{{ cat.createdAt | date:'mediumDate' }}</td>
                   <td class="text-end d-flex justify-content-end gap-2">
+                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(cat)">
+                      <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+                      {{ 'common.edit' | translate }}
+                    </button>
                     <button class="btn btn-sm btn-light-danger" (click)="delete(cat.id!)">
                       <i class="ki-duotone ki-trash fs-5">
                         <span class="path1"></span><span class="path2"></span>
@@ -121,3 +125,59 @@
         }
       </div>
     </div>
+
+@if (editingId() !== null) {
+  <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">{{ 'common.edit' | translate }}</h5>
+          <button type="button" class="btn-close" (click)="closeEdit()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">{{ 'common.nameEn' | translate }} <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" [(ngModel)]="editDraft.name.en" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">{{ 'common.nameAr' | translate }}</label>
+              <input type="text" class="form-control" [(ngModel)]="editDraft.name.ar" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">{{ 'common.nameFr' | translate }}</label>
+              <input type="text" class="form-control" [(ngModel)]="editDraft.name.fr" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">{{ 'common.descriptionEn' | translate }}</label>
+              <input type="text" class="form-control" [(ngModel)]="editDraft.description!.en" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">{{ 'common.descriptionAr' | translate }}</label>
+              <input type="text" class="form-control" [(ngModel)]="editDraft.description!.ar" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">{{ 'common.descriptionFr' | translate }}</label>
+              <input type="text" class="form-control" [(ngModel)]="editDraft.description!.fr" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'category.parentCategory' | translate }}</label>
+            <select class="form-select" [(ngModel)]="editDraft.parentCategoryId">
+              <option [ngValue]="null">— {{ 'category.noParent' | translate }} —</option>
+              @for (c of editableCategoryOptions(); track c.id) {
+                <option [ngValue]="c.id">{{ localize(c.name) }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" (click)="closeEdit()">{{ 'common.cancel' | translate }}</button>
+          <button type="button" class="btn btn-primary" (click)="saveEdit()">{{ 'common.save' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

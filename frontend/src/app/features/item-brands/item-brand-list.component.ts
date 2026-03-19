@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemBrand } from '../../core/models/item-brand.model';
@@ -9,13 +10,33 @@ import { TranslateService } from '../../core/services/translate.service';
 @Component({
   selector: 'app-item-brand-list',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './item-brand-list.component.html',
   styleUrl: './item-brand-list.component.less',
 })
 export class ItemBrandListComponent implements OnInit {
   private service   = inject(ItemBrandService);
   private translate = inject(TranslateService);
+
+  editingId = signal<number | null>(null);
+  editDraft: ItemBrand = { name: '' };
+
+  openEdit(brand: ItemBrand): void {
+    this.editDraft = { ...brand };
+    this.editingId.set(brand.id!);
+  }
+
+  closeEdit(): void {
+    this.editingId.set(null);
+  }
+
+  saveEdit(): void {
+    const id = this.editingId();
+    if (id === null) return;
+    this.service.update(id, this.editDraft).subscribe({
+      next: () => { this.load(); this.closeEdit(); }
+    });
+  }
 
   brands        = signal<ItemBrand[]>([]);
   loading       = signal(false);

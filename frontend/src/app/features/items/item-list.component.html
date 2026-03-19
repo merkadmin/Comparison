@@ -130,7 +130,11 @@
           <td>
             <span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span>
           </td>
-          <td class="text-end">
+          <td class="text-end d-flex justify-content-end gap-2">
+            <button class="btn btn-sm btn-light-primary" (click)="openEdit(item)">
+              <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+              {{ 'common.edit' | translate }}
+            </button>
             <button class="btn btn-sm btn-light-danger" (click)="delete(item.id!)">
               <i class="ki-duotone ki-trash fs-5">
                 <span class="path1"></span><span class="path2"></span>
@@ -146,3 +150,54 @@
     }
   </div>
 </div>
+
+@if (editingId() !== null) {
+  <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">{{ 'common.edit' | translate }}</h5>
+          <button type="button" class="btn-close" (click)="closeEdit()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.description" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'common.barcode' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.barcode" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'common.imageUrl' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.imageUrl" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'item.brand' | translate }}</label>
+            <select class="form-select" [(ngModel)]="editDraft.brandId">
+              @for (b of brands(); track b.id) {
+                <option [ngValue]="b.id">{{ b.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'item.category' | translate }}</label>
+            <select class="form-select" [(ngModel)]="editDraft.itemCategoryId">
+              @for (c of categories(); track c.id) {
+                <option [ngValue]="c.id">{{ localize(c.name) }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" (click)="closeEdit()">{{ 'common.cancel' | translate }}</button>
+          <button type="button" class="btn btn-primary" (click)="saveEdit()">{{ 'common.save' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

@@ -24,6 +24,8 @@ export const en: Record<string, string> = {
   'common.country':     'Country',
   'common.image':       'Image',
   'common.barcode':     'Barcode',
+  'common.logoUrl':     'Logo URL',
+  'common.imageUrl':    'Image URL',
   'common.deactivate': 'Deactivate',
   'common.activate':   'Activate',
   'common.confirm':    'Confirm',
@@ -60,6 +62,7 @@ export const en: Record<string, string> = {
   'category.importSuccess': 'Categories imported successfully.',
   'category.importError':   'Failed to import categories.',
   'category.searchPlaceholder': 'Search categories...',
+  'category.noParent': 'Select Parent Category',
 
   // Item Brands
   'brand.title':            'Item Brands',

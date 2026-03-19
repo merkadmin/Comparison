@@ -134,7 +134,11 @@
                       <span class="badge badge-light-danger">{{ 'common.inactive' | translate }}</span>
                     }
                   </td>
-                  <td class="text-end">
+                  <td class="text-end d-flex justify-content-end gap-2">
+                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(pkg)">
+                      <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+                      {{ 'common.edit' | translate }}
+                    </button>
                     <button class="btn btn-sm btn-light-danger" (click)="delete(pkg.id!)">
                       <i class="ki-duotone ki-trash fs-5">
                         <span class="path1"></span><span class="path2"></span>
@@ -150,3 +154,54 @@
         }
       </div>
     </div>
+
+@if (editingId() !== null) {
+  <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">{{ 'common.edit' | translate }}</h5>
+          <button type="button" class="btn-close" (click)="closeEdit()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.description" />
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">{{ 'package.originalPrice' | translate }}</label>
+              <input type="number" class="form-control" [(ngModel)]="editDraft.originalPrice" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">{{ 'package.offerPrice' | translate }}</label>
+              <input type="number" class="form-control" [(ngModel)]="editDraft.offerPrice" />
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">{{ 'package.startDate' | translate }}</label>
+              <input type="date" class="form-control" [(ngModel)]="editDraft.startDateStr" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">{{ 'package.endDate' | translate }}</label>
+              <input type="date" class="form-control" [(ngModel)]="editDraft.endDateStr" />
+            </div>
+          </div>
+          <div class="mb-3 form-check form-check-custom form-check-solid">
+            <input class="form-check-input" type="checkbox" id="editIsActive" [(ngModel)]="editDraft.isActive" />
+            <label class="form-check-label fw-semibold ms-2" for="editIsActive">{{ 'common.active' | translate }}</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" (click)="closeEdit()">{{ 'common.cancel' | translate }}</button>
+          <button type="button" class="btn btn-primary" (click)="saveEdit()">{{ 'common.save' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

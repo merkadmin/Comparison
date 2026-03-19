@@ -32,7 +32,7 @@ public class ItemCategoriesController : BaseController<ItemCategory, IBaseReposi
 	}
 
 	[HttpDelete("bulk")]
-	public async Task<IActionResult> DeleteMany([FromBody] IEnumerable<long> ids)
+	public override async Task<IActionResult> DeleteMany([FromBody] IEnumerable<long> ids)
 	{
 		// Expand each requested ID to include all its descendants (cascade)
 		var all = (await Repo.GetAllAsync()).ToList();

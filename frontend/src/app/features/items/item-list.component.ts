@@ -3,6 +3,7 @@ import { SelectOption } from '../../shared/components/common-select/common-selec
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ItemService } from '../../core/services/item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
@@ -17,7 +18,7 @@ import { CommonSelectComponent } from '../../shared/components/common-select/com
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, CommonSelectComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent],
   templateUrl: './item-list.component.html',
   styleUrl: './item-list.component.less',
 })
@@ -27,6 +28,26 @@ export class ItemListComponent implements OnInit, OnDestroy {
   private brandService    = inject(ItemBrandService);
   private translate       = inject(TranslateService);
   private route           = inject(ActivatedRoute);
+
+  editingId = signal<number | null>(null);
+  editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0 };
+
+  openEdit(item: Item): void {
+    this.editDraft = { ...item };
+    this.editingId.set(item.id!);
+  }
+
+  closeEdit(): void {
+    this.editingId.set(null);
+  }
+
+  saveEdit(): void {
+    const id = this.editingId();
+    if (id === null) return;
+    this.itemService.update(id, this.editDraft).subscribe({
+      next: () => { this.loadItems(); this.closeEdit(); }
+    });
+  }
 
   localize(ls: LocalizedString): string {
     const lang = this.translate.currentLang();
