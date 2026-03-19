@@ -14,20 +14,21 @@ import { ItemBrand } from '../../core/models/item-brand.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonSelectComponent } from '../../shared/components/common-select/common-select.component';
+import { CommonViewModeComponent } from '../../shared/components/commonActions/common-view-mode/common-view-mode';
 
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonViewModeComponent],
   templateUrl: './item-list.component.html',
   styleUrl: './item-list.component.less',
 })
 export class ItemListComponent implements OnInit, OnDestroy {
-  private itemService     = inject(ItemService);
+  private itemService = inject(ItemService);
   private categoryService = inject(ItemCategoryService);
-  private brandService    = inject(ItemBrandService);
-  private translate       = inject(TranslateService);
-  private route           = inject(ActivatedRoute);
+  private brandService = inject(ItemBrandService);
+  private translate = inject(TranslateService);
+  private route = inject(ActivatedRoute);
 
   editingId = signal<number | null>(null);
   editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0 };
@@ -54,19 +55,19 @@ export class ItemListComponent implements OnInit, OnDestroy {
     return ls[lang] || ls.en;
   }
 
-  items      = signal<Item[]>([]);
+  items = signal<Item[]>([]);
   categories = signal<ItemCategory[]>([]);
-  brands     = signal<ItemBrand[]>([]);
-  loading    = signal(false);
-  error      = signal<string | null>(null);
+  brands = signal<ItemBrand[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
   selectedCategoryId = signal<number | null>(null);
-  selectedBrandId    = signal<number | null>(null);
-  searchQuery        = signal('');
-  importing          = signal(false);
-  importError        = signal<string | null>(null);
-  importSuccess      = signal(false);
-  selectedIds        = signal<Set<number>>(new Set());
-  viewMode           = signal<'list' | 'cards'>('list');
+  selectedBrandId = signal<number | null>(null);
+  searchQuery = signal('');
+  importing = signal(false);
+  importError = signal<string | null>(null);
+  importSuccess = signal(false);
+  selectedIds = signal<Set<number>>(new Set());
+  viewMode = signal<'list' | 'cards'>('list');
   private querySub!: Subscription;
 
   categoryOptions = computed<SelectOption[]>(() =>
@@ -87,8 +88,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
-    this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
+    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => { } });
+    this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => { } });
 
     // Subscribe to query param changes so clicking a sidebar category
     // reloads items even when already on the /items route
@@ -210,7 +211,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
