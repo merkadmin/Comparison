@@ -31,6 +31,14 @@ export class ItemCategoryService {
     return this.api.deleteWithBody<void>('/itemcategories/bulk', ids);
   }
 
+  setActive(id: number, isActive: boolean): Observable<void> {
+    return this.api.patch<void>(`/itemcategories/${id}/active`, isActive);
+  }
+
+  getDescendantCount(id: number): Observable<number> {
+    return this.api.get<number>(`/itemcategories/${id}/descendant-count`);
+  }
+
   exportTemplate(): Observable<Blob> {
     return this.api.getBlob('/itemcategories/export-template');
   }

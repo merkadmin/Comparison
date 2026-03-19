@@ -24,6 +24,9 @@ export const ar: Record<string, string> = {
   'common.country':     'الدولة',
   'common.image':       'الصورة',
   'common.barcode':     'الباركود',
+  'common.deactivate': 'تعطيل',
+  'common.activate':   'تفعيل',
+  'common.confirm':    'تأكيد',
 
   // Navigation
   'nav.dashboard':        'لوحة التحكم',
@@ -50,7 +53,10 @@ export const ar: Record<string, string> = {
   'category.deleteWithChildrenText':   'يحتوي هذا التصنيف على {count} تصنيف(ات) فرعية ستُحذف أيضاً. لا يمكن التراجع عن ذلك.',
   'category.deleteBulkConfirm':   'حذف التصنيفات المحددة؟',
   'category.deleteBulkText':      'أنت على وشك حذف {count} تصنيفات. لا يمكن التراجع عن ذلك.',
-  'category.deleteSelected':      'حذف المحدد',
+  'category.deleteSelected':             'حذف المحدد',
+  'category.deactivateConfirm':          'هل تريد تعطيل هذا التصنيف؟',
+  'category.deactivateConfirmText':      'سيتم تعطيل هذا التصنيف.',
+  'category.deactivateWithChildrenText': 'يحتوي هذا التصنيف على {count} تصنيف(ات) فرعية ستُعطَّل أيضاً.',
   'category.importSuccess': 'تم استيراد التصنيفات بنجاح.',
   'category.importError':   'فشل استيراد التصنيفات.',
   'category.searchPlaceholder': 'ابحث في التصنيفات...',

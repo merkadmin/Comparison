@@ -18,6 +18,7 @@ import { CommonSelectComponent } from '../../shared/components/common-select/com
   standalone: true,
   imports: [CommonModule, TranslatePipe, CommonSelectComponent],
   templateUrl: './item-list.component.html',
+  styleUrl: './item-list.component.less',
 })
 export class ItemListComponent implements OnInit, OnDestroy {
   private itemService     = inject(ItemService);
@@ -49,6 +50,12 @@ export class ItemListComponent implements OnInit, OnDestroy {
   );
   brandOptions = computed<SelectOption[]>(() =>
     this.brands().map(b => ({ value: b.id, label: b.name }))
+  );
+  private categoryMap = computed<Map<number, ItemCategory>>(() =>
+    new Map(this.categories().map(c => [c.id!, c]))
+  );
+  private brandMap = computed<Map<number, ItemBrand>>(() =>
+    new Map(this.brands().map(b => [b.id!, b]))
   );
   filteredItems = computed<Item[]>(() => {
     const q = this.searchQuery().trim().toLowerCase();
@@ -95,11 +102,12 @@ export class ItemListComponent implements OnInit, OnDestroy {
   }
 
   getBrandName(brandId: number): string {
-    return this.brands().find(b => b.id === brandId)?.name ?? String(brandId);
+    const brand = this.brandMap().get(+brandId);
+    return brand ? brand.name : String(brandId);
   }
 
   getCategoryName(id: number): string {
-    const cat = this.categories().find(c => c.id === id);
+    const cat = this.categoryMap().get(+id);
     return cat ? this.localize(cat.name) : String(id);
   }
 

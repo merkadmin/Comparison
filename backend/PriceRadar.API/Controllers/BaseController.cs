@@ -56,6 +56,13 @@ public abstract class BaseController<TModel, TRepo> : ControllerBase
 		return NoContent();
 	}
 
+	[HttpPatch("{id:long}/active")]
+	public virtual async Task<IActionResult> SetActive(long id, [FromBody] bool isActive)
+	{
+		await Repo.SetActiveAsync(id, isActive);
+		return NoContent();
+	}
+
 	private static long GetId(TModel entity) =>
 		(long)(typeof(TModel).GetProperty("Id")?.GetValue(entity) ?? 0L);
 }

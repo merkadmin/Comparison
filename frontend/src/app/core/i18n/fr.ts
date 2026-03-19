@@ -24,6 +24,9 @@ export const fr: Record<string, string> = {
   'common.country':     'Pays',
   'common.image':       'Image',
   'common.barcode':     'Code-barres',
+  'common.deactivate': 'Désactiver',
+  'common.activate':   'Activer',
+  'common.confirm':    'Confirmer',
 
   // Navigation
   'nav.dashboard':        'Tableau de bord',
@@ -50,7 +53,10 @@ export const fr: Record<string, string> = {
   'category.deleteWithChildrenText':   'Cette catégorie a {count} enfant(s) qui seront également supprimés. Cette action est irréversible.',
   'category.deleteBulkConfirm':   'Supprimer les catégories sélectionnées ?',
   'category.deleteBulkText':      'Vous êtes sur le point de supprimer {count} catégories. Cette action est irréversible.',
-  'category.deleteSelected':      'Supprimer la sélection',
+  'category.deleteSelected':             'Supprimer la sélection',
+  'category.deactivateConfirm':          'Désactiver cette catégorie ?',
+  'category.deactivateConfirmText':      'Cette catégorie sera désactivée.',
+  'category.deactivateWithChildrenText': 'Cette catégorie a {count} enfant(s) qui seront également désactivés.',
   'category.importSuccess': 'Catégories importées avec succès.',
   'category.importError':   'Échec de l\'importation des catégories.',
   'category.searchPlaceholder': 'Rechercher des catégories...',

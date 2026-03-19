@@ -6,29 +6,34 @@ namespace PriceRadar.DAL.Documents;
 [BsonCollection("ItemBrand")]
 public class ItemBrandDocument : IDocument<ItemBrand>
 {
-	[BsonId]
-	public long Id { get; set; }
+    [BsonId]
+    public long     Id        { get; set; }
+    public bool     IsActive  { get; set; } = true;
+    public bool     IsDeleted { get; set; } = false;
+    public string   Name      { get; set; } = string.Empty;
+    public string?  LogoUrl   { get; set; }
+    public string?  Country   { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-	public string Name { get; set; } = string.Empty;
-	public string? LogoUrl { get; set; }
-	public string? Country { get; set; }
-	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public ItemBrand ToModel() => new()
+    {
+        Id        = Id,
+        IsActive  = IsActive,
+        IsDeleted = IsDeleted,
+        Name      = Name,
+        LogoUrl   = LogoUrl,
+        Country   = Country,
+        CreatedAt = CreatedAt,
+    };
 
-	public ItemBrand ToModel() => new()
-	{
-		Id = Id,
-		Name = Name,
-		LogoUrl = LogoUrl,
-		Country = Country,
-		CreatedAt = CreatedAt
-	};
-
-	public static ItemBrandDocument FromModel(ItemBrand b) => new()
-	{
-		Id = b.Id,
-		Name = b.Name,
-		LogoUrl = b.LogoUrl,
-		Country = b.Country,
-		CreatedAt = b.CreatedAt
-	};
+    public static ItemBrandDocument FromModel(ItemBrand b) => new()
+    {
+        Id        = b.Id,
+        IsActive  = b.IsActive,
+        IsDeleted = b.IsDeleted,
+        Name      = b.Name,
+        LogoUrl   = b.LogoUrl,
+        Country   = b.Country,
+        CreatedAt = b.CreatedAt,
+    };
 }

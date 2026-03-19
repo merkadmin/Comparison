@@ -13,6 +13,15 @@ html, body {
   letter-spacing: 0.03em;
 }
 
+/* Row hover — scoped per theme */
+[data-bs-theme="dark"] .table tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-bs-theme="light"] .table tbody tr:hover td {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
 /* =====================================================
    RTL overrides for Metronic layout
    Metronic hardcodes left-side positioning, so we flip
@@ -34,11 +43,7 @@ html[dir="rtl"] {
   @media (min-width: 992px) {
     [data-kt-app-sidebar-fixed="true"] .app-wrapper {
       margin-left: 0 !important;
-      margin-right: calc(
-        var(--bs-app-sidebar-width) +
-        var(--bs-app-sidebar-gap-start, 0px) +
-        var(--bs-app-sidebar-gap-end, 0px)
-      ) !important;
+      margin-right: ~"calc(var(--bs-app-sidebar-width) + var(--bs-app-sidebar-gap-start, 0px) + var(--bs-app-sidebar-gap-end, 0px))" !important;
     }
   }
 
@@ -46,11 +51,7 @@ html[dir="rtl"] {
   @media (min-width: 992px) {
     [data-kt-app-header-fixed="true"][data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-header="true"] .app-header {
       left: 0 !important;
-      right: calc(
-        var(--bs-app-sidebar-width) +
-        var(--bs-app-sidebar-gap-start, 0px) +
-        var(--bs-app-sidebar-gap-end, 0px)
-      ) !important;
+      right: ~"calc(var(--bs-app-sidebar-width) + var(--bs-app-sidebar-gap-start, 0px) + var(--bs-app-sidebar-gap-end, 0px))" !important;
     }
   }
 
@@ -58,11 +59,7 @@ html[dir="rtl"] {
   @media (min-width: 992px) {
     [data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-footer="true"] .app-footer {
       left: 0 !important;
-      right: calc(
-        var(--bs-app-sidebar-width) +
-        var(--bs-app-sidebar-gap-start, 0px) +
-        var(--bs-app-sidebar-gap-end, 0px)
-      ) !important;
+      right: ~"calc(var(--bs-app-sidebar-width) + var(--bs-app-sidebar-gap-start, 0px) + var(--bs-app-sidebar-gap-end, 0px))" !important;
     }
   }
 
@@ -70,18 +67,14 @@ html[dir="rtl"] {
   @media (min-width: 992px) {
     [data-kt-app-toolbar-fixed="true"][data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-toolbar="true"] .app-toolbar {
       left: 0 !important;
-      right: calc(
-        var(--bs-app-sidebar-width) +
-        var(--bs-app-sidebar-gap-start, 0px) +
-        var(--bs-app-sidebar-gap-end, 0px)
-      ) !important;
+      right: ~"calc(var(--bs-app-sidebar-width) + var(--bs-app-sidebar-gap-start, 0px) + var(--bs-app-sidebar-gap-end, 0px))" !important;
     }
   }
 
   /* 6. Sidebar collapse (hidden state): flip negative margin */
   [data-kt-app-sidebar-collapse="on"] .app-sidebar {
     margin-left: 0 !important;
-    margin-right: calc(-1 * var(--bs-app-sidebar-width-actual)) !important;
+    margin-right: ~"calc(-1 * var(--bs-app-sidebar-width-actual))" !important;
   }
 
   /* 7. Sidebar toggle button: move from start-100 side to end-100 */

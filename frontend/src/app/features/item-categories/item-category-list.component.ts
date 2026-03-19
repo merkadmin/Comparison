@@ -13,7 +13,7 @@ import { CommonSearchComponent } from '../../shared/components/common-search/com
   standalone: true,
   imports: [CommonModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent],
   templateUrl: './item-category-list.component.html',
-  styles: [`thead th { font-size: 13px; font-weight: 700; }`],
+  styleUrl: './item-category-list.component.less',
 })
 export class ItemCategoryListComponent implements OnInit {
   private service = inject(ItemCategoryService);
@@ -124,28 +124,29 @@ export class ItemCategoryListComponent implements OnInit {
   }
 
   delete(id: number): void {
-    const childCount = this.getAllDescendantIds(id).length;
-    const text = childCount > 0
-      ? this.translate.translate('category.deleteWithChildrenText').replace('{count}', String(childCount))
-      : this.translate.translate('category.deleteConfirmText');
+    this.service.getDescendantCount(id).subscribe(childCount => {
+      const text = childCount > 0
+        ? this.translate.translate('category.deleteWithChildrenText').replace('{count}', String(childCount))
+        : this.translate.translate('category.deleteConfirmText');
 
-    Swal.fire({
-      title: this.translate.translate('category.deleteConfirm'),
-      text,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#f1416c',
-      confirmButtonText: this.translate.translate('common.delete'),
-      cancelButtonText: this.translate.translate('common.cancel'),
-    }).then(result => {
-      if (!result.isConfirmed) return;
-      this.service.delete(id).subscribe({
-        next: () => {
-          const s = new Set(this.selectedIds());
-          s.delete(id);
-          this.selectedIds.set(s);
-          this.load();
-        }
+      Swal.fire({
+        title:              this.translate.translate('category.deleteConfirm'),
+        text,
+        icon:               'warning',
+        showCancelButton:   true,
+        confirmButtonColor: '#f1416c',
+        confirmButtonText:  this.translate.translate('common.delete'),
+        cancelButtonText:   this.translate.translate('common.cancel'),
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        this.service.delete(id).subscribe({
+          next: () => {
+            const s = new Set(this.selectedIds());
+            s.delete(id);
+            this.selectedIds.set(s);
+            this.load();
+          }
+        });
       });
     });
   }
@@ -182,6 +183,42 @@ export class ItemCategoryListComponent implements OnInit {
           this.load();
         }
       });
+    });
+  }
+
+  setActive(id: number, isActive: boolean): void {
+    if (!isActive) {
+      this.service.getDescendantCount(id).subscribe(childCount => {
+        const text = childCount > 0
+          ? this.translate.translate('category.deactivateWithChildrenText').replace('{count}', String(childCount))
+          : this.translate.translate('category.deactivateConfirmText');
+
+        Swal.fire({
+          title:              this.translate.translate('category.deactivateConfirm'),
+          text,
+          icon:               'warning',
+          showCancelButton:   true,
+          confirmButtonColor: '#f39c12',
+          confirmButtonText:  this.translate.translate('common.deactivate'),
+          cancelButtonText:   this.translate.translate('common.cancel'),
+        }).then(result => {
+          if (!result.isConfirmed) return;
+          this.doSetActive(id, isActive);
+        });
+      });
+    } else {
+      this.doSetActive(id, isActive);
+    }
+  }
+
+  private doSetActive(id: number, isActive: boolean): void {
+    this.service.setActive(id, isActive).subscribe({
+      next: () => {
+        const affected = new Set([id, ...this.getAllDescendantIds(id)]);
+        this.categories.update(list =>
+          list.map(c => affected.has(c.id!) ? { ...c, isActive } : c)
+        );
+      }
     });
   }
 

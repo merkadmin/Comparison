@@ -10,6 +10,7 @@ import { TranslateService } from '../../core/services/translate.service';
   standalone: true,
   imports: [CommonModule, TranslatePipe],
   templateUrl: './item-brand-list.component.html',
+  styleUrl: './item-brand-list.component.less',
 })
 export class ItemBrandListComponent implements OnInit {
   private service   = inject(ItemBrandService);

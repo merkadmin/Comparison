@@ -43,6 +43,9 @@ public class MongoDbContext
 	public IMongoCollection<TableNameDocument> TableNames =>
 		_database.GetCollection<TableNameDocument>("TableName_s");
 
+	public IMongoCollection<DiagnosticsDocument> Diagnostics =>
+		_database.GetCollection<DiagnosticsDocument>("Diagnostics");
+
 	public async Task<long> GetNextSequenceAsync(string name)
 	{
 		var filter = Builders<SequenceDocument>.Filter.Eq(s => s.Name, name);

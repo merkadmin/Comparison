@@ -44,6 +44,26 @@ public class ItemCategoriesController : BaseController<ItemCategory, IBaseReposi
 		return NoContent();
 	}
 
+	[HttpGet("{id:long}/descendant-count")]
+	public async Task<IActionResult> GetDescendantCount(long id)
+	{
+		var all         = (await Repo.GetAllAsync()).ToList();
+		var descendants = new List<long>();
+		CollectDescendants(id, all, descendants);
+		return Ok(descendants.Count);
+	}
+
+	[HttpPatch("{id:long}/active")]
+	public override async Task<IActionResult> SetActive(long id, [FromBody] bool isActive)
+	{
+		var all     = (await Repo.GetAllAsync()).ToList();
+		var targets = new List<long> { id };
+		CollectDescendants(id, all, targets);
+
+		await Repo.SetActiveManyAsync(targets, isActive);
+		return NoContent();
+	}
+
 	// Recursively collects the IDs of all descendants of parentId into result.
 	private static void CollectDescendants(long parentId, List<ItemCategory> all, List<long> result)
 	{

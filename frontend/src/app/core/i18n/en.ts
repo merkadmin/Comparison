@@ -24,6 +24,9 @@ export const en: Record<string, string> = {
   'common.country':     'Country',
   'common.image':       'Image',
   'common.barcode':     'Barcode',
+  'common.deactivate': 'Deactivate',
+  'common.activate':   'Activate',
+  'common.confirm':    'Confirm',
 
   // Navigation
   'nav.dashboard':        'Dashboard',
@@ -50,7 +53,10 @@ export const en: Record<string, string> = {
   'category.deleteWithChildrenText':   'This category has {count} child(ren) that will also be deleted. This action cannot be undone.',
   'category.deleteBulkConfirm':   'Delete selected categories?',
   'category.deleteBulkText':      'You are about to delete {count} categories. This cannot be undone.',
-  'category.deleteSelected':      'Delete Selected',
+  'category.deleteSelected':           'Delete Selected',
+  'category.deactivateConfirm':        'Deactivate this category?',
+  'category.deactivateConfirmText':    'This category will be deactivated.',
+  'category.deactivateWithChildrenText': 'This category has {count} child(ren) that will also be deactivated.',
   'category.importSuccess': 'Categories imported successfully.',
   'category.importError':   'Failed to import categories.',
   'category.searchPlaceholder': 'Search categories...',

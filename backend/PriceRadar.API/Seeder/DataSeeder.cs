@@ -24,11 +24,36 @@ public class DataSeeder
 	// categories and brands must exist before items, items before packages.
 	public async Task SeedAsync()
 	{
+		await MigrateDefaultFieldsAsync();
 		await SeedTableNames();
 		//await SeedCategoriesAsync();
 		//await SeedBrandsAsync();
 		//await SeedItemsAsync();
 		//await SeedPackagesAsync();
+	}
+
+	// ─── Migration ────────────────────────────────────────────────────────────
+	// Backfills IsActive/IsDeleted on existing documents that predate these fields.
+	private async Task MigrateDefaultFieldsAsync()
+	{
+		var missing = Builders<MongoDB.Bson.BsonDocument>.Filter.Exists("IsActive", false);
+		var defaults = Builders<MongoDB.Bson.BsonDocument>.Update
+			.Set("IsActive",  true)
+			.Set("IsDeleted", false);
+
+		await Task.WhenAll(
+			_context.ItemCategories .Database.GetCollection<MongoDB.Bson.BsonDocument>("ItemCategory")  .UpdateManyAsync(missing, defaults),
+			_context.ItemBrands     .Database.GetCollection<MongoDB.Bson.BsonDocument>("ItemBrand")     .UpdateManyAsync(missing, defaults),
+			_context.Items          .Database.GetCollection<MongoDB.Bson.BsonDocument>("ProductItem")   .UpdateManyAsync(missing, defaults),
+			_context.ItemPackages   .Database.GetCollection<MongoDB.Bson.BsonDocument>("ItemPackage")   .UpdateManyAsync(missing, defaults),
+			_context.Stores         .Database.GetCollection<MongoDB.Bson.BsonDocument>("stores")        .UpdateManyAsync(missing, defaults),
+			_context.Products       .Database.GetCollection<MongoDB.Bson.BsonDocument>("products")      .UpdateManyAsync(missing, defaults),
+			_context.PriceListings  .Database.GetCollection<MongoDB.Bson.BsonDocument>("priceListings") .UpdateManyAsync(missing, defaults),
+			_context.PriceHistories .Database.GetCollection<MongoDB.Bson.BsonDocument>("priceHistories").UpdateManyAsync(missing, defaults),
+			_context.TableNames     .Database.GetCollection<MongoDB.Bson.BsonDocument>("TableName_s")   .UpdateManyAsync(missing, defaults)
+		);
+
+		Console.WriteLine("[Migration] IsActive/IsDeleted backfilled on all collections.");
 	}
 
 	// ─── Categories ───────────────────────────────────────────────────────────

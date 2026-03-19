@@ -23,6 +23,10 @@ export class ApiService {
     return this.http.put<T>(`${this.base}${path}`, body).pipe(timeout(REQUEST_TIMEOUT_MS));
   }
 
+  patch<T>(path: string, body: unknown): Observable<T> {
+    return this.http.patch<T>(`${this.base}${path}`, body).pipe(timeout(REQUEST_TIMEOUT_MS));
+  }
+
   delete<T>(path: string): Observable<T> {
     return this.http.delete<T>(`${this.base}${path}`).pipe(timeout(REQUEST_TIMEOUT_MS));
   }

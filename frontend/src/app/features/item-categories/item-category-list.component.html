@@ -94,7 +94,7 @@
                   </td>
                   <td class="text-muted">{{ cat.description ? localize(cat.description) : '—' }}</td>
                   <td>{{ cat.createdAt | date:'mediumDate' }}</td>
-                  <td class="text-end">
+                  <td class="text-end d-flex justify-content-end gap-2">
                     <button class="btn btn-sm btn-light-danger" (click)="delete(cat.id!)">
                       <i class="ki-duotone ki-trash fs-5">
                         <span class="path1"></span><span class="path2"></span>
@@ -102,6 +102,17 @@
                       </i>
                       {{ 'common.delete' | translate }}
                     </button>
+                    @if (cat.isActive) {
+                      <button class="btn btn-sm btn-light-warning" (click)="setActive(cat.id!, false)">
+                        <i class="ki-duotone ki-minus-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
+                        {{ 'common.deactivate' | translate }}
+                      </button>
+                    } @else {
+                      <button class="btn btn-sm btn-light-success" (click)="setActive(cat.id!, true)">
+                        <i class="ki-duotone ki-check-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
+                        {{ 'common.activate' | translate }}
+                      </button>
+                    }
                   </td>
                 </tr>
               }
