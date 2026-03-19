@@ -340,30 +340,79 @@ public class DataSeeder
 
 	private async Task SeedTableNames()
 	{
-		if (await _context.TableNames.CountDocumentsAsync(_ => true) > 0) return;
+		// Always upsert — ensures column metadata stays current across restarts.
+		foreach (var (name, endpoint, columns) in TableMetadata())
+		{
+			var existing = await _context.TableNames
+				.Find(t => t.Name == name).FirstOrDefaultAsync();
 
-		// Discover all concrete document types that implement IDocument<T>,
-		// excluding TableNameDocument itself (it's the target collection).
-		var genericDocInterface = typeof(IDocument<>);
-
-		var names = typeof(ItemBrandDocument).Assembly.GetTypes()
-			.Where(t => t is { IsClass: true, IsAbstract: false, DeclaringType: null } &&
-						t != typeof(TableNameDocument) &&
-						t.GetInterfaces().Any(i => i.IsGenericType &&
-							i.GetGenericTypeDefinition() == genericDocInterface))
-			.Select(t => t.Name.EndsWith("Document") ? t.Name[..^"Document".Length] : t.Name)
-			.OrderBy(n => n)
-			.ToList();
-
-		var docs = new List<TableNameDocument>();
-		foreach (var name in names)
-			docs.Add(new TableNameDocument
+			if (existing is null)
 			{
-				Id   = await _context.GetNextSequenceAsync("tablenames"),
-				Name = name
-			});
+				await _context.TableNames.InsertOneAsync(new TableNameDocument
+				{
+					Id       = await _context.GetNextSequenceAsync("tablenames"),
+					Name     = name,
+					Endpoint = endpoint,
+					Columns  = columns
+				});
+			}
+			else
+			{
+				await _context.TableNames.UpdateOneAsync(
+					t => t.Id == existing.Id,
+					Builders<TableNameDocument>.Update
+						.Set(t => t.Endpoint, endpoint)
+						.Set(t => t.Columns,  columns));
+			}
+		}
 
-		await _context.TableNames.InsertManyAsync(docs);
-		Console.WriteLine($"[Seeder] Inserted {docs.Count} table names.");
+		Console.WriteLine("[Seeder] Table metadata seeded/updated.");
 	}
+
+	// Column definitions for every known entity table.
+	private static List<(string Name, string Endpoint, List<ColumnMeta> Columns)> TableMetadata() =>
+	[
+		("ItemCategory", "/itemcategories",
+		[
+			new() { Field = "name",             LabelKey = "common.name",              Type = "localized", Order = 1 },
+			new() { Field = "parentCategoryId", LabelKey = "category.parentCategory",  Type = "number",    Order = 2 },
+			new() { Field = "description",      LabelKey = "common.description",        Type = "localized", Order = 3 },
+			new() { Field = "createdAt",        LabelKey = "common.created",            Type = "date",      Order = 4 },
+			new() { Field = "isActive",         LabelKey = "common.status",             Type = "boolean",   Order = 5 },
+		]),
+		("ItemBrand", "/itembrands",
+		[
+			new() { Field = "name",     LabelKey = "common.name",    Type = "text",    Order = 1 },
+			new() { Field = "country",  LabelKey = "common.country", Type = "text",    Order = 2 },
+			new() { Field = "logoUrl",  LabelKey = "common.logo",    Type = "image",   Order = 3 },
+			new() { Field = "createdAt",LabelKey = "common.created", Type = "date",    Order = 4 },
+			new() { Field = "isActive", LabelKey = "common.status",  Type = "boolean", Order = 5 },
+		]),
+		("Item", "/items",
+		[
+			new() { Field = "name",          LabelKey = "common.name",        Type = "text",    Order = 1 },
+			new() { Field = "imageUrl",      LabelKey = "common.image",       Type = "image",   Order = 2 },
+			new() { Field = "description",   LabelKey = "common.description", Type = "text",    Order = 3 },
+			new() { Field = "barcode",       LabelKey = "common.barcode",     Type = "text",    Order = 4 },
+			new() { Field = "createdAt",     LabelKey = "common.created",     Type = "date",    Order = 5 },
+			new() { Field = "isActive",      LabelKey = "common.status",      Type = "boolean", Order = 6 },
+		]),
+		("ItemPackage", "/itempackages",
+		[
+			new() { Field = "name",               LabelKey = "common.name",            Type = "text",    Order = 1 },
+			new() { Field = "originalPrice",      LabelKey = "package.originalPrice",  Type = "number",  Order = 2 },
+			new() { Field = "offerPrice",         LabelKey = "package.offerPrice",     Type = "number",  Order = 3 },
+			new() { Field = "discountPercentage", LabelKey = "package.discount",       Type = "number",  Order = 4 },
+			new() { Field = "startDate",          LabelKey = "package.startDate",      Type = "date",    Order = 5 },
+			new() { Field = "endDate",            LabelKey = "package.endDate",        Type = "date",    Order = 6 },
+			new() { Field = "isActive",           LabelKey = "common.status",          Type = "boolean", Order = 7 },
+		]),
+		("Diagnostics", "/diagnostics",
+		[
+			new() { Field = "tableName", LabelKey = "diagnostics.tableName", Type = "badge", Order = 1 },
+			new() { Field = "action",    LabelKey = "diagnostics.action",    Type = "badge", Order = 2 },
+			new() { Field = "entityId",  LabelKey = "diagnostics.entityId",  Type = "number",Order = 3 },
+			new() { Field = "timestamp", LabelKey = "diagnostics.timestamp", Type = "date",  Order = 4 },
+		]),
+	];
 }

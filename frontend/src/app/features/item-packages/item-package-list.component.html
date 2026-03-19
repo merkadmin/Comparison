@@ -46,10 +46,10 @@
       </div>
 
       @if (importSuccess()) {
-        <div class="alert alert-success mx-6 mt-4 mb-0">{{ 'package.importSuccess' | translate }}</div>
+        <div class="alert alert-success alert-dismissible mx-6 mt-4 mb-0">{{ 'package.importSuccess' | translate }}<button type="button" class="btn-close" (click)="importSuccess.set(false)"></button></div>
       }
       @if (importError()) {
-        <div class="alert alert-danger mx-6 mt-4 mb-0">{{ importError() }}</div>
+        <div class="alert alert-danger alert-dismissible mx-6 mt-4 mb-0">{{ importError() }}<button type="button" class="btn-close" (click)="importError.set(null)"></button></div>
       }
 
       <div class="card-body py-4">
