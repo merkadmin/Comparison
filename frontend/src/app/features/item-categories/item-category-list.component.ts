@@ -9,11 +9,12 @@ import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuComponent, DropDownMenuItem } from '../../shared/components/common-drop-down-menu/common-drop-down-menu.component';
 import { CommonSearchComponent } from '../../shared/components/common-search/common-search.component';
 import { CommonViewModeComponent } from "../../shared/components/commonActions/common-view-mode/common-view-mode";
+import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent, CommonViewModeComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent, CommonViewModeComponent, CommonDropDownMenuActionButton],
   templateUrl: './item-category-list.component.html',
   styleUrl: './item-category-list.component.less',
 })
@@ -24,6 +25,10 @@ export class ItemCategoryListComponent implements OnInit {
   editingId = signal<number | null>(null);
   editDraft: ItemCategory = { name: { en: '', ar: '', fr: '' } };
   viewMode = signal<'list' | 'cards'>('cards');
+
+  bulkMenuItems: ActionMenuItem[] = [
+    { labelKey: 'category.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
+  ];
 
   openEdit(cat: ItemCategory): void {
     this.editDraft = {

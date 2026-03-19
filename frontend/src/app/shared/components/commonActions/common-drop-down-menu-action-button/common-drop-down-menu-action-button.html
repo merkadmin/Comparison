@@ -1,0 +1,28 @@
+<div class="btn-group btn-group-sm">
+  <button class="btn btn-{{ mainColor }}" (click)="mainClick.emit()">
+    <i class="ki-duotone {{ mainIconClass }} fs-2">
+      @for (p of getPathRange(mainIconPaths); track p) {
+        <span class="path{{ p }}"></span>
+      }
+    </i>
+    {{ mainLabelKey | translate }}
+    @if (count > 0) { ({{ count }}) }
+  </button>
+  <button type="button" class="btn btn-{{ mainColor }} dropdown-toggle dropdown-toggle-split"
+    data-bs-toggle="dropdown" aria-expanded="false"></button>
+  <ul class="dropdown-menu">
+    @for (item of menuItems; track item.labelKey) {
+      <li>
+        <a [class]="'dropdown-item cursor-pointer' + (item.color ? ' text-' + item.color : '')"
+          (click)="item.action()">
+          <i class="ki-duotone {{ item.iconClass }} fs-4 me-2">
+            @for (p of getPathRange(item.iconPaths); track p) {
+              <span class="path{{ p }}"></span>
+            }
+          </i>
+          {{ item.labelKey | translate }}
+        </a>
+      </li>
+    }
+  </ul>
+</div>

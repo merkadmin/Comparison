@@ -15,11 +15,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonSelectComponent } from '../../shared/components/common-select/common-select.component';
 import { CommonViewModeComponent } from '../../shared/components/commonActions/common-view-mode/common-view-mode';
+import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonViewModeComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonViewModeComponent, CommonDropDownMenuActionButton],
   templateUrl: './item-list.component.html',
   styleUrl: './item-list.component.less',
 })
@@ -69,6 +70,10 @@ export class ItemListComponent implements OnInit, OnDestroy {
   selectedIds = signal<Set<number>>(new Set());
   viewMode = signal<'list' | 'cards'>('cards');
   private querySub!: Subscription;
+
+  bulkMenuItems: ActionMenuItem[] = [
+    { labelKey: 'item.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
+  ];
 
   categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map(c => ({ value: c.id, label: this.localize(c.name) }))

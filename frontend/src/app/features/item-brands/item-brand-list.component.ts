@@ -6,11 +6,12 @@ import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemBrand } from '../../core/models/item-brand.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 
 @Component({
   selector: 'app-item-brand-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton],
   templateUrl: './item-brand-list.component.html',
   styleUrl: './item-brand-list.component.less',
 })
@@ -45,6 +46,10 @@ export class ItemBrandListComponent implements OnInit {
   importError   = signal<string | null>(null);
   importSuccess = signal(false);
   selectedIds   = signal<Set<number>>(new Set());
+
+  bulkMenuItems: ActionMenuItem[] = [
+    { labelKey: 'brand.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
+  ];
 
   isSelected(id: number): boolean { return this.selectedIds().has(id); }
   isAllSelected(): boolean {
