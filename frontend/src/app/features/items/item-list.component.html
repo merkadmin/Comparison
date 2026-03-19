@@ -306,6 +306,54 @@
             }
           </select>
         </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.modelName' | translate }}</label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.modelName" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.type' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.productItemTypeId">
+            <option [ngValue]="null">—</option>
+            @for (t of productItemTypes(); track t.id) {
+            <option [ngValue]="t.id">{{ t.type }}</option>
+            }
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.briefDescription' | translate }}</label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.briefDescription" />
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.aboutThisItem' | translate }}</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="editDraft.aboutThisItem"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.productInformation' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.productInformationId">
+            <option [ngValue]="null">—</option>
+            @for (info of productInfos(); track info.id) {
+            <option [ngValue]="info.id">{{ info.information }}</option>
+            }
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.prices' | translate }}</label>
+          @for (price of (editDraft.prices ?? []); track $index; let i = $index) {
+          <div class="d-flex gap-2 mb-2 align-items-center">
+            <input type="number" class="form-control form-control-sm w-120px" [placeholder]="'item.storeId' | translate"
+              [(ngModel)]="editDraft.prices![i].storeId" />
+            <input type="number" class="form-control form-control-sm" [placeholder]="'item.price' | translate"
+              [(ngModel)]="editDraft.prices![i].price" />
+            <button type="button" class="btn btn-icon btn-sm btn-light-danger" (click)="removePrice(i)">
+              <i class="ki-duotone ki-cross fs-4"><span class="path1"></span><span class="path2"></span></i>
+            </button>
+          </div>
+          }
+          <button type="button" class="btn btn-sm btn-light-primary" (click)="addPrice()">
+            <i class="ki-duotone ki-plus fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'item.addPrice' | translate }}
+          </button>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-light" (click)="closeEdit()">{{ 'common.cancel' | translate }}</button>

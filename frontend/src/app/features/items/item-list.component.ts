@@ -10,9 +10,13 @@ import { ItemService } from '../../core/services/item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemImageService } from '../../core/services/item-image.service';
-import { Item } from '../../core/models/item.model';
+import { ProductItemTypeService } from '../../core/services/product-item-type.service';
+import { ProductInformationService } from '../../core/services/product-information.service';
+import { Item, StorePrice } from '../../core/models/item.model';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { ItemBrand } from '../../core/models/item-brand.model';
+import { ProductItemType } from '../../core/models/product-item-type.model';
+import { ProductInformation } from '../../core/models/product-information.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonSelectComponent } from '../../shared/components/common-select/common-select.component';
@@ -29,20 +33,31 @@ import { CommonGridColumnsButton, GridColumns } from '../../shared/components/co
   styleUrl: './item-list.component.less',
 })
 export class ItemListComponent implements OnInit, OnDestroy {
-  auth             = inject(AuthService);
-  private itemService  = inject(ItemService);
+  auth                    = inject(AuthService);
+  private itemService     = inject(ItemService);
   private categoryService = inject(ItemCategoryService);
-  private brandService = inject(ItemBrandService);
-  private imageService = inject(ItemImageService);
-  private translate    = inject(TranslateService);
-  private route        = inject(ActivatedRoute);
+  private brandService    = inject(ItemBrandService);
+  private imageService    = inject(ItemImageService);
+  private typeService     = inject(ProductItemTypeService);
+  private infoService     = inject(ProductInformationService);
+  private translate       = inject(TranslateService);
+  private route           = inject(ActivatedRoute);
 
-  editingId    = signal<number | null>(null);
-  editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0, images: [] };
+  editingId       = signal<number | null>(null);
+  editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
   uploadingImages = signal(false);
 
+  productItemTypes   = signal<ProductItemType[]>([]);
+  productInfos       = signal<ProductInformation[]>([]);
+
   openEdit(item: Item): void {
-    this.editDraft = { ...item, images: [...(item.images ?? [])] };
+    this.editDraft = {
+      ...item,
+      images:             [...(item.images ?? [])],
+      prices:             (item.prices ?? []).map(p => ({ ...p })),
+      customerReviews:    [...(item.customerReviews ?? [])],
+      customerCommentIds: [...(item.customerCommentIds ?? [])],
+    };
     this.editingId.set(item.id!);
   }
 
@@ -54,6 +69,14 @@ export class ItemListComponent implements OnInit, OnDestroy {
     this.itemService.update(id, this.editDraft).subscribe({
       next: () => { this.loadItems(); this.closeEdit(); }
     });
+  }
+
+  addPrice(): void {
+    this.editDraft.prices = [...(this.editDraft.prices ?? []), { storeId: 0, price: 0 }];
+  }
+
+  removePrice(index: number): void {
+    this.editDraft.prices = (this.editDraft.prices ?? []).filter((_, i) => i !== index);
   }
 
   /** Resolve a stored relative path to a full URL for display. */
@@ -102,6 +125,11 @@ export class ItemListComponent implements OnInit, OnDestroy {
   localize(ls: LocalizedString): string {
     const lang = this.translate.currentLang();
     return ls[lang] || ls.en;
+  }
+
+  getTypeName(typeId: number | null | undefined): string {
+    if (!typeId) return '—';
+    return this.productItemTypes().find(t => t.id === typeId)?.type ?? String(typeId);
   }
 
   items       = signal<Item[]>([]);
@@ -167,6 +195,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
+    this.typeService.getAll().subscribe({ next: t => this.productItemTypes.set(t), error: () => {} });
+    this.infoService.getAll().subscribe({ next: i => this.productInfos.set(i), error: () => {} });
 
     this.querySub = this.route.queryParamMap.subscribe(params => {
       const categoryId = params.get('categoryId');

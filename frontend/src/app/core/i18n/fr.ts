@@ -99,6 +99,17 @@ export const fr: Record<string, string> = {
   'item.importError':            'Échec de l\'importation des articles.',
   'item.deactivateBulkConfirm':  'Désactiver les articles sélectionnés ?',
   'item.deactivateBulkText':     'Vous êtes sur le point de désactiver {count} articles.',
+  'item.modelName':              'Nom du modèle',
+  'item.type':                   'Type',
+  'item.briefDescription':       'Description courte',
+  'item.aboutThisItem':          'À propos de cet article',
+  'item.productInformation':     'Informations produit',
+  'item.prices':                 'Prix par magasin',
+  'item.storeId':                'ID magasin',
+  'item.price':                  'Prix',
+  'item.addPrice':               'Ajouter un prix',
+  'item.customerReviews':        'Avis clients',
+  'item.customerComments':       'Commentaires clients',
 
   // Auth
   'auth.login':             'Connexion',

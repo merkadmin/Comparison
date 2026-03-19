@@ -49,6 +49,15 @@ public class MongoDbContext
 	public IMongoCollection<UserDocument> Users =>
 		_database.GetCollection<UserDocument>("Users");
 
+	public IMongoCollection<ProductItemTypeDocument> ProductItemTypes =>
+		_database.GetCollection<ProductItemTypeDocument>("ProductItemType");
+
+	public IMongoCollection<ProductInformationDocument> ProductInformations =>
+		_database.GetCollection<ProductInformationDocument>("ProductInformation");
+
+	public IMongoCollection<CustomerCommentDocument> CustomerComments =>
+		_database.GetCollection<CustomerCommentDocument>("CustomerComment");
+
 	public async Task<long> GetNextSequenceAsync(string name)
 	{
 		var filter = Builders<SequenceDocument>.Filter.Eq(s => s.Name, name);

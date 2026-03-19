@@ -99,6 +99,17 @@ export const en: Record<string, string> = {
   'item.importError':            'Failed to import items.',
   'item.deactivateBulkConfirm':  'Deactivate selected items?',
   'item.deactivateBulkText':     'You are about to deactivate {count} items.',
+  'item.modelName':              'Model Name',
+  'item.type':                   'Type',
+  'item.briefDescription':       'Brief Description',
+  'item.aboutThisItem':          'About This Item',
+  'item.productInformation':     'Product Information',
+  'item.prices':                 'Store Prices',
+  'item.storeId':                'Store ID',
+  'item.price':                  'Price',
+  'item.addPrice':               'Add Price',
+  'item.customerReviews':        'Customer Reviews',
+  'item.customerComments':       'Customer Comments',
 
   // Auth
   'auth.login':             'Login',

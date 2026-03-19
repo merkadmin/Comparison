@@ -1,10 +1,18 @@
 import { ItemBrand } from './item-brand.model';
 import { ItemCategory } from './item-category.model';
 
+export interface StorePrice {
+  storeId: number;
+  price: number;
+}
+
 export interface Item {
   id?: number;
   name: string;
   description?: string;
+  briefDescription?: string;
+  aboutThisItem?: string;
+  modelName?: string;
   barcode?: string;
   imageUrl?: string;
   images?: string[];
@@ -13,5 +21,10 @@ export interface Item {
   brand?: ItemBrand;
   itemCategoryId: number;
   category?: ItemCategory;
+  productItemTypeId?: number | null;
+  productInformationId?: number | null;
+  prices?: StorePrice[];
+  customerReviews?: number[];
+  customerCommentIds?: number[];
   createdAt?: Date;
 }

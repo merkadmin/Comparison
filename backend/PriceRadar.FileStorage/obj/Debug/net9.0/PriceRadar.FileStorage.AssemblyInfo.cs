@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PriceRadar.FileStorage")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a2e38145877a2f61489cbf3e760c6c81400f6b66")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5367a084676e04527f4a3e310ac1314827a01bc5")]
 [assembly: System.Reflection.AssemblyProductAttribute("PriceRadar.FileStorage")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PriceRadar.FileStorage")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
