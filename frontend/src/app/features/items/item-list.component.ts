@@ -12,6 +12,8 @@ import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemImageService } from '../../core/services/item-image.service';
 import { ProductItemTypeService } from '../../core/services/product-item-type.service';
 import { ProductInformationService } from '../../core/services/product-information.service';
+import { FavoriteProductItemService } from '../../core/services/favorite-product-item.service';
+import { CartItemService } from '../../core/services/cart-item.service';
 import { Item } from '../../core/models/item.model';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { ItemBrand } from '../../core/models/item-brand.model';
@@ -40,6 +42,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
   private imageService    = inject(ItemImageService);
   private typeService     = inject(ProductItemTypeService);
   private infoService     = inject(ProductInformationService);
+  private favoriteService = inject(FavoriteProductItemService);
+  private cartService     = inject(CartItemService);
   private translate       = inject(TranslateService);
   private route           = inject(ActivatedRoute);
 
@@ -49,6 +53,9 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
   productItemTypes   = signal<ProductItemType[]>([]);
   productInfos       = signal<ProductInformation[]>([]);
+  favoriteIds        = signal<Set<number>>(new Set());
+  cartIds            = signal<Set<number>>(new Set());
+  compareIds         = signal<Set<number>>(new Set());
 
   openEdit(item: Item): void {
     this.editDraft = {
@@ -127,6 +134,38 @@ export class ItemListComponent implements OnInit, OnDestroy {
     return ls[lang] || ls.en;
   }
 
+  isFavorite(id: number): boolean { return this.favoriteIds().has(id); }
+  inCart(id: number): boolean     { return this.cartIds().has(id); }
+  inCompare(id: number): boolean  { return this.compareIds().has(id); }
+
+  toggleFavorite(id: number): void {
+    if (this.isFavorite(id)) {
+      this.favoriteService.remove(id).subscribe({ error: () => {} });
+      this.favoriteIds.update(s => { const n = new Set(s); n.delete(id); return n; });
+    } else {
+      this.favoriteService.add(id).subscribe({ error: () => {} });
+      this.favoriteIds.update(s => new Set(s).add(id));
+    }
+  }
+
+  toggleCart(id: number): void {
+    if (this.inCart(id)) {
+      this.cartService.remove(id).subscribe({ error: () => {} });
+      this.cartIds.update(s => { const n = new Set(s); n.delete(id); return n; });
+    } else {
+      this.cartService.add(id).subscribe({ error: () => {} });
+      this.cartIds.update(s => new Set(s).add(id));
+    }
+  }
+
+  toggleCompare(id: number): void {
+    this.compareIds.update(s => {
+      const n = new Set(s);
+      n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    });
+  }
+
   getTypeName(typeId: number | null | undefined): string {
     if (!typeId) return '—';
     return this.productItemTypes().find(t => t.id === typeId)?.type ?? String(typeId);
@@ -198,6 +237,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
     this.typeService.getAll().subscribe({ next: t => this.productItemTypes.set(t), error: () => {} });
     this.infoService.getAll().subscribe({ next: i => this.productInfos.set(i), error: () => {} });
+    this.favoriteService.getMyFavorites().subscribe({ next: f => this.favoriteIds.set(new Set(f.map(x => x.productItemId))), error: () => {} });
+    this.cartService.getMyCart().subscribe({ next: c => this.cartIds.set(new Set(c.map(x => x.productItemId))), error: () => {} });
 
     this.querySub = this.route.queryParamMap.subscribe(params => {
       const categoryId = params.get('categoryId');

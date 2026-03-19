@@ -97,6 +97,12 @@
             } @else {
             <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
             }
+            <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-1 bg-white bg-opacity-75 border-0 rounded-circle"
+              (click)="toggleFavorite(item.id!); $event.stopPropagation()">
+              <i class="ki-duotone ki-heart fs-4" [class.text-danger]="isFavorite(item.id!)" [class.text-gray-400]="!isFavorite(item.id!)">
+                <span class="path1"></span><span class="path2"></span>
+              </i>
+            </button>
           </div>
           <div class="card-body d-flex flex-column gap-2 p-4">
             <div class="d-flex gap-2 flex-wrap">
@@ -108,6 +114,24 @@
             <p class="text-muted fs-7 mb-0 item-card__desc">{{ item.description }}</p>
             }
           </div>
+          @if (!auth.isAdmin()) {
+          <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+            <button class="btn btn-sm flex-fill"
+              [class.btn-light-success]="!inCart(item.id!)"
+              [class.btn-success]="inCart(item.id!)"
+              (click)="toggleCart(item.id!)">
+              <i class="ki-duotone ki-basket fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+              {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
+            </button>
+            <button class="btn btn-sm flex-fill"
+              [class.btn-light-info]="!inCompare(item.id!)"
+              [class.btn-info]="inCompare(item.id!)"
+              (click)="toggleCompare(item.id!)">
+              <i class="ki-duotone ki-arrows-circle fs-6"><span class="path1"></span><span class="path2"></span></i>
+              {{ 'item.compare' | translate }}
+            </button>
+          </div>
+          }
           @if (auth.isAdmin()) {
           <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
             <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(item)">
@@ -154,12 +178,15 @@
           @if (auth.isAdmin()) {
           <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
           }
+          @if (!auth.isAdmin()) {
+          <th class="text-end min-w-150px">{{ 'common.actions' | translate }}</th>
+          }
         </tr>
       </thead>
       <tbody class="text-gray-600 fw-semibold">
         @if (filteredItems().length === 0) {
         <tr>
-          <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+          <td [attr.colspan]="auth.isAdmin() ? 7 : 6" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
         </tr>
         }
         @for (item of filteredItems(); track item.id; let i = $index) {
@@ -174,26 +201,34 @@
           }
           <td>{{ i + 1 }}</td>
           <td>
-            @if (item.images && item.images.length > 0) {
-            <div class="d-flex align-items-center gap-1">
-              <div class="symbol symbol-40px">
-                <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="object-fit-contain" />
+            <div class="d-flex align-items-center gap-2">
+              @if (item.images && item.images.length > 0) {
+              <div class="d-flex align-items-center gap-1">
+                <div class="symbol symbol-40px">
+                  <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="object-fit-contain" />
+                </div>
+                @if (item.images.length > 1) {
+                <span class="badge badge-light-info fs-8">+{{ item.images.length - 1 }}</span>
+                }
               </div>
-              @if (item.images.length > 1) {
-              <span class="badge badge-light-info fs-8">+{{ item.images.length - 1 }}</span>
+              } @else if (item.imageUrl) {
+              <div class="symbol symbol-40px">
+                <img [src]="item.imageUrl" [alt]="item.name" class="object-fit-contain" />
+              </div>
+              } @else {
+              <div class="symbol symbol-40px symbol-light">
+                <span class="symbol-label bg-light-info text-info fw-bold fs-6">
+                  {{ item.name.charAt(0).toUpperCase() }}
+                </span>
+              </div>
               }
+              <button class="btn btn-icon btn-xs btn-light border-0 p-1"
+                (click)="toggleFavorite(item.id!)">
+                <i class="ki-duotone ki-heart fs-5" [class.text-danger]="isFavorite(item.id!)" [class.text-gray-400]="!isFavorite(item.id!)">
+                  <span class="path1"></span><span class="path2"></span>
+                </i>
+              </button>
             </div>
-            } @else if (item.imageUrl) {
-            <div class="symbol symbol-40px">
-              <img [src]="item.imageUrl" [alt]="item.name" class="object-fit-contain" />
-            </div>
-            } @else {
-            <div class="symbol symbol-40px symbol-light">
-              <span class="symbol-label bg-light-info text-info fw-bold fs-6">
-                {{ item.name.charAt(0).toUpperCase() }}
-              </span>
-            </div>
-            }
           </td>
           <td>
             <span class="text-gray-800 fw-bold text-hover-primary d-block fs-6">{{ item.name }}</span>
@@ -207,6 +242,26 @@
           <td>
             <span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span>
           </td>
+          @if (!auth.isAdmin()) {
+          <td class="text-end">
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-sm"
+                [class.btn-light-success]="!inCart(item.id!)"
+                [class.btn-success]="inCart(item.id!)"
+                (click)="toggleCart(item.id!)">
+                <i class="ki-duotone ki-basket fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
+              </button>
+              <button class="btn btn-sm"
+                [class.btn-light-info]="!inCompare(item.id!)"
+                [class.btn-info]="inCompare(item.id!)"
+                (click)="toggleCompare(item.id!)">
+                <i class="ki-duotone ki-arrows-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
+                {{ 'item.compare' | translate }}
+              </button>
+            </div>
+          </td>
+          }
           @if (auth.isAdmin()) {
           <td class="text-end">
             <div class="d-flex justify-content-end gap-2">

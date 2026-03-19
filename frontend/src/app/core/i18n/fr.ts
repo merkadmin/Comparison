@@ -110,6 +110,11 @@ export const fr: Record<string, string> = {
   'item.addPrice':               'Ajouter un prix',
   'item.customerReviews':        'Avis clients',
   'item.customerComments':       'Commentaires clients',
+  'item.addToCart':              'Ajouter au panier',
+  'item.removeFromCart':         'Retirer du panier',
+  'item.compare':                'Comparer',
+  'item.addedToFavorites':       'Ajouté aux favoris',
+  'item.removedFromFavorites':   'Retiré des favoris',
 
   // Auth
   'auth.login':             'Connexion',

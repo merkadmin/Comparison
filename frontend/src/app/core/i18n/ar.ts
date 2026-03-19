@@ -110,6 +110,11 @@ export const ar: Record<string, string> = {
   'item.addPrice':               'إضافة سعر',
   'item.customerReviews':        'تقييمات العملاء',
   'item.customerComments':       'تعليقات العملاء',
+  'item.addToCart':              'أضف إلى السلة',
+  'item.removeFromCart':         'إزالة من السلة',
+  'item.compare':                'قارن',
+  'item.addedToFavorites':       'تمت الإضافة إلى المفضلة',
+  'item.removedFromFavorites':   'تمت الإزالة من المفضلة',
 
   // Auth
   'auth.login':             'تسجيل الدخول',

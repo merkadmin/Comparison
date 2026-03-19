@@ -58,6 +58,12 @@ public class MongoDbContext
 	public IMongoCollection<CustomerCommentDocument> CustomerComments =>
 		_database.GetCollection<CustomerCommentDocument>("CustomerComment");
 
+	public IMongoCollection<FavoriteProductItemDocument> FavoriteProductItems =>
+		_database.GetCollection<FavoriteProductItemDocument>("FavoriteProductItem");
+
+	public IMongoCollection<CartItemDocument> CartItems =>
+		_database.GetCollection<CartItemDocument>("CartItem");
+
 	public async Task<long> GetNextSequenceAsync(string name)
 	{
 		var filter = Builders<SequenceDocument>.Filter.Eq(s => s.Name, name);
