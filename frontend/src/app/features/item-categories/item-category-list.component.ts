@@ -8,11 +8,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuComponent, DropDownMenuItem } from '../../shared/components/common-drop-down-menu/common-drop-down-menu.component';
 import { CommonSearchComponent } from '../../shared/components/common-search/common-search.component';
+import { CommonViewModeComponent } from "../../shared/components/commonActions/common-view-mode/common-view-mode";
 
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuComponent, CommonSearchComponent, CommonViewModeComponent],
   templateUrl: './item-category-list.component.html',
   styleUrl: './item-category-list.component.less',
 })
@@ -22,6 +23,7 @@ export class ItemCategoryListComponent implements OnInit {
 
   editingId = signal<number | null>(null);
   editDraft: ItemCategory = { name: { en: '', ar: '', fr: '' } };
+  viewMode = signal<'list' | 'cards'>('list');
 
   openEdit(cat: ItemCategory): void {
     this.editDraft = {
