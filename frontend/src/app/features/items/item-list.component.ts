@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 import { ItemService } from '../../core/services/item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
@@ -28,6 +29,7 @@ import { CommonGridColumnsButton, GridColumns } from '../../shared/components/co
   styleUrl: './item-list.component.less',
 })
 export class ItemListComponent implements OnInit, OnDestroy {
+  auth             = inject(AuthService);
   private itemService  = inject(ItemService);
   private categoryService = inject(ItemCategoryService);
   private brandService = inject(ItemBrandService);

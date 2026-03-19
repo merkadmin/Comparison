@@ -1,4 +1,4 @@
-import { Component, inject, signal, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
+import { Component, inject, signal, ElementRef, ViewChild, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
@@ -15,7 +15,7 @@ declare const google: any;
   templateUrl: './login.component.html',
   styleUrl: './login.component.less',
 })
-export class LoginComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private auth   = inject(AuthService);
   private router = inject(Router);
 
@@ -29,7 +29,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
   loginPassword = '';
 
   signupUserName = '';
-  signupLogin    = '';
   signupEmail    = '';
   signupPassword = '';
   signupConfirm  = '';
@@ -42,6 +41,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.tryInitGoogle();
+  }
+
+  ngOnDestroy(): void {
+    if (typeof google !== 'undefined') {
+      google.accounts.id.cancel();
+    }
   }
 
   private tryInitGoogle(retries = 10): void {
@@ -78,7 +83,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   onSignup(): void {
-    if (!this.signupUserName || !this.signupLogin || !this.signupEmail || !this.signupPassword) {
+    if (!this.signupUserName || !this.signupEmail || !this.signupPassword) {
       this.error.set('auth.fillAllFields');
       return;
     }
@@ -88,7 +93,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
     this.loading.set(true);
     this.error.set(null);
-    this.auth.signup(this.signupUserName, this.signupLogin, this.signupEmail, this.signupPassword).subscribe({
+    this.auth.signup(this.signupUserName, this.signupEmail, this.signupPassword).subscribe({
       next: () => this.router.navigate(['/']),
       error: (e) => { this.error.set(e?.error?.message ?? 'auth.signupError'); this.loading.set(false); },
     });

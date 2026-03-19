@@ -2,8 +2,10 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../core/services/auth.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemBrand } from '../../core/models/item-brand.model';
+
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
@@ -16,6 +18,7 @@ import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/com
   styleUrl: './item-brand-list.component.less',
 })
 export class ItemBrandListComponent implements OnInit {
+  auth              = inject(AuthService);
   private service   = inject(ItemBrandService);
   private translate = inject(TranslateService);
 

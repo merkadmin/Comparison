@@ -25,8 +25,8 @@ export class AuthService {
       .pipe(tap(r => this.storeAuth(r)));
   }
 
-  signup(userName: string, login: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.base}/auth/signup`, { userName, login, email, password })
+  signup(userName: string, email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.base}/auth/signup`, { userName, email, password })
       .pipe(tap(r => this.storeAuth(r)));
   }
 

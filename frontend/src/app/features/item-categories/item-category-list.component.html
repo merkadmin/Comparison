@@ -9,7 +9,7 @@
       <app-common-view-mode [viewMode]="viewMode()" (viewModeChange)="viewMode.set($event)" />
       <!--END::View Mode Toggle-->
 
-      @if (selectedIds().size > 0) {
+      @if (auth.isAdmin() && selectedIds().size > 0) {
         <app-common-drop-down-menu-action-button
           mainLabelKey="common.deactivate"
           mainIconClass="ki-minus-circle"
@@ -19,6 +19,7 @@
       }
 
       <app-common-search placeholderKey="category.searchPlaceholder" (searchChange)="searchTerm.set($event)" />
+      @if (auth.isAdmin()) {
       <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
       <app-common-drop-down-menu-action-button
         mainLabelKey="common.importTemplate"
@@ -28,6 +29,7 @@
         [menuEnd]="true"
         (mainClick)="fileInput.click()"
         [menuItems]="importMenuItems" />
+      }
     </div>
   </div>
 
@@ -82,6 +84,7 @@
             <p class="text-muted fs-7 mb-0 item-card__desc">{{ localize(cat.description) }}</p>
             }
           </div>
+          @if (auth.isAdmin()) {
           <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
             <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(cat)">
               <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
@@ -98,6 +101,7 @@
               (mainClick)="setActive(cat.id!, cat.isActive === false)"
               [menuItems]="getRowMenuItems(cat.id!)" />
           </div>
+          }
         </div>
       </div>
       }
@@ -109,33 +113,39 @@
     <table class="table align-middle table-row-dashed fs-6 gy-5">
       <thead class="fs-6">
         <tr class="text-start text-muted fw-bold text-uppercase gs-0">
+          @if (auth.isAdmin()) {
           <th class="w-30px">
             <div class="form-check form-check-sm form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" [checked]="isAllSelected()" (change)="toggleAll()" />
             </div>
           </th>
+          }
           <th class="w-30px">{{ 'common.number' | translate }}</th>
           <th class="min-w-200px">{{ 'common.name' | translate }}</th>
           <th class="min-w-175px">{{ 'category.parentCategory' | translate }}</th>
           <th class="min-w-250px">{{ 'common.description' | translate }}</th>
           <th class="min-w-125px">{{ 'common.created' | translate }}</th>
+          @if (auth.isAdmin()) {
           <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
+          }
         </tr>
       </thead>
       <tbody class="text-gray-600 fw-semibold">
         @if (visibleCategories().length === 0) {
         <tr>
-          <td colspan="7" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+          <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
         </tr>
         }
         @for (cat of visibleCategories(); track cat.id; let i = $index) {
         <tr [class.table-active]="isSelected(cat.id!)">
+          @if (auth.isAdmin()) {
           <td>
             <div class="form-check form-check-sm form-check-custom form-check-solid">
               <input class="form-check-input" type="checkbox" [checked]="isSelected(cat.id!)"
                 (change)="toggleOne(cat.id!)" />
             </div>
           </td>
+          }
           <td>{{ i + 1 }}</td>
           <td [style.padding-left.px]="16 + getDepth(cat) * 24">
             @if (cat.parentCategoryId) {
@@ -153,6 +163,7 @@
           </td>
           <td class="text-muted">{{ cat.description ? localize(cat.description) : '—' }}</td>
           <td>{{ cat.createdAt | date:'mediumDate' }}</td>
+          @if (auth.isAdmin()) {
           <td class="text-end">
             <div class="d-flex justify-content-end gap-2">
               <button class="btn btn-sm btn-light-primary" (click)="openEdit(cat)">
@@ -169,6 +180,7 @@
                 [menuItems]="getRowMenuItems(cat.id!)" />
             </div>
           </td>
+          }
         </tr>
         }
       </tbody>

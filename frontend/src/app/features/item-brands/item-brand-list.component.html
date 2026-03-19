@@ -4,7 +4,7 @@
           <h3 class="fw-bold m-0">{{ 'brand.title' | translate }}</h3>
         </div>
         <div class="card-toolbar d-flex align-items-center gap-3">
-          @if (selectedIds().size > 0) {
+          @if (auth.isAdmin() && selectedIds().size > 0) {
             <app-common-drop-down-menu-action-button
               mainLabelKey="common.deactivate"
               mainIconClass="ki-minus-circle"
@@ -12,6 +12,7 @@
               (mainClick)="deactivateSelected()"
               [menuItems]="bulkMenuItems" />
           }
+          @if (auth.isAdmin()) {
           <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
           <app-common-drop-down-menu-action-button
             mainLabelKey="common.importTemplate"
@@ -21,6 +22,7 @@
             [menuEnd]="true"
             (mainClick)="fileInput.click()"
             [menuItems]="importMenuItems" />
+          }
         </div>
       </div>
 
@@ -45,6 +47,7 @@
           <table class="table align-middle table-row-dashed fs-6 gy-5">
             <thead>
               <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                @if (auth.isAdmin()) {
                 <th class="w-30px">
                   <div class="form-check form-check-sm form-check-custom form-check-solid">
                     <input class="form-check-input" type="checkbox"
@@ -52,22 +55,26 @@
                       (change)="toggleAll()" />
                   </div>
                 </th>
+                }
                 <th class="w-30px">{{ 'common.number' | translate }}</th>
                 <th class="w-50px">{{ 'common.logo' | translate }}</th>
                 <th class="min-w-150px">{{ 'common.name' | translate }}</th>
                 <th class="min-w-125px">{{ 'common.country' | translate }}</th>
                 <th class="min-w-125px">{{ 'common.created' | translate }}</th>
+                @if (auth.isAdmin()) {
                 <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
+                }
               </tr>
             </thead>
             <tbody class="text-gray-600 fw-semibold">
               @if (brands().length === 0) {
                 <tr>
-                  <td colspan="7" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+                  <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
                 </tr>
               }
               @for (brand of brands(); track brand.id; let i = $index) {
                 <tr [class.table-active]="isSelected(brand.id!)">
+                  @if (auth.isAdmin()) {
                   <td>
                     <div class="form-check form-check-sm form-check-custom form-check-solid">
                       <input class="form-check-input" type="checkbox"
@@ -75,6 +82,7 @@
                         (change)="toggleOne(brand.id!)" />
                     </div>
                   </td>
+                  }
                   <td>{{ i + 1 }}</td>
                   <td>
                     @if (brand.logoUrl) {
@@ -94,6 +102,7 @@
                   </td>
                   <td class="text-muted">{{ brand.country || '—' }}</td>
                   <td>{{ brand.createdAt | date:'mediumDate' }}</td>
+                  @if (auth.isAdmin()) {
                   <td class="text-end">
                     <div class="d-flex justify-content-end gap-2">
                       <button class="btn btn-sm btn-light-primary" (click)="openEdit(brand)">
@@ -110,6 +119,7 @@
                         [menuItems]="getRowMenuItems(brand.id!)" />
                     </div>
                   </td>
+                  }
                 </tr>
               }
             </tbody>

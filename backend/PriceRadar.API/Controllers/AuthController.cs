@@ -10,7 +10,7 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.API.Controllers;
 
-public record SignupRequest(string UserName, string Login, string Email, string Password);
+public record SignupRequest(string UserName, string Email, string Password, string? Login = null);
 public record LoginRequest(string Email, string Password);
 public record GoogleLoginRequest(string IdToken);
 public record AuthResponse(string Token, UserDto User);
@@ -34,17 +34,16 @@ public class AuthController : ControllerBase
 	[HttpPost("signup")]
 	public async Task<ActionResult<AuthResponse>> Signup([FromBody] SignupRequest req)
 	{
-		if (await _users.GetByEmailAsync(req.Email.ToLowerInvariant()) is not null)
-			return Conflict(new { message = "Email already in use." });
+		var email = req.Email.ToLowerInvariant();
 
-		if (await _users.GetByLoginAsync(req.Login) is not null)
-			return Conflict(new { message = "Login already in use." });
+		if (await _users.GetByEmailAsync(email) is not null)
+			return Conflict(new { message = "Email already in use." });
 
 		var user = new User
 		{
 			UserName     = req.UserName,
-			Login        = req.Login,
-			Email        = req.Email.ToLowerInvariant(),
+			Login        = req.Login ?? email,
+			Email        = email,
 			PasswordHash = BC.HashPassword(req.Password),
 			Privilege    = UserPrivilege.Regular,
 		};
@@ -56,7 +55,11 @@ public class AuthController : ControllerBase
 	[HttpPost("login")]
 	public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest req)
 	{
-		var user = await _users.GetByEmailAsync(req.Email.ToLowerInvariant());
+		var identifier = req.Email.Trim().ToLowerInvariant();
+		// Support login by email OR by username/login field
+		var user = await _users.GetByEmailAsync(identifier)
+		        ?? await _users.GetByLoginAsync(identifier);
+
 		if (user is null || user.PasswordHash is null || !BC.Verify(req.Password, user.PasswordHash))
 			return Unauthorized(new { message = "Invalid email or password." });
 

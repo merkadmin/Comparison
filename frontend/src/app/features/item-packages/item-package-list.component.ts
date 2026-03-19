@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { AuthService } from '../../core/services/auth.service';
 import { ItemPackageService } from '../../core/services/item-package.service';
 import { ItemPackage } from '../../core/models/item-package.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -25,6 +26,7 @@ interface PackageEditDraft {
   styleUrl: './item-package-list.component.less',
 })
 export class ItemPackageListComponent implements OnInit {
+  auth              = inject(AuthService);
   private service   = inject(ItemPackageService);
   private translate = inject(TranslateService);
 

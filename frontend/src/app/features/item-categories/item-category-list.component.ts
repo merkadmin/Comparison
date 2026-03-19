@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed, ViewChild, ElementRef } fr
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -18,7 +19,8 @@ import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/com
   styleUrl: './item-category-list.component.less',
 })
 export class ItemCategoryListComponent implements OnInit {
-  private service = inject(ItemCategoryService);
+  auth              = inject(AuthService);
+  private service   = inject(ItemCategoryService);
   private translate = inject(TranslateService);
 
   editingId = signal<number | null>(null);
