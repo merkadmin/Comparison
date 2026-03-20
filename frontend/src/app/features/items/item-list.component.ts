@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { SelectOption } from '../../shared/components/common-select/common-select.component';
-import { Subscription, forkJoin, of } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -238,6 +238,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void { this.querySub.unsubscribe(); }
 
+  private static readonly IMAGE_BATCH_SIZE = 10;
+
   loadItems(): void {
     this.loading.set(true);
     this.error.set(null);
@@ -250,13 +252,28 @@ export class ItemListComponent implements OnInit, OnDestroy {
     obs.subscribe({
       next: data => {
         this.loading.set(false);
-        // Parallel-fetch images from file storage and merge into each item
-        const imageRequests = data.map(item =>
-          item.images?.length ? of(item.images) : this.imageService.getImages(item.id!)
-        );
-        forkJoin(imageRequests.length ? imageRequests : [of([])]).subscribe({
-          next: results => {
-            this.items.set(data.map((item, i) => ({ ...item, images: results[i] })));
+
+        // Items that already carry images (e.g. from a previous load) skip the fetch
+        const needImages = data.filter(item => !(item.images?.length)).map(i => i.id!);
+
+        if (needImages.length === 0) {
+          this.items.set(data);
+          return;
+        }
+
+        // Split into batches and fetch all in parallel
+        const batches: number[][] = [];
+        for (let i = 0; i < needImages.length; i += ItemListComponent.IMAGE_BATCH_SIZE) {
+          batches.push(needImages.slice(i, i + ItemListComponent.IMAGE_BATCH_SIZE));
+        }
+
+        forkJoin(batches.map(batch => this.imageService.getImagesBulk(batch))).subscribe({
+          next: batchResults => {
+            const imageMap = batchResults.reduce((acc, r) => ({ ...acc, ...r }), {} as Record<number, string[]>);
+            this.items.set(data.map(item => ({
+              ...item,
+              images: item.images?.length ? item.images : (imageMap[item.id!] ?? [])
+            })));
           },
           error: () => { this.items.set(data); }  // fall back to DB data if file server is down
         });

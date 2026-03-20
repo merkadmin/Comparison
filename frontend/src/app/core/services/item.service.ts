@@ -8,7 +8,7 @@ export class ItemService {
   private api = inject(ApiService);
 
   getAll(): Observable<Item[]> {
-    return this.api.get<Item[]>('/items');
+    return this.api.get<Item[]>('/items/getAll');
   }
 
   getById(id: number): Observable<Item> {

@@ -8,7 +8,7 @@ export class ItemPackageService {
   private api = inject(ApiService);
 
   getAll(): Observable<ItemPackage[]> {
-    return this.api.get<ItemPackage[]>('/itempackages');
+    return this.api.get<ItemPackage[]>('/itempackages/getAll');
   }
 
   getActive(): Observable<ItemPackage[]> {

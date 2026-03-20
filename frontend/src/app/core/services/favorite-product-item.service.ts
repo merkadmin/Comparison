@@ -8,7 +8,7 @@ export class FavoriteProductItemService {
   private api = inject(ApiService);
 
   getMyFavorites(): Observable<FavoriteProductItem[]> {
-    return this.api.get<FavoriteProductItem[]>('/favoriteproductitems');
+    return this.api.get<FavoriteProductItem[]>('/favoriteproductitems/getAll');
   }
 
   add(productItemId: number): Observable<void> {

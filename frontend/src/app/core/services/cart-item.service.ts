@@ -8,7 +8,7 @@ export class CartItemService {
   private api = inject(ApiService);
 
   getMyCart(): Observable<CartItem[]> {
-    return this.api.get<CartItem[]>('/cartitems');
+    return this.api.get<CartItem[]>('/cartitems/getAll');
   }
 
   add(productItemId: number): Observable<void> {

@@ -19,6 +19,11 @@ export class ItemImageService {
     return this.http.get<string[]>(`${this.base}/api/items/${itemId}/images`);
   }
 
+  /** Fetch images for multiple items at once. Returns a map of itemId → relative paths. */
+  getImagesBulk(itemIds: number[]): Observable<Record<number, string[]>> {
+    return this.http.post<Record<number, string[]>>(`${this.base}/api/items/images/bulk`, itemIds);
+  }
+
   /** Upload one or more image files for a given item. Returns relative paths. */
   upload(itemId: number, categoryId: number, files: File[]): Observable<string[]> {
     const form = new FormData();

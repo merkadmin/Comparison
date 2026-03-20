@@ -1,14 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { ApiService } from './api.service';
 import { ItemCategory } from '../models/item-category.model';
 
 @Injectable({ providedIn: 'root' })
 export class ItemCategoryService {
   private api = inject(ApiService);
+  private all$?: Observable<ItemCategory[]>;
 
   getAll(): Observable<ItemCategory[]> {
-    return this.api.get<ItemCategory[]>('/itemcategories');
+    return this.all$ ??= this.api.get<ItemCategory[]>('/itemcategories/getAll').pipe(shareReplay(1));
   }
 
   getById(id: number): Observable<ItemCategory> {

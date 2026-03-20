@@ -21,6 +21,7 @@ public class CartItemsController : ControllerBase
                    ?? throw new UnauthorizedAccessException());
 
     [HttpGet]
+    [HttpGet("getAll")]
     public async Task<IActionResult> GetMine()
     {
         var items = await _repo.GetByUserIdAsync(CurrentUserId);

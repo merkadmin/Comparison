@@ -1,14 +1,15 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { ApiService } from './api.service';
 import { ProductItemType } from '../models/product-item-type.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductItemTypeService {
   private api = inject(ApiService);
+  private all$?: Observable<ProductItemType[]>;
 
   getAll(): Observable<ProductItemType[]> {
-    return this.api.get<ProductItemType[]>('/productitemtypes');
+    return this.all$ ??= this.api.get<ProductItemType[]>('/productitemtypes/getAll').pipe(shareReplay(1));
   }
 
   create(item: ProductItemType): Observable<ProductItemType> {

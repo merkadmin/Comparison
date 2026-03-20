@@ -16,6 +16,7 @@ public abstract class BaseController<TModel, TRepo> : ControllerBase
 	}
 
 	[HttpGet]
+	[HttpGet("getAll")]
 	public virtual async Task<IActionResult> GetAll()
 	{
 		var items = await Repo.GetAllAsync();
