@@ -1,0 +1,141 @@
+<div class="card">
+
+  <!--START::Header-->
+  <div class="card-header border-0 pt-6 pb-4 d-flex align-items-center gap-4 flex-wrap">
+    <div class="d-flex flex-column">
+      <h3 class="card-title fw-bold text-gray-800 mb-0">
+        @if (currentCategory(); as cat) {
+          {{ getCategoryName(cat.id!) }}
+        } @else {
+          {{ 'nav.shopByCategory' | translate }}
+        }
+      </h3>
+      @if (filteredItems().length > 0) {
+        <span class="text-muted fs-7 mt-1">{{ filteredItems().length }} {{ 'item.single' | translate }}(s)</span>
+      }
+    </div>
+
+    <!--START::Search-->
+    <div class="ms-auto">
+      <div class="input-group input-group-sm w-250px">
+        <span class="input-group-text border-end-0 bg-transparent">
+          <i class="ki-duotone ki-magnifier fs-4 text-muted"><span class="path1"></span><span class="path2"></span></i>
+        </span>
+        <input type="text" class="form-control border-start-0 ps-0"
+          [placeholder]="'common.search' | translate"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)" />
+      </div>
+    </div>
+    <!--END::Search-->
+  </div>
+  <!--END::Header-->
+
+  <div class="card-body py-4">
+
+    <!--START::Loading-->
+    @if (loading()) {
+      <div class="d-flex justify-content-center py-10">
+        <span class="spinner-border text-primary"></span>
+        <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
+      </div>
+    }
+    <!--END::Loading-->
+
+    <!--START::Error-->
+    @if (!loading() && error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    }
+    <!--END::Error-->
+
+    <!--START::Empty-->
+    @if (!loading() && !error() && filteredItems().length === 0) {
+      <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
+    }
+    <!--END::Empty-->
+
+    <!--START::Cards Grid-->
+    @if (!loading() && !error() && filteredItems().length > 0) {
+      <div class="row g-4">
+        @for (item of filteredItems(); track item.id) {
+          <div [class]="colClass()">
+            <div class="item-card card h-100 shadow-sm border-0">
+
+              <!--START::Card Image-->
+              <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center position-relative">
+                @if (item.images && item.images.length > 0) {
+                  <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
+                  @if (item.images.length > 1) {
+                    <span class="position-absolute bottom-0 end-0 badge badge-dark m-1 fs-8">+{{ item.images.length - 1 }}</span>
+                  }
+                } @else if (item.imageUrl) {
+                  <img [src]="item.imageUrl" [alt]="item.name" class="item-card__img" />
+                } @else {
+                  <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
+                }
+
+                <!--START::Favorite Toggle-->
+                <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-1 bg-white bg-opacity-75 border-0 rounded-circle"
+                  (click)="toggleFavorite(item.id!); $event.stopPropagation()">
+                  <i class="ki-duotone ki-heart fs-4" [class.text-danger]="isFavorite(item.id!)"
+                    [class.text-gray-400]="!isFavorite(item.id!)">
+                    <span class="path1"></span><span class="path2"></span>
+                  </i>
+                </button>
+                <!--END::Favorite Toggle-->
+              </div>
+              <!--END::Card Image-->
+
+              <!--START::Card Info-->
+              <div class="card-body d-flex flex-column gap-3 p-4">
+                <span class="badge badge-light-success align-self-start">{{ getCategoryName(item.itemCategoryId) }}</span>
+                <h6 class="fw-bold text-gray-800 mb-0 lh-sm fs-2">{{ item.name }}</h6>
+                @if (item.description) {
+                  <p class="text-muted fs-7 mb-0 item-card__desc fs-3">{{ item.description }}</p>
+                }
+                <!--START::Best Price-->
+                @if (getBestPrice(item.id!) !== null) {
+                  <div class="d-flex align-items-center gap-1 mt-auto pt-2 border-top">
+                    <span class="text-muted fs-6">{{ 'item.bestPrice' | translate }}:</span>
+                    <span class="fw-bold text-primary fs-1">{{ getBestPrice(item.id!) | number:'1.2-2' }}</span>
+                  </div>
+                }
+                <!--END::Best Price-->
+              </div>
+              <!--END::Card Info-->
+
+              <!--START::User Actions-->
+              <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+
+                <!--START::Add to Cart-->
+                <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCart(item.id!)"
+                  [class.btn-success]="inCart(item.id!)" (click)="toggleCart(item.id!)">
+                  <i class="ki-duotone ki-basket fs-1">
+                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                  </i>
+                  {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
+                </button>
+                <!--END::Add to Cart-->
+
+                <!--START::Compare-->
+                <button class="btn btn-sm flex-fill" [class.btn-light-info]="!inCompare(item.id!)"
+                  [class.btn-info]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
+                  <i class="ki-duotone ki-arrows-circle fs-1">
+                    <span class="path1"></span><span class="path2"></span>
+                  </i>
+                  {{ 'item.compare' | translate }}
+                </button>
+                <!--END::Compare-->
+
+              </div>
+              <!--END::User Actions-->
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+    <!--END::Cards Grid-->
+
+  </div>
+</div>

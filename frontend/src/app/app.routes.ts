@@ -9,6 +9,7 @@ import { ItemPackageListComponent } from './features/item-packages/item-package-
 import { LoginComponent } from './features/auth/login/login.component';
 import { StoreListComponent } from './features/stores/store-list.component';
 import { StoreItemListComponent } from './features/store-items/store-item-list.component';
+import { ShopByCategoryComponent } from './features/shop/shop-by-category.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -27,6 +28,7 @@ export const routes: Routes = [
       { path: 'favorites', component: FavoritesListComponent },
       { path: 'stores', component: StoreListComponent },
       { path: 'store-items', component: StoreItemListComponent },
+      { path: 'shop', component: ShopByCategoryComponent },
     ],
   },
   { path: '**', redirectTo: '' },
