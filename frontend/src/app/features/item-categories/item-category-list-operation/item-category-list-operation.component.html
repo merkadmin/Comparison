@@ -1,0 +1,75 @@
+<!--START::Create / Edit Modal-->
+<div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">
+          {{ (isCreating ? 'category.addNew' : 'common.edit') | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closed.emit()"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!--START::Names-->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ 'common.nameEn' | translate }} <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.name.en" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ 'common.nameAr' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.name.ar" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ 'common.nameFr' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.name.fr" />
+          </div>
+        </div>
+        <!--END::Names-->
+
+        <!--START::Descriptions-->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ 'common.descriptionEn' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.description!.en" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ 'common.descriptionAr' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.description!.ar" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ 'common.descriptionFr' | translate }}</label>
+            <input type="text" class="form-control" [(ngModel)]="editDraft.description!.fr" />
+          </div>
+        </div>
+        <!--END::Descriptions-->
+
+        <!--START::Parent Category-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'category.parentCategory' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.parentCategoryId">
+            <option [ngValue]="null">— {{ 'category.noParent' | translate }} —</option>
+            @for (c of parentOptions; track c.id) {
+              <option [ngValue]="c.id">{{ localize(c.name) }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Parent Category-->
+
+      </div>
+
+      <div class="modal-footer">
+        <!--START::Cancel-->
+        <button type="button" class="btn btn-light" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        <!--END::Cancel-->
+        <!--START::Save-->
+        <button type="button" class="btn btn-primary" (click)="saved.emit()">{{ 'common.save' | translate }}</button>
+        <!--END::Save-->
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--END::Create / Edit Modal-->

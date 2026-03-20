@@ -5,6 +5,7 @@ using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PriceRadar.API.Services;
+using PriceRadar.Core.enums;
 using PriceRadar.Core.Interfaces;
 using PriceRadar.Core.Models;
 
@@ -21,13 +22,13 @@ public record UserDto(long Id, string UserName, string Email, string Login, stri
 public class AuthController : ControllerBase
 {
 	private readonly IUserRepository _users;
-	private readonly JwtService      _jwt;
-	private readonly IConfiguration  _config;
+	private readonly JwtService _jwt;
+	private readonly IConfiguration _config;
 
 	public AuthController(IUserRepository users, JwtService jwt, IConfiguration config)
 	{
-		_users  = users;
-		_jwt    = jwt;
+		_users = users;
+		_jwt = jwt;
 		_config = config;
 	}
 
@@ -41,11 +42,11 @@ public class AuthController : ControllerBase
 
 		var user = new User
 		{
-			UserName     = req.UserName,
-			Login        = req.Login ?? email,
-			Email        = email,
+			UserName = req.UserName,
+			Login = req.Login ?? email,
+			Email = email,
 			PasswordHash = BC.HashPassword(req.Password),
-			Privilege    = UserPrivilege.Regular,
+			Privilege = DBUserPrivilege.Regular,
 		};
 
 		var created = await _users.CreateAsync(user);
@@ -58,7 +59,7 @@ public class AuthController : ControllerBase
 		var identifier = req.Email.Trim().ToLowerInvariant();
 		// Support login by email OR by username/login field
 		var user = await _users.GetByEmailAsync(identifier)
-		        ?? await _users.GetByLoginAsync(identifier);
+				?? await _users.GetByLoginAsync(identifier);
 
 		if (user is null || user.PasswordHash is null || !BC.Verify(req.Password, user.PasswordHash))
 			return Unauthorized(new { message = "Invalid email or password." });
@@ -84,24 +85,24 @@ public class AuthController : ControllerBase
 		}
 
 		var user = await _users.GetByGoogleIdAsync(payload.Subject)
-		        ?? await _users.GetByEmailAsync(payload.Email);
+				?? await _users.GetByEmailAsync(payload.Email);
 
 		if (user is null)
 		{
 			user = new User
 			{
-				UserName  = payload.Name ?? payload.Email,
-				Login     = payload.Email,
-				Email     = payload.Email.ToLowerInvariant(),
-				GoogleId  = payload.Subject,
+				UserName = payload.Name ?? payload.Email,
+				Login = payload.Email,
+				Email = payload.Email.ToLowerInvariant(),
+				GoogleId = payload.Subject,
 				AvatarUrl = payload.Picture,
-				Privilege = UserPrivilege.Regular,
+				Privilege = DBUserPrivilege.Regular,
 			};
 			user = await _users.CreateAsync(user);
 		}
 		else if (user.GoogleId is null)
 		{
-			user.GoogleId  = payload.Subject;
+			user.GoogleId = payload.Subject;
 			user.AvatarUrl ??= payload.Picture;
 			await _users.UpdateAsync(user.Id, user);
 		}
@@ -114,7 +115,7 @@ public class AuthController : ControllerBase
 	public async Task<ActionResult<UserDto>> Me()
 	{
 		var idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
-		           ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+				   ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 		if (!long.TryParse(idClaim, out var id)) return Unauthorized();
 
 		var user = await _users.GetByIdAsync(id);

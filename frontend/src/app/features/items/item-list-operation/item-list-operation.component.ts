@@ -21,6 +21,7 @@ export class ItemListOperationComponent {
   private imageSvc  = inject(ItemImageService);
 
   @Input() editDraft!: Item;
+  @Input() isCreating = false;
   @Input() brands: ItemBrand[] = [];
   @Input() categories: ItemCategory[] = [];
   @Input() productItemTypes: ProductItemType[] = [];

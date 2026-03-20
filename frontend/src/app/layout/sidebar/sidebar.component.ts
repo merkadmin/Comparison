@@ -5,6 +5,7 @@ import { TranslateService } from '../../core/services/translate.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,6 +15,7 @@ import { ItemCategory, LocalizedString } from '../../core/models/item-category.m
 })
 export class SidebarComponent implements OnInit {
   translate        = inject(TranslateService);
+  auth             = inject(AuthService);
   private catSvc   = inject(ItemCategoryService);
 
   categories = signal<ItemCategory[]>([]);

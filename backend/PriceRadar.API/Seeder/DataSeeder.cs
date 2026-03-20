@@ -47,9 +47,6 @@ public class DataSeeder
 			_context.Items.Database.GetCollection<MongoDB.Bson.BsonDocument>("ProductItem").UpdateManyAsync(missing, defaults),
 			_context.ItemPackages.Database.GetCollection<MongoDB.Bson.BsonDocument>("ItemPackage").UpdateManyAsync(missing, defaults),
 			_context.Stores.Database.GetCollection<MongoDB.Bson.BsonDocument>("stores").UpdateManyAsync(missing, defaults),
-			_context.Products.Database.GetCollection<MongoDB.Bson.BsonDocument>("products").UpdateManyAsync(missing, defaults),
-			_context.PriceListings.Database.GetCollection<MongoDB.Bson.BsonDocument>("priceListings").UpdateManyAsync(missing, defaults),
-			_context.PriceHistories.Database.GetCollection<MongoDB.Bson.BsonDocument>("priceHistories").UpdateManyAsync(missing, defaults),
 			_context.TableNames.Database.GetCollection<MongoDB.Bson.BsonDocument>("TableName_s").UpdateManyAsync(missing, defaults)
 		);
 

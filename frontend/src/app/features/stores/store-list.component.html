@@ -1,0 +1,291 @@
+<div class="card">
+
+  <!--START::Header Actions-->
+  <app-common-list-header-actions
+    titleKey="store.title"
+    [viewMode]="viewMode()"
+    [columns]="colsPerRow()"
+    [selectedCount]="selectedIds().size"
+    bulkMainLabelKey="common.deactivate"
+    bulkMainIconClass="ki-minus-circle"
+    bulkMainColor="light-warning"
+    [bulkMenuItems]="bulkMenuItems"
+    searchPlaceholderKey="common.search"
+    [importing]="importing()"
+    [importMenuItems]="importMenuItems"
+    importSuccessKey="store.importSuccess"
+    [importSuccess]="importSuccess()"
+    [importErrorMessage]="importError()"
+    (viewModeChange)="viewMode.set($event)"
+    (columnsChange)="colsPerRow.set($event)"
+    (bulkMainClick)="deactivateSelected()"
+    (searchChange)="searchQuery.set($event)"
+    (fileSelected)="onFileSelected($event)"
+    (importSuccessClose)="importSuccess.set(false)"
+    (importErrorClose)="importError.set(null)">
+
+    <!--START::Add Button (Admin)-->
+    @if (auth.isAdmin()) {
+      <button class="btn btn-sm btn-primary" (click)="openCreate()">
+        <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
+        {{ 'store.addNew' | translate }}
+      </button>
+    }
+    <!--END::Add Button (Admin)-->
+
+  </app-common-list-header-actions>
+  <!--END::Header Actions-->
+
+  <div class="card-body py-4">
+
+    <!--START::Loading-->
+    @if (loading()) {
+      <div class="d-flex justify-content-center py-10">
+        <span class="spinner-border text-primary"></span>
+        <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
+      </div>
+    }
+    <!--END::Loading-->
+
+    <!--START::Error-->
+    @if (!loading() && error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    }
+    <!--END::Error-->
+
+    <!--START::Cards View-->
+    @if (!loading() && !error() && viewMode() === 'cards') {
+      @if (filteredStores().length === 0) {
+        <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
+      }
+      <div class="row g-4">
+        @for (store of filteredStores(); track store.id) {
+          <div [class]="colClass()">
+            <div class="card h-100 shadow-sm border-0">
+
+              <!--START::Card Logo-->
+              <div class="bg-light d-flex align-items-center justify-content-center position-relative"
+                style="height:140px;">
+                @if (store.logoUrl) {
+                  <img [src]="store.logoUrl" [alt]="store.name"
+                    style="max-height:100px;max-width:100%;object-fit:contain;" />
+                } @else {
+                  <span class="fw-bold text-info fs-1">{{ store.name.charAt(0).toUpperCase() }}</span>
+                }
+                <!--START::Select Checkbox (Admin)-->
+                @if (auth.isAdmin()) {
+                  <div class="position-absolute top-0 start-0 m-2">
+                    <div class="form-check form-check-sm form-check-custom form-check-solid">
+                      <input class="form-check-input" type="checkbox"
+                        [checked]="isSelected(store.id!)"
+                        (change)="toggleOne(store.id!)" />
+                    </div>
+                  </div>
+                }
+                <!--END::Select Checkbox (Admin)-->
+              </div>
+              <!--END::Card Logo-->
+
+              <!--START::Card Info-->
+              <div class="card-body d-flex flex-column gap-2 p-4">
+                @if (store.type === 'Online') {
+                  <span class="badge badge-light-success w-fit-content">{{ 'store.online' | translate }}</span>
+                } @else {
+                  <span class="badge badge-light-primary w-fit-content">{{ 'store.physical' | translate }}</span>
+                }
+                <h6 class="fw-bold text-gray-800 mb-0 fs-5">{{ store.name }}</h6>
+                @if (store.country) {
+                  <span class="text-muted fs-7">{{ store.country }}</span>
+                }
+                @if (store.websiteUrl) {
+                  <a [href]="store.websiteUrl" target="_blank" class="text-primary fs-7 text-truncate">
+                    {{ store.websiteUrl }}
+                  </a>
+                }
+              </div>
+              <!--END::Card Info-->
+
+              <!--START::Admin Actions-->
+              @if (auth.isAdmin()) {
+                <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+                  <!--START::Edit-->
+                  <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(store)">
+                    <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+                    {{ 'common.edit' | translate }}
+                  </button>
+                  <!--END::Edit-->
+                  <!--START::Activate / Deactivate / Delete-->
+                  <app-common-drop-down-menu-action-button
+                    [mainLabelKey]="store.isActive !== false ? 'common.deactivate' : 'common.activate'"
+                    [mainIconClass]="store.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+                    [mainColor]="store.isActive !== false ? 'light-warning' : 'light-success'"
+                    mainIconSize="6"
+                    mainButtonClass="w-100"
+                    groupClass="flex-fill"
+                    [menuEnd]="true"
+                    (mainClick)="setActive(store.id!, store.isActive === false)"
+                    [menuItems]="getRowMenuItems(store.id!)" />
+                  <!--END::Activate / Deactivate / Delete-->
+                </div>
+              }
+              <!--END::Admin Actions-->
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+    <!--END::Cards View-->
+
+    <!--START::List View-->
+    @if (!loading() && !error() && viewMode() === 'list') {
+      <table class="table align-middle table-row-dashed fs-6 gy-5">
+        <thead>
+          <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+
+            <!--START::Select All (Admin)-->
+            @if (auth.isAdmin()) {
+              <th class="w-30px">
+                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                  <input class="form-check-input" type="checkbox"
+                    [checked]="isAllSelected()" (change)="toggleAll()" />
+                </div>
+              </th>
+            }
+            <!--END::Select All (Admin)-->
+
+            <th class="w-30px">{{ 'common.number' | translate }}</th>
+            <th class="w-50px">{{ 'common.logo' | translate }}</th>
+            <th class="min-w-175px">{{ 'common.name' | translate }}</th>
+            <th class="min-w-100px">{{ 'store.type' | translate }}</th>
+            <th class="min-w-125px">{{ 'common.country' | translate }}</th>
+            <th class="min-w-175px">{{ 'store.websiteUrl' | translate }}</th>
+
+            <!--START::Actions Header-->
+            @if (auth.isAdmin()) {
+              <th class="text-end min-w-150px">{{ 'common.actions' | translate }}</th>
+            }
+            <!--END::Actions Header-->
+
+          </tr>
+        </thead>
+        <tbody class="text-gray-600 fw-semibold">
+
+          <!--START::Empty State-->
+          @if (filteredStores().length === 0) {
+            <tr>
+              <td [attr.colspan]="auth.isAdmin() ? 8 : 6" class="text-center text-muted py-10">
+                {{ 'common.noData' | translate }}
+              </td>
+            </tr>
+          }
+          <!--END::Empty State-->
+
+          @for (store of filteredStores(); track store.id; let i = $index) {
+            <tr [class.table-active]="isSelected(store.id!)">
+
+              <!--START::Row Checkbox (Admin)-->
+              @if (auth.isAdmin()) {
+                <td>
+                  <div class="form-check form-check-sm form-check-custom form-check-solid">
+                    <input class="form-check-input" type="checkbox"
+                      [checked]="isSelected(store.id!)"
+                      (change)="toggleOne(store.id!)" />
+                  </div>
+                </td>
+              }
+              <!--END::Row Checkbox (Admin)-->
+
+              <td>{{ i + 1 }}</td>
+
+              <!--START::Logo-->
+              <td>
+                @if (store.logoUrl) {
+                  <div class="symbol symbol-40px">
+                    <img [src]="store.logoUrl" [alt]="store.name" class="object-fit-contain" />
+                  </div>
+                } @else {
+                  <div class="symbol symbol-40px symbol-light">
+                    <span class="symbol-label bg-light-info text-info fw-bold fs-6">
+                      {{ store.name.charAt(0).toUpperCase() }}
+                    </span>
+                  </div>
+                }
+              </td>
+              <!--END::Logo-->
+
+              <!--START::Name-->
+              <td>
+                <span class="text-gray-800 fw-bold text-hover-primary fs-6">{{ store.name }}</span>
+              </td>
+              <!--END::Name-->
+
+              <!--START::Type-->
+              <td>
+                @if (store.type === 'Online') {
+                  <span class="badge badge-light-success">{{ 'store.online' | translate }}</span>
+                } @else {
+                  <span class="badge badge-light-primary">{{ 'store.physical' | translate }}</span>
+                }
+              </td>
+              <!--END::Type-->
+
+              <td class="text-muted">{{ store.country || '—' }}</td>
+
+              <!--START::Website-->
+              <td>
+                @if (store.websiteUrl) {
+                  <a [href]="store.websiteUrl" target="_blank" class="text-primary fw-semibold fs-7">
+                    {{ store.websiteUrl }}
+                  </a>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <!--END::Website-->
+
+              <!--START::Admin Actions-->
+              @if (auth.isAdmin()) {
+                <td class="text-end">
+                  <div class="d-flex justify-content-end gap-2">
+                    <!--START::Edit-->
+                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(store)">
+                      <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+                      {{ 'common.edit' | translate }}
+                    </button>
+                    <!--END::Edit-->
+                    <!--START::Activate / Deactivate / Delete-->
+                    <app-common-drop-down-menu-action-button
+                      [mainLabelKey]="store.isActive !== false ? 'common.deactivate' : 'common.activate'"
+                      [mainIconClass]="store.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+                      [mainColor]="store.isActive !== false ? 'light-warning' : 'light-success'"
+                      mainIconSize="5"
+                      [menuEnd]="true"
+                      (mainClick)="setActive(store.id!, store.isActive === false)"
+                      [menuItems]="getRowMenuItems(store.id!)" />
+                    <!--END::Activate / Deactivate / Delete-->
+                  </div>
+                </td>
+              }
+              <!--END::Admin Actions-->
+
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+    <!--END::List View-->
+
+  </div>
+</div>
+
+<!--START::Create / Edit Modal-->
+@if (editingId() !== null) {
+  <app-store-list-operation
+    [editDraft]="editDraft"
+    [isCreating]="isCreating()"
+    [storeTypes]="storeTypes"
+    (closed)="closeEdit()"
+    (saved)="saveEdit()" />
+}
+<!--END::Create / Edit Modal-->

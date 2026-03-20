@@ -9,11 +9,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
+import { ItemCategoryListOperationComponent } from './item-category-list-operation/item-category-list-operation.component';
 
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions, ItemCategoryListOperationComponent],
   templateUrl: './item-category-list.component.html',
   styleUrl: './item-category-list.component.less',
 })
@@ -22,7 +23,8 @@ export class ItemCategoryListComponent implements OnInit {
   private service   = inject(ItemCategoryService);
   private translate = inject(TranslateService);
 
-  editingId = signal<number | null>(null);
+  editingId  = signal<number | null>(null);
+  isCreating = signal(false);
   editDraft: ItemCategory = { name: { en: '', ar: '', fr: '' } };
   viewMode = signal<'list' | 'cards'>('cards');
 
@@ -36,32 +38,42 @@ export class ItemCategoryListComponent implements OnInit {
     ];
   }
 
+  openCreate(): void {
+    this.editDraft = { name: { en: '', ar: '', fr: '' }, description: { en: '', ar: '', fr: '' } };
+    this.isCreating.set(true);
+    this.editingId.set(0);
+  }
+
   openEdit(cat: ItemCategory): void {
     this.editDraft = {
       ...cat,
       name: { ...cat.name },
       description: cat.description ? { ...cat.description } : { en: '', ar: '', fr: '' }
     };
+    this.isCreating.set(false);
     this.editingId.set(cat.id!);
   }
 
   closeEdit(): void {
     this.editingId.set(null);
+    this.isCreating.set(false);
   }
 
   saveEdit(): void {
-    const id = this.editingId();
-    if (id === null) return;
-    const payload: ItemCategory = {
-      ...this.editDraft,
-      parentCategoryId: this.editDraft.parentCategoryId || null
-    };
-    this.service.update(id, payload).subscribe({
-      next: () => { this.load(); this.closeEdit(); }
-    });
+    if (this.isCreating()) {
+      const payload: ItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
+      this.service.create(payload).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+    } else {
+      const id = this.editingId();
+      if (id === null) return;
+      const payload: ItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
+      this.service.update(id, payload).subscribe({
+        next: () => { this.load(); this.closeEdit(); }
+      });
+    }
   }
 
-  editableCategoryOptions = computed<ItemCategory[]>(() => {
+  parentOptions = computed<ItemCategory[]>(() => {
     const id = this.editingId();
     return this.categories().filter(c => c.id !== id);
   });

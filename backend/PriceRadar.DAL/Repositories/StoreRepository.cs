@@ -7,6 +7,6 @@ namespace PriceRadar.DAL.Repositories;
 
 public class StoreRepository : BaseRepository<Store, StoreDocument>, IStoreRepository
 {
-    public StoreRepository(MongoDbContext context)
-        : base(context, context.Stores, "stores", StoreDocument.FromModel) { }
+	public StoreRepository(MongoDbContext context)
+		: base(context, context.Stores, "stores", StoreDocument.FromModel) { }
 }

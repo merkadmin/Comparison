@@ -46,9 +46,50 @@ export const ar: Record<string, string> = {
   'nav.prices':           'مقارنة الأسعار',
   'nav.priceHistory':     'تاريخ الأسعار',
   'nav.stores':           'المتاجر',
+  'nav.storeItems':       'منتجات المتاجر',
   'nav.shopByCategory':   'تسوق حسب القسم',
   'nav.showAll':          'عرض الكل',
   'nav.favorites':        'المفضلة',
+  'nav.settings':         'الإعدادات',
+
+  // Store Items
+  'storeItem.title':                'منتجات المتاجر',
+  'storeItem.addNew':               'إضافة منتج متجر',
+  'storeItem.item':                 'المنتج',
+  'storeItem.store':                'المتجر',
+  'storeItem.selectItem':           'اختر منتجاً',
+  'storeItem.selectStore':          'اختر متجراً',
+  'storeItem.allItems':             'كل المنتجات',
+  'storeItem.allStores':            'كل المتاجر',
+  'storeItem.deleteConfirm':        'حذف هذا المنتج من المتجر؟',
+  'storeItem.deleteSelected':       'حذف المحدد',
+  'storeItem.deactivateBulkConfirm':'تعطيل المنتجات المحددة؟',
+  'storeItem.deactivateBulkText':   'سيتم تعطيل {count} منتج/منتجات.',
+  'storeItem.deleteBulkConfirm':    'حذف المنتجات المحددة؟',
+  'storeItem.deleteBulkText':       'سيتم حذف {count} منتج/منتجات نهائياً.',
+  'storeItem.sellingPrice':         'سعر البيع',
+  'storeItem.priceType':            'نوع السعر',
+  'storeItem.priceType.Regular':    'عادي',
+  'storeItem.priceType.Premium':    'مميز',
+  'storeItem.priceType.Offer':      'عرض',
+  'storeItem.importSuccess':        'تم استيراد منتجات المتاجر بنجاح.',
+  'storeItem.importError':          'فشل استيراد منتجات المتاجر. يرجى التحقق من صيغة الملف.',
+
+  // Stores
+  'store.title':          'المتاجر',
+  'store.addNew':         'إضافة متجر',
+  'store.type':           'النوع',
+  'store.online':         'إلكتروني',
+  'store.physical':       'فيزيائي',
+  'store.websiteUrl':     'رابط الموقع',
+  'store.deleteConfirm':  'حذف هذا المتجر؟',
+  'store.importSuccess':  'تم استيراد المتاجر بنجاح.',
+  'store.importError':             'فشل استيراد المتاجر. يرجى التحقق من صيغة الملف.',
+  'store.deleteSelected':          'حذف المحدد',
+  'store.deactivateBulkConfirm':   'تعطيل المتاجر المحددة؟',
+  'store.deactivateBulkText':      'سيتم تعطيل {count} متجر/متاجر.',
+  'store.deleteBulkConfirm':       'حذف المتاجر المحددة؟',
+  'store.deleteBulkText':          'سيتم حذف {count} متجر/متاجر نهائياً.',
 
   // Item Categories
   'category.title':         'تصنيفات المنتجات',
@@ -69,6 +110,7 @@ export const ar: Record<string, string> = {
   'category.deactivateBulkText':    'أنت على وشك تعطيل {count} تصنيفات.',
   'category.searchPlaceholder': 'ابحث في التصنيفات...',
   'category.noParent': 'اختر التصنيف الأب',
+  'category.addNew': 'إضافة تصنيف',
 
   // Item Brands
   'brand.title':            'ماركات المنتجات',
@@ -81,9 +123,11 @@ export const ar: Record<string, string> = {
   'brand.importError':           'فشل استيراد الماركات.',
   'brand.deactivateBulkConfirm': 'تعطيل الماركات المحددة؟',
   'brand.deactivateBulkText':    'أنت على وشك تعطيل {count} ماركات.',
+  'brand.addNew':                'إضافة ماركة',
 
   // Items
   'item.title':             'المنتجات',
+  'item.addNew':            'إضافة منتج',
   'item.single':            'منتج',
   'item.brand':             'الماركة',
   'item.category':          'التصنيف',
@@ -116,6 +160,7 @@ export const ar: Record<string, string> = {
   'item.compare':                'قارن',
   'item.addedToFavorites':       'تمت الإضافة إلى المفضلة',
   'item.removedFromFavorites':   'تمت الإزالة من المفضلة',
+  'item.bestPrice':              'أفضل سعر',
 
   // Auth
   'auth.login':             'تسجيل الدخول',

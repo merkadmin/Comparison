@@ -10,11 +10,12 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
+import { ItemBrandListOperationComponent } from './item-brand-list-operation/item-brand-list-operation.component';
 
 @Component({
   selector: 'app-item-brand-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions, ItemBrandListOperationComponent],
   templateUrl: './item-brand-list.component.html',
   styleUrl: './item-brand-list.component.less',
 })
@@ -23,24 +24,37 @@ export class ItemBrandListComponent implements OnInit {
   private service   = inject(ItemBrandService);
   private translate = inject(TranslateService);
 
-  editingId = signal<number | null>(null);
+  editingId  = signal<number | null>(null);
+  isCreating = signal(false);
   editDraft: ItemBrand = { name: '' };
+
+  openCreate(): void {
+    this.editDraft = { name: '' };
+    this.isCreating.set(true);
+    this.editingId.set(0);
+  }
 
   openEdit(brand: ItemBrand): void {
     this.editDraft = { ...brand };
+    this.isCreating.set(false);
     this.editingId.set(brand.id!);
   }
 
   closeEdit(): void {
     this.editingId.set(null);
+    this.isCreating.set(false);
   }
 
   saveEdit(): void {
-    const id = this.editingId();
-    if (id === null) return;
-    this.service.update(id, this.editDraft).subscribe({
-      next: () => { this.load(); this.closeEdit(); }
-    });
+    if (this.isCreating()) {
+      this.service.create(this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+    } else {
+      const id = this.editingId();
+      if (id === null) return;
+      this.service.update(id, this.editDraft).subscribe({
+        next: () => { this.load(); this.closeEdit(); }
+      });
+    }
   }
 
   brands        = signal<ItemBrand[]>([]);

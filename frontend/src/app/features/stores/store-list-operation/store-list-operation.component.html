@@ -1,0 +1,68 @@
+<!--START::Create / Edit Modal-->
+<div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">
+          {{ (isCreating ? 'store.addNew' : 'common.edit') | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closed.emit()"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!--START::Name-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
+        </div>
+        <!--END::Name-->
+
+        <!--START::Type-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'store.type' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.type">
+            @for (t of storeTypes; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Type-->
+
+        <!--START::Country-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.country' | translate }}</label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.country" />
+        </div>
+        <!--END::Country-->
+
+        <!--START::Website URL-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'store.websiteUrl' | translate }}</label>
+          <input type="url" class="form-control" [(ngModel)]="editDraft.websiteUrl" />
+        </div>
+        <!--END::Website URL-->
+
+        <!--START::Logo URL-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.logoUrl' | translate }}</label>
+          <input type="url" class="form-control" [(ngModel)]="editDraft.logoUrl" />
+        </div>
+        <!--END::Logo URL-->
+
+      </div>
+
+      <div class="modal-footer">
+        <!--START::Cancel-->
+        <button type="button" class="btn btn-light" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        <!--END::Cancel-->
+        <!--START::Save-->
+        <button type="button" class="btn btn-primary" (click)="saved.emit()">{{ 'common.save' | translate }}</button>
+        <!--END::Save-->
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--END::Create / Edit Modal-->

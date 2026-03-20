@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using PriceRadar.Core.Models;
 using PriceRadar.DAL.Documents;
 
 namespace PriceRadar.DAL.Context;
@@ -12,18 +13,6 @@ public class MongoDbContext
 		var client = new MongoClient(connectionString);
 		_database = client.GetDatabase(databaseName);
 	}
-
-	public IMongoCollection<ProductDocument> Products =>
-		_database.GetCollection<ProductDocument>("products");
-
-	public IMongoCollection<StoreDocument> Stores =>
-		_database.GetCollection<StoreDocument>("stores");
-
-	public IMongoCollection<PriceListingDocument> PriceListings =>
-		_database.GetCollection<PriceListingDocument>("priceListings");
-
-	public IMongoCollection<PriceHistoryDocument> PriceHistories =>
-		_database.GetCollection<PriceHistoryDocument>("priceHistories");
 
 	public IMongoCollection<ItemCategoryDocument> ItemCategories =>
 		_database.GetCollection<ItemCategoryDocument>("ItemCategory");
@@ -49,12 +38,6 @@ public class MongoDbContext
 	public IMongoCollection<UserDocument> Users =>
 		_database.GetCollection<UserDocument>("Users");
 
-	public IMongoCollection<ProductItemTypeDocument> ProductItemTypes =>
-		_database.GetCollection<ProductItemTypeDocument>("ProductItemType");
-
-	public IMongoCollection<ProductInformationDocument> ProductInformations =>
-		_database.GetCollection<ProductInformationDocument>("ProductInformation");
-
 	public IMongoCollection<CustomerCommentDocument> CustomerComments =>
 		_database.GetCollection<CustomerCommentDocument>("CustomerComment");
 
@@ -63,6 +46,12 @@ public class MongoDbContext
 
 	public IMongoCollection<CartItemDocument> CartItems =>
 		_database.GetCollection<CartItemDocument>("CartItem");
+
+	public IMongoCollection<StoreDocument> Stores =>
+		_database.GetCollection<StoreDocument>("Store");
+
+	public IMongoCollection<Store_ItemDocuement> Store_Items =>
+		_database.GetCollection<Store_ItemDocuement>("Store_Item");
 
 	public async Task<long> GetNextSequenceAsync(string name)
 	{

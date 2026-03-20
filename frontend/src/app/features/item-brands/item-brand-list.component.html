@@ -14,7 +14,18 @@
         (bulkMainClick)="deactivateSelected()"
         (fileSelected)="onFileSelected($event)"
         (importSuccessClose)="importSuccess.set(false)"
-        (importErrorClose)="importError.set(null)" />
+        (importErrorClose)="importError.set(null)">
+
+        <!--START::Add Button (Admin)-->
+        @if (auth.isAdmin()) {
+          <button class="btn btn-sm btn-primary" (click)="openCreate()">
+            <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'brand.addNew' | translate }}
+          </button>
+        }
+        <!--END::Add Button (Admin)-->
+
+      </app-common-list-header-actions>
 
       <div class="card-body py-4">
         @if (loading()) {
@@ -111,33 +122,12 @@
       </div>
     </div>
 
+<!--START::Create / Edit Modal-->
 @if (editingId() !== null) {
-  <div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title fw-bold">{{ 'common.edit' | translate }}</h5>
-          <button type="button" class="btn-close" (click)="closeEdit()"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">{{ 'common.country' | translate }}</label>
-            <input type="text" class="form-control" [(ngModel)]="editDraft.country" />
-          </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">{{ 'common.logoUrl' | translate }}</label>
-            <input type="text" class="form-control" [(ngModel)]="editDraft.logoUrl" />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" (click)="closeEdit()">{{ 'common.cancel' | translate }}</button>
-          <button type="button" class="btn btn-primary" (click)="saveEdit()">{{ 'common.save' | translate }}</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-item-brand-list-operation
+    [editDraft]="editDraft"
+    [isCreating]="isCreating()"
+    (closed)="closeEdit()"
+    (saved)="saveEdit()" />
 }
+<!--END::Create / Edit Modal-->

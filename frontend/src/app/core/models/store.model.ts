@@ -1,7 +1,8 @@
 export type StoreType = 'Online' | 'Physical';
 
 export interface Store {
-  id?: string;
+  id?: number;
+  isActive?: boolean;
   name: string;
   type: StoreType;
   websiteUrl?: string;

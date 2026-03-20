@@ -46,9 +46,50 @@ export const fr: Record<string, string> = {
   'nav.prices':           'Comparaison des prix',
   'nav.priceHistory':     'Historique des prix',
   'nav.stores':           'Magasins',
+  'nav.storeItems':       'Articles en magasin',
   'nav.shopByCategory':   'Acheter par catégorie',
   'nav.showAll':          'Tout afficher',
   'nav.favorites':        'Favoris',
+  'nav.settings':         'Paramètres',
+
+  // Store Items
+  'storeItem.title':                'Articles en magasin',
+  'storeItem.addNew':               'Ajouter un article en magasin',
+  'storeItem.item':                 'Article',
+  'storeItem.store':                'Magasin',
+  'storeItem.selectItem':           'Sélectionner un article',
+  'storeItem.selectStore':          'Sélectionner un magasin',
+  'storeItem.allItems':             'Tous les articles',
+  'storeItem.allStores':            'Tous les magasins',
+  'storeItem.deleteConfirm':        'Supprimer cet article du magasin ?',
+  'storeItem.deleteSelected':       'Supprimer la sélection',
+  'storeItem.deactivateBulkConfirm':'Désactiver les articles sélectionnés ?',
+  'storeItem.deactivateBulkText':   '{count} article(s) seront désactivés.',
+  'storeItem.deleteBulkConfirm':    'Supprimer les articles sélectionnés ?',
+  'storeItem.deleteBulkText':       '{count} article(s) seront supprimés définitivement.',
+  'storeItem.sellingPrice':         'Prix de vente',
+  'storeItem.priceType':            'Type de prix',
+  'storeItem.priceType.Regular':    'Régulier',
+  'storeItem.priceType.Premium':    'Premium',
+  'storeItem.priceType.Offer':      'Offre',
+  'storeItem.importSuccess':        'Articles en magasin importés avec succès.',
+  'storeItem.importError':          'Échec de l\'importation. Veuillez vérifier le format du fichier.',
+
+  // Stores
+  'store.title':          'Magasins',
+  'store.addNew':         'Ajouter un magasin',
+  'store.type':           'Type',
+  'store.online':         'En ligne',
+  'store.physical':       'Physique',
+  'store.websiteUrl':     'URL du site web',
+  'store.deleteConfirm':  'Supprimer ce magasin ?',
+  'store.importSuccess':  'Magasins importés avec succès.',
+  'store.importError':             'Échec de l\'importation. Veuillez vérifier le format du fichier.',
+  'store.deleteSelected':          'Supprimer la sélection',
+  'store.deactivateBulkConfirm':   'Désactiver les magasins sélectionnés ?',
+  'store.deactivateBulkText':      '{count} magasin(s) seront désactivés.',
+  'store.deleteBulkConfirm':       'Supprimer les magasins sélectionnés ?',
+  'store.deleteBulkText':          '{count} magasin(s) seront supprimés définitivement.',
 
   // Item Categories
   'category.title':         'Catégories d\'articles',
@@ -69,6 +110,7 @@ export const fr: Record<string, string> = {
   'category.deactivateBulkText':    'Vous êtes sur le point de désactiver {count} catégories.',
   'category.searchPlaceholder': 'Rechercher des catégories...',
   'category.noParent': 'Sélectionnez la catégorie parente',
+  'category.addNew': 'Ajouter une catégorie',
 
   // Item Brands
   'brand.title':            'Marques d\'articles',
@@ -81,9 +123,11 @@ export const fr: Record<string, string> = {
   'brand.importError':           'Échec de l\'importation des marques.',
   'brand.deactivateBulkConfirm': 'Désactiver les marques sélectionnées ?',
   'brand.deactivateBulkText':    'Vous êtes sur le point de désactiver {count} marques.',
+  'brand.addNew':                'Ajouter une marque',
 
   // Items
   'item.title':             'Articles',
+  'item.addNew':            'Ajouter un article',
   'item.single':            'Article',
   'item.brand':             'Marque',
   'item.category':          'Catégorie',
@@ -116,6 +160,7 @@ export const fr: Record<string, string> = {
   'item.compare':                'Comparer',
   'item.addedToFavorites':       'Ajouté aux favoris',
   'item.removedFromFavorites':   'Retiré des favoris',
+  'item.bestPrice':              'Meilleur prix',
 
   // Auth
   'auth.login':             'Connexion',

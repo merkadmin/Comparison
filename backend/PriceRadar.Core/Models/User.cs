@@ -1,6 +1,6 @@
-namespace PriceRadar.Core.Models;
+using PriceRadar.Core.enums;
 
-public enum UserPrivilege { Regular = 0, Premium = 1, Admin = 2 }
+namespace PriceRadar.Core.Models;
 
 public class User
 {
@@ -11,7 +11,7 @@ public class User
 	public string Login { get; set; } = string.Empty;
 	public string? PasswordHash { get; set; }
 	public string Email { get; set; } = string.Empty;
-	public UserPrivilege Privilege { get; set; } = UserPrivilege.Regular;
+	public DBUserPrivilege Privilege { get; set; } = DBUserPrivilege.Regular;
 	public string? GoogleId { get; set; }
 	public string? AvatarUrl { get; set; }
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

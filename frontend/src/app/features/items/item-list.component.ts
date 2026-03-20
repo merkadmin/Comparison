@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ItemService } from '../../core/services/item.service';
+import { StoreItemService } from '../../core/services/store-item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemImageService } from '../../core/services/item-image.service';
@@ -14,6 +15,7 @@ import { ProductItemTypeService } from '../../core/services/product-item-type.se
 import { ProductInformationService } from '../../core/services/product-information.service';
 import { UserActivityService } from '../../core/services/user-activity.service';
 import { Item } from '../../core/models/item.model';
+import { StoreItem } from '../../core/models/store-item.model';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { ItemBrand } from '../../core/models/item-brand.model';
 import { ProductItemType } from '../../core/models/product-item-type.model';
@@ -24,6 +26,7 @@ import { CommonSelectComponent } from '../../shared/components/common-select/com
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonImageUploadButton } from '../../shared/components/commonActions/common-image-upload-button/common-image-upload-button';
 import { GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
+import { computedColClass } from '../../shared/helpers/grid-columns.helper';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemListOperationComponent } from './item-list-operation/item-list-operation.component';
 
@@ -35,44 +38,72 @@ import { ItemListOperationComponent } from './item-list-operation/item-list-oper
   styleUrl: './item-list.component.less',
 })
 export class ItemListComponent implements OnInit, OnDestroy {
-  auth                    = inject(AuthService);
-  private itemService     = inject(ItemService);
+  auth = inject(AuthService);
+  private itemService = inject(ItemService);
+  private storeItemService = inject(StoreItemService);
   private categoryService = inject(ItemCategoryService);
-  private brandService    = inject(ItemBrandService);
-  private imageService    = inject(ItemImageService);
-  private typeService     = inject(ProductItemTypeService);
-  private infoService     = inject(ProductInformationService);
-  userActivity            = inject(UserActivityService);
-  private translate       = inject(TranslateService);
-  private route           = inject(ActivatedRoute);
-
-  editingId       = signal<number | null>(null);
+  private brandService = inject(ItemBrandService);
+  private imageService = inject(ItemImageService);
+  private typeService = inject(ProductItemTypeService);
+  private infoService = inject(ProductInformationService);
+  private translate = inject(TranslateService);
+  private route = inject(ActivatedRoute);
+  private querySub!: Subscription;
+  categories = signal<ItemCategory[]>([]);
+  userActivity = inject(UserActivityService);
+  brands = signal<ItemBrand[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  selectedCategoryId = signal<number | null>(null);
+  selectedBrandId = signal<number | null>(null);
+  searchQuery = signal('');
+  importing = signal(false);
+  importError = signal<string | null>(null);
+  importSuccess = signal(false);
+  selectedIds = signal<Set<number>>(new Set());
+  viewMode = signal<'list' | 'cards'>('cards');
+  colsPerRow = signal<GridColumns>(5);
+  colClass = computedColClass(this.colsPerRow);
+  editingId = signal<number | null>(null);
+  isCreating = signal(false);
   editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
   uploadingImages = signal(false);
-
-  productItemTypes   = signal<ProductItemType[]>([]);
-  productInfos       = signal<ProductInformation[]>([]);
+  productItemTypes = signal<ProductItemType[]>([]);
+  productInfos = signal<ProductInformation[]>([]);
   compareIds = signal<Set<number>>(new Set());
+
+  openCreate(): void {
+    this.editDraft = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
+    this.isCreating.set(true);
+    this.editingId.set(0);
+  }
 
   openEdit(item: Item): void {
     this.editDraft = {
       ...item,
-      images:             [...(item.images ?? [])],
-      prices:             (item.prices ?? []).map(p => ({ ...p })),
-      customerReviews:    [...(item.customerReviews ?? [])],
+      images: [...(item.images ?? [])],
+      prices: (item.prices ?? []).map(p => ({ ...p })),
+      customerReviews: [...(item.customerReviews ?? [])],
       customerCommentIds: [...(item.customerCommentIds ?? [])],
     };
+    this.isCreating.set(false);
     this.editingId.set(item.id!);
   }
 
-  closeEdit(): void { this.editingId.set(null); }
+  closeEdit(): void { this.editingId.set(null); this.isCreating.set(false); }
 
   saveEdit(): void {
-    const id = this.editingId();
-    if (id === null) return;
-    this.itemService.update(id, this.editDraft).subscribe({
-      next: () => { this.loadItems(); this.closeEdit(); }
-    });
+    if (this.isCreating()) {
+      this.itemService.create(this.editDraft).subscribe({
+        next: () => { this.loadItems(); this.closeEdit(); }
+      });
+    } else {
+      const id = this.editingId();
+      if (id === null) return;
+      this.itemService.update(id, this.editDraft).subscribe({
+        next: () => { this.loadItems(); this.closeEdit(); }
+      });
+    }
   }
 
   addPrice(): void {
@@ -88,7 +119,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
   onImageFilesSelected(event: Event): void {
     const id = this.editingId();
-    if (id === null) return;
+    if (!id) return;
     const files = Array.from((event.target as HTMLInputElement).files ?? []);
     if (!files.length) return;
 
@@ -116,12 +147,12 @@ export class ItemListComponent implements OnInit, OnDestroy {
   }
 
   removeImage(index: number): void {
-    const id   = this.editingId();
+    const id = this.editingId();
     const path = this.editDraft.images?.[index];
     if (!path) return;
 
     if (id !== null) {
-      this.imageService.delete(id, path).subscribe({ error: () => {} });
+      this.imageService.delete(id, path).subscribe({ error: () => { } });
     }
     this.editDraft.images = (this.editDraft.images ?? []).filter((_, i) => i !== index);
   }
@@ -132,11 +163,11 @@ export class ItemListComponent implements OnInit, OnDestroy {
   }
 
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
-  inCart(id: number): boolean     { return this.userActivity.cartIds().has(id); }
-  inCompare(id: number): boolean  { return this.compareIds().has(id); }
+  inCart(id: number): boolean { return this.userActivity.cartIds().has(id); }
+  inCompare(id: number): boolean { return this.compareIds().has(id); }
 
-  toggleFavorite(id: number): void  { this.userActivity.toggleFavorite(id); }
-  toggleCart(id: number): void      { this.userActivity.toggleCart(id); }
+  toggleFavorite(id: number): void { this.userActivity.toggleFavorite(id); }
+  toggleCart(id: number): void { this.userActivity.toggleCart(id); }
 
   toggleCompare(id: number): void {
     this.compareIds.update(s => {
@@ -151,29 +182,18 @@ export class ItemListComponent implements OnInit, OnDestroy {
     return this.productItemTypes().find(t => t.id === typeId)?.type ?? String(typeId);
   }
 
-  items       = signal<Item[]>([]);
-  categories  = signal<ItemCategory[]>([]);
-  brands      = signal<ItemBrand[]>([]);
-  loading     = signal(false);
-  error       = signal<string | null>(null);
-  selectedCategoryId = signal<number | null>(null);
-  selectedBrandId    = signal<number | null>(null);
-  searchQuery        = signal('');
-  importing          = signal(false);
-  importError        = signal<string | null>(null);
-  importSuccess      = signal(false);
-  selectedIds        = signal<Set<number>>(new Set());
-  viewMode           = signal<'list' | 'cards'>('cards');
-  colsPerRow         = signal<GridColumns>(5);
-  colClass           = computed(() => ({
-    1: 'col-12',
-    2: 'col-6',
-    3: 'col-4',
-    4: 'col-3',
-    5: 'col-grid-5',
-    6: 'col-2',
-  })[this.colsPerRow()]);
-  private querySub!: Subscription;
+  items = signal<Item[]>([]);
+  storeItems = signal<StoreItem[]>([]);
+  bestPriceMap = computed<Map<number, number>>(() => {
+    const map = new Map<number, number>();
+    for (const si of this.storeItems()) {
+      if (si.isActive === false) continue;
+      const cur = map.get(si.itemId);
+      if (cur === undefined || si.sellingPrice < cur) map.set(si.itemId, si.sellingPrice);
+    }
+    return map;
+  });
+  getBestPrice(itemId: number): number | null { return this.bestPriceMap().get(itemId) ?? null; }
 
   /** Override in subclasses to lock the component into favorites-only mode. */
   protected get favoritesOnly(): boolean { return this.route.snapshot.data['favoritesOnly'] ?? false; }
@@ -222,10 +242,11 @@ export class ItemListComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
-    this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => {} });
-    this.typeService.getAll().subscribe({ next: t => this.productItemTypes.set(t), error: () => {} });
-    this.infoService.getAll().subscribe({ next: i => this.productInfos.set(i), error: () => {} });
+    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => { } });
+    this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => { } });
+    this.storeItemService.getAll().subscribe({ next: si => this.storeItems.set(si), error: () => { } });
+    this.typeService.getAll().subscribe({ next: t => this.productItemTypes.set(t), error: () => { } });
+    this.infoService.getAll().subscribe({ next: i => this.productInfos.set(i), error: () => { } });
     this.userActivity.loadAll();
 
     this.querySub = this.route.queryParamMap.subscribe(params => {
@@ -309,7 +330,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
     if (!confirm('Delete this item?')) return;
     this.itemService.delete(id).subscribe({
       next: () => {
-        this.imageService.deleteAll(id).subscribe({ error: () => {} });
+        this.imageService.deleteAll(id).subscribe({ error: () => { } });
         const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
         this.loadItems();
       }
@@ -337,7 +358,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
       if (!result.isConfirmed) return;
       this.itemService.deleteMany(ids).subscribe({
         next: () => {
-          ids.forEach(id => this.imageService.deleteAll(id).subscribe({ error: () => {} }));
+          ids.forEach(id => this.imageService.deleteAll(id).subscribe({ error: () => { } }));
           this.selectedIds.set(new Set());
           this.loadItems();
         }
@@ -386,7 +407,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: () => {}
+      error: () => { }
     });
   }
 

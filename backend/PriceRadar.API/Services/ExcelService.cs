@@ -1,4 +1,5 @@
 using ClosedXML.Excel;
+using PriceRadar.Core.enums;
 using PriceRadar.Core.Models;
 
 namespace PriceRadar.API.Services;
@@ -181,7 +182,114 @@ public static class ExcelService
 		return list;
 	}
 
-	// ── Helpers ──────────────────────────────────────────────────────────────
+	// ── Store Items ──────────────────────────────────────────────────────────
+
+	public static byte[] GetStoreItemTemplate()
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("StoreItems");
+		string[] headers = ["ItemId*", "StoreId*", "SellingPrice*", "PriceType (Regular/Premium/Offer)*"];
+		WriteHeaders(ws, headers);
+
+		// Example row
+		ws.Cell(2, 1).Value = 1;
+		ws.Cell(2, 2).Value = 1;
+		ws.Cell(2, 3).Value = 99.99;
+		ws.Cell(2, 4).Value = "Regular";
+		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
+		ws.Row(2).Style.Font.Italic = true;
+
+		// Note row
+		ws.Cell(3, 1).Value = "↑ Example row — delete before importing";
+		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
+		ws.Cell(3, 1).Style.Font.Italic = true;
+		ws.Range(3, 1, 3, headers.Length).Merge();
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static List<Store_Item> ParseStoreItems(Stream stream)
+	{
+		using var wb = new XLWorkbook(stream);
+		var ws = wb.Worksheet(1);
+		var list = new List<Store_Item>();
+		int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+		for (int r = 2; r <= lastRow; r++)
+		{
+			if (!ws.Cell(r, 1).TryGetValue<long>(out var itemId) || itemId == 0) continue;
+			if (!ws.Cell(r, 2).TryGetValue<long>(out var storeId) || storeId == 0) continue;
+			ws.Cell(r, 3).TryGetValue<decimal>(out var price);
+			var typeStr = ws.Cell(r, 4).GetString().Trim();
+			var priceType = typeStr.Equals("Premium", StringComparison.OrdinalIgnoreCase) ? SellingPriceType.Premium
+			              : typeStr.Equals("Offer",   StringComparison.OrdinalIgnoreCase) ? SellingPriceType.Offer
+			              : SellingPriceType.Regular;
+			list.Add(new Store_Item { ItemId = itemId, StoreId = storeId, SellingPrice = price, SellingPriceTypeId = priceType });
+		}
+		return list;
+	}
+
+	// ── Stores ───────────────────────────────────────────────────────────────
+
+	public static byte[] GetStoreTemplate()
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("Stores");
+		string[] headers = ["Name*", "Type (Online/Physical)*", "Country", "WebsiteUrl", "LogoUrl"];
+		WriteHeaders(ws, headers);
+
+		// Example row
+		ws.Cell(2, 1).Value = "Amazon";
+		ws.Cell(2, 2).Value = "Online";
+		ws.Cell(2, 3).Value = "USA";
+		ws.Cell(2, 4).Value = "https://www.amazon.com";
+		ws.Cell(2, 5).Value = "https://logo.amazon.com/logo.png";
+		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
+		ws.Row(2).Style.Font.Italic = true;
+
+		// Note row
+		ws.Cell(3, 1).Value = "↑ Example row — delete before importing";
+		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
+		ws.Cell(3, 1).Style.Font.Italic = true;
+		ws.Range(3, 1, 3, headers.Length).Merge();
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static List<Store> ParseStores(Stream stream)
+	{
+		using var wb = new XLWorkbook(stream);
+		var ws = wb.Worksheet(1);
+		var list = new List<Store>();
+		int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+		for (int r = 2; r <= lastRow; r++)
+		{
+			var name = ws.Cell(r, 1).GetString().Trim();
+			if (string.IsNullOrEmpty(name)) continue;
+
+			var typeStr = ws.Cell(r, 2).GetString().Trim();
+			var storeType = typeStr.Equals("Physical", StringComparison.OrdinalIgnoreCase)
+				? DBStoreType.Physical
+				: DBStoreType.Online;
+
+			list.Add(new Store
+			{
+				Name       = name,
+				StoreTypeId = storeType,
+				Country    = NullIfEmpty(ws.Cell(r, 3).GetString()) ?? string.Empty,
+				WebsiteUrl = NullIfEmpty(ws.Cell(r, 4).GetString()),
+				LogoUrl    = NullIfEmpty(ws.Cell(r, 5).GetString()),
+			});
+		}
+		return list;
+	}
+
+	// ── Helpers ───────────────────────────────────────────────────────────────
 
 	private static void WriteHeaders(IXLWorksheet ws, string[] headers)
 	{

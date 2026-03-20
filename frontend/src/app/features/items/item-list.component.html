@@ -22,6 +22,15 @@
       </app-common-select>
     }
     <!--END::Category & Brand Filters-->
+
+    <!--START::Add Button (Admin)-->
+    @if (auth.isAdmin() && !favoritesOnly) {
+      <button class="btn btn-sm btn-primary" (click)="openCreate()">
+        <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
+        {{ 'item.addNew' | translate }}
+      </button>
+    }
+    <!--END::Add Button (Admin)-->
   </app-common-list-header-actions>
   <!--END::Header Actions-->
 
@@ -88,6 +97,14 @@
                 @if (item.description) {
                   <p class="text-muted fs-7 mb-0 item-card__desc fs-3">{{ item.description }}</p>
                 }
+                <!--START::Best Price-->
+                @if (getBestPrice(item.id!) !== null) {
+                  <div class="d-flex align-items-center gap-1 mt-auto pt-2 border-top">
+                    <span class="text-muted fs-6">{{ 'item.bestPrice' | translate }}:</span>
+                    <span class="fw-bold text-primary fs-1">{{ getBestPrice(item.id!) | number:'1.2-2' }}</span>
+                  </div>
+                }
+                <!--END::Best Price-->
               </div>
               <!--END::Card Info-->
 
@@ -178,7 +195,8 @@
             <th class="min-w-175px">{{ 'common.name' | translate }}</th>
             <th class="min-w-125px">{{ 'item.brand' | translate }}</th>
             <th class="min-w-200px">{{ 'item.category' | translate }}</th>
-            
+            <th class="min-w-125px">{{ 'item.bestPrice' | translate }}</th>
+
             <!--START::Actions Header-->
             @if (auth.isAdmin()) {
               <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
@@ -195,7 +213,7 @@
           <!--START::Empty State-->
           @if (filteredItems().length === 0) {
             <tr>
-              <td [attr.colspan]="auth.isAdmin() ? 7 : 6" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+              <td [attr.colspan]="auth.isAdmin() ? 8 : 7" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
             </tr>
           }
           <!--END::Empty State-->
@@ -264,6 +282,13 @@
 
               <td><span class="badge badge-light-primary">{{ getBrandName(item.brandId) }}</span></td>
               <td><span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span></td>
+              <td>
+                @if (getBestPrice(item.id!) !== null) {
+                  <span class="fw-bold text-primary">{{ getBestPrice(item.id!) | number:'1.2-2' }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
 
               <!--START::User Actions-->
               @if (!auth.isAdmin()) {
@@ -329,6 +354,7 @@
 @if (editingId() !== null) {
   <app-item-list-operation
     [editDraft]="editDraft"
+    [isCreating]="isCreating()"
     [brands]="brands()"
     [categories]="categories()"
     [productItemTypes]="productItemTypes()"

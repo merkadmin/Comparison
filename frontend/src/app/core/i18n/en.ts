@@ -34,7 +34,7 @@ export const en: Record<string, string> = {
   'common.uploadImages': 'Upload',
 
   // Navigation
-  'nav.dashboard':        'Dashboard',
+  'nav.dashboard':        'Home',
   'nav.home':             'Home',
   'nav.items':            'Items',
   'nav.itemList':         'Items List',
@@ -46,9 +46,50 @@ export const en: Record<string, string> = {
   'nav.prices':           'Price Comparison',
   'nav.priceHistory':     'Price History',
   'nav.stores':           'Stores',
+  'nav.storeItems':       'Store Items',
   'nav.shopByCategory':   'Shop by Category',
   'nav.showAll':          'Show All',
   'nav.favorites':        'Favorites',
+  'nav.settings':         'Settings',
+
+  // Store Items
+  'storeItem.title':                'Store Items',
+  'storeItem.addNew':               'Add Store Item',
+  'storeItem.item':                 'Item',
+  'storeItem.store':                'Store',
+  'storeItem.selectItem':           'Select an item',
+  'storeItem.selectStore':          'Select a store',
+  'storeItem.allItems':             'All Items',
+  'storeItem.allStores':            'All Stores',
+  'storeItem.deleteConfirm':        'Delete this store item?',
+  'storeItem.deleteSelected':       'Delete Selected',
+  'storeItem.deactivateBulkConfirm':'Deactivate selected store items?',
+  'storeItem.deactivateBulkText':   '{count} store item(s) will be deactivated.',
+  'storeItem.deleteBulkConfirm':    'Delete selected store items?',
+  'storeItem.deleteBulkText':       '{count} store item(s) will be permanently deleted.',
+  'storeItem.sellingPrice':         'Selling Price',
+  'storeItem.priceType':            'Price Type',
+  'storeItem.priceType.Regular':    'Regular',
+  'storeItem.priceType.Premium':    'Premium',
+  'storeItem.priceType.Offer':      'Offer',
+  'storeItem.importSuccess':        'Store items imported successfully.',
+  'storeItem.importError':          'Failed to import store items. Please check the file format.',
+
+  // Stores
+  'store.title':          'Stores',
+  'store.addNew':         'Add Store',
+  'store.type':           'Type',
+  'store.online':         'Online',
+  'store.physical':       'Physical',
+  'store.websiteUrl':     'Website URL',
+  'store.deleteConfirm':  'Delete this store?',
+  'store.importSuccess':  'Stores imported successfully.',
+  'store.importError':             'Failed to import stores. Please check the file format.',
+  'store.deleteSelected':          'Delete Selected',
+  'store.deactivateBulkConfirm':   'Deactivate selected stores?',
+  'store.deactivateBulkText':      '{count} store(s) will be deactivated.',
+  'store.deleteBulkConfirm':       'Delete selected stores?',
+  'store.deleteBulkText':          '{count} store(s) will be permanently deleted.',
 
   // Item Categories
   'category.title':         'Item Categories',
@@ -69,6 +110,7 @@ export const en: Record<string, string> = {
   'category.deactivateBulkText':    'You are about to deactivate {count} categories.',
   'category.searchPlaceholder': 'Search categories...',
   'category.noParent': 'Select Parent Category',
+  'category.addNew': 'Add Category',
 
   // Item Brands
   'brand.title':            'Item Brands',
@@ -81,9 +123,11 @@ export const en: Record<string, string> = {
   'brand.importError':           'Failed to import brands.',
   'brand.deactivateBulkConfirm': 'Deactivate selected brands?',
   'brand.deactivateBulkText':    'You are about to deactivate {count} brands.',
+  'brand.addNew':                'Add Brand',
 
   // Items
   'item.title':             'Items',
+  'item.addNew':            'Add Item',
   'item.single':            'Item',
   'item.brand':             'Brand',
   'item.category':          'Category',
@@ -116,6 +160,7 @@ export const en: Record<string, string> = {
   'item.compare':                'Compare',
   'item.addedToFavorites':       'Added to favorites',
   'item.removedFromFavorites':   'Removed from favorites',
+  'item.bestPrice':              'Best Price',
 
   // Auth
   'auth.login':             'Login',
