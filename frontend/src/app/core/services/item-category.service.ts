@@ -1,26 +1,26 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, shareReplay } from 'rxjs';
 import { ApiService } from './api.service';
-import { ItemCategory } from '../models/item-category.model';
+import { IItemCategory } from '../models/interfaces/IItemCategory';
 
 @Injectable({ providedIn: 'root' })
 export class ItemCategoryService {
   private api = inject(ApiService);
-  private all$?: Observable<ItemCategory[]>;
+  private all$?: Observable<IItemCategory[]>;
 
-  getAll(): Observable<ItemCategory[]> {
-    return this.all$ ??= this.api.get<ItemCategory[]>('/itemcategories/getAll').pipe(shareReplay(1));
+  getAll(): Observable<IItemCategory[]> {
+    return this.all$ ??= this.api.get<IItemCategory[]>('/itemcategories/getAll').pipe(shareReplay(1));
   }
 
-  getById(id: number): Observable<ItemCategory> {
-    return this.api.get<ItemCategory>(`/itemcategories/${id}`);
+  getById(id: number): Observable<IItemCategory> {
+    return this.api.get<IItemCategory>(`/itemcategories/${id}`);
   }
 
-  create(category: ItemCategory): Observable<ItemCategory> {
-    return this.api.post<ItemCategory>('/itemcategories', category);
+  create(category: IItemCategory): Observable<IItemCategory> {
+    return this.api.post<IItemCategory>('/itemcategories', category);
   }
 
-  update(id: number, category: ItemCategory): Observable<void> {
+  update(id: number, category: IItemCategory): Observable<void> {
     return this.api.put<void>(`/itemcategories/${id}`, category);
   }
 

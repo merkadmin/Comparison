@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
-import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
+import { MultiLangString } from '../../core/models/interfaces/LocalizedString';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemCategoryListOperationComponent } from './item-category-list-operation/item-category-list-operation.component';
+import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
 
 @Component({
   selector: 'app-item-category-list',
@@ -19,13 +20,13 @@ import { ItemCategoryListOperationComponent } from './item-category-list-operati
   styleUrl: './item-category-list.component.less',
 })
 export class ItemCategoryListComponent implements OnInit {
-  auth              = inject(AuthService);
-  private service   = inject(ItemCategoryService);
+  auth = inject(AuthService);
+  private service = inject(ItemCategoryService);
   private translate = inject(TranslateService);
 
-  editingId  = signal<number | null>(null);
+  editingId = signal<number | null>(null);
   isCreating = signal(false);
-  editDraft: ItemCategory = { name: { en: '', ar: '', fr: '' } };
+  editDraft: IItemCategory = { name: { en: '', ar: '', fr: '' } };
   viewMode = signal<'list' | 'cards'>('cards');
 
   bulkMenuItems: ActionMenuItem[] = [
@@ -44,7 +45,7 @@ export class ItemCategoryListComponent implements OnInit {
     this.editingId.set(0);
   }
 
-  openEdit(cat: ItemCategory): void {
+  openEdit(cat: IItemCategory): void {
     this.editDraft = {
       ...cat,
       name: { ...cat.name },
@@ -61,36 +62,36 @@ export class ItemCategoryListComponent implements OnInit {
 
   saveEdit(): void {
     if (this.isCreating()) {
-      const payload: ItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
+      const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
       this.service.create(payload).subscribe({ next: () => { this.load(); this.closeEdit(); } });
     } else {
       const id = this.editingId();
       if (id === null) return;
-      const payload: ItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
+      const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
       this.service.update(id, payload).subscribe({
         next: () => { this.load(); this.closeEdit(); }
       });
     }
   }
 
-  parentOptions = computed<ItemCategory[]>(() => {
+  parentOptions = computed<IItemCategory[]>(() => {
     const id = this.editingId();
     return this.categories().filter(c => c.id !== id);
   });
 
-  localize(ls: LocalizedString): string {
+  localize(ls: MultiLangString): string {
     const lang = this.translate.currentLang();
     return ls[lang] || ls.en;
   }
 
-  categories = signal<ItemCategory[]>([]);
+  categories = signal<IItemCategory[]>([]);
 
-  sortedCategories = computed<ItemCategory[]>(() => {
+  sortedCategories = computed<IItemCategory[]>(() => {
     const all = this.categories();
     const lang = this.translate.currentLang();
-    const loc = (ls: LocalizedString) => ls[lang] || ls.en;
+    const loc = (ls: MultiLangString) => ls[lang] || ls.en;
 
-    const flatten = (parentId: number | null): ItemCategory[] =>
+    const flatten = (parentId: number | null): IItemCategory[] =>
       all
         .filter(c => (c.parentCategoryId ?? null) === parentId)
         .sort((a, b) => loc(a.name).localeCompare(loc(b.name)))
@@ -100,7 +101,7 @@ export class ItemCategoryListComponent implements OnInit {
   });
   searchTerm = signal('');
 
-  visibleCategories = computed<ItemCategory[]>(() => {
+  visibleCategories = computed<IItemCategory[]>(() => {
     const term = this.searchTerm().toLowerCase().trim();
     if (!term) return this.sortedCategories();
     return this.sortedCategories().filter(cat =>
@@ -132,7 +133,7 @@ export class ItemCategoryListComponent implements OnInit {
     });
   }
 
-  getDepth(cat: ItemCategory): number {
+  getDepth(cat: IItemCategory): number {
     const all = this.categories();
     let depth = 0;
     let parentId = cat.parentCategoryId;
@@ -180,13 +181,13 @@ export class ItemCategoryListComponent implements OnInit {
         : this.translate.translate('category.deleteConfirmText');
 
       Swal.fire({
-        title:              this.translate.translate('category.deleteConfirm'),
+        title: this.translate.translate('category.deleteConfirm'),
         text,
-        icon:               'warning',
-        showCancelButton:   true,
+        icon: 'warning',
+        showCancelButton: true,
         confirmButtonColor: '#f1416c',
-        confirmButtonText:  this.translate.translate('common.delete'),
-        cancelButtonText:   this.translate.translate('common.cancel'),
+        confirmButtonText: this.translate.translate('common.delete'),
+        cancelButtonText: this.translate.translate('common.cancel'),
       }).then(result => {
         if (!result.isConfirmed) return;
         this.service.delete(id).subscribe({
@@ -265,13 +266,13 @@ export class ItemCategoryListComponent implements OnInit {
           : this.translate.translate('category.deactivateConfirmText');
 
         Swal.fire({
-          title:              this.translate.translate('category.deactivateConfirm'),
+          title: this.translate.translate('category.deactivateConfirm'),
           text,
-          icon:               'warning',
-          showCancelButton:   true,
+          icon: 'warning',
+          showCancelButton: true,
           confirmButtonColor: '#f39c12',
-          confirmButtonText:  this.translate.translate('common.deactivate'),
-          cancelButtonText:   this.translate.translate('common.cancel'),
+          confirmButtonText: this.translate.translate('common.deactivate'),
+          cancelButtonText: this.translate.translate('common.cancel'),
         }).then(result => {
           if (!result.isConfirmed) return;
           this.doSetActive(id, isActive);

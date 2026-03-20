@@ -53,6 +53,22 @@ public class MongoDbContext
 	public IMongoCollection<Store_ItemDocuement> Store_Items =>
 		_database.GetCollection<Store_ItemDocuement>("Store_Item");
 
+	// ── Static lookup collections (_s = static/seed) ─────────────────────────
+	public IMongoCollection<StaticLookupDocument> StoreTypes =>
+		_database.GetCollection<StaticLookupDocument>("StoreType_s");
+
+	public IMongoCollection<StaticLookupDocument> DBStores =>
+		_database.GetCollection<StaticLookupDocument>("DBStore_s");
+
+	public IMongoCollection<StaticLookupDocument> PriceHistoryTypes =>
+		_database.GetCollection<StaticLookupDocument>("PriceHistoryType_s");
+
+	public IMongoCollection<StaticLookupDocument> SellingPriceTypes =>
+		_database.GetCollection<StaticLookupDocument>("SellingPriceType_s");
+
+	public IMongoCollection<StaticLookupDocument> UserPrivileges =>
+		_database.GetCollection<StaticLookupDocument>("UserPrivilege_s");
+
 	public async Task<long> GetNextSequenceAsync(string name)
 	{
 		var filter = Builders<SequenceDocument>.Filter.Eq(s => s.Name, name);

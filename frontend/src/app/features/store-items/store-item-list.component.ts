@@ -6,7 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { StoreItemService } from '../../core/services/store-item.service';
 import { ItemService } from '../../core/services/item.service';
 import { StoreService } from '../../core/services/store.service';
-import { StoreItem } from '../../core/models/store-item.model';
+import { StoreItem, SellingPriceType } from '../../core/models/store-item.model';
 import { Item } from '../../core/models/item.model';
 import { Store } from '../../core/models/store.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
@@ -26,26 +26,66 @@ import { computedColClass } from '../../shared/helpers/grid-columns.helper';
   templateUrl: './store-item-list.component.html',
 })
 export class StoreItemListComponent implements OnInit {
-  auth              = inject(AuthService);
-  private service   = inject(StoreItemService);
-  private itemSvc   = inject(ItemService);
-  private storeSvc  = inject(StoreService);
+  auth = inject(AuthService);
+  private service = inject(StoreItemService);
+  private itemSvc = inject(ItemService);
+  private storeSvc = inject(StoreService);
   private translate = inject(TranslateService);
 
-  readonly sellingPriceTypes: StoreItem['sellingPriceTypeId'][] = ['Regular', 'Premium', 'Offer'];
+  readonly sellingPriceTypes: SellingPriceType[] =
+    [
+      SellingPriceType.Regular,
+      SellingPriceType.Premium,
+      SellingPriceType.Offer
+    ];
 
   // ── View ──────────────────────────────────────────────────────────────────
-  viewMode   = signal<ViewMode>('cards');
+  viewMode = signal<ViewMode>('cards');
   colsPerRow = signal<GridColumns>(5);
-  colClass   = computedColClass(this.colsPerRow);
+  colClass = computedColClass(this.colsPerRow);
 
   // ── Edit / Create ─────────────────────────────────────────────────────────
-  editingId  = signal<number | null>(null);
+  editingId = signal<number | null>(null);
   isCreating = signal(false);
-  editDraft: StoreItem = { itemId: 0, storeId: 0, sellingPrice: 0, sellingPriceTypeId: 'Regular' };
+  editDraft: StoreItem = { itemId: 0, storeId: 0, sellingPrice: 0, sellingPriceTypeId: SellingPriceType.Regular };
+
+  // ── Data ──────────────────────────────────────────────────────────────────
+  storeItems = signal<StoreItem[]>([]);
+  items = signal<Item[]>([]);
+  stores = signal<Store[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  searchQuery = signal('');
+  selectedItemId = signal<number | null>(null);
+  selectedStoreId = signal<number | null>(null);
+  importing = signal(false);
+  importError = signal<string | null>(null);
+  importSuccess = signal(false);
+  selectedIds = signal<Set<number>>(new Set());
+
+  itemOptions = computed<SelectOption[]>(() => this.items().map(i => ({ value: i.id, label: i.name })));
+  storeOptions = computed<SelectOption[]>(() => this.stores().map(s => ({ value: s.id, label: s.name })));
+
+  filteredStoreItems = computed<StoreItem[]>(() => {
+    const q = this.searchQuery().trim().toLowerCase();
+    const itemId = this.selectedItemId();
+    const storeId = this.selectedStoreId();
+    return this.storeItems()
+      .filter(si => {
+        if (itemId !== null && si.itemId !== itemId) return false;
+        if (storeId !== null && si.storeId !== storeId) return false;
+        if (q) {
+          const matchItem = this.getItemName(si.itemId).toLowerCase().includes(q);
+          const matchStore = this.getStoreName(si.storeId).toLowerCase().includes(q);
+          if (!matchItem && !matchStore) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => a.sellingPrice - b.sellingPrice);
+  });
 
   openCreate(): void {
-    this.editDraft = { itemId: 0, storeId: 0, sellingPrice: 0, sellingPriceTypeId: 'Regular' };
+    this.editDraft = { itemId: 0, storeId: 0, sellingPrice: 0, sellingPriceTypeId: SellingPriceType.Regular };
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -70,41 +110,6 @@ export class StoreItemListComponent implements OnInit {
       this.service.update(id, this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
     }
   }
-
-  // ── Data ──────────────────────────────────────────────────────────────────
-  storeItems    = signal<StoreItem[]>([]);
-  items         = signal<Item[]>([]);
-  stores        = signal<Store[]>([]);
-  loading       = signal(false);
-  error         = signal<string | null>(null);
-  searchQuery      = signal('');
-  selectedItemId   = signal<number | null>(null);
-  selectedStoreId  = signal<number | null>(null);
-  importing     = signal(false);
-  importError   = signal<string | null>(null);
-  importSuccess = signal(false);
-  selectedIds   = signal<Set<number>>(new Set());
-
-  itemOptions  = computed<SelectOption[]>(() => this.items().map(i  => ({ value: i.id,  label: i.name })));
-  storeOptions = computed<SelectOption[]>(() => this.stores().map(s => ({ value: s.id,  label: s.name })));
-
-  filteredStoreItems = computed<StoreItem[]>(() => {
-    const q       = this.searchQuery().trim().toLowerCase();
-    const itemId  = this.selectedItemId();
-    const storeId = this.selectedStoreId();
-    return this.storeItems()
-      .filter(si => {
-        if (itemId  !== null && si.itemId  !== itemId)  return false;
-        if (storeId !== null && si.storeId !== storeId) return false;
-        if (q) {
-          const matchItem  = this.getItemName(si.itemId).toLowerCase().includes(q);
-          const matchStore = this.getStoreName(si.storeId).toLowerCase().includes(q);
-          if (!matchItem && !matchStore) return false;
-        }
-        return true;
-      })
-      .sort((a, b) => a.sellingPrice - b.sellingPrice);
-  });
 
   // ── Lookups ───────────────────────────────────────────────────────────────
   getItemName(itemId: number): string {
@@ -175,7 +180,7 @@ export class StoreItemListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#f1416c',
       confirmButtonText: this.translate.translate('common.delete'),
-      cancelButtonText:  this.translate.translate('common.cancel'),
+      cancelButtonText: this.translate.translate('common.cancel'),
     }).then(result => {
       if (!result.isConfirmed) return;
       this.service.delete(id).subscribe({
@@ -192,12 +197,12 @@ export class StoreItemListComponent implements OnInit {
     const ids = [...this.selectedIds()];
     Swal.fire({
       title: this.translate.translate('storeItem.deactivateBulkConfirm'),
-      text:  this.translate.translate('storeItem.deactivateBulkText').replace('{count}', String(ids.length)),
+      text: this.translate.translate('storeItem.deactivateBulkText').replace('{count}', String(ids.length)),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#f39c12',
       confirmButtonText: this.translate.translate('common.deactivate'),
-      cancelButtonText:  this.translate.translate('common.cancel'),
+      cancelButtonText: this.translate.translate('common.cancel'),
     }).then(result => {
       if (!result.isConfirmed) return;
       this.service.setActiveMany(ids, false).subscribe({
@@ -213,12 +218,12 @@ export class StoreItemListComponent implements OnInit {
     const ids = [...this.selectedIds()];
     Swal.fire({
       title: this.translate.translate('storeItem.deleteBulkConfirm'),
-      text:  this.translate.translate('storeItem.deleteBulkText').replace('{count}', String(ids.length)),
+      text: this.translate.translate('storeItem.deleteBulkText').replace('{count}', String(ids.length)),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#f1416c',
       confirmButtonText: this.translate.translate('common.delete'),
-      cancelButtonText:  this.translate.translate('common.cancel'),
+      cancelButtonText: this.translate.translate('common.cancel'),
     }).then(result => {
       if (!result.isConfirmed) return;
       this.service.deleteMany(ids).subscribe({
@@ -238,7 +243,7 @@ export class StoreItemListComponent implements OnInit {
         a.click();
         URL.revokeObjectURL(url);
       },
-      error: () => {}
+      error: () => { }
     });
   }
 

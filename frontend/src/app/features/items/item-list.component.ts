@@ -16,7 +16,7 @@ import { ProductInformationService } from '../../core/services/product-informati
 import { UserActivityService } from '../../core/services/user-activity.service';
 import { Item } from '../../core/models/item.model';
 import { StoreItem } from '../../core/models/store-item.model';
-import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
+import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
 import { ItemBrand } from '../../core/models/item-brand.model';
 import { ProductItemType } from '../../core/models/product-item-type.model';
 import { ProductInformation } from '../../core/models/product-information.model';
@@ -29,6 +29,7 @@ import { GridColumns } from '../../shared/components/commonActions/common-grid-c
 import { computedColClass } from '../../shared/helpers/grid-columns.helper';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemListOperationComponent } from './item-list-operation/item-list-operation.component';
+import { MultiLangString } from '../../core/models/interfaces/LocalizedString';
 
 @Component({
   selector: 'app-item-list',
@@ -49,7 +50,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   private translate = inject(TranslateService);
   private route = inject(ActivatedRoute);
   private querySub!: Subscription;
-  categories = signal<ItemCategory[]>([]);
+  categories = signal<IItemCategory[]>([]);
   userActivity = inject(UserActivityService);
   brands = signal<ItemBrand[]>([]);
   loading = signal(false);
@@ -157,7 +158,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
     this.editDraft.images = (this.editDraft.images ?? []).filter((_, i) => i !== index);
   }
 
-  localize(ls: LocalizedString): string {
+  localize(ls: MultiLangString): string {
     const lang = this.translate.currentLang();
     return ls[lang] || ls.en;
   }
@@ -225,7 +226,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   brandOptions = computed<SelectOption[]>(() =>
     this.brands().map(b => ({ value: b.id, label: b.name }))
   );
-  private categoryMap = computed<Map<number, ItemCategory>>(() =>
+  private categoryMap = computed<Map<number, IItemCategory>>(() =>
     new Map(this.categories().map(c => [c.id!, c]))
   );
   private brandMap = computed<Map<number, ItemBrand>>(() =>

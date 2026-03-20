@@ -5,7 +5,8 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
 import { ItemImageService } from '../../../core/services/item-image.service';
 import { Item } from '../../../core/models/item.model';
-import { ItemCategory, LocalizedString } from '../../../core/models/item-category.model';
+import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
+import { MultiLangString } from '../../../core/models/interfaces/LocalizedString';
 import { ItemBrand } from '../../../core/models/item-brand.model';
 import { ProductItemType } from '../../../core/models/product-item-type.model';
 import { ProductInformation } from '../../../core/models/product-information.model';
@@ -23,7 +24,7 @@ export class ItemListOperationComponent {
   @Input() editDraft!: Item;
   @Input() isCreating = false;
   @Input() brands: ItemBrand[] = [];
-  @Input() categories: ItemCategory[] = [];
+  @Input() categories: IItemCategory[] = [];
   @Input() productItemTypes: ProductItemType[] = [];
   @Input() productInfos: ProductInformation[] = [];
   @Input() uploadingImages = false;
@@ -39,7 +40,7 @@ export class ItemListOperationComponent {
     return this.imageSvc.resolveUrl(path);
   }
 
-  localize(ls: LocalizedString): string {
+  localize(ls: MultiLangString): string {
     const lang = this.translate.currentLang();
     return ls[lang] || ls.en;
   }

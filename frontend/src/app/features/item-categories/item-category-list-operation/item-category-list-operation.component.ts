@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
-import { ItemCategory, LocalizedString } from '../../../core/models/item-category.model';
+import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
+import { MultiLangString } from '../../../core/models/interfaces/LocalizedString';
 
 @Component({
   selector: 'app-item-category-list-operation',
@@ -14,14 +15,14 @@ import { ItemCategory, LocalizedString } from '../../../core/models/item-categor
 export class ItemCategoryListOperationComponent {
   private translate = inject(TranslateService);
 
-  @Input() editDraft!: ItemCategory;
+  @Input() editDraft!: IItemCategory;
   @Input() isCreating = false;
-  @Input() parentOptions: ItemCategory[] = [];
+  @Input() parentOptions: IItemCategory[] = [];
 
   @Output() closed = new EventEmitter<void>();
   @Output() saved  = new EventEmitter<void>();
 
-  localize(ls: LocalizedString): string {
+  localize(ls: MultiLangString): string {
     const lang = this.translate.currentLang();
     return ls[lang] || ls.en;
   }

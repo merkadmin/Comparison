@@ -25,7 +25,7 @@ export class StoreListComponent implements OnInit {
   private service = inject(StoreService);
   private translate = inject(TranslateService);
 
-  readonly storeTypes: StoreType[] = ['Online', 'Physical'];
+  readonly storeTypes: StoreType[] = [StoreType.Online, StoreType.Physical];
 
   // ── View ──────────────────────────────────────────────────────────────────
   viewMode = signal<ViewMode>('cards');
@@ -35,7 +35,7 @@ export class StoreListComponent implements OnInit {
   // ── Edit / Create ─────────────────────────────────────────────────────────
   editingId = signal<number | null>(null);
   isCreating = signal(false);
-  editDraft: Store = { name: '', type: 'Online', country: '' };
+  editDraft: Store = { name: '', type: StoreType.Online, country: '' };
 
   // ── Data ──────────────────────────────────────────────────────────────────
   stores = signal<Store[]>([]);
@@ -62,7 +62,7 @@ export class StoreListComponent implements OnInit {
   ];
 
   openCreate(): void {
-    this.editDraft = { name: '', type: 'Online', country: '' };
+    this.editDraft = { name: '', type: StoreType.Online, country: '' };
     this.isCreating.set(true);
     this.editingId.set(0);
   }

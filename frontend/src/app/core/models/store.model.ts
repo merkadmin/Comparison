@@ -1,4 +1,5 @@
-export type StoreType = 'Online' | 'Physical';
+import { StoreType } from "../../shared/helpers/StaticEnums";
+export { StoreType };
 
 export interface Store {
   id?: number;

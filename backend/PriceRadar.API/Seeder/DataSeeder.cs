@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using PriceRadar.Core.enums;
 using PriceRadar.Core.Interfaces;
 using PriceRadar.Core.Models;
 using PriceRadar.DAL.Context;
@@ -25,6 +26,7 @@ public class DataSeeder
 	public async Task SeedAsync()
 	{
 		await MigrateDefaultFieldsAsync();
+		await SeedStaticLookupsAsync();
 		await SeedTableNames();
 		//await SeedCategoriesAsync();
 		//await SeedBrandsAsync();
@@ -367,6 +369,35 @@ public class DataSeeder
 	}
 
 	// Column definitions for every known entity table.
+	// ─── Static Lookups ───────────────────────────────────────────────────────
+	private async Task SeedStaticLookupsAsync()
+	{
+		await SeedLookup(_context.StoreTypes, Enum.GetValues<DBStoreType>()
+			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
+
+		await SeedLookup(_context.DBStores, Enum.GetValues<DBStore>()
+			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
+
+		await SeedLookup(_context.PriceHistoryTypes, Enum.GetValues<DBPriceHistoryType>()
+			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
+
+		await SeedLookup(_context.SellingPriceTypes, Enum.GetValues<SellingPriceType>()
+			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
+
+		await SeedLookup(_context.UserPrivileges, Enum.GetValues<DBUserPrivilege>()
+			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
+
+		Console.WriteLine("[Seeder] Static lookups seeded.");
+	}
+
+	private static async Task SeedLookup(
+		IMongoCollection<StaticLookupDocument> col,
+		IEnumerable<StaticLookupDocument> items)
+	{
+		if (await col.CountDocumentsAsync(_ => true) > 0) return;
+		await col.InsertManyAsync(items);
+	}
+
 	private static List<(string Name, string Endpoint, List<ColumnMeta> Columns)> TableMetadata() =>
 	[
 		("ItemCategory", "/itemcategories",

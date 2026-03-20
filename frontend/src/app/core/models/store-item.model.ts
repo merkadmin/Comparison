@@ -1,4 +1,5 @@
-export type SellingPriceType = 'Regular' | 'Premium' | 'Offer';
+import { SellingPriceType } from '../../shared/helpers/StaticEnums';
+export { SellingPriceType };
 
 export interface StoreItem {
   id?: number;
