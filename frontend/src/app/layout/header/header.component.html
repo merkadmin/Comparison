@@ -168,6 +168,22 @@
         </div>
         <!--end::Notifications-->
 
+        <!--begin::Cart (non-admin only)-->
+        @if (auth.currentUser() && !auth.isAdmin()) {
+          <div class="app-navbar-item ms-1 ms-md-3">
+            <div class="btn btn-icon btn-custom btn-icon-muted btn-active-light btn-active-color-primary w-35px h-35px position-relative">
+              <i class="ki-duotone ki-basket fs-2">
+                <span class="path1"></span><span class="path2"></span>
+                <span class="path3"></span><span class="path4"></span>
+              </i>
+              @if (cartCount() > 0) {
+                <span class="position-absolute top-0 start-100 translate-middle badge badge-circle badge-danger fs-10">{{ cartCount() }}</span>
+              }
+            </div>
+          </div>
+        }
+        <!--end::Cart-->
+
         <!--begin::User menu-->
         <div class="app-navbar-item ms-1 ms-md-3" id="kt_header_user_menu_toggle">
           <div class="cursor-pointer symbol symbol-35px"
@@ -206,6 +222,18 @@
                 </div>
               </div>
             </div>
+            <!--begin::Favorites (non-admin only)-->
+            @if (!auth.isAdmin()) {
+              <div class="separator my-2"></div>
+              <div class="menu-item px-5">
+                <a class="menu-link px-5" routerLink="/favorites">
+                  <i class="ki-duotone ki-heart fs-5 text-danger me-2"><span class="path1"></span><span class="path2"></span></i>
+                  {{ 'nav.favorites' | translate }}
+                </a>
+              </div>
+            }
+            <!--end::Favorites-->
+
             <div class="separator my-2"></div>
             <div class="menu-item px-5">
               <a class="menu-link px-5 text-danger" (click)="auth.logout()">

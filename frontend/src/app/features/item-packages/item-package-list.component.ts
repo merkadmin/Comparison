@@ -7,6 +7,8 @@ import { ItemPackageService } from '../../core/services/item-package.service';
 import { ItemPackage } from '../../core/models/item-package.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 
 interface PackageEditDraft {
   name: string;
@@ -21,7 +23,7 @@ interface PackageEditDraft {
 @Component({
   selector: 'app-item-package-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonListHeaderActions],
   templateUrl: './item-package-list.component.html',
   styleUrl: './item-package-list.component.less',
 })
@@ -90,6 +92,12 @@ export class ItemPackageListComponent implements OnInit {
   importError   = signal<string | null>(null);
   importSuccess = signal(false);
   selectedIds   = signal<Set<number>>(new Set());
+
+  importMenuItems: ActionMenuItem[] = [
+    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
+  ];
+
+  bulkMenuItems: ActionMenuItem[] = [];
 
   ngOnInit(): void { this.load(); }
 

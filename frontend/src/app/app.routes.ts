@@ -21,6 +21,7 @@ export const routes: Routes = [
       { path: 'item-brands', component: ItemBrandListComponent },
       { path: 'items', component: ItemListComponent },
       { path: 'item-packages', component: ItemPackageListComponent },
+      { path: 'favorites', component: ItemListComponent, data: { favoritesOnly: true } },
     ],
   },
   { path: '**', redirectTo: '' },

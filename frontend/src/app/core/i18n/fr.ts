@@ -48,6 +48,7 @@ export const fr: Record<string, string> = {
   'nav.stores':           'Magasins',
   'nav.shopByCategory':   'Acheter par catégorie',
   'nav.showAll':          'Tout afficher',
+  'nav.favorites':        'Favoris',
 
   // Item Categories
   'category.title':         'Catégories d\'articles',

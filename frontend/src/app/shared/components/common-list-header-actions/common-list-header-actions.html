@@ -1,0 +1,59 @@
+<div class="card-header border-0 pt-6">
+  <div class="card-title">
+    <h3 class="fw-bold m-0">{{ titleKey | translate }}</h3>
+  </div>
+  <div class="card-toolbar d-flex align-items-center gap-3">
+
+    @if (viewMode !== undefined) {
+      <app-common-view-mode [viewMode]="viewMode" (viewModeChange)="viewModeChange.emit($event)" />
+    }
+
+    @if (columns !== undefined && viewMode === 'cards') {
+      <app-common-grid-columns-button [columns]="columns" (columnsChange)="columnsChange.emit($event)" />
+    }
+
+    @if (auth.isAdmin() && selectedCount > 0 && bulkMainLabelKey) {
+      <app-common-drop-down-menu-action-button
+        [mainLabelKey]="bulkMainLabelKey"
+        [mainIconClass]="bulkMainIconClass"
+        [mainColor]="bulkMainColor"
+        [count]="selectedCount"
+        [menuEnd]="true"
+        (mainClick)="bulkMainClick.emit()"
+        [menuItems]="bulkMenuItems" />
+    }
+
+    @if (searchPlaceholderKey) {
+      <app-common-search [placeholderKey]="searchPlaceholderKey" (searchChange)="searchChange.emit($event)" />
+    }
+
+    <!-- Slot for custom toolbar items (selects, toggles, etc.) -->
+    <ng-content />
+
+    @if (auth.isAdmin() && importMenuItems.length > 0) {
+      <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="fileSelected.emit($event)" />
+      <app-common-drop-down-menu-action-button
+        mainLabelKey="common.importTemplate"
+        mainIconClass="ki-file-up"
+        mainColor="light-success"
+        [loading]="importing"
+        [menuEnd]="true"
+        (mainClick)="fileInput.click()"
+        [menuItems]="importMenuItems" />
+    }
+
+  </div>
+</div>
+
+@if (importSuccess && importSuccessKey) {
+  <div class="alert alert-success alert-dismissible mx-6 mt-4 mb-0">
+    {{ importSuccessKey | translate }}
+    <button type="button" class="btn-close" (click)="importSuccessClose.emit()"></button>
+  </div>
+}
+@if (importErrorMessage) {
+  <div class="alert alert-danger alert-dismissible mx-6 mt-4 mb-0">
+    {{ importErrorMessage }}
+    <button type="button" class="btn-close" (click)="importErrorClose.emit()"></button>
+  </div>
+}

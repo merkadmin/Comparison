@@ -1,37 +1,20 @@
 <div class="card">
-      <div class="card-header border-0 pt-6">
-        <div class="card-title">
-          <h3 class="fw-bold m-0">{{ 'brand.title' | translate }}</h3>
-        </div>
-        <div class="card-toolbar d-flex align-items-center gap-3">
-          @if (auth.isAdmin() && selectedIds().size > 0) {
-            <app-common-drop-down-menu-action-button
-              mainLabelKey="common.deactivate"
-              mainIconClass="ki-minus-circle"
-              [count]="selectedIds().size"
-              (mainClick)="deactivateSelected()"
-              [menuItems]="bulkMenuItems" />
-          }
-          @if (auth.isAdmin()) {
-          <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
-          <app-common-drop-down-menu-action-button
-            mainLabelKey="common.importTemplate"
-            mainIconClass="ki-file-up"
-            mainColor="light-success"
-            [loading]="importing()"
-            [menuEnd]="true"
-            (mainClick)="fileInput.click()"
-            [menuItems]="importMenuItems" />
-          }
-        </div>
-      </div>
-
-      @if (importSuccess()) {
-        <div class="alert alert-success alert-dismissible mx-6 mt-4 mb-0">{{ 'brand.importSuccess' | translate }}<button type="button" class="btn-close" (click)="importSuccess.set(false)"></button></div>
-      }
-      @if (importError()) {
-        <div class="alert alert-danger alert-dismissible mx-6 mt-4 mb-0">{{ importError() }}<button type="button" class="btn-close" (click)="importError.set(null)"></button></div>
-      }
+      <app-common-list-header-actions
+        titleKey="brand.title"
+        [selectedCount]="selectedIds().size"
+        bulkMainLabelKey="common.deactivate"
+        bulkMainIconClass="ki-minus-circle"
+        bulkMainColor="light-warning"
+        [bulkMenuItems]="bulkMenuItems"
+        [importing]="importing()"
+        [importMenuItems]="importMenuItems"
+        importSuccessKey="brand.importSuccess"
+        [importSuccess]="importSuccess()"
+        [importErrorMessage]="importError()"
+        (bulkMainClick)="deactivateSelected()"
+        (fileSelected)="onFileSelected($event)"
+        (importSuccessClose)="importSuccess.set(false)"
+        (importErrorClose)="importError.set(null)" />
 
       <div class="card-body py-4">
         @if (loading()) {

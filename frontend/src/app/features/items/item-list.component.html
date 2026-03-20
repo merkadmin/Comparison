@@ -1,42 +1,27 @@
 <div class="card">
-  <div class="card-header border-0 pt-6">
-    <div class="card-title">
-      <h3 class="fw-bold m-0">{{ 'item.title' | translate }}</h3>
-    </div>
-    <div class="card-toolbar d-flex align-items-center gap-3">
-
-      <!--START::View Mode Toggle-->
-      <app-common-view-mode [viewMode]="viewMode()" (viewModeChange)="viewMode.set($event)" />
-      <!--END::View Mode Toggle-->
-
-      <!--START::Grid Columns-->
-      @if (viewMode() === 'cards') {
-        <app-common-grid-columns-button [columns]="colsPerRow()" (columnsChange)="colsPerRow.set($event)" />
-      }
-      <!--END::Grid Columns-->
-
-      <!--START::Bulk Actions-->
-      @if (auth.isAdmin() && selectedIds().size > 0) {
-         <app-common-drop-down-menu-action-button
-              mainLabelKey="common.deactivate"
-              mainIconClass="ki-minus-circle"
-              [mainColor]="'light-warning'"
-              mainIconSize="6"
-              mainButtonClass="w-100"
-              groupClass="flex-fill"
-              [menuEnd]="true"
-              (mainClick)="deactivateSelected()"
-              [menuItems]="bulkMenuItems" />
-      }
-      <!--END::Bulk Actions-->
-      
-      <div class="d-flex align-items-center position-relative">
-        <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-3">
-          <span class="path1"></span><span class="path2"></span>
-        </i>
-        <input type="text" class="form-control form-control-sm ps-9 w-200px" [placeholder]="'common.search' | translate"
-          [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
-      </div>
+  <app-common-list-header-actions
+    [titleKey]="titleKey"
+    [viewMode]="viewMode()"
+    [columns]="colsPerRow()"
+    [selectedCount]="favoritesOnly ? 0 : selectedIds().size"
+    bulkMainLabelKey="common.deactivate"
+    bulkMainIconClass="ki-minus-circle"
+    bulkMainColor="light-warning"
+    [bulkMenuItems]="bulkMenuItems"
+    searchPlaceholderKey="common.search"
+    [importing]="importing()"
+    [importMenuItems]="importMenuItems"
+    importSuccessKey="item.importSuccess"
+    [importSuccess]="importSuccess()"
+    [importErrorMessage]="importError()"
+    (viewModeChange)="viewMode.set($event)"
+    (columnsChange)="colsPerRow.set($event)"
+    (bulkMainClick)="deactivateSelected()"
+    (searchChange)="searchQuery.set($event)"
+    (fileSelected)="onFileSelected($event)"
+    (importSuccessClose)="importSuccess.set(false)"
+    (importErrorClose)="importError.set(null)">
+    @if (!favoritesOnly) {
       <app-common-select [options]="categoryOptions()" [placeholder]="'item.allCategories' | translate"
         [selected]="selectedCategoryId()"
         (selectedChange)="selectedCategoryId.set($event); selectedBrandId.set(null); loadItems()">
@@ -45,28 +30,8 @@
         [selected]="selectedBrandId()"
         (selectedChange)="selectedBrandId.set($event); selectedCategoryId.set(null); loadItems()">
       </app-common-select>
-      @if (auth.isAdmin()) {
-      <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="onFileSelected($event)" />
-      <app-common-drop-down-menu-action-button
-        mainLabelKey="common.importTemplate"
-        mainIconClass="ki-file-up"
-        mainColor="light-success"
-        [loading]="importing()"
-        [menuEnd]="true"
-        (mainClick)="fileInput.click()"
-        [menuItems]="importMenuItems" />
-      }
-    </div>
-  </div>
-
-  @if (importSuccess()) {
-  <div class="alert alert-success alert-dismissible mx-6 mt-4 mb-0">{{ 'item.importSuccess' | translate }}<button
-      type="button" class="btn-close" (click)="importSuccess.set(false)"></button></div>
-  }
-  @if (importError()) {
-  <div class="alert alert-danger alert-dismissible mx-6 mt-4 mb-0">{{ importError() }}<button type="button"
-      class="btn-close" (click)="importError.set(null)"></button></div>
-  }
+    }
+  </app-common-list-header-actions>
 
   <div class="card-body py-4">
     @if (loading()) {

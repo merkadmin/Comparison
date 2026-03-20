@@ -7,14 +7,13 @@ import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemCategory, LocalizedString } from '../../core/models/item-category.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
-import { CommonSearchComponent } from '../../shared/components/common-search/common-search.component';
-import { CommonViewModeComponent } from "../../shared/components/commonActions/common-view-mode/common-view-mode";
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonSearchComponent, CommonViewModeComponent, CommonDropDownMenuActionButton],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions],
   templateUrl: './item-category-list.component.html',
   styleUrl: './item-category-list.component.less',
 })

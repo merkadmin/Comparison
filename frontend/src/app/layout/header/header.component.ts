@@ -6,6 +6,7 @@ import { TranslateService } from '../../core/services/translate.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { AuthService } from '../../core/services/auth.service';
+import { UserActivityService } from '../../core/services/user-activity.service';
 
 export interface BreadcrumbItem {
   labelKey?: string;   // translation key
@@ -32,6 +33,7 @@ const breadcrumbMap: Record<string, BreadcrumbItem[]> = {
 export class HeaderComponent {
   translate        = inject(TranslateService);
   auth             = inject(AuthService);
+  userActivity     = inject(UserActivityService);
   private router   = inject(Router);
   private catSvc   = inject(ItemCategoryService);
 
@@ -44,6 +46,8 @@ export class HeaderComponent {
 
   // Holds the localized name of the active category (when browsing by category)
   private categoryName = signal<string | null>(null);
+
+  cartCount = computed(() => this.userActivity.cartIds().size);
 
   constructor() {
     // Whenever the URL changes, check for categoryId and fetch the category name
@@ -61,6 +65,13 @@ export class HeaderComponent {
         });
       } else {
         this.categoryName.set(null);
+      }
+    });
+
+    // Load cart/favorites when user is authenticated
+    effect(() => {
+      if (this.auth.currentUser()) {
+        this.userActivity.loadAll();
       }
     });
   }

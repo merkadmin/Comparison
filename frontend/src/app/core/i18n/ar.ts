@@ -48,6 +48,7 @@ export const ar: Record<string, string> = {
   'nav.stores':           'المتاجر',
   'nav.shopByCategory':   'تسوق حسب القسم',
   'nav.showAll':          'عرض الكل',
+  'nav.favorites':        'المفضلة',
 
   // Item Categories
   'category.title':         'تصنيفات المنتجات',

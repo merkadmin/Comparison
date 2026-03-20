@@ -9,11 +9,12 @@ import { ItemBrand } from '../../core/models/item-brand.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 
 @Component({
   selector: 'app-item-brand-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions],
   templateUrl: './item-brand-list.component.html',
   styleUrl: './item-brand-list.component.less',
 })

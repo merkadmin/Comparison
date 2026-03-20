@@ -48,6 +48,7 @@ export const en: Record<string, string> = {
   'nav.stores':           'Stores',
   'nav.shopByCategory':   'Shop by Category',
   'nav.showAll':          'Show All',
+  'nav.favorites':        'Favorites',
 
   // Item Categories
   'category.title':         'Item Categories',
