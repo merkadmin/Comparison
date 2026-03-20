@@ -175,8 +175,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
   })[this.colsPerRow()]);
   private querySub!: Subscription;
 
-  /** Set via route data: { favoritesOnly: true } — shows only favorited items, hides admin controls */
-  readonly favoritesOnly: boolean = this.route.snapshot.data['favoritesOnly'] ?? false;
+  /** Override in subclasses to lock the component into favorites-only mode. */
+  protected get favoritesOnly(): boolean { return this.route.snapshot.data['favoritesOnly'] ?? false; }
   readonly titleKey = this.favoritesOnly ? 'nav.favorites' : 'item.title';
 
   importMenuItems: ActionMenuItem[] = this.favoritesOnly ? [] : [

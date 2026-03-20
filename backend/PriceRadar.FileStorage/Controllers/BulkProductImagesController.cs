@@ -20,18 +20,16 @@ public class BulkProductImagesController : ControllerBase
 	// POST /api/items/images/bulk
 	// Body: array of item IDs  e.g. [1, 2, 3, 4, 5]
 	// Returns: { "1": ["ProductImages/1/file.jpg", ...], "2": [], ... }
-	[HttpPost("getBulkImages")]
-	public ActionResult<Dictionary<long, List<string>>> GetBulkImages([FromBody] long[] itemIds)
+	[HttpPost("getImagesBulk")]
+	public ActionResult<Dictionary<long, List<string>>> GetImagesBulk([FromBody] long[] itemIds)
 	{
-		var result = new Dictionary<long, List<string>>();
+		Dictionary<long, List<string>> result = new Dictionary<long, List<string>>();
 		foreach (var itemId in itemIds)
 		{
-			var folder = Path.Combine(_imagesRoot, itemId.ToString());
-			result[itemId] = Directory.Exists(folder)
-				? Directory.EnumerateFiles(folder)
-					.Select(f => $"ProductImages/{itemId}/{Path.GetFileName(f)}")
-					.ToList()
-				: [];
+			string folder = Path.Combine(_imagesRoot, itemId.ToString());
+			if (Directory.Exists(folder))
+				result[itemId] = Directory.EnumerateFiles(folder)
+					.Select(f => $"ProductImages/{itemId}/{Path.GetFileName(f)}").ToList();
 		}
 		return Ok(result);
 	}

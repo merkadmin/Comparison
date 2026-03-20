@@ -4,6 +4,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { ItemCategoryListComponent } from './features/item-categories/item-category-list.component';
 import { ItemBrandListComponent } from './features/item-brands/item-brand-list.component';
 import { ItemListComponent } from './features/items/item-list.component';
+import { FavoritesListComponent } from './features/favorites/favorites-list.component';
 import { ItemPackageListComponent } from './features/item-packages/item-package-list.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { authGuard } from './core/guards/auth.guard';
@@ -21,7 +22,7 @@ export const routes: Routes = [
       { path: 'item-brands', component: ItemBrandListComponent },
       { path: 'items', component: ItemListComponent },
       { path: 'item-packages', component: ItemPackageListComponent },
-      { path: 'favorites', component: ItemListComponent, data: { favoritesOnly: true } },
+      { path: 'favorites', component: FavoritesListComponent },
     ],
   },
   { path: '**', redirectTo: '' },

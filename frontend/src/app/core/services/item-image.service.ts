@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
 export class ItemImageService {
   private base = environment.fileStorageUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /** Returns the full URL for a relative image path stored in the database. */
   resolveUrl(relativePath: string): string {
@@ -21,7 +21,7 @@ export class ItemImageService {
 
   /** Fetch images for multiple items at once. Returns a map of itemId → relative paths. */
   getImagesBulk(itemIds: number[]): Observable<Record<number, string[]>> {
-    return this.http.post<Record<number, string[]>>(`${this.base}/api/items/images/getBulkImages`, itemIds);
+    return this.http.post<Record<number, string[]>>(`${this.base}/api/items/images/getImagesBulk`, itemIds);
   }
 
   /** Upload one or more image files for a given item. Returns relative paths. */
