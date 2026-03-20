@@ -20,8 +20,8 @@ public class BulkProductImagesController : ControllerBase
 	// POST /api/items/images/bulk
 	// Body: array of item IDs  e.g. [1, 2, 3, 4, 5]
 	// Returns: { "1": ["ProductImages/1/file.jpg", ...], "2": [], ... }
-	[HttpPost("bulk")]
-	public ActionResult<Dictionary<long, List<string>>> GetBulk([FromBody] long[] itemIds)
+	[HttpPost("getBulkImages")]
+	public ActionResult<Dictionary<long, List<string>>> GetBulkImages([FromBody] long[] itemIds)
 	{
 		var result = new Dictionary<long, List<string>>();
 		foreach (var itemId in itemIds)

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { SelectOption } from '../../shared/components/common-select/common-select.component';
-import { Subscription, forkJoin } from 'rxjs';
+import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -238,8 +238,6 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void { this.querySub.unsubscribe(); }
 
-  private static readonly IMAGE_BATCH_SIZE = 10;
-
   loadItems(): void {
     this.loading.set(true);
     this.error.set(null);
@@ -261,15 +259,9 @@ export class ItemListComponent implements OnInit, OnDestroy {
           return;
         }
 
-        // Split into batches and fetch all in parallel
-        const batches: number[][] = [];
-        for (let i = 0; i < needImages.length; i += ItemListComponent.IMAGE_BATCH_SIZE) {
-          batches.push(needImages.slice(i, i + ItemListComponent.IMAGE_BATCH_SIZE));
-        }
-
-        forkJoin(batches.map(batch => this.imageService.getImagesBulk(batch))).subscribe({
-          next: batchResults => {
-            const imageMap = batchResults.reduce((acc, r) => ({ ...acc, ...r }), {} as Record<number, string[]>);
+        // Send all IDs at once — the backend controls batch size via configuration
+        this.imageService.getImagesBulk(needImages).subscribe({
+          next: imageMap => {
             this.items.set(data.map(item => ({
               ...item,
               images: item.images?.length ? item.images : (imageMap[item.id!] ?? [])

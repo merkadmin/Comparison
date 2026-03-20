@@ -21,7 +21,7 @@ export class ItemImageService {
 
   /** Fetch images for multiple items at once. Returns a map of itemId → relative paths. */
   getImagesBulk(itemIds: number[]): Observable<Record<number, string[]>> {
-    return this.http.post<Record<number, string[]>>(`${this.base}/api/items/images/bulk`, itemIds);
+    return this.http.post<Record<number, string[]>>(`${this.base}/api/items/images/getBulkImages`, itemIds);
   }
 
   /** Upload one or more image files for a given item. Returns relative paths. */

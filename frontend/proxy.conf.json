@@ -1,24 +1,9 @@
-[{
-  "context": [
-    "/items",
-    "/itembrands",
-    "/itemcategories",
-    "/itempackages",
-    "/stores",
-    "/products",
-    "/pricelistings",
-    "/pricehistory",
-    "/productitemtypes",
-    "/productinformations",
-    "/customercomments",
-    "/favoriteproductitems",
-    "/cartitems",
-    "/auth"
-  ],
-  "target": "http://localhost:5036",
-  "secure": false,
-  "changeOrigin": true,
-  "pathRewrite": { "^/": "/api/" },
-  "proxyTimeout": 5000,
-  "timeout": 5000
-}]
+{
+  "/api": {
+    "target": "http://localhost:5036",
+    "secure": false,
+    "changeOrigin": true,
+    "proxyTimeout": 5000,
+    "timeout": 5000
+  }
+}
