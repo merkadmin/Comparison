@@ -37,6 +37,30 @@ export class StoreListComponent implements OnInit {
   isCreating = signal(false);
   editDraft: Store = { name: '', type: 'Online', country: '' };
 
+  // ── Data ──────────────────────────────────────────────────────────────────
+  stores = signal<Store[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  searchQuery = signal('');
+  importing = signal(false);
+  importError = signal<string | null>(null);
+  importSuccess = signal(false);
+  selectedIds = signal<Set<number>>(new Set());
+
+  filteredStores = computed<Store[]>(() => {
+    const q = this.searchQuery().trim().toLowerCase();
+    return q ? this.stores().filter(s => s.name.toLowerCase().includes(q)) : this.stores();
+  });
+
+  // ── Bulk actions ──────────────────────────────────────────────────────────
+  importMenuItems: ActionMenuItem[] = [
+    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
+  ];
+
+  bulkMenuItems: ActionMenuItem[] = [
+    { labelKey: 'store.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
+  ];
+
   openCreate(): void {
     this.editDraft = { name: '', type: 'Online', country: '' };
     this.isCreating.set(true);
@@ -61,21 +85,6 @@ export class StoreListComponent implements OnInit {
     }
   }
 
-  // ── Data ──────────────────────────────────────────────────────────────────
-  stores = signal<Store[]>([]);
-  loading = signal(false);
-  error = signal<string | null>(null);
-  searchQuery = signal('');
-  importing = signal(false);
-  importError = signal<string | null>(null);
-  importSuccess = signal(false);
-  selectedIds = signal<Set<number>>(new Set());
-
-  filteredStores = computed<Store[]>(() => {
-    const q = this.searchQuery().trim().toLowerCase();
-    return q ? this.stores().filter(s => s.name.toLowerCase().includes(q)) : this.stores();
-  });
-
   // ── Selection ─────────────────────────────────────────────────────────────
   isSelected(id: number): boolean { return this.selectedIds().has(id); }
   isAllSelected(): boolean {
@@ -92,15 +101,6 @@ export class StoreListComponent implements OnInit {
       this.isAllSelected() ? new Set() : new Set(this.filteredStores().map(s => s.id!))
     );
   }
-
-  // ── Bulk actions ──────────────────────────────────────────────────────────
-  importMenuItems: ActionMenuItem[] = [
-    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
-  ];
-
-  bulkMenuItems: ActionMenuItem[] = [
-    { labelKey: 'store.deleteSelected', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.deleteSelected() }
-  ];
 
   getRowMenuItems(id: number): ActionMenuItem[] {
     return [
