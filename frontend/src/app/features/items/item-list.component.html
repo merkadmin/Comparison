@@ -1,26 +1,16 @@
 <div class="card">
-  <app-common-list-header-actions
-    [titleKey]="titleKey"
-    [viewMode]="viewMode()"
-    [columns]="colsPerRow()"
-    [selectedCount]="favoritesOnly ? 0 : selectedIds().size"
-    bulkMainLabelKey="common.deactivate"
-    bulkMainIconClass="ki-minus-circle"
-    bulkMainColor="light-warning"
-    [bulkMenuItems]="bulkMenuItems"
-    searchPlaceholderKey="common.search"
-    [importing]="importing()"
-    [importMenuItems]="importMenuItems"
-    importSuccessKey="item.importSuccess"
-    [importSuccess]="importSuccess()"
-    [importErrorMessage]="importError()"
-    (viewModeChange)="viewMode.set($event)"
-    (columnsChange)="colsPerRow.set($event)"
-    (bulkMainClick)="deactivateSelected()"
-    (searchChange)="searchQuery.set($event)"
-    (fileSelected)="onFileSelected($event)"
-    (importSuccessClose)="importSuccess.set(false)"
+
+  <!--START::Header Actions-->
+  <app-common-list-header-actions [titleKey]="titleKey" [viewMode]="viewMode()" [columns]="colsPerRow()"
+    [selectedCount]="favoritesOnly ? 0 : selectedIds().size" bulkMainLabelKey="common.deactivate"
+    bulkMainIconClass="ki-minus-circle" bulkMainColor="light-warning" [bulkMenuItems]="bulkMenuItems"
+    searchPlaceholderKey="common.search" [importing]="importing()" [importMenuItems]="importMenuItems"
+    importSuccessKey="item.importSuccess" [importSuccess]="importSuccess()" [importErrorMessage]="importError()"
+    (viewModeChange)="viewMode.set($event)" (columnsChange)="colsPerRow.set($event)"
+    (bulkMainClick)="deactivateSelected()" (searchChange)="searchQuery.set($event)"
+    (fileSelected)="onFileSelected($event)" (importSuccessClose)="importSuccess.set(false)"
     (importErrorClose)="importError.set(null)">
+    <!--START::Category & Brand Filters-->
     @if (!favoritesOnly) {
       <app-common-select [options]="categoryOptions()" [placeholder]="'item.allCategories' | translate"
         [selected]="selectedCategoryId()"
@@ -31,355 +21,324 @@
         (selectedChange)="selectedBrandId.set($event); selectedCategoryId.set(null); loadItems()">
       </app-common-select>
     }
+    <!--END::Category & Brand Filters-->
   </app-common-list-header-actions>
+  <!--END::Header Actions-->
 
   <div class="card-body py-4">
+
+    <!--START::Loading-->
     @if (loading()) {
-    <div class="d-flex justify-content-center py-10">
-      <span class="spinner-border text-primary"></span>
-      <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
-    </div>
-    }
-    @if (!loading() && error()) {
-    <div class="alert alert-danger">{{ error() }}</div>
-    }
-    @if (!loading() && !error() && viewMode() === 'cards') {
-    @if (filteredItems().length === 0) {
-    <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
-    }
-    <div class="row g-4">
-      @for (item of filteredItems(); track item.id) {
-      <div [class]="colClass()">
-        <div class="item-card card h-100 shadow-sm border-0">
-          <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center position-relative">
-            @if (item.images && item.images.length > 0) {
-            <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
-            @if (item.images.length > 1) {
-            <span class="position-absolute bottom-0 end-0 badge badge-dark m-1 fs-8">+{{ item.images.length - 1 }}</span>
-            }
-            } @else if (item.imageUrl) {
-            <img [src]="item.imageUrl" [alt]="item.name" class="item-card__img" />
-            } @else {
-            <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
-            }
-            <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-1 bg-white bg-opacity-75 border-0 rounded-circle"
-              (click)="toggleFavorite(item.id!); $event.stopPropagation()">
-              <i class="ki-duotone ki-heart fs-4" [class.text-danger]="isFavorite(item.id!)" [class.text-gray-400]="!isFavorite(item.id!)">
-                <span class="path1"></span><span class="path2"></span>
-              </i>
-            </button>
-          </div>
-          <div class="card-body d-flex flex-column gap-2 p-4">
-            <div class="d-flex gap-2 flex-wrap">
-              <span class="badge badge-light-primary">{{ getBrandName(item.brandId) }}</span>
-              <span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span>
-            </div>
-            <h6 class="fw-bold text-gray-800 mb-0 lh-sm">{{ item.name }}</h6>
-            @if (item.description) {
-            <p class="text-muted fs-7 mb-0 item-card__desc">{{ item.description }}</p>
-            }
-          </div>
-          @if (!auth.isAdmin()) {
-          <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
-            <button class="btn btn-sm flex-fill"
-              [class.btn-light-success]="!inCart(item.id!)"
-              [class.btn-success]="inCart(item.id!)"
-              (click)="toggleCart(item.id!)">
-              <i class="ki-duotone ki-basket fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-              {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
-            </button>
-            <button class="btn btn-sm flex-fill"
-              [class.btn-light-info]="!inCompare(item.id!)"
-              [class.btn-info]="inCompare(item.id!)"
-              (click)="toggleCompare(item.id!)">
-              <i class="ki-duotone ki-arrows-circle fs-6"><span class="path1"></span><span class="path2"></span></i>
-              {{ 'item.compare' | translate }}
-            </button>
-          </div>
-          }
-          @if (auth.isAdmin()) {
-          <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
-            <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(item)">
-              <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
-              {{ 'common.edit' | translate }}
-            </button>
-            <app-common-image-upload-button
-              [itemId]="item.id!"
-              [categoryId]="item.itemCategoryId"
-              (uploaded)="onImagesUploaded(item.id!, $event)" />
-            <app-common-drop-down-menu-action-button
-              [mainLabelKey]="item.isActive !== false ? 'common.deactivate' : 'common.activate'"
-              [mainIconClass]="item.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-              [mainColor]="item.isActive !== false ? 'light-warning' : 'light-success'"
-              mainIconSize="6"
-              mainButtonClass="w-100"
-              groupClass="flex-fill"
-              [menuEnd]="true"
-              (mainClick)="setActive(item.id!, item.isActive === false)"
-              [menuItems]="getRowMenuItems(item.id!)" />
-          </div>
-          }
-        </div>
+      <div class="d-flex justify-content-center py-10">
+        <span class="spinner-border text-primary"></span>
+        <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
       </div>
-      }
-    </div>
     }
-    @if (!loading() && !error() && viewMode() === 'list') {
-    <table class="table align-middle table-row-dashed fs-6 gy-5">
-      <thead>
-        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-          @if (auth.isAdmin()) {
-          <th class="w-30px">
-            <div class="form-check form-check-sm form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" [checked]="isAllSelected()" (change)="toggleAll()" />
-            </div>
-          </th>
-          }
-          <th class="w-30px">{{ 'common.number' | translate }}</th>
-          <th class="w-50px">{{ 'common.image' | translate }}</th>
-          <th class="min-w-175px">{{ 'common.name' | translate }}</th>
-          <th class="min-w-125px">{{ 'item.brand' | translate }}</th>
-          <th class="min-w-200px">{{ 'item.category' | translate }}</th>
-          @if (auth.isAdmin()) {
-          <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
-          }
-          @if (!auth.isAdmin()) {
-          <th class="text-end min-w-150px">{{ 'common.actions' | translate }}</th>
-          }
-        </tr>
-      </thead>
-      <tbody class="text-gray-600 fw-semibold">
-        @if (filteredItems().length === 0) {
-        <tr>
-          <td [attr.colspan]="auth.isAdmin() ? 7 : 6" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
-        </tr>
-        }
-        @for (item of filteredItems(); track item.id; let i = $index) {
-        <tr [class.table-active]="isSelected(item.id!)">
-          @if (auth.isAdmin()) {
-          <td>
-            <div class="form-check form-check-sm form-check-custom form-check-solid">
-              <input class="form-check-input" type="checkbox" [checked]="isSelected(item.id!)"
-                (change)="toggleOne(item.id!)" />
-            </div>
-          </td>
-          }
-          <td>{{ i + 1 }}</td>
-          <td>
-            <div class="d-flex align-items-center gap-2">
-              @if (item.images && item.images.length > 0) {
-              <div class="d-flex align-items-center gap-1">
-                <div class="symbol symbol-40px">
-                  <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="object-fit-contain" />
+    <!--END::Loading-->
+
+    <!--START::Error-->
+    @if (!loading() && error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    }
+    <!--END::Error-->
+
+    <!--START::Cards View-->
+    @if (!loading() && !error() && viewMode() === 'cards') {
+      @if (filteredItems().length === 0) {
+        <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
+      }
+      <div class="row g-4">
+        @for (item of filteredItems(); track item.id) {
+          <div [class]="colClass()">
+            <div class="item-card card h-100 shadow-sm border-0">
+
+              <!--START::Card Image-->
+              <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center position-relative">
+                @if (item.images && item.images.length > 0) {
+                  <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
+                  @if (item.images.length > 1) {
+                    <span class="position-absolute bottom-0 end-0 badge badge-dark m-1 fs-8">+{{ item.images.length - 1 }}</span>
+                  }
+                } @else if (item.imageUrl) {
+                  <img [src]="item.imageUrl" [alt]="item.name" class="item-card__img" />
+                } @else {
+                  <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
+                }
+
+                <!--START::Favorite Toggle-->
+                <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-1 bg-white bg-opacity-75 border-0 rounded-circle"
+                  (click)="toggleFavorite(item.id!); $event.stopPropagation()">
+                  <i class="ki-duotone ki-heart fs-4" [class.text-danger]="isFavorite(item.id!)"
+                    [class.text-gray-400]="!isFavorite(item.id!)">
+                    <span class="path1"></span><span class="path2"></span>
+                  </i>
+                </button>
+                <!--END::Favorite Toggle-->
+                
+              </div>
+              <!--END::Card Image-->
+
+              <!--START::Card Info-->
+              <div class="card-body d-flex flex-column gap-3 p-4">
+                <div class="d-flex gap-3 flex-wrap">
+                  <span class="badge badge-light-primary fs-4">{{ getBrandName(item.brandId) }}</span>
+                  <span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span>
                 </div>
-                @if (item.images.length > 1) {
-                <span class="badge badge-light-info fs-8">+{{ item.images.length - 1 }}</span>
+                <h6 class="fw-bold text-gray-800 mb-0 lh-sm fs-2">{{ item.name }}</h6>
+                @if (item.description) {
+                  <p class="text-muted fs-7 mb-0 item-card__desc fs-3">{{ item.description }}</p>
                 }
               </div>
-              } @else if (item.imageUrl) {
-              <div class="symbol symbol-40px">
-                <img [src]="item.imageUrl" [alt]="item.name" class="object-fit-contain" />
-              </div>
-              } @else {
-              <div class="symbol symbol-40px symbol-light">
-                <span class="symbol-label bg-light-info text-info fw-bold fs-6">
-                  {{ item.name.charAt(0).toUpperCase() }}
-                </span>
-              </div>
+              <!--END::Card Info-->
+
+              <!--START::User Actions-->
+              @if (!auth.isAdmin()) {
+                <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+
+                  <!--START::Add to Cart-->
+                  <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCart(item.id!)"
+                    [class.btn-success]="inCart(item.id!)" (click)="toggleCart(item.id!)">
+                    <i class="ki-duotone ki-basket fs-1">
+                      <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                    </i>
+                    {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
+                  </button>
+                  <!--END::Add to Cart-->
+
+                  <!--START::Compare-->
+                  <button class="btn btn-sm flex-fill" [class.btn-light-info]="!inCompare(item.id!)"
+                    [class.btn-info]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
+                    <i class="ki-duotone ki-arrows-circle fs-1">
+                      <span class="path1"></span><span class="path2"></span>
+                    </i>
+                    {{ 'item.compare' | translate }}
+                  </button>
+                  <!--END::Compare-->
+
+                </div>
               }
-              <button class="btn btn-icon btn-xs btn-light border-0 p-1"
-                (click)="toggleFavorite(item.id!)">
-                <i class="ki-duotone ki-heart fs-5" [class.text-danger]="isFavorite(item.id!)" [class.text-gray-400]="!isFavorite(item.id!)">
-                  <span class="path1"></span><span class="path2"></span>
-                </i>
-              </button>
+              <!--END::User Actions-->
+
+              <!--START::Admin Actions-->
+              @if (auth.isAdmin()) {
+                <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+
+                  <!--START::Edit-->
+                  <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(item)">
+                    <i class="ki-duotone ki-pencil fs-1">
+                      <span class="path1"></span><span class="path2"></span>
+                    </i>
+                    {{ 'common.edit' | translate }}
+                  </button>
+                  <!--END::Edit-->
+
+                  <!--START::Upload Images-->
+                  <app-common-image-upload-button [itemId]="item.id!" [categoryId]="item.itemCategoryId"
+                    (uploaded)="onImagesUploaded(item.id!, $event)" />
+                  <!--END::Upload Images-->
+
+                  <!--START::Activate / Deactivate / Delete-->
+                  <app-common-drop-down-menu-action-button
+                    [mainLabelKey]="item.isActive !== false ? 'common.deactivate' : 'common.activate'"
+                    [mainIconClass]="item.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+                    [mainColor]="item.isActive !== false ? 'light-warning' : 'light-success'" mainIconSize="6"
+                    mainButtonClass="w-100" groupClass="flex-fill" [menuEnd]="true"
+                    (mainClick)="setActive(item.id!, item.isActive === false)" [menuItems]="getRowMenuItems(item.id!)" />
+                  <!--END::Activate / Deactivate / Delete-->
+
+                </div>
+              }
+              <!--END::Admin Actions-->
+
             </div>
-          </td>
-          <td>
-            <span class="text-gray-800 fw-bold text-hover-primary d-block fs-6">{{ item.name }}</span>
-            @if (item.description) {
-            <span class="text-muted fw-semibold fs-7">{{ item.description }}</span>
-            }
-          </td>
-          <td>
-            <span class="badge badge-light-primary">{{ getBrandName(item.brandId) }}</span>
-          </td>
-          <td>
-            <span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span>
-          </td>
-          @if (!auth.isAdmin()) {
-          <td class="text-end">
-            <div class="d-flex justify-content-end gap-2">
-              <button class="btn btn-sm"
-                [class.btn-light-success]="!inCart(item.id!)"
-                [class.btn-success]="inCart(item.id!)"
-                (click)="toggleCart(item.id!)">
-                <i class="ki-duotone ki-basket fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
-                {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
-              </button>
-              <button class="btn btn-sm"
-                [class.btn-light-info]="!inCompare(item.id!)"
-                [class.btn-info]="inCompare(item.id!)"
-                (click)="toggleCompare(item.id!)">
-                <i class="ki-duotone ki-arrows-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
-                {{ 'item.compare' | translate }}
-              </button>
-            </div>
-          </td>
-          }
-          @if (auth.isAdmin()) {
-          <td class="text-end">
-            <div class="d-flex justify-content-end gap-2">
-              <button class="btn btn-sm btn-light-primary" (click)="openEdit(item)">
-                <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
-                {{ 'common.edit' | translate }}
-              </button>
-              <app-common-image-upload-button
-                [itemId]="item.id!"
-                [categoryId]="item.itemCategoryId"
-                (uploaded)="onImagesUploaded(item.id!, $event)" />
-              <app-common-drop-down-menu-action-button
-                [mainLabelKey]="item.isActive !== false ? 'common.deactivate' : 'common.activate'"
-                [mainIconClass]="item.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-                [mainColor]="item.isActive !== false ? 'light-warning' : 'light-success'"
-                mainIconSize="5"
-                [menuEnd]="true"
-                (mainClick)="setActive(item.id!, item.isActive === false)"
-                [menuItems]="getRowMenuItems(item.id!)" />
-            </div>
-          </td>
-          }
-        </tr>
+          </div>
         }
-      </tbody>
-    </table>
+      </div>
     }
-  </div>
+    <!--END::Cards View-->
 
-</div>
+    <!--START::List View-->
+    @if (!loading() && !error() && viewMode() === 'list') {
+      <table class="table align-middle table-row-dashed fs-6 gy-5">
+        <thead>
+          <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
 
-@if (editingId() !== null) {
-<div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold">{{ 'common.edit' | translate }}</h5>
-        <button type="button" class="btn-close" (click)="closeEdit()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label fw-semibold">
-            {{ 'common.name' | translate }}
-            <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.description" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'common.barcode' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.barcode" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'common.images' | translate }}</label>
-          <div class="d-flex gap-2 mb-2">
-            <input #imgFileInput type="file" accept="image/*" multiple class="d-none" (change)="onImageFilesSelected($event)" />
-            <button type="button" class="btn btn-light-primary btn-sm"
-              [disabled]="uploadingImages()"
-              (click)="imgFileInput.click()">
-              @if (uploadingImages()) {
-                <span class="spinner-border spinner-border-sm me-1"></span>
-              } @else {
-                <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+            <!--START::Select All (Admin)-->
+            @if (auth.isAdmin()) {
+              <th class="w-30px">
+                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                  <input class="form-check-input" type="checkbox" [checked]="isAllSelected()" (change)="toggleAll()" />
+                </div>
+              </th>
+            }
+            <!--END::Select All (Admin)-->
+
+            <th class="w-30px">{{ 'common.number' | translate }}</th>
+            <th class="w-50px">{{ 'common.image' | translate }}</th>
+            <th class="min-w-175px">{{ 'common.name' | translate }}</th>
+            <th class="min-w-125px">{{ 'item.brand' | translate }}</th>
+            <th class="min-w-200px">{{ 'item.category' | translate }}</th>
+            
+            <!--START::Actions Header-->
+            @if (auth.isAdmin()) {
+              <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
+            }
+            @if (!auth.isAdmin()) {
+              <th class="text-end min-w-150px">{{ 'common.actions' | translate }}</th>
+            }
+            <!--END::Actions Header-->
+
+          </tr>
+        </thead>
+        <tbody class="text-gray-600 fw-semibold">
+
+          <!--START::Empty State-->
+          @if (filteredItems().length === 0) {
+            <tr>
+              <td [attr.colspan]="auth.isAdmin() ? 7 : 6" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+            </tr>
+          }
+          <!--END::Empty State-->
+
+          @for (item of filteredItems(); track item.id; let i = $index) {
+            <tr [class.table-active]="isSelected(item.id!)">
+
+              <!--START::Row Checkbox (Admin)-->
+              @if (auth.isAdmin()) {
+                <td>
+                  <div class="form-check form-check-sm form-check-custom form-check-solid">
+                    <input class="form-check-input" type="checkbox" [checked]="isSelected(item.id!)"
+                      (change)="toggleOne(item.id!)" />
+                  </div>
+                </td>
               }
-              {{ 'common.uploadImages' | translate }}
-            </button>
-          </div>
-          @if (editDraft.images && editDraft.images.length > 0) {
-          <div class="d-flex flex-wrap gap-3 mt-2">
-            @for (img of editDraft.images; track img; let i = $index) {
-            <div class="position-relative">
-              <img [src]="imgUrl(img)" style="width:80px;height:80px;object-fit:contain;border-radius:8px;border:1px solid #e4e6ef;" />
-              <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0"
-                style="width:18px;height:18px;padding:0;font-size:10px;" (click)="removeImage(i)">
-                <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
-              </button>
-            </div>
-            }
-          </div>
+              <!--END::Row Checkbox (Admin)-->
+
+              <td>{{ i + 1 }}</td>
+
+              <!--START::Row Image & Favorite-->
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  @if (item.images && item.images.length > 0) {
+                    <div class="d-flex align-items-center gap-1">
+                      <div class="symbol symbol-40px">
+                        <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="object-fit-contain" />
+                      </div>
+                      @if (item.images.length > 1) {
+                        <span class="badge badge-light-info fs-8">+{{ item.images.length - 1 }}</span>
+                      }
+                    </div>
+                  } @else if (item.imageUrl) {
+                    <div class="symbol symbol-40px">
+                      <img [src]="item.imageUrl" [alt]="item.name" class="object-fit-contain" />
+                    </div>
+                  } @else {
+                    <div class="symbol symbol-40px symbol-light">
+                      <span class="symbol-label bg-light-info text-info fw-bold fs-6">
+                        {{ item.name.charAt(0).toUpperCase() }}
+                      </span>
+                    </div>
+                  }
+
+                  <!--START::Favorite Toggle-->
+                  <button class="btn btn-icon btn-xs btn-light border-0 p-1" (click)="toggleFavorite(item.id!)">
+                    <i class="ki-duotone ki-heart fs-5" [class.text-danger]="isFavorite(item.id!)"
+                      [class.text-gray-400]="!isFavorite(item.id!)">
+                      <span class="path1"></span><span class="path2"></span>
+                    </i>
+                  </button>
+                  <!--END::Favorite Toggle-->
+
+                </div>
+              </td>
+              <!--END::Row Image & Favorite-->
+
+              <!--START::Row Name-->
+              <td>
+                <span class="text-gray-800 fw-bold text-hover-primary d-block fs-6">{{ item.name }}</span>
+                @if (item.description) {
+                  <span class="text-muted fw-semibold fs-7">{{ item.description }}</span>
+                }
+              </td>
+              <!--END::Row Name-->
+
+              <td><span class="badge badge-light-primary">{{ getBrandName(item.brandId) }}</span></td>
+              <td><span class="badge badge-light-success">{{ getCategoryName(item.itemCategoryId) }}</span></td>
+
+              <!--START::User Actions-->
+              @if (!auth.isAdmin()) {
+                <td class="text-end">
+                  <div class="d-flex justify-content-end gap-2">
+                    <!--START::Add to Cart-->
+                    <button class="btn btn-sm" [class.btn-light-success]="!inCart(item.id!)"
+                      [class.btn-success]="inCart(item.id!)" (click)="toggleCart(item.id!)">
+                      <i class="ki-duotone ki-basket fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                      {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
+                    </button>
+                    <!--END::Add to Cart-->
+                    <!--START::Compare-->
+                    <button class="btn btn-sm" [class.btn-light-info]="!inCompare(item.id!)"
+                      [class.btn-info]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
+                      <i class="ki-duotone ki-arrows-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
+                      {{ 'item.compare' | translate }}
+                    </button>
+                    <!--END::Compare-->
+                  </div>
+                </td>
+              }
+              <!--END::User Actions-->
+
+              <!--START::Admin Actions-->
+              @if (auth.isAdmin()) {
+                <td class="text-end">
+                  <div class="d-flex justify-content-end gap-2">
+                    <!--START::Edit-->
+                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(item)">
+                      <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+                      {{ 'common.edit' | translate }}
+                    </button>
+                    <!--END::Edit-->
+                    <!--START::Upload Images-->
+                    <app-common-image-upload-button [itemId]="item.id!" [categoryId]="item.itemCategoryId"
+                      (uploaded)="onImagesUploaded(item.id!, $event)" />
+                    <!--END::Upload Images-->
+                    <!--START::Activate / Deactivate / Delete-->
+                    <app-common-drop-down-menu-action-button
+                      [mainLabelKey]="item.isActive !== false ? 'common.deactivate' : 'common.activate'"
+                      [mainIconClass]="item.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+                      [mainColor]="item.isActive !== false ? 'light-warning' : 'light-success'" mainIconSize="5"
+                      [menuEnd]="true" (mainClick)="setActive(item.id!, item.isActive === false)"
+                      [menuItems]="getRowMenuItems(item.id!)" />
+                    <!--END::Activate / Deactivate / Delete-->
+                  </div>
+                </td>
+              }
+              <!--END::Admin Actions-->
+
+            </tr>
           }
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.brand' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.brandId">
-            @for (b of brands(); track b.id) {
-            <option [ngValue]="b.id">{{ b.name }}</option>
-            }
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.category' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.itemCategoryId">
-            @for (c of categories(); track c.id) {
-            <option [ngValue]="c.id">{{ localize(c.name) }}</option>
-            }
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.modelName' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.modelName" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.type' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.productItemTypeId">
-            <option [ngValue]="null">—</option>
-            @for (t of productItemTypes(); track t.id) {
-            <option [ngValue]="t.id">{{ t.type }}</option>
-            }
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.briefDescription' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.briefDescription" />
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.aboutThisItem' | translate }}</label>
-          <textarea class="form-control" rows="3" [(ngModel)]="editDraft.aboutThisItem"></textarea>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.productInformation' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.productInformationId">
-            <option [ngValue]="null">—</option>
-            @for (info of productInfos(); track info.id) {
-            <option [ngValue]="info.id">{{ info.information }}</option>
-            }
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.prices' | translate }}</label>
-          @for (price of (editDraft.prices ?? []); track $index; let i = $index) {
-          <div class="d-flex gap-2 mb-2 align-items-center">
-            <input type="number" class="form-control form-control-sm w-120px" [placeholder]="'item.storeId' | translate"
-              [(ngModel)]="editDraft.prices![i].storeId" />
-            <input type="number" class="form-control form-control-sm" [placeholder]="'item.price' | translate"
-              [(ngModel)]="editDraft.prices![i].price" />
-            <button type="button" class="btn btn-icon btn-sm btn-light-danger" (click)="removePrice(i)">
-              <i class="ki-duotone ki-cross fs-4"><span class="path1"></span><span class="path2"></span></i>
-            </button>
-          </div>
-          }
-          <button type="button" class="btn btn-sm btn-light-primary" (click)="addPrice()">
-            <i class="ki-duotone ki-plus fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
-            {{ 'item.addPrice' | translate }}
-          </button>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" (click)="closeEdit()">{{ 'common.cancel' | translate }}</button>
-        <button type="button" class="btn btn-primary" (click)="saveEdit()">{{ 'common.save' | translate }}</button>
-      </div>
-    </div>
+        </tbody>
+      </table>
+    }
+    <!--END::List View-->
+
   </div>
 </div>
+
+<!--START::Edit Modal-->
+@if (editingId() !== null) {
+  <app-item-list-operation
+    [editDraft]="editDraft"
+    [brands]="brands()"
+    [categories]="categories()"
+    [productItemTypes]="productItemTypes()"
+    [productInfos]="productInfos()"
+    [uploadingImages]="uploadingImages()"
+    (closed)="closeEdit()"
+    (saved)="saveEdit()"
+    (priceAdded)="addPrice()"
+    (priceRemoved)="removePrice($event)"
+    (imageFilesSelected)="onImageFilesSelected($event)"
+    (imageRemoved)="removeImage($event)" />
 }
+<!--END::Edit Modal-->

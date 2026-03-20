@@ -1,0 +1,168 @@
+<!--START::Edit Modal-->
+<div class="modal fade show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">{{ 'common.edit' | translate }}</h5>
+        <button type="button" class="btn-close" (click)="closed.emit()"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!--START::Name-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
+        </div>
+        <!--END::Name-->
+
+        <!--START::Description-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.description" />
+        </div>
+        <!--END::Description-->
+
+        <!--START::Barcode-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.barcode' | translate }}</label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.barcode" />
+        </div>
+        <!--END::Barcode-->
+
+        <!--START::Images-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.images' | translate }}</label>
+          <div class="d-flex gap-2 mb-2">
+            <input #imgFileInput type="file" accept="image/*" multiple class="d-none"
+              (change)="imageFilesSelected.emit($event)" />
+            <button type="button" class="btn btn-light-primary btn-sm" [disabled]="uploadingImages"
+              (click)="imgFileInput.click()">
+              @if (uploadingImages) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              } @else {
+                <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+              }
+              {{ 'common.uploadImages' | translate }}
+            </button>
+          </div>
+          @if (editDraft.images && editDraft.images.length > 0) {
+            <div class="d-flex flex-wrap gap-3 mt-2">
+              @for (img of editDraft.images; track img; let i = $index) {
+                <div class="position-relative">
+                  <img [src]="imgUrl(img)" style="width:80px;height:80px;object-fit:contain;border-radius:8px;border:1px solid #e4e6ef;" />
+                  <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0"
+                    style="width:18px;height:18px;padding:0;font-size:10px;" (click)="imageRemoved.emit(i)">
+                    <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <!--END::Images-->
+
+        <!--START::Brand-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.brand' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.brandId">
+            @for (b of brands; track b.id) {
+              <option [ngValue]="b.id">{{ b.name }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Brand-->
+
+        <!--START::Category-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.category' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.itemCategoryId">
+            @for (c of categories; track c.id) {
+              <option [ngValue]="c.id">{{ localize(c.name) }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Category-->
+
+        <!--START::Model Name-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.modelName' | translate }}</label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.modelName" />
+        </div>
+        <!--END::Model Name-->
+
+        <!--START::Type-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.type' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.productItemTypeId">
+            <option [ngValue]="null">—</option>
+            @for (t of productItemTypes; track t.id) {
+              <option [ngValue]="t.id">{{ t.type }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Type-->
+
+        <!--START::Brief Description-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.briefDescription' | translate }}</label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.briefDescription" />
+        </div>
+        <!--END::Brief Description-->
+
+        <!--START::About This Item-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.aboutThisItem' | translate }}</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="editDraft.aboutThisItem"></textarea>
+        </div>
+        <!--END::About This Item-->
+
+        <!--START::Product Information-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.productInformation' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.productInformationId">
+            <option [ngValue]="null">—</option>
+            @for (info of productInfos; track info.id) {
+              <option [ngValue]="info.id">{{ info.information }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Product Information-->
+
+        <!--START::Store Prices-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.prices' | translate }}</label>
+          @for (price of (editDraft.prices ?? []); track $index; let i = $index) {
+            <div class="d-flex gap-2 mb-2 align-items-center">
+              <input type="number" class="form-control form-control-sm w-120px" [placeholder]="'item.storeId' | translate"
+                [(ngModel)]="editDraft.prices![i].storeId" />
+              <input type="number" class="form-control form-control-sm" [placeholder]="'item.price' | translate"
+                [(ngModel)]="editDraft.prices![i].price" />
+              <button type="button" class="btn btn-icon btn-sm btn-light-danger" (click)="priceRemoved.emit(i)">
+                <i class="ki-duotone ki-cross fs-4"><span class="path1"></span><span class="path2"></span></i>
+              </button>
+            </div>
+          }
+          <button type="button" class="btn btn-sm btn-light-primary" (click)="priceAdded.emit()">
+            <i class="ki-duotone ki-plus fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'item.addPrice' | translate }}
+          </button>
+        </div>
+        <!--END::Store Prices-->
+
+      </div>
+
+      <div class="modal-footer">
+        <!--START::Cancel-->
+        <button type="button" class="btn btn-light" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        <!--END::Cancel-->
+        <!--START::Save-->
+        <button type="button" class="btn btn-primary" (click)="saved.emit()">{{ 'common.save' | translate }}</button>
+        <!--END::Save-->
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--END::Edit Modal-->
