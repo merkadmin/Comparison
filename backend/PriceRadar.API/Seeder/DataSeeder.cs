@@ -381,8 +381,8 @@ public class DataSeeder
 		await SeedLookup(_context.PriceHistoryTypes, Enum.GetValues<DBPriceHistoryType>()
 			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
 
-		await SeedLookup(_context.SellingPriceTypes, Enum.GetValues<SellingPriceType>()
-			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
+		//await SeedLookup(_context.SellingPriceTypes, Enum.GetValues<SellingPriceType>()
+		//	.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
 
 		await SeedLookup(_context.UserPrivileges, Enum.GetValues<DBUserPrivilege>()
 			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));

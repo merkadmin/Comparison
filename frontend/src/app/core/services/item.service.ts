@@ -56,4 +56,8 @@ export class ItemService {
   exportTemplate(): Observable<Blob> {
     return this.api.getBlob('/items/export-template');
   }
+
+  exportList(): Observable<Blob> {
+    return this.api.getBlob('/items/export-list');
+  }
 }

@@ -43,6 +43,10 @@ export class StoreService {
     return this.api.getBlob('/stores/export-template');
   }
 
+  exportList(): Observable<Blob> {
+    return this.api.getBlob('/stores/export-list');
+  }
+
   importExcel(file: File): Observable<void> {
     const formData = new FormData();
     formData.append('file', file);

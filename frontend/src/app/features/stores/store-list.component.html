@@ -89,11 +89,11 @@
               <!--START::Card Info-->
               <div class="card-body d-flex flex-column gap-2 p-4">
                 @if (store.type === 'Online') {
-                  <span class="badge badge-light-success w-fit-content">{{ 'store.online' | translate }}</span>
+                  <span class="badge badge-light-success w-fit-content fs-5">{{ 'store.online' | translate }}</span>
                 } @else {
-                  <span class="badge badge-light-primary w-fit-content">{{ 'store.physical' | translate }}</span>
+                  <span class="badge badge-light-primary w-fit-content fs-5">{{ 'store.physical' | translate }}</span>
                 }
-                <h6 class="fw-bold text-gray-800 mb-0 fs-5">{{ store.name }}</h6>
+                <h6 class="fw-bold text-gray-800 mb-0 fs-2">{{ store.name }}</h6>
                 @if (store.country) {
                   <span class="text-muted fs-7">{{ store.country }}</span>
                 }

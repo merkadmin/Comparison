@@ -20,6 +20,14 @@ public class ItemPackagesController : BaseController<ItemPackage, IItemPackageRe
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-packages-template.xlsx");
 	}
 
+	[HttpGet("export-list")]
+	public async Task<IActionResult> ExportList()
+	{
+		var packages = await Repo.GetAllAsync();
+		var bytes = ExcelService.ExportItemPackageList(packages);
+		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-packages.xlsx");
+	}
+
 	[HttpPost("import")]
 	[Consumes("multipart/form-data")]
 	public async Task<IActionResult> Import(IFormFile file)

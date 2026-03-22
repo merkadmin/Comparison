@@ -42,7 +42,7 @@
 		Promotion = 3
 	}
 
-	public enum SellingPriceType
+	public enum DBSellingPriceType
 	{
 		Regular = 1,
 		Premium = 2,

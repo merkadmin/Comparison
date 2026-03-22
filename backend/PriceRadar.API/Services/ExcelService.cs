@@ -77,6 +77,34 @@ public static class ExcelService
 	/// Returns each parsed category paired with the raw ParentCategory cell value
 	/// (may be a numeric ID string or a name string). The controller resolves it against the DB.
 	/// </summary>
+	public static byte[] ExportItemCategoryList(IEnumerable<ItemCategory> categories)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("ItemCategories");
+		string[] headers = { "Id", "Name_En", "Name_Ar", "Name_Fr", "Description_En", "Description_Ar", "Description_Fr", "ParentCategoryId", "IsActive" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var c in categories)
+		{
+			ws.Cell(row, 1).Value = c.Id;
+			ws.Cell(row, 2).Value = c.Name.En;
+			ws.Cell(row, 3).Value = c.Name.Ar;
+			ws.Cell(row, 4).Value = c.Name.Fr;
+			ws.Cell(row, 5).Value = c.Description?.En ?? string.Empty;
+			ws.Cell(row, 6).Value = c.Description?.Ar ?? string.Empty;
+			ws.Cell(row, 7).Value = c.Description?.Fr ?? string.Empty;
+			ws.Cell(row, 8).Value = c.ParentCategoryId.HasValue ? (XLCellValue)c.ParentCategoryId.Value : string.Empty;
+			ws.Cell(row, 9).Value = c.IsActive;
+			row++;
+		}
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
 	public static List<(ItemCategory Category, string? ParentRef)> ParseItemCategories(Stream stream)
 	{
 		using var wb = new XLWorkbook(stream);
@@ -107,6 +135,37 @@ public static class ExcelService
 		return list;
 	}
 
+	// ── Items ─────────────────────────────────────────────────────────────────
+
+	public static byte[] ExportItemList(IEnumerable<Item> items)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("Items");
+		string[] headers = { "Id", "Name", "Description", "BriefDescription", "ModelName", "Barcode", "ImageUrl", "BrandId", "ItemCategoryId", "IsActive" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var i in items)
+		{
+			ws.Cell(row, 1).Value = i.Id;
+			ws.Cell(row, 2).Value = i.Name;
+			ws.Cell(row, 3).Value = i.Description ?? string.Empty;
+			ws.Cell(row, 4).Value = i.BriefDescription ?? string.Empty;
+			ws.Cell(row, 5).Value = i.ModelName ?? string.Empty;
+			ws.Cell(row, 6).Value = i.Barcode ?? string.Empty;
+			ws.Cell(row, 7).Value = i.ImageUrl ?? string.Empty;
+			ws.Cell(row, 8).Value = i.BrandId;
+			ws.Cell(row, 9).Value = i.ItemCategoryId;
+			ws.Cell(row, 10).Value = i.IsActive;
+			row++;
+		}
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
 	// ── Item Brands ──────────────────────────────────────────────────────────
 
 	public static byte[] GetItemBrandTemplate()
@@ -115,6 +174,30 @@ public static class ExcelService
 		var ws = wb.AddWorksheet("ItemBrands");
 		string[] headers = ["Name*", "LogoUrl", "Country"];
 		WriteHeaders(ws, headers);
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static byte[] ExportItemBrandList(IEnumerable<ItemBrand> brands)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("ItemBrands");
+		string[] headers = { "Id", "Name", "LogoUrl", "Country", "IsActive" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var b in brands)
+		{
+			ws.Cell(row, 1).Value = b.Id;
+			ws.Cell(row, 2).Value = b.Name;
+			ws.Cell(row, 3).Value = b.LogoUrl ?? string.Empty;
+			ws.Cell(row, 4).Value = b.Country ?? string.Empty;
+			ws.Cell(row, 5).Value = b.IsActive;
+			row++;
+		}
+
+		ws.Columns().AdjustToContents();
 		using var ms = new MemoryStream();
 		wb.SaveAs(ms);
 		return ms.ToArray();
@@ -148,6 +231,34 @@ public static class ExcelService
 		var ws = wb.AddWorksheet("ItemPackages");
 		string[] headers = ["Name*", "Description", "OriginalPrice*", "OfferPrice*", "StartDate", "EndDate", "IsActive"];
 		WriteHeaders(ws, headers);
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static byte[] ExportItemPackageList(IEnumerable<ItemPackage> packages)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("ItemPackages");
+		string[] headers = { "Id", "Name", "Description", "OriginalPrice", "OfferPrice", "Discount%", "StartDate", "EndDate", "IsActive" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var p in packages)
+		{
+			ws.Cell(row, 1).Value = p.Id;
+			ws.Cell(row, 2).Value = p.Name;
+			ws.Cell(row, 3).Value = p.Description ?? string.Empty;
+			ws.Cell(row, 4).Value = p.OriginalPrice;
+			ws.Cell(row, 5).Value = p.OfferPrice;
+			ws.Cell(row, 6).Value = p.DiscountPercentage;
+			ws.Cell(row, 7).Value = p.StartDate.ToString("yyyy-MM-dd");
+			ws.Cell(row, 8).Value = p.EndDate.HasValue ? (XLCellValue)p.EndDate.Value.ToString("yyyy-MM-dd") : string.Empty;
+			ws.Cell(row, 9).Value = p.IsActive;
+			row++;
+		}
+
+		ws.Columns().AdjustToContents();
 		using var ms = new MemoryStream();
 		wb.SaveAs(ms);
 		return ms.ToArray();
@@ -211,6 +322,31 @@ public static class ExcelService
 		return ms.ToArray();
 	}
 
+	public static byte[] ExportStoreItemList(IEnumerable<Store_Item> storeItems)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("StoreItems");
+		string[] headers = { "Id", "ItemId", "StoreId", "SellingPrice", "PriceType", "IsActive" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var si in storeItems)
+		{
+			ws.Cell(row, 1).Value = si.Id;
+			ws.Cell(row, 2).Value = si.ItemId;
+			ws.Cell(row, 3).Value = si.StoreId;
+			ws.Cell(row, 4).Value = si.SellingPrice;
+			ws.Cell(row, 5).Value = si.SellingPriceTypeId.ToString();
+			ws.Cell(row, 6).Value = si.IsActive;
+			row++;
+		}
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
 	public static List<Store_Item> ParseStoreItems(Stream stream)
 	{
 		using var wb = new XLWorkbook(stream);
@@ -223,9 +359,9 @@ public static class ExcelService
 			if (!ws.Cell(r, 2).TryGetValue<long>(out var storeId) || storeId == 0) continue;
 			ws.Cell(r, 3).TryGetValue<decimal>(out var price);
 			var typeStr = ws.Cell(r, 4).GetString().Trim();
-			var priceType = typeStr.Equals("Premium", StringComparison.OrdinalIgnoreCase) ? SellingPriceType.Premium
-			              : typeStr.Equals("Offer",   StringComparison.OrdinalIgnoreCase) ? SellingPriceType.Offer
-			              : SellingPriceType.Regular;
+			var priceType = typeStr.Equals("Premium", StringComparison.OrdinalIgnoreCase) ? DBSellingPriceType.Premium
+			              : typeStr.Equals("Offer",   StringComparison.OrdinalIgnoreCase) ? DBSellingPriceType.Offer
+			              : DBSellingPriceType.Regular;
 			list.Add(new Store_Item { ItemId = itemId, StoreId = storeId, SellingPrice = price, SellingPriceTypeId = priceType });
 		}
 		return list;
@@ -254,6 +390,32 @@ public static class ExcelService
 		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
 		ws.Cell(3, 1).Style.Font.Italic = true;
 		ws.Range(3, 1, 3, headers.Length).Merge();
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static byte[] ExportStoreList(IEnumerable<Store> stores)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("Stores");
+		string[] headers = { "Id", "Name", "Type", "Country", "WebsiteUrl", "LogoUrl", "IsActive" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var s in stores)
+		{
+			ws.Cell(row, 1).Value = s.Id;
+			ws.Cell(row, 2).Value = s.Name;
+			ws.Cell(row, 3).Value = s.StoreTypeId.ToString();
+			ws.Cell(row, 4).Value = s.Country;
+			ws.Cell(row, 5).Value = s.WebsiteUrl ?? string.Empty;
+			ws.Cell(row, 6).Value = s.LogoUrl ?? string.Empty;
+			ws.Cell(row, 7).Value = s.IsActive;
+			row++;
+		}
 
 		ws.Columns().AdjustToContents();
 		using var ms = new MemoryStream();

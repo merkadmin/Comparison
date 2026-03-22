@@ -1,15 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { IItemCategory } from '../models/interfaces/IItemCategory';
 
 @Injectable({ providedIn: 'root' })
 export class ItemCategoryService {
   private api = inject(ApiService);
-  private all$?: Observable<IItemCategory[]>;
 
   getAll(): Observable<IItemCategory[]> {
-    return this.all$ ??= this.api.get<IItemCategory[]>('/itemcategories/getAll').pipe(shareReplay(1));
+    return this.api.get<IItemCategory[]>('/itemcategories/getAll');
   }
 
   getById(id: number): Observable<IItemCategory> {
@@ -46,6 +45,10 @@ export class ItemCategoryService {
 
   exportTemplate(): Observable<Blob> {
     return this.api.getBlob('/itemcategories/export-template');
+  }
+
+  exportList(): Observable<Blob> {
+    return this.api.getBlob('/itemcategories/export-list');
   }
 
   importExcel(file: File): Observable<void> {

@@ -10,6 +10,7 @@ export const en: Record<string, string> = {
   'common.search': 'Search',
   'common.importTemplate': 'Import Template',
   'common.exportTemplate': 'Export Template',
+  'common.exportList': 'Export List',
   'common.loading': 'Loading...',
   'common.noData': 'No records found.',
   'common.created': 'Created',

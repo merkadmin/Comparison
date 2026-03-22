@@ -16,6 +16,14 @@ public class ItemBrandsController : BaseController<ItemBrand, IItemBrandReposito
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-brands-template.xlsx");
 	}
 
+	[HttpGet("export-list")]
+	public async Task<IActionResult> ExportList()
+	{
+		var brands = await Repo.GetAllAsync();
+		var bytes = ExcelService.ExportItemBrandList(brands);
+		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-brands.xlsx");
+	}
+
 	[HttpPost("import")]
 	[Consumes("multipart/form-data")]
 	public async Task<IActionResult> Import(IFormFile file)

@@ -1,7 +1,5 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { ItemService } from '../../core/services/item.service';
 import { StoreItemService } from '../../core/services/store-item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
@@ -22,33 +20,44 @@ import { computedColClass } from '../../shared/helpers/grid-columns.helper';
   templateUrl: './shop-by-category.component.html',
   styleUrl: './shop-by-category.component.less',
 })
-export class ShopByCategoryComponent implements OnInit, OnDestroy {
+export class ShopByCategoryComponent implements OnInit {
   private itemService      = inject(ItemService);
   private storeItemService = inject(StoreItemService);
   private categoryService  = inject(ItemCategoryService);
   private imageService     = inject(ItemImageService);
-  private route            = inject(ActivatedRoute);
   private translate        = inject(TranslateService);
   userActivity             = inject(UserActivityService);
 
-  private querySub!: Subscription;
+  // ── State ──────────────────────────────────────────────────────────────────
+  allCategories  = signal<IItemCategory[]>([]);
+  navStack       = signal<IItemCategory[]>([]);   // breadcrumb path
+  selectedLeaf   = signal<IItemCategory | null>(null);  // leaf category whose items are shown
+  items          = signal<Item[]>([]);
+  storeItems     = signal<StoreItem[]>([]);
+  loadingItems   = signal(false);
+  loadingCats    = signal(false);
+  searchQuery    = signal('');
+  compareIds     = signal<Set<number>>(new Set());
+  colsPerRow     = signal<GridColumns>(4);
+  colClass       = computedColClass(this.colsPerRow);
 
-  items        = signal<Item[]>([]);
-  storeItems   = signal<StoreItem[]>([]);
-  categories   = signal<IItemCategory[]>([]);
-  loading      = signal(false);
-  error        = signal<string | null>(null);
-  searchQuery  = signal('');
-  colsPerRow   = signal<GridColumns>(4);
-  colClass     = computedColClass(this.colsPerRow);
-  compareIds   = signal<Set<number>>(new Set());
+  // ── Derived ────────────────────────────────────────────────────────────────
 
-  currentCategory = computed<IItemCategory | undefined>(() => {
-    const id = this.selectedCategoryId();
-    return id !== null ? this.categories().find(c => c.id === id) : undefined;
+  /** ID of the category whose children we're currently listing (null = root). */
+  currentParentId = computed<number | null>(() => {
+    const stack = this.navStack();
+    return stack.length > 0 ? stack[stack.length - 1].id! : null;
   });
 
-  selectedCategoryId = signal<number | null>(null);
+  /** Children of the current level to display as category tiles. */
+  visibleCategories = computed<IItemCategory[]>(() =>
+    this.allCategories().filter(c => (c.parentCategoryId ?? null) === this.currentParentId())
+  );
+
+  filteredItems = computed<Item[]>(() => {
+    const q = this.searchQuery().trim().toLowerCase();
+    return q ? this.items().filter(i => i.name.toLowerCase().includes(q)) : this.items();
+  });
 
   bestPriceMap = computed<Map<number, number>>(() => {
     const map = new Map<number, number>();
@@ -60,61 +69,76 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     return map;
   });
 
-  filteredItems = computed<Item[]>(() => {
-    const q = this.searchQuery().trim().toLowerCase();
-    if (!q) return this.items();
-    return this.items().filter(i => i.name.toLowerCase().includes(q));
-  });
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  hasChildren(cat: IItemCategory): boolean {
+    return this.allCategories().some(c => c.parentCategoryId === cat.id);
+  }
+
+  localize(cat: IItemCategory): string {
+    const lang = this.translate.currentLang();
+    return cat.name[lang] || cat.name['en'];
+  }
 
   getBestPrice(itemId: number): number | null { return this.bestPriceMap().get(itemId) ?? null; }
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
   inCart(id: number): boolean { return this.userActivity.cartIds().has(id); }
   inCompare(id: number): boolean { return this.compareIds().has(id); }
-
   toggleFavorite(id: number): void { this.userActivity.toggleFavorite(id); }
   toggleCart(id: number): void { this.userActivity.toggleCart(id); }
   toggleCompare(id: number): void {
-    this.compareIds.update(s => {
-      const n = new Set(s);
-      n.has(id) ? n.delete(id) : n.add(id);
-      return n;
-    });
+    this.compareIds.update(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n; });
   }
 
-  getCategoryName(id: number): string {
-    const lang = this.translate.currentLang();
-    const cat = this.categories().find(c => c.id === id);
-    if (!cat) return String(id);
-    return cat.name[lang] || cat.name['en'];
+  // ── Navigation ─────────────────────────────────────────────────────────────
+
+  selectCategory(cat: IItemCategory): void {
+    if (this.hasChildren(cat)) {
+      this.navStack.update(s => [...s, cat]);
+      this.selectedLeaf.set(null);
+      this.items.set([]);
+    } else {
+      this.selectedLeaf.set(cat);
+      this.loadItemsForLeaf(cat.id!);
+    }
   }
+
+  goBack(): void {
+    if (this.selectedLeaf()) {
+      this.selectedLeaf.set(null);
+      this.items.set([]);
+    } else {
+      this.navStack.update(s => s.slice(0, -1));
+    }
+    this.searchQuery.set('');
+  }
+
+  navigateTo(index: number): void {
+    this.navStack.update(s => s.slice(0, index + 1));
+    this.selectedLeaf.set(null);
+    this.items.set([]);
+    this.searchQuery.set('');
+  }
+
+  // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => {} });
+    this.loadingCats.set(true);
+    this.categoryService.getAll().subscribe({
+      next: c => { this.allCategories.set(c); this.loadingCats.set(false); },
+      error: () => { this.loadingCats.set(false); }
+    });
     this.storeItemService.getAll().subscribe({ next: si => this.storeItems.set(si), error: () => {} });
     this.userActivity.loadAll();
-
-    this.querySub = this.route.queryParamMap.subscribe(params => {
-      const categoryId = params.get('categoryId');
-      this.selectedCategoryId.set(categoryId ? +categoryId : null);
-      this.loadItems();
-    });
   }
 
-  ngOnDestroy(): void { this.querySub.unsubscribe(); }
-
-  private loadItems(): void {
-    this.loading.set(true);
-    this.error.set(null);
-    const categoryId = this.selectedCategoryId();
-    const obs = categoryId !== null
-      ? this.itemService.getByCategory(categoryId)
-      : this.itemService.getAll();
-
-    obs.subscribe({
+  private loadItemsForLeaf(categoryId: number): void {
+    this.loadingItems.set(true);
+    this.itemService.getByCategory(categoryId).subscribe({
       next: data => {
-        this.loading.set(false);
-        const needImages = data.filter(item => !(item.images?.length)).map(i => i.id!);
+        this.loadingItems.set(false);
+        const needImages = data.filter(i => !(i.images?.length)).map(i => i.id!);
         if (needImages.length === 0) { this.items.set(data); return; }
         this.imageService.getImagesBulk(needImages).subscribe({
           next: imageMap => {
@@ -126,7 +150,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
           error: () => { this.items.set(data); }
         });
       },
-      error: () => { this.error.set('Failed to load items.'); this.loading.set(false); }
+      error: () => { this.loadingItems.set(false); }
     });
   }
 }

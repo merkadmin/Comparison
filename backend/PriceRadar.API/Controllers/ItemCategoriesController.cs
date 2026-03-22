@@ -16,6 +16,14 @@ public class ItemCategoriesController : BaseController<ItemCategory, IBaseReposi
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-categories-template.xlsx");
 	}
 
+	[HttpGet("export-list")]
+	public async Task<IActionResult> ExportList()
+	{
+		var categories = await Repo.GetAllAsync();
+		var bytes = ExcelService.ExportItemCategoryList(categories);
+		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-categories.xlsx");
+	}
+
 	[HttpDelete("{id:long}")]
 	public override async Task<IActionResult> Delete(long id)
 	{

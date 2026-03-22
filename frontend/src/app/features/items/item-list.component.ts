@@ -201,7 +201,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
   readonly titleKey = this.favoritesOnly ? 'nav.favorites' : 'item.title';
 
   importMenuItems: ActionMenuItem[] = this.favoritesOnly ? [] : [
-    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
+    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() },
+    { labelKey: 'common.exportList', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportList() },
   ];
 
   allSelectedInactive = computed<boolean>(() => {
@@ -405,6 +406,20 @@ export class ItemListComponent implements OnInit, OnDestroy {
         const a = document.createElement('a');
         a.href = url;
         a.download = 'items-template.xlsx';
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => { }
+    });
+  }
+
+  exportList(): void {
+    this.itemService.exportList().subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'items.xlsx';
         a.click();
         URL.revokeObjectURL(url);
       },

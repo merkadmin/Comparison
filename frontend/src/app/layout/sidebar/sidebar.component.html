@@ -88,8 +88,9 @@
         <!--END::Settings (Admin only)-->
 
         <!-- Shop by Category -->
-        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-          <span class="menu-link">
+        @if (!auth.isAdmin()) {
+        <div class="menu-item">
+          <a class="menu-link" routerLink="/shop" routerLinkActive="active">
             <span class="menu-icon">
               <i class="ki-duotone ki-category fs-2">
                 <span class="path1"></span><span class="path2"></span>
@@ -97,26 +98,9 @@
               </i>
             </span>
             <span class="menu-title">{{ 'nav.shopByCategory' | translate }}</span>
-            <span class="menu-arrow"></span>
-          </span>
-          <div class="menu-sub menu-sub-accordion">
-            @for (cat of categories(); track cat.id) {
-            <div class="menu-item">
-              <a class="menu-link" [routerLink]="['/shop']" [queryParams]="{ categoryId: cat.id }"
-                routerLinkActive="active">
-                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                <span class="menu-title">{{ localize(cat.name) }}</span>
-              </a>
-            </div>
-            }
-            <div class="menu-item">
-              <a class="menu-link" routerLink="/item-categories" routerLinkActive="active">
-                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                <span class="menu-title fw-bold text-primary">{{ 'nav.showAll' | translate }}</span>
-              </a>
-            </div>
-          </div>
+          </a>
         </div>
+        }
 
         <!-- Price Comparison -->
         <div data-kt-menu-trigger="click" class="menu-item menu-accordion">

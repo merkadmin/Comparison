@@ -10,6 +10,7 @@ export const fr: Record<string, string> = {
   'common.search': 'Rechercher',
   'common.importTemplate': 'Importer',
   'common.exportTemplate': 'Exporter le modèle',
+  'common.exportList': 'Exporter la liste',
   'common.loading': 'Chargement...',
   'common.noData': 'Aucun enregistrement trouvé.',
   'common.created': 'Créé le',

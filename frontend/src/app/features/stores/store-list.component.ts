@@ -54,7 +54,8 @@ export class StoreListComponent implements OnInit {
 
   // ── Bulk actions ──────────────────────────────────────────────────────────
   importMenuItems: ActionMenuItem[] = [
-    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() }
+    { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() },
+    { labelKey: 'common.exportList', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportList() },
   ];
 
   bulkMenuItems: ActionMenuItem[] = [
@@ -194,6 +195,20 @@ export class StoreListComponent implements OnInit {
         const a = document.createElement('a');
         a.href = url;
         a.download = 'stores-template.xlsx';
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: () => { }
+    });
+  }
+
+  exportList(): void {
+    this.service.exportList().subscribe({
+      next: blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'stores.xlsx';
         a.click();
         URL.revokeObjectURL(url);
       },

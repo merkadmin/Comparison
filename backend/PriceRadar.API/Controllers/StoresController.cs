@@ -16,6 +16,14 @@ public class StoresController : BaseController<Store, IStoreRepository>
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "stores-template.xlsx");
 	}
 
+	[HttpGet("export-list")]
+	public async Task<IActionResult> ExportList()
+	{
+		var stores = await Repo.GetAllAsync();
+		var bytes = ExcelService.ExportStoreList(stores);
+		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "stores.xlsx");
+	}
+
 	[HttpPost("import")]
 	[Consumes("multipart/form-data")]
 	public async Task<IActionResult> Import(IFormFile file)

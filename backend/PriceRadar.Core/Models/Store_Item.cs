@@ -8,7 +8,7 @@ namespace PriceRadar.Core.Models
 		public long ItemId { get; set; }
 		public long StoreId { get; set; }
 		public decimal SellingPrice { get; set; }
-		public SellingPriceType SellingPriceTypeId { get; set; } = SellingPriceType.Regular;
+		public DBSellingPriceType SellingPriceTypeId { get; set; } = DBSellingPriceType.Regular;
 		public bool IsActive { get; set; } = true;
 		public bool IsDeleted { get; set; } = false;
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

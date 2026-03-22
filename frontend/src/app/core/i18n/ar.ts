@@ -10,6 +10,7 @@ export const ar: Record<string, string> = {
   'common.search': 'بحث',
   'common.importTemplate': 'استيراد',
   'common.exportTemplate': 'تصدير القالب',
+  'common.exportList': 'تصدير القائمة',
   'common.loading': 'جارٍ التحميل...',
   'common.noData': 'لا توجد سجلات.',
   'common.created': 'تاريخ الإنشاء',

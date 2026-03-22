@@ -34,7 +34,7 @@ public abstract class BaseController<TModel, TRepo> : ControllerBase
 	public virtual async Task<IActionResult> Create([FromBody] TModel entity)
 	{
 		var created = await Repo.CreateAsync(entity);
-		return CreatedAtAction(nameof(GetById), new { id = GetId(created) }, created);
+		return StatusCode(201, created);
 	}
 
 	[HttpPut("{id:long}")]
@@ -71,6 +71,4 @@ public abstract class BaseController<TModel, TRepo> : ControllerBase
 		return NoContent();
 	}
 
-	private static long GetId(TModel entity) =>
-		(long)(typeof(TModel).GetProperty("Id")?.GetValue(entity) ?? 0L);
 }

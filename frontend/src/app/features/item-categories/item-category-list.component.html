@@ -1,35 +1,24 @@
 <div class="card">
-  <app-common-list-header-actions
-    titleKey="category.title"
-    [viewMode]="viewMode()"
-    [selectedCount]="selectedIds().size"
-    bulkMainLabelKey="common.deactivate"
-    bulkMainIconClass="ki-minus-circle"
-    bulkMainColor="light-warning"
-    [bulkMenuItems]="bulkMenuItems"
-    searchPlaceholderKey="category.searchPlaceholder"
-    [importing]="importing()"
-    [importMenuItems]="importMenuItems"
-    importSuccessKey="category.importSuccess"
-    [importSuccess]="importSuccess()"
-    [importErrorMessage]="importError()"
-    (viewModeChange)="viewMode.set($event)"
-    (bulkMainClick)="deactivateSelected()"
-    (searchChange)="searchTerm.set($event)"
-    (fileSelected)="onFileSelected($event)"
-    (importSuccessClose)="importSuccess.set(false)"
-    (importErrorClose)="importError.set(null)">
+  <!--START:: Header Actions for admin users-->
+  <app-common-list-header-actions titleKey="category.title" [viewMode]="auth.isAdmin() ? viewMode() : undefined" [selectedCount]="selectedIds().size"
+    bulkMainLabelKey="common.deactivate" bulkMainIconClass="ki-minus-circle" bulkMainColor="light-warning"
+    [bulkMenuItems]="bulkMenuItems" searchPlaceholderKey="category.searchPlaceholder" [importing]="importing()"
+    [importMenuItems]="importMenuItems" importSuccessKey="category.importSuccess" [importSuccess]="importSuccess()"
+    [importErrorMessage]="importError()" (viewModeChange)="viewMode.set($event)" (bulkMainClick)="deactivateSelected()"
+    (searchChange)="searchTerm.set($event)" (fileSelected)="onFileSelected($event)"
+    (importSuccessClose)="importSuccess.set(false)" (importErrorClose)="importError.set(null)">
 
     <!--START::Add Button (Admin)-->
     @if (auth.isAdmin()) {
-      <button class="btn btn-sm btn-primary" (click)="openCreate()">
-        <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
-        {{ 'category.addNew' | translate }}
-      </button>
+    <button class="btn btn-sm btn-primary" (click)="openCreate()">
+      <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
+      {{ 'category.addNew' | translate }}
+    </button>
     }
     <!--END::Add Button (Admin)-->
 
   </app-common-list-header-actions>
+  <!--END:: Header Actions for admin users-->
 
   <div class="card-body py-4">
     @if (loading()) {
@@ -82,13 +71,9 @@
             <app-common-drop-down-menu-action-button
               [mainLabelKey]="cat.isActive !== false ? 'common.deactivate' : 'common.activate'"
               [mainIconClass]="cat.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-              [mainColor]="cat.isActive !== false ? 'light-warning' : 'light-success'"
-              mainIconSize="6"
-              mainButtonClass="w-100"
-              groupClass="flex-fill"
-              [menuEnd]="true"
-              (mainClick)="setActive(cat.id!, cat.isActive === false)"
-              [menuItems]="getRowMenuItems(cat.id!)" />
+              [mainColor]="cat.isActive !== false ? 'light-warning' : 'light-success'" mainIconSize="6"
+              mainButtonClass="w-100" groupClass="flex-fill" [menuEnd]="true"
+              (mainClick)="setActive(cat.id!, cat.isActive === false)" [menuItems]="getRowMenuItems(cat.id!)" />
           </div>
           }
         </div>
@@ -122,7 +107,8 @@
       <tbody class="text-gray-600 fw-semibold">
         @if (visibleCategories().length === 0) {
         <tr>
-          <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+          <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">{{ 'common.noData' |
+            translate }}</td>
         </tr>
         }
         @for (cat of visibleCategories(); track cat.id; let i = $index) {
@@ -152,24 +138,33 @@
           </td>
           <td class="text-muted">{{ cat.description ? localize(cat.description) : '—' }}</td>
           <td>{{ cat.createdAt | date:'mediumDate' }}</td>
+
+          <!--START:: Row Actions for Admin -->
           @if (auth.isAdmin()) {
           <td class="text-end">
             <div class="d-flex justify-content-end gap-2">
+
+              <!--START:: Row Edit Button -->
               <button class="btn btn-sm btn-light-primary" (click)="openEdit(cat)">
                 <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
                 {{ 'common.edit' | translate }}
               </button>
+              <!--END:: Row Edit Button -->
+
+              <!--START:: Row Drop down Actions-->
               <app-common-drop-down-menu-action-button
                 [mainLabelKey]="cat.isActive !== false ? 'common.deactivate' : 'common.activate'"
                 [mainIconClass]="cat.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-                [mainColor]="cat.isActive !== false ? 'light-warning' : 'light-success'"
-                mainIconSize="5"
-                [menuEnd]="true"
-                (mainClick)="setActive(cat.id!, cat.isActive === false)"
+                [mainColor]="cat.isActive !== false ? 'light-warning' : 'light-success'" mainIconSize="5"
+                [menuEnd]="true" (mainClick)="setActive(cat.id!, cat.isActive === false)"
                 [menuItems]="getRowMenuItems(cat.id!)" />
+                <!--END:: Row Drop down Actions-->
+
             </div>
           </td>
           }
+          <!--END:: Row Actions for Admin -->
+
         </tr>
         }
       </tbody>
@@ -180,11 +175,7 @@
 
 <!--START::Create / Edit Modal-->
 @if (editingId() !== null) {
-  <app-item-category-list-operation
-    [editDraft]="editDraft"
-    [isCreating]="isCreating()"
-    [parentOptions]="parentOptions()"
-    (closed)="closeEdit()"
-    (saved)="saveEdit()" />
+<app-item-category-list-operation [editDraft]="editDraft" [isCreating]="isCreating()" [parentOptions]="parentOptions()"
+  (closed)="closeEdit()" (saved)="saveEdit()" />
 }
 <!--END::Create / Edit Modal-->
