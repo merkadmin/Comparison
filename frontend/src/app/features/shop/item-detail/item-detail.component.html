@@ -42,6 +42,15 @@
         </div>
       }
 
+      <!--Best Price-->
+      @if (itemStoreItems.length > 0) {
+        <div class="item-detail-panel__best-price d-flex align-items-center gap-2 pt-3 flex-wrap">
+          <span class="text-muted fs-7 fw-semibold">{{ 'item.bestPrice' | translate }}</span>
+          <span class="fw-bold fs-2 best-price-value">{{ itemStoreItems[0].sellingPrice | number:'1.2-2' }}</span>
+          <span class="badge badge-light-primary fs-7">{{ getStoreName(itemStoreItems[0].storeId) }}</span>
+        </div>
+      }
+
     </div>
     <!--END::Left - Images-->
 

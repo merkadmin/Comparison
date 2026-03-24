@@ -173,7 +173,7 @@
                   @if (getBestPrice(item.id!) !== null) {
                     <div class="d-flex align-items-center gap-1 mt-auto pt-2 border-top">
                       <span class="text-muted fs-6">{{ 'item.bestPrice' | translate }}:</span>
-                      <span class="fw-bold text-primary fs-1">{{ getBestPrice(item.id!) | number:'1.2-2' }}</span>
+                      <span class="fw-bold text-primary fs-1 best-price">{{ getBestPrice(item.id!) | number:'1.2-2' }}</span>
                     </div>
                   }
                 </div>
