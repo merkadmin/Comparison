@@ -1,0 +1,86 @@
+.pages-row {
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover td { background: rgba(var(--bs-primary-rgb), 0.04); }
+}
+
+// ── Operation mode layout ─────────────────────────────────────────────────────
+
+.page-op {
+  &__slots {
+    min-width: 0;
+  }
+
+  &__picker {
+    width: 340px;
+    min-width: 340px;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  &__picker-header {
+    flex-shrink: 0;
+  }
+
+  &__picker-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    overflow-y: auto;
+    flex: 1;
+  }
+}
+
+// ── Slot row ─────────────────────────────────────────────────────────────────
+
+.slot-row--editing {
+  background: rgba(var(--bs-primary-rgb), 0.04);
+  td { border-color: rgba(var(--bs-primary-rgb), 0.2) !important; }
+}
+
+.slot-icon-preview {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+// ── Icon picker tile ──────────────────────────────────────────────────────────
+
+.picker-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 6px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.12s;
+  background: var(--bs-light);
+  text-align: center;
+
+  &:hover {
+    background: rgba(var(--bs-primary-rgb), 0.08);
+    border-color: rgba(var(--bs-primary-rgb), 0.3);
+    transform: translateY(-2px);
+  }
+
+  &--active {
+    background: rgba(var(--bs-primary-rgb), 0.12) !important;
+    border-color: var(--bs-primary) !important;
+  }
+
+  i { font-size: 2rem; }
+
+  &__name {
+    font-size: 0.65rem;
+    color: var(--bs-gray-600);
+    word-break: break-all;
+    line-height: 1.3;
+  }
+}

@@ -155,7 +155,7 @@
                   <!--Favorite Icon-->
                   <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-1 bg-white bg-opacity-75 border-0 rounded-circle"
                     (click)="toggleFavorite(item.id!); $event.stopPropagation()">
-                    <i class="ki-duotone ki-heart fs-4"
+                    <i class="ki-duotone ki-{{ favoriteIcon() }} fs-4"
                       [class.text-danger]="isFavorite(item.id!)"
                       [class.text-gray-400]="!isFavorite(item.id!)">
                       <span class="path1"></span><span class="path2"></span>
@@ -187,7 +187,7 @@
                       [class.btn-primary]="!inCart(item.id!)"
                       [disabled]="!inCart(item.id!) && pendingCount(item.id!) === 0"
                       (click)="cartButtonClick(item.id!)">
-                      <i class="ki-duotone ki-basket fs-1">
+                      <i class="ki-duotone ki-{{ cartIcon() }} fs-1">
                         <span class="path1"></span><span class="path2"></span><span class="path3"></span>
                       </i>
                       @if (inCart(item.id!)) {
@@ -202,7 +202,7 @@
                       [class.btn-light-success]="!inCompare(item.id!)"
                       [class.btn-success]="inCompare(item.id!)"
                       (click)="toggleCompare(item.id!)">
-                      <i class="ki-duotone ki-arrows-circle fs-1 text-success">
+                      <i class="ki-duotone ki-{{ compareIcon() }} fs-1 text-success">
                         <span class="path1"></span><span class="path2"></span>
                       </i>
                       {{ 'item.compare' | translate }}

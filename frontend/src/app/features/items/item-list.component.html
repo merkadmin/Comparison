@@ -115,7 +115,7 @@
                   <!--START::Add to Cart-->
                   <button class="btn btn-sm flex-fill" [class.btn-primary]="!inCart(item.id!)"
                     [class.btn-success]="inCart(item.id!)" (click)="toggleCart(item.id!)">
-                    <i class="ki-duotone ki-basket fs-1">
+                    <i class="ki-duotone ki-{{ cartIcon() }} fs-1">
                       <span class="path1"></span><span class="path2"></span><span class="path3"></span>
                     </i>
                     {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
@@ -125,7 +125,7 @@
                   <!--START::Compare-->
                   <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCompare(item.id!)"
                     [class.btn-success]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
-                    <i class="ki-duotone ki-arrows-circle fs-1 text-success">
+                    <i class="ki-duotone ki-{{ compareIcon() }} fs-1 text-success">
                       <span class="path1"></span><span class="path2"></span>
                     </i>
                     {{ 'item.compare' | translate }}
@@ -142,7 +142,7 @@
 
                   <!--START::Edit-->
                   <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(item)">
-                    <i class="ki-duotone ki-pencil fs-1">
+                    <i class="ki-duotone ki-{{ editIcon() }} fs-1">
                       <span class="path1"></span><span class="path2"></span>
                     </i>
                     {{ 'common.edit' | translate }}
@@ -297,14 +297,14 @@
                     <!--START::Add to Cart-->
                     <button class="btn btn-sm" [class.btn-primary]="!inCart(item.id!)"
                       [class.btn-success]="inCart(item.id!)" (click)="toggleCart(item.id!)">
-                      <i class="ki-duotone ki-basket fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                      <i class="ki-duotone ki-{{ cartIcon() }} fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                       {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
                     </button>
                     <!--END::Add to Cart-->
                     <!--START::Compare-->
                     <button class="btn btn-sm" [class.btn-light-success]="!inCompare(item.id!)"
                       [class.btn-success]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
-                      <i class="ki-duotone ki-arrows-circle fs-5 text-success"><span class="path1"></span><span class="path2"></span></i>
+                      <i class="ki-duotone ki-{{ compareIcon() }} fs-5 text-success"><span class="path1"></span><span class="path2"></span></i>
                       {{ 'item.compare' | translate }}
                     </button>
                     <!--END::Compare-->

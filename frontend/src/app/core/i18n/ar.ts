@@ -53,6 +53,7 @@ export const ar: Record<string, string> = {
   'nav.favorites': 'المفضلة',
   'nav.settings': 'الإعدادات',
   'nav.appSetup': 'إعداد التطبيق',
+  'nav.pages': 'الصفحات',
   'nav.setIcons': 'الأيقونات',
 
   // Store Items

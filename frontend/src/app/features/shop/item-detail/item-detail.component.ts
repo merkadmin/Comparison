@@ -5,6 +5,7 @@ import { StoreItem, SellingPriceType } from '../../../core/models/store-item.mod
 import { Store } from '../../../core/models/store.model';
 import { ItemImageService } from '../../../core/services/item-image.service';
 import { UserActivityService } from '../../../core/services/user-activity.service';
+import { IconConfigService } from '../../../core/services/icon-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
 @Component({
@@ -17,6 +18,11 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 export class ItemDetailComponent {
   private imageService = inject(ItemImageService);
   userActivity         = inject(UserActivityService);
+  private iconConfig   = inject(IconConfigService);
+
+  cartIcon     = this.iconConfig.iconSignal('global.cart',    'basket');
+  compareIcon  = this.iconConfig.iconSignal('global.compare', 'arrows-circle');
+  favoriteIcon = this.iconConfig.iconSignal('global.favorite','heart');
 
   @Input() item!: Item;
   @Input() storeItems: StoreItem[] = [];

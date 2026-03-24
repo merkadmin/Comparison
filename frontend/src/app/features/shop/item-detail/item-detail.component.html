@@ -134,7 +134,7 @@
 
     @if (inCart()) {
       <button class="btn btn-sm btn-success flex-fill" (click)="removeFromCart()">
-        <i class="ki-duotone ki-basket fs-4">
+        <i class="ki-duotone ki-{{ cartIcon() }} fs-4">
           <span class="path1"></span><span class="path2"></span><span class="path3"></span>
         </i>
         {{ 'item.removeFromCart' | translate }}
@@ -143,7 +143,7 @@
       <button class="btn btn-sm btn-primary flex-fill"
         [disabled]="selectedStoreIds().size === 0"
         (click)="confirmCart()">
-        <i class="ki-duotone ki-basket fs-4">
+        <i class="ki-duotone ki-{{ cartIcon() }} fs-4">
           <span class="path1"></span><span class="path2"></span><span class="path3"></span>
         </i>
         {{ 'item.addToCart' | translate }}
@@ -157,7 +157,7 @@
       [class.btn-light-success]="!inCompare()"
       [class.btn-success]="inCompare()"
       (click)="compareToggled.emit(item.id!)">
-      <i class="ki-duotone ki-arrows-circle fs-4 text-success">
+      <i class="ki-duotone ki-{{ compareIcon() }} fs-4 text-success">
         <span class="path1"></span><span class="path2"></span>
       </i>
       {{ 'item.compare' | translate }}
@@ -167,7 +167,7 @@
       [class.btn-light-danger]="isFavorite()"
       [class.btn-light]="!isFavorite()"
       (click)="favoriteToggled.emit(item.id!)">
-      <i class="ki-duotone ki-heart fs-3"
+      <i class="ki-duotone ki-{{ favoriteIcon() }} fs-3"
         [class.text-danger]="isFavorite()"
         [class.text-gray-400]="!isFavorite()">
         <span class="path1"></span><span class="path2"></span>

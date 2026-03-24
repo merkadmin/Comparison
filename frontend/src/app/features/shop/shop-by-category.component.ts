@@ -15,6 +15,7 @@ import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
 import { GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { computedColClass } from '../../shared/helpers/grid-columns.helper';
 import { ItemDetailComponent } from './item-detail/item-detail.component';
+import { IconConfigService } from '../../core/services/icon-config.service';
 
 @Component({
   selector: 'app-shop-by-category',
@@ -31,6 +32,12 @@ export class ShopByCategoryComponent implements OnInit {
   private imageService     = inject(ItemImageService);
   private translate        = inject(TranslateService);
   userActivity             = inject(UserActivityService);
+  private iconConfig       = inject(IconConfigService);
+
+  // ── Icon config signals ────────────────────────────────────────────────────
+  cartIcon    = this.iconConfig.iconSignal('global.cart',    'basket');
+  compareIcon = this.iconConfig.iconSignal('global.compare', 'arrows-circle');
+  favoriteIcon = this.iconConfig.iconSignal('global.favorite','heart');
 
   // ── State ──────────────────────────────────────────────────────────────────
   allCategories  = signal<IItemCategory[]>([]);

@@ -11,6 +11,7 @@ import { StoreListComponent } from './features/stores/store-list.component';
 import { StoreItemListComponent } from './features/store-items/store-item-list.component';
 import { ShopByCategoryComponent } from './features/shop/shop-by-category.component';
 import { SetIconsComponent } from './features/app-setup/set-icons/set-icons.component';
+import { PagesComponent } from './features/app-setup/pages/pages.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -31,6 +32,7 @@ export const routes: Routes = [
       { path: 'store-items', component: StoreItemListComponent },
       { path: 'shop', component: ShopByCategoryComponent },
       { path: 'app-setup/set-icons', component: SetIconsComponent },
+      { path: 'app-setup/pages', component: PagesComponent },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -30,6 +30,7 @@ import { computedColClass } from '../../shared/helpers/grid-columns.helper';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemListOperationComponent } from './item-list-operation/item-list-operation.component';
 import { MultiLangString } from '../../core/models/interfaces/LocalizedString';
+import { IconConfigService } from '../../core/services/icon-config.service';
 
 @Component({
   selector: 'app-item-list',
@@ -40,7 +41,15 @@ import { MultiLangString } from '../../core/models/interfaces/LocalizedString';
 })
 export class ItemListComponent implements OnInit, OnDestroy {
   auth = inject(AuthService);
+  private iconConfig   = inject(IconConfigService);
   private itemService = inject(ItemService);
+
+  cartIcon     = this.iconConfig.iconSignal('global.cart',    'basket');
+  compareIcon  = this.iconConfig.iconSignal('global.compare', 'arrows-circle');
+  favoriteIcon = this.iconConfig.iconSignal('global.favorite','heart');
+  addIcon      = this.iconConfig.iconSignal('global.add',     'plus');
+  editIcon     = this.iconConfig.iconSignal('global.edit',    'pencil');
+  deleteIcon   = this.iconConfig.iconSignal('global.delete',  'trash');
   private storeItemService = inject(StoreItemService);
   private categoryService = inject(ItemCategoryService);
   private brandService = inject(ItemBrandService);
