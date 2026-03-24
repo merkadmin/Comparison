@@ -157,7 +157,7 @@
       [class.btn-light-success]="!inCompare()"
       [class.btn-success]="inCompare()"
       (click)="compareToggled.emit(item.id!)">
-      <i class="ki-duotone ki-{{ compareIcon() }} fs-4 text-success">
+      <i class="ki-duotone ki-{{ compareIcon() }} fs-4">
         <span class="path1"></span><span class="path2"></span>
       </i>
       {{ 'item.compare' | translate }}

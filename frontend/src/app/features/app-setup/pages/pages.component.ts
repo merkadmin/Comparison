@@ -109,6 +109,7 @@ export class PagesComponent {
 
   selectedPage  = signal<AppPage | null>(null);
   editingSlot   = signal<IconSlot | null>(null);
+  pendingIcon   = signal<string | null>(null);
   pickerSearch  = signal('');
 
   pickerIcons = computed(() => {
@@ -133,18 +134,26 @@ export class PagesComponent {
 
   startEdit(slot: IconSlot): void {
     this.editingSlot.set(slot);
+    this.pendingIcon.set(null);
     this.pickerSearch.set('');
   }
 
   cancelEdit(): void {
     this.editingSlot.set(null);
+    this.pendingIcon.set(null);
   }
 
-  applyIcon(iconName: string): void {
+  selectIcon(iconName: string): void {
+    this.pendingIcon.set(iconName);
+  }
+
+  saveIcon(): void {
     const slot = this.editingSlot();
-    if (!slot) return;
-    this.iconConfig.setIcon(slot.key, iconName);
+    const icon = this.pendingIcon();
+    if (!slot || !icon) return;
+    this.iconConfig.setIcon(slot.key, icon);
     this.editingSlot.set(null);
+    this.pendingIcon.set(null);
   }
 
   resetSlot(slot: IconSlot): void {

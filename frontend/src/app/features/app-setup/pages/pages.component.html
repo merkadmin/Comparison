@@ -188,11 +188,29 @@
               </div>
             </div>
 
+            <!--START::Selected Preview + Save-->
+            @if (pendingIcon()) {
+              <div class="d-flex align-items-center gap-3 px-3 pt-3 pb-1">
+                <div class="d-flex align-items-center gap-2 flex-grow-1 bg-light rounded px-3 py-2">
+                  <i class="ki-duotone ki-{{ pendingIcon() }} fs-2x">
+                    @for (p of iconPaths; track p) { <span class="path{{ p }}"></span> }
+                  </i>
+                  <span class="fw-semibold text-gray-800 fs-7 font-monospace">{{ pendingIcon() }}</span>
+                </div>
+                <button class="btn btn-sm btn-success" (click)="saveIcon()">
+                  <i class="ki-duotone ki-check fs-4"><span class="path1"></span></i>
+                  Save
+                </button>
+              </div>
+            }
+            <!--END::Selected Preview + Save-->
+
             <div class="page-op__picker-grid px-3 py-3">
               @for (name of pickerIcons(); track name) {
                 <div class="picker-tile"
                   [class.picker-tile--active]="currentIcon(slot) === name"
-                  (click)="applyIcon(name)"
+                  [class.picker-tile--pending]="pendingIcon() === name"
+                  (click)="selectIcon(name)"
                   [title]="name">
                   <i class="ki-duotone ki-{{ name }} fs-2">
                     @for (p of iconPaths; track p) { <span class="path{{ p }}"></span> }

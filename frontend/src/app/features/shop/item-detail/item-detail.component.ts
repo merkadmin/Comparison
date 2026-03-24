@@ -17,25 +17,25 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 })
 export class ItemDetailComponent {
   private imageService = inject(ItemImageService);
-  userActivity         = inject(UserActivityService);
-  private iconConfig   = inject(IconConfigService);
+  userActivity = inject(UserActivityService);
+  private iconConfig = inject(IconConfigService);
 
-  cartIcon     = this.iconConfig.iconSignal('global.cart',    'basket');
-  compareIcon  = this.iconConfig.iconSignal('global.compare', 'arrows-circle');
-  favoriteIcon = this.iconConfig.iconSignal('global.favorite','heart');
+  cartIcon = this.iconConfig.iconSignal('global.cart', 'basket');
+  compareIcon = this.iconConfig.iconSignal('global.compare', 'data');
+  favoriteIcon = this.iconConfig.iconSignal('global.favorite', 'heart');
 
   @Input() item!: Item;
   @Input() storeItems: StoreItem[] = [];
   @Input() stores: Store[] = [];
   @Input() compareIds = new Set<number>();
 
-  @Output() closed          = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
   @Output() favoriteToggled = new EventEmitter<number>();
-  @Output() cartToggled     = new EventEmitter<number>();
-  @Output() compareToggled  = new EventEmitter<number>();
+  @Output() cartToggled = new EventEmitter<number>();
+  @Output() compareToggled = new EventEmitter<number>();
 
-  activeIdx        = signal(0);
-  lightboxIdx      = signal<number | null>(null);
+  activeIdx = signal(0);
+  lightboxIdx = signal<number | null>(null);
   selectedStoreIds = signal<Set<number>>(new Set());
 
   toggleStoreSelection(si: StoreItem): void {
@@ -58,10 +58,10 @@ export class ItemDetailComponent {
     this.cartToggled.emit(this.item.id!);
   }
 
-  openLightbox(): void          { this.lightboxIdx.set(this.activeIdx()); }
-  closeLightbox(): void         { this.lightboxIdx.set(null); }
-  lightboxNext(): void          { this.lightboxIdx.update(i => i !== null ? Math.min(i + 1, this.allImages.length - 1) : null); }
-  lightboxPrev(): void          { this.lightboxIdx.update(i => i !== null ? Math.max(i - 1, 0) : null); }
+  openLightbox(): void { this.lightboxIdx.set(this.activeIdx()); }
+  closeLightbox(): void { this.lightboxIdx.set(null); }
+  lightboxNext(): void { this.lightboxIdx.update(i => i !== null ? Math.min(i + 1, this.allImages.length - 1) : null); }
+  lightboxPrev(): void { this.lightboxIdx.update(i => i !== null ? Math.max(i - 1, 0) : null); }
   lightboxSelect(i: number): void { this.lightboxIdx.set(i); }
 
   get allImages(): string[] {
@@ -93,12 +93,12 @@ export class ItemDetailComponent {
   }
 
   priceTypeBadge(type: SellingPriceType): string {
-    if (type === SellingPriceType.Offer)   return 'badge-light-danger';
+    if (type === SellingPriceType.Offer) return 'badge-light-danger';
     if (type === SellingPriceType.Premium) return 'badge-light-warning';
     return 'badge-light-success';
   }
 
   isFavorite(): boolean { return this.userActivity.favoriteIds().has(this.item.id!); }
-  inCart(): boolean     { return this.userActivity.cartIds().has(this.item.id!); }
-  inCompare(): boolean  { return this.compareIds.has(this.item.id!); }
+  inCart(): boolean { return this.userActivity.cartIds().has(this.item.id!); }
+  inCompare(): boolean { return this.compareIds.has(this.item.id!); }
 }
