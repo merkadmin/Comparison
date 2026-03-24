@@ -64,11 +64,9 @@
             <div class="card h-100 shadow-sm border-0">
 
               <!--START::Card Logo-->
-              <div class="bg-light d-flex align-items-center justify-content-center position-relative"
-                style="height:140px;">
+              <div class="bg-light d-flex align-items-center justify-content-center position-relative store-logo-wrap">
                 @if (store.logoUrl) {
-                  <img [src]="store.logoUrl" [alt]="store.name"
-                    style="max-height:100px;max-width:100%;object-fit:contain;" />
+                  <img [src]="store.logoUrl" [alt]="store.name" class="store-logo-img" />
                 } @else {
                   <span class="fw-bold text-info fs-1">{{ store.name.charAt(0).toUpperCase() }}</span>
                 }

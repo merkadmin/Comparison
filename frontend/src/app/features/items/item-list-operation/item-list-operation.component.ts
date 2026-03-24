@@ -16,6 +16,7 @@ import { ProductInformation } from '../../../core/models/product-information.mod
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './item-list-operation.component.html',
+  styleUrl: './item-list-operation.component.less',
 })
 export class ItemListOperationComponent {
   private translate = inject(TranslateService);

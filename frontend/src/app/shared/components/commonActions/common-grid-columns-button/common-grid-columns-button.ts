@@ -8,6 +8,7 @@ export type GridColumns = 1 | 2 | 3 | 4 | 5 | 6;
   standalone: true,
   imports: [CommonModule],
   templateUrl: './common-grid-columns-button.html',
+  styleUrl: './common-grid-columns-button.less',
 })
 export class CommonGridColumnsButton {
   @Input()  columns: GridColumns = 5;

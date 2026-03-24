@@ -113,7 +113,7 @@
                 <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
 
                   <!--START::Add to Cart-->
-                  <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCart(item.id!)"
+                  <button class="btn btn-sm flex-fill" [class.btn-primary]="!inCart(item.id!)"
                     [class.btn-success]="inCart(item.id!)" (click)="toggleCart(item.id!)">
                     <i class="ki-duotone ki-basket fs-1">
                       <span class="path1"></span><span class="path2"></span><span class="path3"></span>
@@ -295,7 +295,7 @@
                 <td class="text-end">
                   <div class="d-flex justify-content-end gap-2">
                     <!--START::Add to Cart-->
-                    <button class="btn btn-sm" [class.btn-light-success]="!inCart(item.id!)"
+                    <button class="btn btn-sm" [class.btn-primary]="!inCart(item.id!)"
                       [class.btn-success]="inCart(item.id!)" (click)="toggleCart(item.id!)">
                       <i class="ki-duotone ki-basket fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
                       {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}

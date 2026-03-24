@@ -1,6 +1,56 @@
 /* Global styles for PriceRadar */
 /* Metronic CSS is loaded via index.html link tags */
 
+/* =====================================================
+   Solid badge & button colors in light mode
+   Metronic "light" variants use tinted backgrounds;
+   override them to solid fills for better contrast.
+   ===================================================== */
+[data-bs-theme="light"] {
+  .badge-light-primary { background-color: var(--bs-primary) !important; color: #fff !important; }
+  .badge-light-success { background-color: var(--bs-success) !important; color: #fff !important; }
+  .badge-light-warning { background-color: var(--bs-warning) !important; color: #fff !important; }
+  .badge-light-danger  { background-color: var(--bs-danger)  !important; color: #fff !important; }
+  .badge-light-info    { background-color: var(--bs-info)    !important; color: #fff !important; }
+  .badge-light-dark    { background-color: var(--bs-dark)    !important; color: #fff !important; }
+
+  .btn-light-primary {
+    background-color: var(--bs-primary) !important;
+    border-color: var(--bs-primary) !important;
+    color: #fff !important;
+    &:hover, &:focus, &:active { filter: brightness(0.9); }
+  }
+  .btn-light-success {
+    background-color: var(--bs-success) !important;
+    border-color: var(--bs-success) !important;
+    color: #fff !important;
+    &:hover, &:focus, &:active { filter: brightness(0.9); }
+  }
+  .btn-light-warning {
+    background-color: var(--bs-warning) !important;
+    border-color: var(--bs-warning) !important;
+    color: #fff !important;
+    &:hover, &:focus, &:active { filter: brightness(0.9); }
+  }
+  .btn-light-danger {
+    background-color: var(--bs-danger) !important;
+    border-color: var(--bs-danger) !important;
+    color: #fff !important;
+    &:hover, &:focus, &:active { filter: brightness(0.9); }
+  }
+  .btn-light-info {
+    background-color: var(--bs-info) !important;
+    border-color: var(--bs-info) !important;
+    color: #fff !important;
+    &:hover, &:focus, &:active { filter: brightness(0.9); }
+  }
+}
+
+/* Shared inline modal backdrop (replaces style="background:rgba(0,0,0,0.5)") */
+.modal-inline-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
 /* 5-column grid (Bootstrap has no col-2.4 built-in) */
 .col-grid-5 {
   flex: 0 0 auto;

@@ -19,6 +19,7 @@ import { computedColClass } from '../../shared/helpers/grid-columns.helper';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions, StoreListOperationComponent],
   templateUrl: './store-list.component.html',
+  styleUrl: './store-list.component.less',
 })
 export class StoreListComponent implements OnInit {
   auth = inject(AuthService);

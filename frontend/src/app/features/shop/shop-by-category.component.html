@@ -184,8 +184,7 @@
                   <div class="d-flex gap-2">
                     <button class="btn btn-sm flex-fill"
                       [class.btn-success]="inCart(item.id!)"
-                      [class.btn-primary]="!inCart(item.id!) && pendingCount(item.id!) > 0"
-                      [class.btn-light-success]="!inCart(item.id!) && pendingCount(item.id!) === 0"
+                      [class.btn-primary]="!inCart(item.id!)"
                       [disabled]="!inCart(item.id!) && pendingCount(item.id!) === 0"
                       (click)="cartButtonClick(item.id!)">
                       <i class="ki-duotone ki-basket fs-1">
