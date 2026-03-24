@@ -25,12 +25,14 @@
     (importErrorClose)="importError.set(null)">
 
     <!--START::Add Button (Admin)-->
-    @if (auth.isAdmin()) {
-      <button class="btn btn-sm btn-primary" (click)="openCreate()">
-        <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
-        {{ 'store.addNew' | translate }}
-      </button>
-    }
+    <div slot="add">
+      @if (auth.isAdmin()) {
+        <button class="btn btn-sm btn-primary" (click)="openCreate()">
+          <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
+          {{ 'store.addNew' | translate }}
+        </button>
+      }
+    </div>
     <!--END::Add Button (Admin)-->
 
   </app-common-list-header-actions>
@@ -283,7 +285,9 @@
     [editDraft]="editDraft"
     [isCreating]="isCreating()"
     [storeTypes]="storeTypes"
+    [saving]="saving()"
     (closed)="closeEdit()"
-    (saved)="saveEdit()" />
+    (saved)="saveEdit()"
+    (savedAndNew)="saveEditAndNew()" />
 }
 <!--END::Create / Edit Modal-->

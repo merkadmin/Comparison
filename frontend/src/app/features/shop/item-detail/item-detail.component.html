@@ -53,25 +53,25 @@
 
       <!--START::Variant Groups-->
       @if (hasVariants) {
-        <div class="d-flex flex-column gap-4 pt-3">
+        <div class="d-flex flex-column gap-3 pt-3">
           @for (group of variantGroups; track group.type) {
-            <div>
-              <h6 class="fw-semibold text-gray-700 fs-7 mb-2">
+            <div class="variant-group">
+              <h6 class="fw-semibold text-gray-700 fs-7 mb-1">
                 {{ 'variant.type.' + group.type | translate }}
               </h6>
-              <div class="d-flex flex-wrap gap-2">
+              <div class="variant-list">
                 @for (v of group.variants; track v.id) {
-                  <label class="variant-chip d-flex align-items-center gap-2 px-3 py-2 rounded border cursor-pointer"
-                    [class.variant-chip--selected]="selectedVariants().get(group.type) === v.id">
-                    <input type="radio" class="d-none"
-                      [name]="'vg-' + group.type"
-                      [value]="v.id"
-                      [checked]="selectedVariants().get(group.type) === v.id"
-                      (change)="selectVariant(group.type, v.id!)" />
+                  <div class="variant-list-item d-flex align-items-center gap-3 px-3 py-2 cursor-pointer"
+                    [class.variant-list-item--selected]="selectedVariants().get(group.type) === v.id"
+                    (click)="selectVariant(group.type, v.id!)">
+                    <div class="variant-list-item__radio">
+                      <span class="variant-list-item__dot"></span>
+                    </div>
                     @if (v.abbreviation) {
-                      <span class="badge badge-light-dark fs-8">{{ v.abbreviation }}</span>
+                      <span class="badge badge-light-dark fs-8 me-1">{{ v.abbreviation }}</span>
                     }
-                  </label>
+                    <span class="text-gray-800 fs-7">{{ v.variantValue }}</span>
+                  </div>
                 }
               </div>
             </div>

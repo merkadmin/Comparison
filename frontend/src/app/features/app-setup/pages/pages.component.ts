@@ -1,7 +1,6 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { IconConfigService, AppPage, IconSlot, APP_PAGES } from '../../../core/services/icon-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
@@ -96,7 +95,7 @@ const ALL_ICONS: string[] = [
 @Component({
   selector: 'app-pages',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './pages.component.html',
   styleUrl: './pages.component.less',
 })

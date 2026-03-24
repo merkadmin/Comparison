@@ -59,13 +59,23 @@
 	public enum DBVariantType
 	{
 		Color = 1,
-		Size = 2,
-		Material = 3,
-		Style = 4,
-		Pattern = 5,
-		Brand = 6,
-		Model = 7,
-		Version = 8,
-		Other = 9
+		Size,
+		Material,
+		Style,
+		Pattern,
+		Brand,
+		Model,
+		Version,
+		RamType,
+		RamSize,
+		HardDiskType,
+		HardDiskSize,
+		OperatingSystem,
+		ScreenType,
+		ScreenSize,
+		Resolution,
+		RefreshRate,
+		CellularTechnology,
+		Other
 	}
 }

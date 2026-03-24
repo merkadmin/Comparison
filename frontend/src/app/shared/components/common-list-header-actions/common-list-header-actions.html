@@ -1,6 +1,7 @@
 <div class="card-header border-0 pt-6">
-  <div class="card-title">
+  <div class="card-title d-flex align-items-center gap-3 flex-wrap">
     <h3 class="fw-bold m-0">{{ titleKey | translate }}</h3>
+    <ng-content select="[slot=left]" />
   </div>
   <div class="card-toolbar d-flex align-items-center gap-3">
 
@@ -29,6 +30,9 @@
 
     <!-- Slot for custom toolbar items (selects, toggles, etc.) -->
     <ng-content />
+
+    <!-- Slot for primary Add button — always directly left of import -->
+    <ng-content select="[slot=add]" />
 
     @if (auth.isAdmin() && importMenuItems.length > 0) {
       <input #fileInput type="file" accept=".xlsx,.xls" class="d-none" (change)="fileSelected.emit($event)" />

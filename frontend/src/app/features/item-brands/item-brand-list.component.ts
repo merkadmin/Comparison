@@ -8,6 +8,7 @@ import { ItemBrand } from '../../core/models/item-brand.model';
 
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { ToastService } from '../../core/services/toast.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemBrandListOperationComponent } from './item-brand-list-operation/item-brand-list-operation.component';
@@ -23,9 +24,11 @@ export class ItemBrandListComponent implements OnInit {
   auth              = inject(AuthService);
   private service   = inject(ItemBrandService);
   private translate = inject(TranslateService);
+  private toast     = inject(ToastService);
 
   editingId  = signal<number | null>(null);
   isCreating = signal(false);
+  saving     = signal(false);
   editDraft: ItemBrand = { name: '' };
 
   openCreate(): void {
@@ -46,15 +49,33 @@ export class ItemBrandListComponent implements OnInit {
   }
 
   saveEdit(): void {
+    this.saving.set(true);
+    const onSuccess = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('brand.saveSuccess'));
+      this.load();
+      this.closeEdit();
+    };
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('brand.saveError')); };
     if (this.isCreating()) {
-      this.service.create(this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
     } else {
-      const id = this.editingId();
-      if (id === null) return;
-      this.service.update(id, this.editDraft).subscribe({
-        next: () => { this.load(); this.closeEdit(); }
-      });
+      this.service.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
     }
+  }
+
+  saveEditAndNew(): void {
+    if (!this.isCreating()) return;
+    this.saving.set(true);
+    this.service.create(this.editDraft).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('brand.saveSuccess'));
+        this.load();
+        this.editDraft = { name: '' };
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('brand.saveError')); },
+    });
   }
 
   brands        = signal<ItemBrand[]>([]);

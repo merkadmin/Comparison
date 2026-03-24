@@ -11,6 +11,7 @@ import { Item } from '../../core/models/item.model';
 import { ProductItemVariant } from '../../core/models/product-item-variant.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { ToastService } from '../../core/services/toast.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
@@ -35,6 +36,7 @@ export class ItemVariantMapListComponent implements OnInit {
   private itemSvc   = inject(ItemService);
   private variantSvc = inject(ProductItemVariantService);
   private translate  = inject(TranslateService);
+  private toast      = inject(ToastService);
   private iconConfig = inject(IconConfigService);
 
   addIcon    = this.iconConfig.iconSignal('global.add',    'plus');
@@ -55,8 +57,10 @@ export class ItemVariantMapListComponent implements OnInit {
   importError   = signal<string | null>(null);
   importSuccess = signal(false);
 
-  editingId  = signal<number | null>(null);
-  isCreating = signal(false);
+  editingId      = signal<number | null>(null);
+  isCreating     = signal(false);
+  saving         = signal(false);
+  selectedItemId = signal<number | null>(null);
   editDraft: ProductItemVariantMap = { productItemId: 0, variantId: 0 };
 
   private itemMap    = computed(() => new Map(this.items().map(i => [i.id!, i])));
@@ -66,9 +70,11 @@ export class ItemVariantMapListComponent implements OnInit {
   getVariant(id: number): ProductItemVariant | undefined { return this.variantMap().get(id); }
 
   filteredMaps = computed<ProductItemVariantMap[]>(() => {
-    const q = this.searchQuery().trim().toLowerCase();
-    if (!q) return this.maps();
+    const q      = this.searchQuery().trim().toLowerCase();
+    const itemId = this.selectedItemId();
     return this.maps().filter(m => {
+      if (itemId !== null && m.productItemId !== itemId) return false;
+      if (!q) return true;
       const item = this.getItemName(m.productItemId).toLowerCase();
       const v = this.getVariant(m.variantId);
       const vStr = v ? `${v.variantTypeId} ${v.variantValue} ${v.abbreviation ?? ''}`.toLowerCase() : '';
@@ -106,13 +112,33 @@ export class ItemVariantMapListComponent implements OnInit {
   closeEdit(): void { this.editingId.set(null); this.isCreating.set(false); }
 
   saveEdit(): void {
+    this.saving.set(true);
+    const onSuccess = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('itemVariantMap.saveSuccess'));
+      this.load();
+      this.closeEdit();
+    };
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('itemVariantMap.saveError')); };
     if (this.isCreating()) {
-      this.service.create(this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
     } else {
-      const id = this.editingId();
-      if (id === null) return;
-      this.service.update(id, this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
     }
+  }
+
+  saveEditAndNew(): void {
+    if (!this.isCreating()) return;
+    this.saving.set(true);
+    this.service.create(this.editDraft).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('itemVariantMap.saveSuccess'));
+        this.load();
+        this.editDraft = { productItemId: 0, variantId: 0 };
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('itemVariantMap.saveError')); },
+    });
   }
 
   isSelected(id: number): boolean { return this.selectedIds().has(id); }

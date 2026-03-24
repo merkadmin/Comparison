@@ -9,12 +9,14 @@
     (importSuccessClose)="importSuccess.set(false)" (importErrorClose)="importError.set(null)">
 
     <!--START::Add Button (Admin)-->
-    @if (auth.isAdmin()) {
-    <button class="btn btn-sm btn-primary" (click)="openCreate()">
-      <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
-      {{ 'category.addNew' | translate }}
-    </button>
-    }
+    <div slot="add">
+      @if (auth.isAdmin()) {
+        <button class="btn btn-sm btn-primary" (click)="openCreate()">
+          <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
+          {{ 'category.addNew' | translate }}
+        </button>
+      }
+    </div>
     <!--END::Add Button (Admin)-->
 
   </app-common-list-header-actions>
@@ -176,7 +178,13 @@
 
 <!--START::Create / Edit Modal-->
 @if (editingId() !== null) {
-<app-item-category-list-operation [editDraft]="editDraft" [isCreating]="isCreating()" [parentOptions]="parentOptions()"
-  (closed)="closeEdit()" (saved)="saveEdit()" />
+<app-item-category-list-operation
+  [editDraft]="editDraft"
+  [isCreating]="isCreating()"
+  [parentOptions]="parentOptions()"
+  [saving]="saving()"
+  (closed)="closeEdit()"
+  (saved)="saveEdit()"
+  (savedAndNew)="saveEditAndNew()" />
 }
 <!--END::Create / Edit Modal-->

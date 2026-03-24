@@ -5,7 +5,7 @@
 
       <div class="modal-header">
         <h5 class="modal-title fw-bold">{{ (isCreating ? 'item.addNew' : 'common.edit') | translate }}</h5>
-        <button type="button" class="btn-close" (click)="closed.emit()"></button>
+        <button type="button" class="btn-close" [disabled]="saving" (click)="closed.emit()"></button>
       </div>
 
       <div class="modal-body">
@@ -153,13 +153,18 @@
 
       </div>
 
-      <div class="modal-footer">
-        <!--START::Cancel-->
-        <button type="button" class="btn btn-light" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
-        <!--END::Cancel-->
-        <!--START::Save-->
-        <button type="button" class="btn btn-primary" (click)="saved.emit()">{{ 'common.save' | translate }}</button>
-        <!--END::Save-->
+      <div class="modal-footer gap-2">
+        <button type="button" class="btn btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        @if (isCreating) {
+          <button type="button" class="btn btn-light-primary" [disabled]="saving" (click)="savedAndNew.emit()">
+            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+            {{ 'common.saveAndNew' | translate }}
+          </button>
+        }
+        <button type="button" class="btn btn-primary" [disabled]="saving" (click)="saved.emit()">
+          @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ 'common.save' | translate }}
+        </button>
       </div>
 
     </div>

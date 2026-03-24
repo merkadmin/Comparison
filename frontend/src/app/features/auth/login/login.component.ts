@@ -1,9 +1,10 @@
-import { Component, inject, signal, ElementRef, ViewChild, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, computed, ElementRef, ViewChild, AfterViewInit, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslateService, AppLang } from '../../../core/services/translate.service';
 import { environment } from '../../../../environments/environment';
 
 declare const google: any;
@@ -18,12 +19,29 @@ declare const google: any;
 export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   private auth   = inject(AuthService);
   private router = inject(Router);
+  translate      = inject(TranslateService);
 
   @ViewChild('googleBtn') googleBtnRef!: ElementRef;
 
-  mode    = signal<'login' | 'signup'>('login');
-  loading = signal(false);
-  error   = signal<string | null>(null);
+  mode     = signal<'login' | 'signup'>('login');
+  loading  = signal(false);
+  error    = signal<string | null>(null);
+  langOpen = signal(false);
+
+  readonly langs: { code: AppLang; label: string; flag: string }[] = [
+    { code: 'en', label: 'English',  flag: 'assets/media/flags/united-states.svg' },
+    { code: 'ar', label: 'العربية', flag: 'assets/media/flags/saudi-arabia.svg'  },
+    { code: 'fr', label: 'Français', flag: 'assets/media/flags/france.svg'        },
+  ];
+
+  currentFlag = computed(() =>
+    this.langs.find(l => l.code === this.translate.currentLang())?.flag ?? this.langs[0].flag
+  );
+
+  setLang(code: AppLang): void {
+    this.translate.setLanguage(code);
+    this.langOpen.set(false);
+  }
 
   loginEmail    = '';
   loginPassword = '';

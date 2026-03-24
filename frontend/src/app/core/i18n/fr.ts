@@ -33,6 +33,7 @@ export const fr: Record<string, string> = {
   'common.add': 'Ajouter',
   'common.images': 'Images',
   'common.uploadImages': 'Télécharger des images',
+  'common.saveAndNew': 'Enregistrer et nouveau',
 
   // Navigation
   'nav.dashboard': 'Tableau de bord',
@@ -76,6 +77,8 @@ export const fr: Record<string, string> = {
   'storeItem.priceType.Regular': 'Régulier',
   'storeItem.priceType.Premium': 'Premium',
   'storeItem.priceType.Offer': 'Offre',
+  'storeItem.saveSuccess': 'Article en magasin enregistré avec succès.',
+  'storeItem.saveError': 'Échec de l\'enregistrement de l\'article en magasin.',
   'storeItem.importSuccess': 'Articles en magasin importés avec succès.',
   'storeItem.importError': 'Échec de l\'importation. Veuillez vérifier le format du fichier.',
 
@@ -94,6 +97,8 @@ export const fr: Record<string, string> = {
   'store.deactivateBulkText': '{count} magasin(s) seront désactivés.',
   'store.deleteBulkConfirm': 'Supprimer les magasins sélectionnés ?',
   'store.deleteBulkText': '{count} magasin(s) seront supprimés définitivement.',
+  'store.saveSuccess': 'Magasin enregistré avec succès.',
+  'store.saveError': 'Échec de l\'enregistrement du magasin.',
 
   // Item Categories
   'category.title': 'Catégories d\'articles',
@@ -115,6 +120,8 @@ export const fr: Record<string, string> = {
   'category.searchPlaceholder': 'Rechercher des catégories...',
   'category.noParent': 'Sélectionnez la catégorie parente',
   'category.addNew': 'Ajouter une catégorie',
+  'category.saveSuccess': 'Catégorie enregistrée avec succès.',
+  'category.saveError': 'Échec de l\'enregistrement de la catégorie.',
 
   // Item Brands
   'brand.title': 'Marques d\'articles',
@@ -128,6 +135,8 @@ export const fr: Record<string, string> = {
   'brand.deactivateBulkConfirm': 'Désactiver les marques sélectionnées ?',
   'brand.deactivateBulkText': 'Vous êtes sur le point de désactiver {count} marques.',
   'brand.addNew': 'Ajouter une marque',
+  'brand.saveSuccess': 'Marque enregistrée avec succès.',
+  'brand.saveError': 'Échec de l\'enregistrement de la marque.',
 
   // Items
   'item.title': 'Articles',
@@ -165,6 +174,8 @@ export const fr: Record<string, string> = {
   'item.addedToFavorites': 'Ajouté aux favoris',
   'item.removedFromFavorites': 'Retiré des favoris',
   'item.bestPrice': 'Meilleur prix',
+  'item.saveSuccess': 'Article enregistré avec succès.',
+  'item.saveError': 'Échec de l\'enregistrement de l\'article.',
 
   // Auth
   'auth.login': 'Connexion',
@@ -225,6 +236,16 @@ export const fr: Record<string, string> = {
   'variant.type.Brand': 'Marque',
   'variant.type.Model': 'Modèle',
   'variant.type.Version': 'Version',
+  'variant.type.RamType': 'Type de RAM',
+  'variant.type.RamSize': 'Taille de RAM',
+  'variant.type.HardDiskType': 'Type de disque dur',
+  'variant.type.HardDiskSize': 'Taille du disque dur',
+  'variant.type.OperatingSystem': 'Système d\'exploitation',
+  'variant.type.ScreenType': 'Type d\'écran',
+  'variant.type.ScreenSize': 'Taille d\'écran',
+  'variant.type.Resolution': 'Résolution',
+  'variant.type.RefreshRate': 'Taux de rafraîchissement',
+  'variant.type.CellularTechnology': 'Technologie cellulaire',
   'variant.type.Other': 'Autre',
   'variant.variantValue': 'Valeur de la variante',
   'variant.abbreviation': 'Abréviation',
@@ -237,6 +258,10 @@ export const fr: Record<string, string> = {
   'variant.deactivateBulkConfirm': 'Désactiver les variantes sélectionnées ?',
   'variant.deactivateBulkText': 'Vous êtes sur le point de désactiver {count} variante(s).',
   'variant.selectRequired': 'Veuillez sélectionner toutes les options avant d\'ajouter au panier.',
+  'variant.filterByItem': 'Filtrer par article',
+  'variant.allItems': 'Tous les articles',
+  'variant.saveSuccess': 'Variante enregistrée avec succès.',
+  'variant.saveError': 'Échec de l\'enregistrement de la variante.',
   'variant.importSuccess': 'Variantes importées avec succès.',
   'variant.importError': 'Échec de l\'importation. Veuillez vérifier le format du fichier.',
 
@@ -252,6 +277,17 @@ export const fr: Record<string, string> = {
   'itemVariantMap.deleteSelected': 'Supprimer la sélection',
   'itemVariantMap.deleteBulkConfirm': 'Supprimer les associations sélectionnées ?',
   'itemVariantMap.deleteBulkText': 'Vous êtes sur le point de supprimer {count} association(s). Cette action est irréversible.',
+  'itemVariantMap.saveSuccess': 'Association de variante enregistrée avec succès.',
+  'itemVariantMap.saveError': 'Échec de l\'enregistrement de l\'association.',
   'itemVariantMap.importSuccess': 'Variantes d\'articles importées avec succès.',
   'itemVariantMap.importError': 'Échec de l\'importation. Veuillez vérifier le format du fichier.',
+  'itemVariantMap.sellingPrice': 'Prix de vente',
+  'itemVariantMap.sellingPricePlaceholder': 'Optionnel — remplace le prix de l\'article en magasin',
+  'itemVariantMap.store': 'Magasin',
+  'itemVariantMap.storePlaceholder': 'Optionnel — ID du magasin',
+  'itemVariantMap.description': 'Description',
+  'itemVariantMap.descriptionPlaceholder': 'Description optionnelle pour cette variante',
+  'itemVariantMap.about': 'À propos',
+  'itemVariantMap.aboutPlaceholder': 'Texte optionnel à propos de cette variante',
+  'itemVariantMap.pricingOptionalHint': 'Les champs de tarification sont optionnels. Si Prix de vente + Magasin sont renseignés, ils remplacent le prix de l\'article en magasin.',
 };

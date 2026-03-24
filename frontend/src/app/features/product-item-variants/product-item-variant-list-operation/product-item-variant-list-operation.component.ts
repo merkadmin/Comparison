@@ -15,7 +15,9 @@ export class ProductItemVariantListOperationComponent {
 
   @Input() editDraft!: ProductItemVariant;
   @Input() isCreating = false;
+  @Input() saving = false;
 
-  @Output() closed = new EventEmitter<void>();
-  @Output() saved  = new EventEmitter<void>();
+  @Output() closed      = new EventEmitter<void>();
+  @Output() saved       = new EventEmitter<void>();
+  @Output() savedAndNew = new EventEmitter<void>();
 }

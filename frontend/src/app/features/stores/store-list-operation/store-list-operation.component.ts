@@ -14,7 +14,9 @@ export class StoreListOperationComponent {
   @Input() editDraft!: Store;
   @Input() isCreating = false;
   @Input() storeTypes: StoreType[] = [];
+  @Input() saving = false;
 
-  @Output() closed = new EventEmitter<void>();
-  @Output() saved  = new EventEmitter<void>();
+  @Output() closed      = new EventEmitter<void>();
+  @Output() saved       = new EventEmitter<void>();
+  @Output() savedAndNew = new EventEmitter<void>();
 }

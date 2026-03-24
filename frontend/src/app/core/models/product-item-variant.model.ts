@@ -1,7 +1,14 @@
-export type VariantType = 'Color' | 'Size' | 'Material' | 'Style' | 'Pattern' | 'Brand' | 'Model' | 'Version' | 'Other';
+export type VariantType =
+  | 'Color' | 'Size' | 'Material' | 'Style' | 'Pattern' | 'Brand' | 'Model' | 'Version'
+  | 'RamType' | 'RamSize' | 'HardDiskType' | 'HardDiskSize' | 'OperatingSystem'
+  | 'ScreenType' | 'ScreenSize' | 'Resolution' | 'RefreshRate' | 'CellularTechnology'
+  | 'Other';
 
 export const VARIANT_TYPES: VariantType[] = [
-  'Color', 'Size', 'Material', 'Style', 'Pattern', 'Brand', 'Model', 'Version', 'Other'
+  'Color', 'Size', 'Material', 'Style', 'Pattern', 'Brand', 'Model', 'Version',
+  'RamType', 'RamSize', 'HardDiskType', 'HardDiskSize', 'OperatingSystem',
+  'ScreenType', 'ScreenSize', 'Resolution', 'RefreshRate', 'CellularTechnology',
+  'Other',
 ];
 
 export interface ProductItemVariant {

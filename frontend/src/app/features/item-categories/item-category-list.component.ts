@@ -7,6 +7,7 @@ import { ItemCategoryService } from '../../core/services/item-category.service';
 import { MultiLangString } from '../../core/models/interfaces/LocalizedString';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { ToastService } from '../../core/services/toast.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemCategoryListOperationComponent } from './item-category-list-operation/item-category-list-operation.component';
@@ -23,9 +24,11 @@ export class ItemCategoryListComponent implements OnInit {
   auth = inject(AuthService);
   private service = inject(ItemCategoryService);
   private translate = inject(TranslateService);
+  private toast = inject(ToastService);
 
   editingId = signal<number | null>(null);
   isCreating = signal(false);
+  saving = signal(false);
   editDraft: IItemCategory = { name: { en: '', ar: '', fr: '' } };
   viewMode = signal<'list' | 'cards'>('cards');
 
@@ -61,17 +64,35 @@ export class ItemCategoryListComponent implements OnInit {
   }
 
   saveEdit(): void {
+    this.saving.set(true);
+    const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
+    const onSuccess = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('category.saveSuccess'));
+      this.load();
+      this.closeEdit();
+    };
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('category.saveError')); };
     if (this.isCreating()) {
-      const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
-      this.service.create(payload).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.create(payload).subscribe({ next: onSuccess, error: onError });
     } else {
-      const id = this.editingId();
-      if (id === null) return;
-      const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
-      this.service.update(id, payload).subscribe({
-        next: () => { this.load(); this.closeEdit(); }
-      });
+      this.service.update(this.editingId()!, payload).subscribe({ next: onSuccess, error: onError });
     }
+  }
+
+  saveEditAndNew(): void {
+    if (!this.isCreating()) return;
+    this.saving.set(true);
+    const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
+    this.service.create(payload).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('category.saveSuccess'));
+        this.load();
+        this.editDraft = { name: { en: '', ar: '', fr: '' }, description: { en: '', ar: '', fr: '' } };
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('category.saveError')); },
+    });
   }
 
   parentOptions = computed<IItemCategory[]>(() => {

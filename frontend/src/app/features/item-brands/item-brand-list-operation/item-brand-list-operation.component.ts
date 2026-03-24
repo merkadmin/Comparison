@@ -13,7 +13,9 @@ import { ItemBrand } from '../../../core/models/item-brand.model';
 export class ItemBrandListOperationComponent {
   @Input() editDraft!: ItemBrand;
   @Input() isCreating = false;
+  @Input() saving = false;
 
-  @Output() closed = new EventEmitter<void>();
-  @Output() saved  = new EventEmitter<void>();
+  @Output() closed      = new EventEmitter<void>();
+  @Output() saved       = new EventEmitter<void>();
+  @Output() savedAndNew = new EventEmitter<void>();
 }

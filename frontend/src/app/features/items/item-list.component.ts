@@ -22,6 +22,7 @@ import { ProductItemType } from '../../core/models/product-item-type.model';
 import { ProductInformation } from '../../core/models/product-information.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { ToastService } from '../../core/services/toast.service';
 import { CommonSelectComponent } from '../../shared/components/common-select/common-select.component';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonImageUploadButton } from '../../shared/components/commonActions/common-image-upload-button/common-image-upload-button';
@@ -57,6 +58,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   private typeService = inject(ProductItemTypeService);
   private infoService = inject(ProductInformationService);
   private translate = inject(TranslateService);
+  private toast = inject(ToastService);
   private route = inject(ActivatedRoute);
   private querySub!: Subscription;
   categories = signal<IItemCategory[]>([]);
@@ -76,6 +78,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   colClass = computedColClass(this.colsPerRow);
   editingId = signal<number | null>(null);
   isCreating = signal(false);
+  saving = signal(false);
   editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
   uploadingImages = signal(false);
   productItemTypes = signal<ProductItemType[]>([]);
@@ -103,17 +106,33 @@ export class ItemListComponent implements OnInit, OnDestroy {
   closeEdit(): void { this.editingId.set(null); this.isCreating.set(false); }
 
   saveEdit(): void {
+    this.saving.set(true);
+    const onSuccess = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('item.saveSuccess'));
+      this.loadItems();
+      this.closeEdit();
+    };
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('item.saveError')); };
     if (this.isCreating()) {
-      this.itemService.create(this.editDraft).subscribe({
-        next: () => { this.loadItems(); this.closeEdit(); }
-      });
+      this.itemService.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
     } else {
-      const id = this.editingId();
-      if (id === null) return;
-      this.itemService.update(id, this.editDraft).subscribe({
-        next: () => { this.loadItems(); this.closeEdit(); }
-      });
+      this.itemService.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
     }
+  }
+
+  saveEditAndNew(): void {
+    if (!this.isCreating()) return;
+    this.saving.set(true);
+    this.itemService.create(this.editDraft).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('item.saveSuccess'));
+        this.loadItems();
+        this.editDraft = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('item.saveError')); },
+    });
   }
 
   addPrice(): void {

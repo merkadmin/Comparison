@@ -7,7 +7,7 @@
         <h5 class="modal-title fw-bold">
           {{ (isCreating ? 'variant.addNew' : 'common.edit') | translate }}
         </h5>
-        <button type="button" class="btn-close" (click)="closed.emit()"></button>
+        <button type="button" class="btn-close" [disabled]="saving" (click)="closed.emit()"></button>
       </div>
 
       <div class="modal-body">
@@ -15,7 +15,7 @@
         <!--START::Variant Type-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'variant.variantType' | translate }} <span class="text-danger">*</span></label>
-          <select class="form-select" [(ngModel)]="editDraft.variantTypeId">
+          <select class="form-select" [(ngModel)]="editDraft.variantTypeId" [disabled]="saving">
             @for (type of variantTypes; track type) {
               <option [ngValue]="type">{{ 'variant.type.' + type | translate }}</option>
             }
@@ -27,6 +27,7 @@
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'variant.variantValue' | translate }}</label>
           <input type="text" class="form-control" [(ngModel)]="editDraft.variantValue"
+            [disabled]="saving"
             [placeholder]="'variant.variantValuePlaceholder' | translate" />
         </div>
         <!--END::Variant Value-->
@@ -35,15 +36,33 @@
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'variant.abbreviation' | translate }}</label>
           <input type="text" class="form-control" [(ngModel)]="editDraft.abbreviation"
+            [disabled]="saving"
             [placeholder]="'variant.abbreviationPlaceholder' | translate" />
         </div>
         <!--END::Abbreviation-->
 
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
-        <button type="button" class="btn btn-primary" (click)="saved.emit()">{{ 'common.save' | translate }}</button>
+      <div class="modal-footer gap-2">
+        <button type="button" class="btn btn-light" [disabled]="saving" (click)="closed.emit()">
+          {{ 'common.cancel' | translate }}
+        </button>
+
+        @if (isCreating) {
+          <button type="button" class="btn btn-light-primary" [disabled]="saving" (click)="savedAndNew.emit()">
+            @if (saving) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            {{ 'common.saveAndNew' | translate }}
+          </button>
+        }
+
+        <button type="button" class="btn btn-primary" [disabled]="saving" (click)="saved.emit()">
+          @if (saving) {
+            <span class="spinner-border spinner-border-sm me-1"></span>
+          }
+          {{ 'common.save' | translate }}
+        </button>
       </div>
 
     </div>

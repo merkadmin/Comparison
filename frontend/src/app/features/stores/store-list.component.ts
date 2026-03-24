@@ -7,6 +7,7 @@ import { StoreService } from '../../core/services/store.service';
 import { Store, StoreType } from '../../core/models/store.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { ToastService } from '../../core/services/toast.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { StoreListOperationComponent } from './store-list-operation/store-list-operation.component';
@@ -25,6 +26,7 @@ export class StoreListComponent implements OnInit {
   auth = inject(AuthService);
   private service = inject(StoreService);
   private translate = inject(TranslateService);
+  private toast = inject(ToastService);
 
   readonly storeTypes: StoreType[] = [StoreType.Online, StoreType.Physical];
 
@@ -36,6 +38,7 @@ export class StoreListComponent implements OnInit {
   // ── Edit / Create ─────────────────────────────────────────────────────────
   editingId = signal<number | null>(null);
   isCreating = signal(false);
+  saving = signal(false);
   editDraft: Store = { name: '', type: StoreType.Online, country: '' };
 
   // ── Data ──────────────────────────────────────────────────────────────────
@@ -78,13 +81,33 @@ export class StoreListComponent implements OnInit {
   closeEdit(): void { this.editingId.set(null); }
 
   saveEdit(): void {
+    this.saving.set(true);
+    const onSuccess = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('store.saveSuccess'));
+      this.load();
+      this.closeEdit();
+    };
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); };
     if (this.isCreating()) {
-      this.service.create(this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
     } else {
-      const id = this.editingId();
-      if (id === null) return;
-      this.service.update(id, this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
     }
+  }
+
+  saveEditAndNew(): void {
+    if (!this.isCreating()) return;
+    this.saving.set(true);
+    this.service.create(this.editDraft).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('store.saveSuccess'));
+        this.load();
+        this.editDraft = { name: '', type: StoreType.Online, country: '' };
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); },
+    });
   }
 
   // ── Selection ─────────────────────────────────────────────────────────────

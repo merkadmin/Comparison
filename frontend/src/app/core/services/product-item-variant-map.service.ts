@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { ProductItemVariantMap } from '../models/product-item-variant-map.model';
+import { ProductItemVariantMap, ItemPriceDto } from '../models/product-item-variant-map.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductItemVariantMapService {
@@ -17,6 +17,10 @@ export class ProductItemVariantMapService {
 
   getByVariant(variantId: number): Observable<ProductItemVariantMap[]> {
     return this.api.get<ProductItemVariantMap[]>(`/item-variant-map/by-variant/${variantId}`);
+  }
+
+  getPrices(itemId: number): Observable<ItemPriceDto[]> {
+    return this.api.get<ItemPriceDto[]>(`/item-variant-map/prices/${itemId}`);
   }
 
   create(map: ProductItemVariantMap): Observable<ProductItemVariantMap> {

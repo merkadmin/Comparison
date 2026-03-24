@@ -18,7 +18,9 @@ export class StoreItemListOperationComponent {
   @Input() items: Item[] = [];
   @Input() stores: Store[] = [];
   @Input() sellingPriceTypes: SellingPriceType[] = [];
+  @Input() saving = false;
 
-  @Output() closed = new EventEmitter<void>();
-  @Output() saved  = new EventEmitter<void>();
+  @Output() closed      = new EventEmitter<void>();
+  @Output() saved       = new EventEmitter<void>();
+  @Output() savedAndNew = new EventEmitter<void>();
 }

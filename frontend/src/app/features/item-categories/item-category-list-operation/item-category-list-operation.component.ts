@@ -18,9 +18,11 @@ export class ItemCategoryListOperationComponent {
   @Input() editDraft!: IItemCategory;
   @Input() isCreating = false;
   @Input() parentOptions: IItemCategory[] = [];
+  @Input() saving = false;
 
-  @Output() closed = new EventEmitter<void>();
-  @Output() saved  = new EventEmitter<void>();
+  @Output() closed      = new EventEmitter<void>();
+  @Output() saved       = new EventEmitter<void>();
+  @Output() savedAndNew = new EventEmitter<void>();
 
   localize(ls: MultiLangString): string {
     const lang = this.translate.currentLang();

@@ -11,6 +11,7 @@ import { Item } from '../../core/models/item.model';
 import { Store } from '../../core/models/store.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
+import { ToastService } from '../../core/services/toast.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { CommonSelectComponent, SelectOption } from '../../shared/components/common-select/common-select.component';
@@ -32,6 +33,7 @@ export class StoreItemListComponent implements OnInit {
   private itemSvc = inject(ItemService);
   private storeSvc = inject(StoreService);
   private translate = inject(TranslateService);
+  private toast = inject(ToastService);
 
   readonly sellingPriceTypes: SellingPriceType[] =
     [
@@ -48,6 +50,7 @@ export class StoreItemListComponent implements OnInit {
   // ── Edit / Create ─────────────────────────────────────────────────────────
   editingId = signal<number | null>(null);
   isCreating = signal(false);
+  saving = signal(false);
   editDraft: StoreItem = { itemId: 0, storeId: 0, sellingPrice: 0, sellingPriceTypeId: SellingPriceType.Regular };
 
   // ── Data ──────────────────────────────────────────────────────────────────
@@ -103,13 +106,33 @@ export class StoreItemListComponent implements OnInit {
   }
 
   saveEdit(): void {
+    this.saving.set(true);
+    const onSuccess = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('storeItem.saveSuccess'));
+      this.load();
+      this.closeEdit();
+    };
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('storeItem.saveError')); };
     if (this.isCreating()) {
-      this.service.create(this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
     } else {
-      const id = this.editingId();
-      if (id === null) return;
-      this.service.update(id, this.editDraft).subscribe({ next: () => { this.load(); this.closeEdit(); } });
+      this.service.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
     }
+  }
+
+  saveEditAndNew(): void {
+    if (!this.isCreating()) return;
+    this.saving.set(true);
+    this.service.create(this.editDraft).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('storeItem.saveSuccess'));
+        this.load();
+        this.editDraft = { itemId: 0, storeId: 0, sellingPrice: 0, sellingPriceTypeId: SellingPriceType.Regular };
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('storeItem.saveError')); },
+    });
   }
 
   // ── Lookups ───────────────────────────────────────────────────────────────

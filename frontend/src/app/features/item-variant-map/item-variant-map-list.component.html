@@ -23,14 +23,34 @@
     (importSuccessClose)="importSuccess.set(false)"
     (importErrorClose)="importError.set(null)">
 
-    @if (auth.isAdmin()) {
-      <button class="btn btn-sm btn-primary" (click)="openCreate()">
-        <i class="ki-duotone ki-{{ addIcon() }} fs-2">
-          <span class="path1"></span><span class="path2"></span>
-        </i>
-        {{ 'itemVariantMap.addNew' | translate }}
-      </button>
+    @if (items().length > 0) {
+      <div slot="left" class="d-flex align-items-center gap-2">
+        <select class="form-select form-select-sm w-auto"
+                [ngModel]="selectedItemId()"
+                (ngModelChange)="selectedItemId.set($event)">
+          <option [ngValue]="null">{{ 'variant.allItems' | translate }}</option>
+          @for (item of items(); track item.id) {
+            <option [ngValue]="item.id">{{ item.name }}</option>
+          }
+        </select>
+        @if (selectedItemId() !== null) {
+          <button class="btn btn-sm btn-light-danger" (click)="selectedItemId.set(null)">
+            <i class="ki-duotone ki-cross fs-4"><span class="path1"></span><span class="path2"></span></i>
+          </button>
+        }
+      </div>
     }
+
+    <div slot="add">
+      @if (auth.isAdmin()) {
+        <button class="btn btn-sm btn-primary" (click)="openCreate()">
+          <i class="ki-duotone ki-{{ addIcon() }} fs-2">
+            <span class="path1"></span><span class="path2"></span>
+          </i>
+          {{ 'itemVariantMap.addNew' | translate }}
+        </button>
+      }
+    </div>
 
   </app-common-list-header-actions>
 
@@ -93,25 +113,25 @@
               }
               <td>{{ i + 1 }}</td>
               <td>
-                <span class="text-gray-800 fw-bold text-hover-primary fs-6">{{ getItemName(m.productItemId) }}</span>
+                <span class="text-gray-800 fw-bold text-hover-primary fs-5">{{ getItemName(m.productItemId) }}</span>
               </td>
               <td>
                 @if (v) {
-                  <span class="badge badge-light-primary">{{ 'variant.type.' + v.variantTypeId | translate }}</span>
+                  <span class="fs-5">{{ 'variant.type.' + v.variantTypeId | translate }}</span>
                 } @else { <span class="text-muted">—</span> }
               </td>
               <td>
                 @if (v?.variantValue) {
-                  <span class="badge badge-light-info">{{ v!.variantValue }}</span>
+                  <span class="badge badge-light-primary fs-5">{{ v!.variantValue }}</span>
                 } @else { <span class="text-muted">—</span> }
               </td>
               <td>
                 @if (v?.abbreviation) {
-                  <span class="badge badge-light-dark">{{ v!.abbreviation }}</span>
+                  <span class="badge badge-light-dark fs-5">{{ v!.abbreviation }}</span>
                 } @else { <span class="text-muted">—</span> }
               </td>
               <td>
-                <span class="badge"
+                <span class="badge fs-5"
                   [class.badge-light-success]="m.isActive !== false"
                   [class.badge-light-danger]="m.isActive === false">
                   {{ (m.isActive !== false ? 'common.active' : 'common.inactive') | translate }}
@@ -223,6 +243,8 @@
     [isCreating]="isCreating()"
     [items]="items()"
     [variants]="variants()"
+    [saving]="saving()"
     (closed)="closeEdit()"
-    (saved)="saveEdit()" />
+    (saved)="saveEdit()"
+    (savedAndNew)="saveEditAndNew()" />
 }

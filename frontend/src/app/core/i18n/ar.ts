@@ -33,6 +33,7 @@ export const ar: Record<string, string> = {
   'common.add': 'إضافة',
   'common.images': 'الصور',
   'common.uploadImages': 'رفع الصور',
+  'common.saveAndNew': 'حفظ وجديد',
 
   // Navigation
   'nav.dashboard': 'لوحة التحكم',
@@ -76,6 +77,8 @@ export const ar: Record<string, string> = {
   'storeItem.priceType.Regular': 'عادي',
   'storeItem.priceType.Premium': 'مميز',
   'storeItem.priceType.Offer': 'عرض',
+  'storeItem.saveSuccess': 'تم حفظ منتج المتجر بنجاح.',
+  'storeItem.saveError': 'فشل حفظ منتج المتجر.',
   'storeItem.importSuccess': 'تم استيراد منتجات المتاجر بنجاح.',
   'storeItem.importError': 'فشل استيراد منتجات المتاجر. يرجى التحقق من صيغة الملف.',
 
@@ -94,6 +97,8 @@ export const ar: Record<string, string> = {
   'store.deactivateBulkText': 'سيتم تعطيل {count} متجر/متاجر.',
   'store.deleteBulkConfirm': 'حذف المتاجر المحددة؟',
   'store.deleteBulkText': 'سيتم حذف {count} متجر/متاجر نهائياً.',
+  'store.saveSuccess': 'تم حفظ المتجر بنجاح.',
+  'store.saveError': 'فشل حفظ المتجر.',
 
   // Item Categories
   'category.title': 'تصنيفات المنتجات',
@@ -115,6 +120,8 @@ export const ar: Record<string, string> = {
   'category.searchPlaceholder': 'ابحث في التصنيفات...',
   'category.noParent': 'اختر التصنيف الأب',
   'category.addNew': 'إضافة تصنيف',
+  'category.saveSuccess': 'تم حفظ التصنيف بنجاح.',
+  'category.saveError': 'فشل حفظ التصنيف.',
 
   // Item Brands
   'brand.title': 'ماركات المنتجات',
@@ -128,6 +135,8 @@ export const ar: Record<string, string> = {
   'brand.deactivateBulkConfirm': 'تعطيل الماركات المحددة؟',
   'brand.deactivateBulkText': 'أنت على وشك تعطيل {count} ماركات.',
   'brand.addNew': 'إضافة ماركة',
+  'brand.saveSuccess': 'تم حفظ الماركة بنجاح.',
+  'brand.saveError': 'فشل حفظ الماركة.',
 
   // Items
   'item.title': 'المنتجات',
@@ -165,6 +174,8 @@ export const ar: Record<string, string> = {
   'item.addedToFavorites': 'تمت الإضافة إلى المفضلة',
   'item.removedFromFavorites': 'تمت الإزالة من المفضلة',
   'item.bestPrice': 'أفضل سعر',
+  'item.saveSuccess': 'تم حفظ المنتج بنجاح.',
+  'item.saveError': 'فشل حفظ المنتج.',
 
   // Auth
   'auth.login': 'تسجيل الدخول',
@@ -225,6 +236,16 @@ export const ar: Record<string, string> = {
   'variant.type.Brand': 'الماركة',
   'variant.type.Model': 'الموديل',
   'variant.type.Version': 'الإصدار',
+  'variant.type.RamType': 'نوع الذاكرة العشوائية',
+  'variant.type.RamSize': 'حجم الذاكرة العشوائية',
+  'variant.type.HardDiskType': 'نوع القرص الصلب',
+  'variant.type.HardDiskSize': 'حجم القرص الصلب',
+  'variant.type.OperatingSystem': 'نظام التشغيل',
+  'variant.type.ScreenType': 'نوع الشاشة',
+  'variant.type.ScreenSize': 'حجم الشاشة',
+  'variant.type.Resolution': 'الدقة',
+  'variant.type.RefreshRate': 'معدل التحديث',
+  'variant.type.CellularTechnology': 'تقنية الاتصال',
   'variant.type.Other': 'أخرى',
   'variant.variantValue': 'قيمة المتغير',
   'variant.variantValuePlaceholder': 'مثال: أحمر، XL، 256GB',
@@ -237,6 +258,10 @@ export const ar: Record<string, string> = {
   'variant.deactivateBulkConfirm': 'تعطيل المتغيرات المحددة؟',
   'variant.deactivateBulkText': 'أنت على وشك تعطيل {count} متغير/متغيرات.',
   'variant.selectRequired': 'يرجى اختيار جميع الخيارات قبل الإضافة إلى السلة.',
+  'variant.filterByItem': 'تصفية حسب المنتج',
+  'variant.allItems': 'جميع المنتجات',
+  'variant.saveSuccess': 'تم حفظ المتغير بنجاح.',
+  'variant.saveError': 'فشل حفظ المتغير.',
   'variant.importSuccess': 'تم استيراد المتغيرات بنجاح.',
   'variant.importError': 'فشل استيراد المتغيرات. يرجى التحقق من صيغة الملف.',
 
@@ -252,6 +277,17 @@ export const ar: Record<string, string> = {
   'itemVariantMap.deleteSelected': 'حذف المحدد',
   'itemVariantMap.deleteBulkConfirm': 'حذف الروابط المحددة؟',
   'itemVariantMap.deleteBulkText': 'أنت على وشك حذف {count} رابط/روابط. لا يمكن التراجع عن ذلك.',
+  'itemVariantMap.saveSuccess': 'تم حفظ ربط المتغير بنجاح.',
+  'itemVariantMap.saveError': 'فشل حفظ ربط المتغير.',
   'itemVariantMap.importSuccess': 'تم استيراد متغيرات المنتج بنجاح.',
   'itemVariantMap.importError': 'فشل استيراد متغيرات المنتج. يرجى التحقق من صيغة الملف.',
+  'itemVariantMap.sellingPrice': 'سعر البيع',
+  'itemVariantMap.sellingPricePlaceholder': 'اختياري — يستبدل سعر المتجر',
+  'itemVariantMap.store': 'المتجر',
+  'itemVariantMap.storePlaceholder': 'اختياري — معرّف المتجر',
+  'itemVariantMap.description': 'الوصف',
+  'itemVariantMap.descriptionPlaceholder': 'وصف اختياري لهذا المتغير',
+  'itemVariantMap.about': 'حول المنتج',
+  'itemVariantMap.aboutPlaceholder': 'نص اختياري حول هذا المتغير',
+  'itemVariantMap.pricingOptionalHint': 'حقول التسعير اختيارية. إذا تم تعيين سعر البيع والمتجر، فإنهما يتجاوزان سعر المتجر.',
 };

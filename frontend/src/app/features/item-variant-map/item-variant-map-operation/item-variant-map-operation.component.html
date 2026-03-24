@@ -7,7 +7,7 @@
         <h5 class="modal-title fw-bold">
           {{ (isCreating ? 'itemVariantMap.addNew' : 'common.edit') | translate }}
         </h5>
-        <button type="button" class="btn-close" (click)="closed.emit()"></button>
+        <button type="button" class="btn-close" [disabled]="saving" (click)="closed.emit()"></button>
       </div>
 
       <div class="modal-body">
@@ -58,13 +58,63 @@
         </div>
         <!--END::Variant-->
 
+        <hr class="my-3" />
+        <p class="text-muted fs-7 mb-3">{{ 'itemVariantMap.pricingOptionalHint' | translate }}</p>
+
+        <!--START::Selling Price-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'itemVariantMap.sellingPrice' | translate }}</label>
+          <input type="number" class="form-control" min="0" step="0.01"
+            [placeholder]="'itemVariantMap.sellingPricePlaceholder' | translate"
+            [(ngModel)]="editDraft.sellingPrice" />
+        </div>
+        <!--END::Selling Price-->
+
+        <!--START::Store-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'itemVariantMap.store' | translate }}</label>
+          <input type="number" class="form-control"
+            [placeholder]="'itemVariantMap.storePlaceholder' | translate"
+            [(ngModel)]="editDraft.storeId" />
+        </div>
+        <!--END::Store-->
+
+        <!--START::Description-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'itemVariantMap.description' | translate }}</label>
+          <textarea class="form-control" rows="2"
+            [placeholder]="'itemVariantMap.descriptionPlaceholder' | translate"
+            [(ngModel)]="editDraft.description"></textarea>
+        </div>
+        <!--END::Description-->
+
+        <!--START::About-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'itemVariantMap.about' | translate }}</label>
+          <textarea class="form-control" rows="2"
+            [placeholder]="'itemVariantMap.aboutPlaceholder' | translate"
+            [(ngModel)]="editDraft.about"></textarea>
+        </div>
+        <!--END::About-->
+
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-light" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+      <div class="modal-footer gap-2">
+        <button type="button" class="btn btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        @if (isCreating) {
+          <button type="button" class="btn btn-light-primary"
+            [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
+            (click)="savedAndNew.emit()">
+            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+            {{ 'common.saveAndNew' | translate }}
+          </button>
+        }
         <button type="button" class="btn btn-primary"
-          [disabled]="!editDraft.productItemId || !editDraft.variantId"
-          (click)="saved.emit()">{{ 'common.save' | translate }}</button>
+          [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
+          (click)="saved.emit()">
+          @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ 'common.save' | translate }}
+        </button>
       </div>
 
     </div>

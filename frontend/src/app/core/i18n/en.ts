@@ -33,6 +33,7 @@ export const en: Record<string, string> = {
   'common.add': 'Add',
   'common.images': 'Images',
   'common.uploadImages': 'Upload',
+  'common.saveAndNew': 'Save & New',
 
   // Navigation
   'nav.dashboard': 'Home',
@@ -76,6 +77,8 @@ export const en: Record<string, string> = {
   'storeItem.priceType.Regular': 'Regular',
   'storeItem.priceType.Premium': 'Premium',
   'storeItem.priceType.Offer': 'Offer',
+  'storeItem.saveSuccess': 'Store item saved successfully.',
+  'storeItem.saveError': 'Failed to save store item.',
   'storeItem.importSuccess': 'Store items imported successfully.',
   'storeItem.importError': 'Failed to import store items. Please check the file format.',
 
@@ -94,6 +97,8 @@ export const en: Record<string, string> = {
   'store.deactivateBulkText': '{count} store(s) will be deactivated.',
   'store.deleteBulkConfirm': 'Delete selected stores?',
   'store.deleteBulkText': '{count} store(s) will be permanently deleted.',
+  'store.saveSuccess': 'Store saved successfully.',
+  'store.saveError': 'Failed to save store.',
 
   // Item Categories
   'category.title': 'Item Categories',
@@ -115,6 +120,8 @@ export const en: Record<string, string> = {
   'category.searchPlaceholder': 'Search categories...',
   'category.noParent': 'Select Parent Category',
   'category.addNew': 'Add Category',
+  'category.saveSuccess': 'Category saved successfully.',
+  'category.saveError': 'Failed to save category.',
 
   // Item Brands
   'brand.title': 'Item Brands',
@@ -128,6 +135,8 @@ export const en: Record<string, string> = {
   'brand.deactivateBulkConfirm': 'Deactivate selected brands?',
   'brand.deactivateBulkText': 'You are about to deactivate {count} brands.',
   'brand.addNew': 'Add Brand',
+  'brand.saveSuccess': 'Brand saved successfully.',
+  'brand.saveError': 'Failed to save brand.',
 
   // Items
   'item.title': 'Items',
@@ -165,6 +174,8 @@ export const en: Record<string, string> = {
   'item.addedToFavorites': 'Added to favorites',
   'item.removedFromFavorites': 'Removed from favorites',
   'item.bestPrice': 'Best Price',
+  'item.saveSuccess': 'Item saved successfully.',
+  'item.saveError': 'Failed to save item.',
 
   // Auth
   'auth.login': 'Login',
@@ -225,6 +236,16 @@ export const en: Record<string, string> = {
   'variant.type.Brand': 'Brand',
   'variant.type.Model': 'Model',
   'variant.type.Version': 'Version',
+  'variant.type.RamType': 'RAM Type',
+  'variant.type.RamSize': 'RAM Size',
+  'variant.type.HardDiskType': 'Hard Disk Type',
+  'variant.type.HardDiskSize': 'Hard Disk Size',
+  'variant.type.OperatingSystem': 'Operating System',
+  'variant.type.ScreenType': 'Screen Type',
+  'variant.type.ScreenSize': 'Screen Size',
+  'variant.type.Resolution': 'Resolution',
+  'variant.type.RefreshRate': 'Refresh Rate',
+  'variant.type.CellularTechnology': 'Cellular Technology',
   'variant.type.Other': 'Other',
   'variant.variantValue': 'Variant Value',
   'variant.variantValuePlaceholder': 'e.g. Red, XL, 256GB',
@@ -237,6 +258,10 @@ export const en: Record<string, string> = {
   'variant.deactivateBulkConfirm': 'Deactivate selected variants?',
   'variant.deactivateBulkText': 'You are about to deactivate {count} variants.',
   'variant.selectRequired': 'Please select all options before adding to cart.',
+  'variant.filterByItem': 'Filter by Item',
+  'variant.allItems': 'All Items',
+  'variant.saveSuccess': 'Variant saved successfully.',
+  'variant.saveError': 'Failed to save variant.',
   'variant.importSuccess': 'Variants imported successfully.',
   'variant.importError': 'Failed to import variants. Please check the file format.',
 
@@ -252,6 +277,17 @@ export const en: Record<string, string> = {
   'itemVariantMap.deleteSelected': 'Delete Selected',
   'itemVariantMap.deleteBulkConfirm': 'Delete selected mappings?',
   'itemVariantMap.deleteBulkText': 'You are about to delete {count} mapping(s). This cannot be undone.',
+  'itemVariantMap.saveSuccess': 'Item variant saved successfully.',
+  'itemVariantMap.saveError': 'Failed to save item variant.',
   'itemVariantMap.importSuccess': 'Item variants imported successfully.',
   'itemVariantMap.importError': 'Failed to import item variants. Please check the file format.',
+  'itemVariantMap.sellingPrice': 'Selling Price',
+  'itemVariantMap.sellingPricePlaceholder': 'Optional — overrides store item price',
+  'itemVariantMap.store': 'Store',
+  'itemVariantMap.storePlaceholder': 'Optional — store ID',
+  'itemVariantMap.description': 'Description',
+  'itemVariantMap.descriptionPlaceholder': 'Optional description for this variant',
+  'itemVariantMap.about': 'About',
+  'itemVariantMap.aboutPlaceholder': 'Optional about text for this variant',
+  'itemVariantMap.pricingOptionalHint': 'Pricing fields are optional. If Selling Price + Store are set, they override the store item price.',
 };

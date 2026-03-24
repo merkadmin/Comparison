@@ -17,9 +17,11 @@ export class ItemVariantMapOperationComponent {
   @Input() isCreating = false;
   @Input() items: Item[] = [];
   @Input() variants: ProductItemVariant[] = [];
+  @Input() saving = false;
 
-  @Output() closed = new EventEmitter<void>();
-  @Output() saved  = new EventEmitter<void>();
+  @Output() closed      = new EventEmitter<void>();
+  @Output() saved       = new EventEmitter<void>();
+  @Output() savedAndNew = new EventEmitter<void>();
 
   readonly variantTypes = VARIANT_TYPES;
   selectedType = signal<VariantType | null>(null);

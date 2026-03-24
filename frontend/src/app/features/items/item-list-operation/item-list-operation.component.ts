@@ -29,9 +29,11 @@ export class ItemListOperationComponent {
   @Input() productItemTypes: ProductItemType[] = [];
   @Input() productInfos: ProductInformation[] = [];
   @Input() uploadingImages = false;
+  @Input() saving = false;
 
   @Output() closed              = new EventEmitter<void>();
   @Output() saved               = new EventEmitter<void>();
+  @Output() savedAndNew         = new EventEmitter<void>();
   @Output() priceAdded          = new EventEmitter<void>();
   @Output() priceRemoved        = new EventEmitter<number>();
   @Output() imageFilesSelected  = new EventEmitter<Event>();
