@@ -46,9 +46,15 @@ export class ItemDetailComponent {
   }
 
   get itemStoreItems(): StoreItem[] {
-    return this.storeItems
-      .filter(si => si.itemId === this.item.id && si.isActive !== false)
-      .sort((a, b) => a.sellingPrice - b.sellingPrice);
+    const active = this.storeItems.filter(si => si.itemId === this.item.id && si.isActive !== false);
+    // Keep only the best (lowest) price entry per store, then sort by price
+    const bestPerStore = new Map<number, StoreItem>();
+    for (const si of active) {
+      const existing = bestPerStore.get(si.storeId);
+      if (!existing || si.sellingPrice < existing.sellingPrice)
+        bestPerStore.set(si.storeId, si);
+    }
+    return [...bestPerStore.values()].sort((a, b) => a.sellingPrice - b.sellingPrice);
   }
 
   getStoreName(storeId: number): string {
