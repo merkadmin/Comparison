@@ -28,7 +28,11 @@ export class ItemDetailComponent {
   @Output() cartToggled     = new EventEmitter<number>();
   @Output() compareToggled  = new EventEmitter<number>();
 
-  activeIdx = signal(0);
+  activeIdx   = signal(0);
+  lightboxImg = signal<string | null>(null);
+
+  openLightbox(): void  { this.lightboxImg.set(this.allImages[this.activeIdx()]); }
+  closeLightbox(): void { this.lightboxImg.set(null); }
 
   get allImages(): string[] {
     const imgs = this.item.images?.length

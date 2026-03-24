@@ -19,8 +19,9 @@
     <!--START::Left - Images-->
     <div class="item-detail-panel__gallery d-flex flex-column gap-3">
 
-      <!--Main Image-->
-      <div class="item-detail-panel__main-img d-flex align-items-center justify-content-center bg-white rounded border">
+      <!--Main Image (click to enlarge)-->
+      <div class="item-detail-panel__main-img d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
+        (click)="allImages.length > 0 && openLightbox()">
         @if (allImages.length > 0) {
           <img [src]="allImages[activeIdx()]" [alt]="item.name" class="item-detail-panel__main-img-el" />
         } @else {
@@ -28,7 +29,7 @@
         }
       </div>
 
-      <!--Thumbnails-->
+      <!--Thumbnails (click to switch, no lightbox)-->
       @if (allImages.length > 1) {
         <div class="item-detail-panel__thumbs d-flex gap-2 flex-wrap">
           @for (img of allImages; track img; let i = $index) {
@@ -152,3 +153,14 @@
 
 </div>
 <!--END::Modal Panel-->
+
+<!--START::Lightbox-->
+@if (lightboxImg()) {
+  <div class="item-lightbox" (click)="closeLightbox()">
+    <button class="item-lightbox__close btn btn-icon btn-sm btn-light" (click)="closeLightbox(); $event.stopPropagation()">
+      <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+    <img [src]="lightboxImg()!" [alt]="item.name" class="item-lightbox__img" (click)="$event.stopPropagation()" />
+  </div>
+}
+<!--END::Lightbox-->
