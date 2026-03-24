@@ -12,21 +12,27 @@ public static class ExcelService
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("Items");
-		string[] headers = { "Name*", "Description", "Barcode", "ImageUrl", "BrandId*", "ItemCategoryId*" };
+		// Col:  1       2             3                  4               5           6          7          8          9            10               11
+		string[] headers = { "Name*", "Description", "BriefDescription", "AboutThisItem", "ModelName", "Barcode", "ImageUrl", "BrandId", "BrandName", "ItemCategoryId", "CategoryName_En" };
 		WriteHeaders(ws, headers);
 
 		// Example row
-		ws.Cell(2, 1).Value = "iPhone 15 Pro";
-		ws.Cell(2, 2).Value = "A17 Pro chip, 256GB";
-		ws.Cell(2, 3).Value = "APL-IP15PRO-256";
-		ws.Cell(2, 4).Value = "https://store.storeimages.cdn-apple.com/iphone15pro.jpg";
-		ws.Cell(2, 5).Value = 1;   // BrandId
-		ws.Cell(2, 6).Value = 1;   // ItemCategoryId
+		ws.Cell(2, 1).Value  = "iPhone 15 Pro";
+		ws.Cell(2, 2).Value  = "A17 Pro chip, 256GB";
+		ws.Cell(2, 3).Value  = "The ultimate iPhone experience.";
+		ws.Cell(2, 4).Value  = "Titanium design, A17 Pro chip, Pro camera system.";
+		ws.Cell(2, 5).Value  = "A3293";
+		ws.Cell(2, 6).Value  = "APL-IP15PRO-256";
+		ws.Cell(2, 7).Value  = "https://store.storeimages.cdn-apple.com/iphone15pro.jpg";
+		ws.Cell(2, 8).Value  = "";           // BrandId (optional if BrandName provided)
+		ws.Cell(2, 9).Value  = "Apple";      // BrandName (optional if BrandId provided)
+		ws.Cell(2, 10).Value = "";           // ItemCategoryId (optional if CategoryName_En provided)
+		ws.Cell(2, 11).Value = "Smartphones"; // CategoryName_En (optional if ItemCategoryId provided)
 		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
 		ws.Row(2).Style.Font.Italic = true;
 
 		// Note row
-		ws.Cell(3, 1).Value = "↑ Example row — delete before importing";
+		ws.Cell(3, 1).Value = "↑ Example row — delete before importing. Fill BrandId OR BrandName (name takes priority). Same for CategoryId/Name.";
 		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
 		ws.Cell(3, 1).Style.Font.Italic = true;
 		ws.Range(3, 1, 3, headers.Length).Merge();
@@ -37,25 +43,30 @@ public static class ExcelService
 		return ms.ToArray();
 	}
 
-	public static List<Item> ParseItems(Stream stream)
+	public static List<(Item Item, string? BrandName, string? CategoryName)> ParseItems(Stream stream)
 	{
 		using var wb = new XLWorkbook(stream);
 		var ws = wb.Worksheet(1);
-		var list = new List<Item>();
+		var list = new List<(Item, string?, string?)>();
 		int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
 		for (int r = 2; r <= lastRow; r++)
 		{
 			var name = ws.Cell(r, 1).GetString().Trim();
 			if (string.IsNullOrEmpty(name)) continue;
-			list.Add(new Item
+			list.Add((new Item
 			{
-				Name = name,
-				Description = NullIfEmpty(ws.Cell(r, 2).GetString()),
-				Barcode = NullIfEmpty(ws.Cell(r, 3).GetString()),
-				ImageUrl = NullIfEmpty(ws.Cell(r, 4).GetString()),
-				BrandId = ws.Cell(r, 5).TryGetValue<long>(out var bid) ? bid : 0,
-				ItemCategoryId = ws.Cell(r, 6).TryGetValue<long>(out var cid) ? cid : 0,
-			});
+				Name             = name,
+				Description      = NullIfEmpty(ws.Cell(r, 2).GetString()),
+				BriefDescription = NullIfEmpty(ws.Cell(r, 3).GetString()),
+				AboutThisItem    = NullIfEmpty(ws.Cell(r, 4).GetString()),
+				ModelName        = NullIfEmpty(ws.Cell(r, 5).GetString()),
+				Barcode          = NullIfEmpty(ws.Cell(r, 6).GetString()),
+				ImageUrl         = NullIfEmpty(ws.Cell(r, 7).GetString()),
+				BrandId        = ws.Cell(r, 8).TryGetValue<long>(out var bid) ? bid : 0,
+				ItemCategoryId = ws.Cell(r, 10).TryGetValue<long>(out var cid) ? cid : 0,
+			},
+			NullIfEmpty(ws.Cell(r, 9).GetString().Trim()),
+			NullIfEmpty(ws.Cell(r, 11).GetString().Trim())));
 		}
 		return list;
 	}
@@ -137,26 +148,34 @@ public static class ExcelService
 
 	// ── Items ─────────────────────────────────────────────────────────────────
 
-	public static byte[] ExportItemList(IEnumerable<Item> items)
+	public static byte[] ExportItemList(IEnumerable<Item> items, IEnumerable<ItemBrand> brands, IEnumerable<ItemCategory> categories)
 	{
+		var brandMap    = brands.ToDictionary(b => b.Id, b => b.Name);
+		var categoryMap = categories.ToDictionary(c => c.Id, c => c.Name.En);
+
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("Items");
-		string[] headers = { "Id", "Name", "Description", "BriefDescription", "ModelName", "Barcode", "ImageUrl", "BrandId", "ItemCategoryId", "IsActive" };
+		// Col:  1     2       3              4                  5               6           7          8          9           10              11             12               13          14
+		string[] headers = { "Id", "Name", "Description", "BriefDescription", "AboutThisItem", "ModelName", "Barcode", "ImageUrl", "BrandId", "BrandName", "ItemCategoryId", "CategoryName", "IsActive", "CreatedAt" };
 		WriteHeaders(ws, headers);
 
 		int row = 2;
 		foreach (var i in items)
 		{
-			ws.Cell(row, 1).Value = i.Id;
-			ws.Cell(row, 2).Value = i.Name;
-			ws.Cell(row, 3).Value = i.Description ?? string.Empty;
-			ws.Cell(row, 4).Value = i.BriefDescription ?? string.Empty;
-			ws.Cell(row, 5).Value = i.ModelName ?? string.Empty;
-			ws.Cell(row, 6).Value = i.Barcode ?? string.Empty;
-			ws.Cell(row, 7).Value = i.ImageUrl ?? string.Empty;
-			ws.Cell(row, 8).Value = i.BrandId;
-			ws.Cell(row, 9).Value = i.ItemCategoryId;
-			ws.Cell(row, 10).Value = i.IsActive;
+			ws.Cell(row, 1).Value  = i.Id;
+			ws.Cell(row, 2).Value  = i.Name;
+			ws.Cell(row, 3).Value  = i.Description ?? string.Empty;
+			ws.Cell(row, 4).Value  = i.BriefDescription ?? string.Empty;
+			ws.Cell(row, 5).Value  = i.AboutThisItem ?? string.Empty;
+			ws.Cell(row, 6).Value  = i.ModelName ?? string.Empty;
+			ws.Cell(row, 7).Value  = i.Barcode ?? string.Empty;
+			ws.Cell(row, 8).Value  = i.ImageUrl ?? string.Empty;
+			ws.Cell(row, 9).Value  = i.BrandId;
+			ws.Cell(row, 10).Value = brandMap.TryGetValue(i.BrandId, out var bn) ? bn : string.Empty;
+			ws.Cell(row, 11).Value = i.ItemCategoryId;
+			ws.Cell(row, 12).Value = categoryMap.TryGetValue(i.ItemCategoryId, out var cn) ? cn : string.Empty;
+			ws.Cell(row, 13).Value = i.IsActive;
+			ws.Cell(row, 14).Value = i.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss");
 			row++;
 		}
 

@@ -7,7 +7,15 @@ namespace PriceRadar.API.Controllers;
 
 public class ItemsController : BaseController<Item, IItemRepository>
 {
-	public ItemsController(IItemRepository repo) : base(repo) { }
+	private readonly IItemBrandRepository _brands;
+	private readonly IBaseRepository<ItemCategory> _categories;
+
+	public ItemsController(IItemRepository repo, IItemBrandRepository brands, IBaseRepository<ItemCategory> categories)
+		: base(repo)
+	{
+		_brands     = brands;
+		_categories = categories;
+	}
 
 	[HttpGet("by-category/{categoryId:long}")]
 	public async Task<IActionResult> GetByCategory(long categoryId) =>
@@ -27,8 +35,10 @@ public class ItemsController : BaseController<Item, IItemRepository>
 	[HttpGet("export-list")]
 	public async Task<IActionResult> ExportList()
 	{
-		var items = await Repo.GetAllAsync();
-		var bytes = ExcelService.ExportItemList(items);
+		var items      = await Repo.GetAllAsync();
+		var brands     = await _brands.GetAllAsync();
+		var categories = await _categories.GetAllAsync();
+		var bytes = ExcelService.ExportItemList(items, brands, categories);
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "items.xlsx");
 	}
 
@@ -39,11 +49,29 @@ public class ItemsController : BaseController<Item, IItemRepository>
 		if (file is null || file.Length == 0)
 			return BadRequest("No file provided.");
 
-		using var stream = file.OpenReadStream();
-		var items = ExcelService.ParseItems(stream);
-		foreach (var item in items)
-			await Repo.CreateAsync(item);
+		using var ms = new MemoryStream();
+		await file.CopyToAsync(ms);
+		ms.Position = 0;
 
-		return Ok(new { imported = items.Count });
+		var parsed     = ExcelService.ParseItems(ms);
+		var brands     = (await _brands.GetAllAsync()).ToList();
+		var categories = (await _categories.GetAllAsync()).ToList();
+
+		foreach (var (item, brandName, categoryName) in parsed)
+		{
+			if (brandName is not null)
+			{
+				var brand = brands.FirstOrDefault(b => string.Equals(b.Name, brandName, StringComparison.OrdinalIgnoreCase));
+				if (brand is not null) item.BrandId = brand.Id;
+			}
+			if (categoryName is not null)
+			{
+				var cat = categories.FirstOrDefault(c => string.Equals(c.Name.En, categoryName, StringComparison.OrdinalIgnoreCase));
+				if (cat is not null) item.ItemCategoryId = cat.Id;
+			}
+			await Repo.CreateAsync(item);
+		}
+
+		return Ok(new { imported = parsed.Count });
 	}
 }
