@@ -23,8 +23,11 @@ public class MongoDbContext
 	public IMongoCollection<ProductItemDocument> ProductItems =>
 		_database.GetCollection<ProductItemDocument>("ProductItem");
 
-	public IMongoCollection<ProductItemVariantDocument> ProductItemVariants =>
-		_database.GetCollection<ProductItemVariantDocument>("ProductItemVariant");
+	public IMongoCollection<VariantDocument> Variants =>
+		_database.GetCollection<VariantDocument>("Variant");
+
+	public IMongoCollection<ProductItem_VariantDocument> ProductItem_Variants =>
+		_database.GetCollection<ProductItem_VariantDocument>("ProductItem_Variant");
 
 	public IMongoCollection<ItemPackageDocument> ItemPackages =>
 		_database.GetCollection<ItemPackageDocument>("ItemPackage");
@@ -61,7 +64,7 @@ public class MongoDbContext
 		_database.GetCollection<StaticLookupDocument>("StoreType_s");
 
 	public IMongoCollection<StaticLookupDocument> DBStores =>
-		_database.GetCollection<StaticLookupDocument>("DBStore_s");
+		_database.GetCollection<StaticLookupDocument>("Store_s");
 
 	public IMongoCollection<StaticLookupDocument> PriceHistoryTypes =>
 		_database.GetCollection<StaticLookupDocument>("PriceHistoryType_s");

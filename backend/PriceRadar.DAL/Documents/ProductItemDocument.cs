@@ -23,7 +23,7 @@ public class ProductItemDocument : IDocument<ProductItem>
 	public bool IsDeleted { get; set; } = false;
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-	public ProductItem ToModel() => new() 
+	public ProductItem ToModel() => new()
 	{
 		Id = Id,
 		IsActive = IsActive,

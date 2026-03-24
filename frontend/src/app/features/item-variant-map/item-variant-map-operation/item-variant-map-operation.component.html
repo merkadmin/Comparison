@@ -1,0 +1,51 @@
+<!--START::Edit Modal-->
+<div class="modal fade show d-block modal-inline-backdrop" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">
+          {{ (isCreating ? 'itemVariantMap.addNew' : 'common.edit') | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closed.emit()"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!--START::Item-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'itemVariantMap.item' | translate }} <span class="text-danger">*</span></label>
+          <select class="form-select" [(ngModel)]="editDraft.productItemId">
+            <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectItem' | translate }}</option>
+            @for (item of items; track item.id) {
+              <option [ngValue]="item.id">{{ item.name }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Item-->
+
+        <!--START::Variant-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'itemVariantMap.variant' | translate }} <span class="text-danger">*</span></label>
+          <select class="form-select" [(ngModel)]="editDraft.variantId">
+            <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
+            @for (v of variants; track v.id) {
+              <option [ngValue]="v.id">{{ v.variantTypeId }} — {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}</option>
+            }
+          </select>
+        </div>
+        <!--END::Variant-->
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        <button type="button" class="btn btn-primary"
+          [disabled]="!editDraft.productItemId || !editDraft.variantId"
+          (click)="saved.emit()">{{ 'common.save' | translate }}</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--END::Edit Modal-->

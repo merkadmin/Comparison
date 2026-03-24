@@ -66,6 +66,10 @@ export const APP_PAGES: AppPage[] = [
     key: 'dashboard', label: 'Dashboard', route: '/home', navIcon: 'element-11',
     slots: [GLOBAL.search],
   },
+  {
+    key: 'product-item-variants', label: 'Item Variants', route: '/product-item-variants', navIcon: 'data',
+    slots: [GLOBAL.add, GLOBAL.edit, GLOBAL.delete, GLOBAL.search, GLOBAL.import, GLOBAL.export],
+  },
 ];
 
 const STORAGE_KEY = 'app_icon_config';

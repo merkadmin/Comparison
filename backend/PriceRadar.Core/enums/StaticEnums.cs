@@ -55,4 +55,17 @@
 		Premium = 1,
 		Admin = 2
 	}
+
+	public enum DBVariantType
+	{
+		Color = 1,
+		Size = 2,
+		Material = 3,
+		Style = 4,
+		Pattern = 5,
+		Brand = 6,
+		Model = 7,
+		Version = 8,
+		Other = 9
+	}
 }

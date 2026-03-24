@@ -1,0 +1,256 @@
+<div class="card">
+
+  <app-common-list-header-actions
+    titleKey="variant.title"
+    [viewMode]="viewMode()"
+    (viewModeChange)="viewMode.set($event)"
+    [columns]="colsPerRow()"
+    (columnsChange)="colsPerRow.set($event)"
+    [selectedCount]="selectedIds().size"
+    bulkMainLabelKey="common.deactivate"
+    bulkMainIconClass="ki-minus-circle"
+    bulkMainColor="light-warning"
+    [bulkMenuItems]="bulkMenuItems"
+    [importing]="importing()"
+    [importMenuItems]="importMenuItems"
+    importSuccessKey="variant.importSuccess"
+    [importSuccess]="importSuccess()"
+    [importErrorMessage]="importError()"
+    searchPlaceholderKey="common.search"
+    (bulkMainClick)="deactivateSelected()"
+    (fileSelected)="onFileSelected($event)"
+    (searchChange)="searchQuery.set($event)"
+    (importSuccessClose)="importSuccess.set(false)"
+    (importErrorClose)="importError.set(null)">
+
+    <!--START::Add Button (Admin)-->
+    @if (auth.isAdmin()) {
+      <button class="btn btn-sm btn-primary" (click)="openCreate()">
+        <i class="ki-duotone ki-{{ addIcon() }} fs-2">
+          <span class="path1"></span><span class="path2"></span>
+        </i>
+        {{ 'variant.addNew' | translate }}
+      </button>
+    }
+    <!--END::Add Button (Admin)-->
+
+  </app-common-list-header-actions>
+
+  <!--START::Type Filter-->
+  <div class="card-header border-0 pt-4 pb-0">
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-sm"
+        [class.btn-primary]="selectedType() === null"
+        [class.btn-light]="selectedType() !== null"
+        (click)="selectedType.set(null)">
+        {{ 'common.all' | translate }}
+        <span class="badge ms-1"
+          [class.badge-light]="selectedType() === null"
+          [class.badge-secondary]="selectedType() !== null">
+          {{ variants().length }}
+        </span>
+      </button>
+      @for (type of variantTypes; track type) {
+        <button class="btn btn-sm"
+          [class.btn-primary]="selectedType() === type"
+          [class.btn-light]="selectedType() !== type"
+          (click)="selectedType.set(selectedType() === type ? null : type)">
+          {{ 'variant.type.' + type | translate }}
+          @if (typeCount()[type]) {
+            <span class="badge ms-1"
+              [class.badge-light]="selectedType() === type"
+              [class.badge-secondary]="selectedType() !== type">
+              {{ typeCount()[type] }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+  <!--END::Type Filter-->
+
+  <div class="card-body py-4">
+
+    <!--START::Loading-->
+    @if (loading()) {
+      <div class="d-flex justify-content-center py-10">
+        <span class="spinner-border text-primary"></span>
+        <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
+      </div>
+    }
+    <!--END::Loading-->
+
+    <!--START::Error-->
+    @if (!loading() && error()) {
+      <div class="alert alert-danger">{{ error() }}</div>
+    }
+    <!--END::Error-->
+
+    <!--START::List View-->
+    @if (!loading() && !error() && viewMode() === 'list') {
+      <table class="table align-middle table-row-dashed fs-6 gy-5">
+        <thead>
+          <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+            @if (auth.isAdmin()) {
+              <th class="w-30px">
+                <div class="form-check form-check-sm form-check-custom form-check-solid">
+                  <input class="form-check-input" type="checkbox"
+                    [checked]="isAllSelected()" (change)="toggleAll()" />
+                </div>
+              </th>
+            }
+            <th class="w-30px">{{ 'common.number' | translate }}</th>
+            <th class="min-w-150px">{{ 'variant.variantType' | translate }}</th>
+            <th class="min-w-120px">{{ 'variant.variantValue' | translate }}</th>
+            <th class="min-w-100px">{{ 'variant.abbreviation' | translate }}</th>
+            <th class="min-w-80px">{{ 'common.status' | translate }}</th>
+            <th class="min-w-100px">{{ 'common.created' | translate }}</th>
+            @if (auth.isAdmin()) {
+              <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody class="text-gray-600 fw-semibold">
+          @if (filteredVariants().length === 0) {
+            <tr>
+              <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">
+                {{ 'common.noData' | translate }}
+              </td>
+            </tr>
+          }
+          @for (v of filteredVariants(); track v.id; let i = $index) {
+            <tr [class.table-active]="isSelected(v.id!)">
+              @if (auth.isAdmin()) {
+                <td>
+                  <div class="form-check form-check-sm form-check-custom form-check-solid">
+                    <input class="form-check-input" type="checkbox"
+                      [checked]="isSelected(v.id!)" (change)="toggleOne(v.id!)" />
+                  </div>
+                </td>
+              }
+              <td>{{ i + 1 }}</td>
+              <td>
+                <span class="text-gray-800 fw-bold text-hover-primary fs-6">{{ 'variant.type.' + v.variantTypeId | translate }}</span>
+              </td>
+              <td>
+                @if (v.variantValue) {
+                  <span class="badge badge-light-info">{{ v.variantValue }}</span>
+                } @else { <span class="text-muted">—</span> }
+              </td>
+              <td>
+                @if (v.abbreviation) {
+                  <span class="badge badge-light-dark">{{ v.abbreviation }}</span>
+                } @else { <span class="text-muted">—</span> }
+              </td>
+              <td>
+                <span class="badge" [class.badge-light-success]="v.isActive !== false" [class.badge-light-danger]="v.isActive === false">
+                  {{ (v.isActive !== false ? 'common.active' : 'common.inactive') | translate }}
+                </span>
+              </td>
+              <td class="text-muted">{{ v.createdAt | date:'mediumDate' }}</td>
+              @if (auth.isAdmin()) {
+                <td class="text-end">
+                  <div class="d-flex justify-content-end gap-2">
+                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(v)">
+                      <i class="ki-duotone ki-{{ editIcon() }} fs-5">
+                        <span class="path1"></span><span class="path2"></span>
+                      </i>
+                      {{ 'common.edit' | translate }}
+                    </button>
+                    <app-common-drop-down-menu-action-button
+                      [mainLabelKey]="v.isActive !== false ? 'common.deactivate' : 'common.activate'"
+                      [mainIconClass]="v.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+                      [mainColor]="v.isActive !== false ? 'light-warning' : 'light-success'"
+                      mainIconSize="5"
+                      [menuEnd]="true"
+                      (mainClick)="setActive(v.id!, v.isActive === false)"
+                      [menuItems]="getRowMenuItems(v.id!)" />
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+    <!--END::List View-->
+
+    <!--START::Card View-->
+    @if (!loading() && !error() && viewMode() === 'cards') {
+      @if (filteredVariants().length === 0) {
+        <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
+      }
+      <div class="row g-4">
+        @for (v of filteredVariants(); track v.id) {
+          <div [class]="colClass()">
+            <div class="card border shadow-sm h-100 variant-card"
+              [class.variant-card--inactive]="v.isActive === false">
+              <div class="card-body d-flex flex-column gap-3 p-4">
+
+                <!--Name & Status-->
+                <div class="d-flex align-items-start justify-content-between gap-2">
+                  <h6 class="fw-bold text-gray-800 mb-0 lh-sm flex-grow-1">{{ 'variant.type.' + v.variantTypeId | translate }}</h6>
+                  <span class="badge flex-shrink-0"
+                    [class.badge-light-success]="v.isActive !== false"
+                    [class.badge-light-danger]="v.isActive === false">
+                    {{ (v.isActive !== false ? 'common.active' : 'common.inactive') | translate }}
+                  </span>
+                </div>
+
+                <!--Variant Value / Abbreviation-->
+                @if (v.variantValue || v.abbreviation) {
+                  <div class="d-flex flex-wrap gap-2">
+                    @if (v.variantValue) {
+                      <span class="badge badge-light-info">{{ v.variantValue }}</span>
+                    }
+                    @if (v.abbreviation) {
+                      <span class="badge badge-light-dark">{{ v.abbreviation }}</span>
+                    }
+                  </div>
+                }
+
+                <!--Created-->
+                @if (v.createdAt) {
+                  <span class="text-muted fs-8 mt-auto">{{ v.createdAt | date:'mediumDate' }}</span>
+                }
+
+              </div>
+
+              <!--Actions-->
+              @if (auth.isAdmin()) {
+                <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+                  <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(v)">
+                    <i class="ki-duotone ki-{{ editIcon() }} fs-5">
+                      <span class="path1"></span><span class="path2"></span>
+                    </i>
+                    {{ 'common.edit' | translate }}
+                  </button>
+                  <app-common-drop-down-menu-action-button
+                    [mainLabelKey]="v.isActive !== false ? 'common.deactivate' : 'common.activate'"
+                    [mainIconClass]="v.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
+                    [mainColor]="v.isActive !== false ? 'light-warning' : 'light-success'"
+                    mainIconSize="5"
+                    [menuEnd]="true"
+                    (mainClick)="setActive(v.id!, v.isActive === false)"
+                    [menuItems]="getRowMenuItems(v.id!)" />
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+    <!--END::Card View-->
+
+  </div>
+</div>
+
+<!--START::Create / Edit Modal-->
+@if (editingId() !== null) {
+  <app-product-item-variant-list-operation
+    [editDraft]="editDraft"
+    [isCreating]="isCreating()"
+    (closed)="closeEdit()"
+    (saved)="saveEdit()" />
+}
+<!--END::Create / Edit Modal-->
