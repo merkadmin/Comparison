@@ -10,6 +10,7 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { StoreListComponent } from './features/stores/store-list.component';
 import { StoreItemListComponent } from './features/store-items/store-item-list.component';
 import { ShopByCategoryComponent } from './features/shop/shop-by-category.component';
+import { SetIconsComponent } from './features/app-setup/set-icons/set-icons.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -29,6 +30,7 @@ export const routes: Routes = [
       { path: 'stores', component: StoreListComponent },
       { path: 'store-items', component: StoreItemListComponent },
       { path: 'shop', component: ShopByCategoryComponent },
+      { path: 'app-setup/set-icons', component: SetIconsComponent },
     ],
   },
   { path: '**', redirectTo: '' },

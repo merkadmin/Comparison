@@ -52,6 +52,8 @@ export const en: Record<string, string> = {
   'nav.showAll': 'Show All',
   'nav.favorites': 'Favorites',
   'nav.settings': 'Settings',
+  'nav.appSetup': 'Application Setup',
+  'nav.setIcons': 'Set Icons',
 
   // Store Items
   'storeItem.title': 'Store Items',

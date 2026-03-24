@@ -1,0 +1,45 @@
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+}
+
+.icon-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  background: var(--bs-light);
+  text-align: center;
+  min-height: 90px;
+
+  &:hover {
+    background: rgba(var(--bs-primary-rgb), 0.07);
+    border-color: rgba(var(--bs-primary-rgb), 0.25);
+    transform: translateY(-2px);
+  }
+
+  &--copied {
+    background: rgba(var(--bs-success-rgb), 0.08) !important;
+    border-color: rgba(var(--bs-success-rgb), 0.4) !important;
+  }
+
+  &__preview {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__name {
+    font-size: 0.68rem;
+    color: var(--bs-gray-600);
+    word-break: break-all;
+    line-height: 1.3;
+  }
+}

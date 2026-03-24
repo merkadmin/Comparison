@@ -52,6 +52,8 @@ export const ar: Record<string, string> = {
   'nav.showAll': 'عرض الكل',
   'nav.favorites': 'المفضلة',
   'nav.settings': 'الإعدادات',
+  'nav.appSetup': 'إعداد التطبيق',
+  'nav.setIcons': 'الأيقونات',
 
   // Store Items
   'storeItem.title': 'منتجات المتاجر',
