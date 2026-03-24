@@ -2,6 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ItemService } from '../../core/services/item.service';
 import { StoreItemService } from '../../core/services/store-item.service';
+import { StoreService } from '../../core/services/store.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemImageService } from '../../core/services/item-image.service';
 import { UserActivityService } from '../../core/services/user-activity.service';
@@ -9,20 +10,23 @@ import { TranslateService } from '../../core/services/translate.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { Item } from '../../core/models/item.model';
 import { StoreItem } from '../../core/models/store-item.model';
+import { Store } from '../../core/models/store.model';
 import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
 import { GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { computedColClass } from '../../shared/helpers/grid-columns.helper';
+import { ItemDetailComponent } from './item-detail/item-detail.component';
 
 @Component({
   selector: 'app-shop-by-category',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, ItemDetailComponent],
   templateUrl: './shop-by-category.component.html',
   styleUrl: './shop-by-category.component.less',
 })
 export class ShopByCategoryComponent implements OnInit {
   private itemService      = inject(ItemService);
   private storeItemService = inject(StoreItemService);
+  private storeService     = inject(StoreService);
   private categoryService  = inject(ItemCategoryService);
   private imageService     = inject(ItemImageService);
   private translate        = inject(TranslateService);
@@ -30,10 +34,12 @@ export class ShopByCategoryComponent implements OnInit {
 
   // ── State ──────────────────────────────────────────────────────────────────
   allCategories  = signal<IItemCategory[]>([]);
-  navStack       = signal<IItemCategory[]>([]);   // breadcrumb path
-  selectedLeaf   = signal<IItemCategory | null>(null);  // leaf category whose items are shown
+  navStack       = signal<IItemCategory[]>([]);
+  selectedLeaf   = signal<IItemCategory | null>(null);
   items          = signal<Item[]>([]);
   storeItems     = signal<StoreItem[]>([]);
+  stores         = signal<Store[]>([]);
+  selectedItem   = signal<Item | null>(null);
   loadingItems   = signal(false);
   loadingCats    = signal(false);
   searchQuery    = signal('');
@@ -123,6 +129,9 @@ export class ShopByCategoryComponent implements OnInit {
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
+  openDetail(item: Item): void  { this.selectedItem.set(item); }
+  closeDetail(): void           { this.selectedItem.set(null); }
+
   ngOnInit(): void {
     this.loadingCats.set(true);
     this.categoryService.getAll().subscribe({
@@ -130,6 +139,7 @@ export class ShopByCategoryComponent implements OnInit {
       error: () => { this.loadingCats.set(false); }
     });
     this.storeItemService.getAll().subscribe({ next: si => this.storeItems.set(si), error: () => {} });
+    this.storeService.getAll().subscribe({ next: s => this.stores.set(s), error: () => {} });
     this.userActivity.loadAll();
   }
 

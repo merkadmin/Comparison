@@ -137,7 +137,7 @@
         <div class="row g-4">
           @for (item of filteredItems(); track item.id) {
             <div [class]="colClass()">
-              <div class="item-card card h-100 shadow-sm border-0">
+              <div class="item-card card h-100 shadow-sm border-0 cursor-pointer" (click)="openDetail(item)">
 
                 <!--START::Card Image-->
                 <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center position-relative">
@@ -184,7 +184,7 @@
                   <button class="btn btn-sm flex-fill"
                     [class.btn-light-success]="!inCart(item.id!)"
                     [class.btn-success]="inCart(item.id!)"
-                    (click)="toggleCart(item.id!)">
+                    (click)="toggleCart(item.id!); $event.stopPropagation()">
                     <i class="ki-duotone ki-basket fs-1">
                       <span class="path1"></span><span class="path2"></span><span class="path3"></span>
                     </i>
@@ -193,7 +193,7 @@
                   <button class="btn btn-sm flex-fill"
                     [class.btn-light-info]="!inCompare(item.id!)"
                     [class.btn-info]="inCompare(item.id!)"
-                    (click)="toggleCompare(item.id!)">
+                    (click)="toggleCompare(item.id!); $event.stopPropagation()">
                     <i class="ki-duotone ki-arrows-circle fs-1">
                       <span class="path1"></span><span class="path2"></span>
                     </i>
@@ -214,3 +214,17 @@
 
   </div>
 </div>
+
+<!--START::Item Detail Modal-->
+@if (selectedItem(); as item) {
+  <app-item-detail
+    [item]="item"
+    [storeItems]="storeItems()"
+    [stores]="stores()"
+    [compareIds]="compareIds()"
+    (closed)="closeDetail()"
+    (favoriteToggled)="toggleFavorite($event)"
+    (cartToggled)="toggleCart($event)"
+    (compareToggled)="toggleCompare($event)" />
+}
+<!--END::Item Detail Modal-->
