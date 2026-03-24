@@ -252,6 +252,8 @@
     [storeItems]="storeItems()"
     [stores]="stores()"
     [compareIds]="compareIds()"
+    [itemVariantMaps]="getItemVariantMaps(item.id!)"
+    [allVariants]="allVariants()"
     (closed)="closeDetail()"
     (favoriteToggled)="toggleFavorite($event)"
     (cartToggled)="toggleCart($event)"

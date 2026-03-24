@@ -39,7 +39,7 @@ export const ar: Record<string, string> = {
   'nav.home': 'الرئيسية',
   'nav.items': 'المنتجات الأساسية',
   'nav.itemList': 'قائمة المنتجات',
-  'nav.itemCategories': 'التصنيفات',
+  'nav.itemCategories': 'تصنيفات المنتجات',
   'nav.itemBrands': 'الماركات',
   'nav.itemPackages': 'العروض والباقات',
   'nav.products': 'المنتجات',
@@ -209,7 +209,7 @@ export const ar: Record<string, string> = {
   'package.importError': 'فشل استيراد الباقات.',
 
   // Product Item Variants
-  'nav.productItemVariants': 'متغيرات المنتج',
+  'nav.productItemVariants': 'المتغيرات',
   'nav.itemVariantMap': 'متغيرات المنتج',
   'variant.title': 'متغيرات المنتج',
   'variant.single': 'متغير',
@@ -236,6 +236,7 @@ export const ar: Record<string, string> = {
   'variant.deleteSelected': 'حذف المحدد',
   'variant.deactivateBulkConfirm': 'تعطيل المتغيرات المحددة؟',
   'variant.deactivateBulkText': 'أنت على وشك تعطيل {count} متغير/متغيرات.',
+  'variant.selectRequired': 'يرجى اختيار جميع الخيارات قبل الإضافة إلى السلة.',
   'variant.importSuccess': 'تم استيراد المتغيرات بنجاح.',
   'variant.importError': 'فشل استيراد المتغيرات. يرجى التحقق من صيغة الملف.',
 

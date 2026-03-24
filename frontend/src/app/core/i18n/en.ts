@@ -39,7 +39,7 @@ export const en: Record<string, string> = {
   'nav.home': 'Home',
   'nav.items': 'Product Items',
   'nav.itemList': 'Items List',
-  'nav.itemCategories': 'Item Categories',
+  'nav.itemCategories': 'Product Categories',
   'nav.itemBrands': 'Brands',
   'nav.itemPackages': 'Offers & Packages',
   'nav.products': 'Products',
@@ -209,9 +209,9 @@ export const en: Record<string, string> = {
   'package.importError': 'Failed to import packages.',
 
   // Product Item Variants
-  'nav.productItemVariants': 'Item Variants',
-  'nav.itemVariantMap': 'Item Variants',
-  'variant.title': 'Item Variants',
+  'nav.productItemVariants': 'Variants',
+  'nav.itemVariantMap': 'Product Variants',
+  'variant.title': 'Product Variants',
   'variant.single': 'Variant',
   'variant.addNew': 'Add Variant',
   'variant.item': 'Item',
@@ -236,12 +236,13 @@ export const en: Record<string, string> = {
   'variant.deleteSelected': 'Delete Selected',
   'variant.deactivateBulkConfirm': 'Deactivate selected variants?',
   'variant.deactivateBulkText': 'You are about to deactivate {count} variants.',
+  'variant.selectRequired': 'Please select all options before adding to cart.',
   'variant.importSuccess': 'Variants imported successfully.',
   'variant.importError': 'Failed to import variants. Please check the file format.',
 
   // Item Variant Map
-  'itemVariantMap.title': 'Item Variants',
-  'itemVariantMap.addNew': 'Add Mapping',
+  'itemVariantMap.title': 'Product Variants',
+  'itemVariantMap.addNew': 'Add Product Variants',
   'itemVariantMap.item': 'Item',
   'itemVariantMap.variant': 'Variant',
   'itemVariantMap.variantType': 'Variant Type',

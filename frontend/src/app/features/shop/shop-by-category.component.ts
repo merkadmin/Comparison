@@ -16,6 +16,10 @@ import { GridColumns } from '../../shared/components/commonActions/common-grid-c
 import { computedColClass } from '../../shared/helpers/grid-columns.helper';
 import { ItemDetailComponent } from './item-detail/item-detail.component';
 import { IconConfigService } from '../../core/services/icon-config.service';
+import { ProductItemVariantMapService } from '../../core/services/product-item-variant-map.service';
+import { ProductItemVariantService } from '../../core/services/product-item-variant.service';
+import { ProductItemVariantMap } from '../../core/models/product-item-variant-map.model';
+import { ProductItemVariant } from '../../core/models/product-item-variant.model';
 
 @Component({
   selector: 'app-shop-by-category',
@@ -33,6 +37,8 @@ export class ShopByCategoryComponent implements OnInit {
   private translate        = inject(TranslateService);
   userActivity             = inject(UserActivityService);
   private iconConfig       = inject(IconConfigService);
+  private variantMapSvc    = inject(ProductItemVariantMapService);
+  private variantSvc       = inject(ProductItemVariantService);
 
   // ── Icon config signals ────────────────────────────────────────────────────
   cartIcon    = this.iconConfig.iconSignal('global.cart',    'basket');
@@ -46,9 +52,11 @@ export class ShopByCategoryComponent implements OnInit {
   items          = signal<Item[]>([]);
   storeItems     = signal<StoreItem[]>([]);
   stores         = signal<Store[]>([]);
-  selectedItem   = signal<Item | null>(null);
-  loadingItems   = signal(false);
-  loadingCats    = signal(false);
+  selectedItem      = signal<Item | null>(null);
+  loadingItems      = signal(false);
+  loadingCats       = signal(false);
+  itemVariantMaps   = signal<ProductItemVariantMap[]>([]);
+  allVariants       = signal<ProductItemVariant[]>([]);
   searchQuery    = signal('');
   compareIds     = signal<Set<number>>(new Set());
   colsPerRow     = signal<GridColumns>(4);
@@ -96,6 +104,10 @@ export class ShopByCategoryComponent implements OnInit {
   cartPickerItemId = signal<number | null>(null);
   // pending selections per item: itemId -> Set of storeItem IDs checked but not yet confirmed
   cartPending      = signal<Map<number, Set<number>>>(new Map());
+
+  getItemVariantMaps(itemId: number): ProductItemVariantMap[] {
+    return this.itemVariantMaps().filter(m => m.productItemId === itemId);
+  }
 
   getItemStoreItems(itemId: number): StoreItem[] {
     const active = this.storeItems().filter(si => si.itemId === itemId && si.isActive !== false);
@@ -192,6 +204,8 @@ export class ShopByCategoryComponent implements OnInit {
     });
     this.storeItemService.getAll().subscribe({ next: si => this.storeItems.set(si), error: () => {} });
     this.storeService.getAll().subscribe({ next: s => this.stores.set(s), error: () => {} });
+    this.variantMapSvc.getAll().subscribe({ next: d => this.itemVariantMaps.set(d), error: () => {} });
+    this.variantSvc.getAll().subscribe({ next: d => this.allVariants.set(d), error: () => {} });
     this.userActivity.loadAll();
   }
 

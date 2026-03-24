@@ -39,7 +39,7 @@ export const fr: Record<string, string> = {
   'nav.home': 'Accueil',
   'nav.items': 'Produits',
   'nav.itemList': 'Liste des articles',
-  'nav.itemCategories': 'Catégories',
+  'nav.itemCategories': 'Catégories de produits',
   'nav.itemBrands': 'Marques',
   'nav.itemPackages': 'Offres & Packs',
   'nav.products': 'Produits',
@@ -209,7 +209,7 @@ export const fr: Record<string, string> = {
   'package.importError': 'Échec de l\'importation des packs.',
 
   // Product Item Variants
-  'nav.productItemVariants': 'Variantes d\'articles',
+  'nav.productItemVariants': 'Variantes',
   'nav.itemVariantMap': 'Variantes d\'articles',
   'variant.title': 'Variantes d\'articles',
   'variant.single': 'Variante',
@@ -236,6 +236,7 @@ export const fr: Record<string, string> = {
   'variant.deleteSelected': 'Supprimer la sélection',
   'variant.deactivateBulkConfirm': 'Désactiver les variantes sélectionnées ?',
   'variant.deactivateBulkText': 'Vous êtes sur le point de désactiver {count} variante(s).',
+  'variant.selectRequired': 'Veuillez sélectionner toutes les options avant d\'ajouter au panier.',
   'variant.importSuccess': 'Variantes importées avec succès.',
   'variant.importError': 'Échec de l\'importation. Veuillez vérifier le format du fichier.',
 

@@ -118,6 +118,28 @@
   white-space: pre-line;
 }
 
+// ── Variant chips ────────────────────────────────────────────────────────────
+
+.variant-chip {
+  transition: background 0.15s, border-color 0.15s;
+  user-select: none;
+  border-color: var(--bs-border-color) !important;
+
+  &--selected {
+    background: rgba(var(--bs-primary-rgb), 0.1) !important;
+    border-color: var(--bs-primary) !important;
+
+    span.fw-semibold {
+      color: var(--bs-primary);
+    }
+  }
+
+  &:hover:not(&--selected) {
+    background: rgba(var(--bs-secondary-rgb), 0.08) !important;
+    border-color: #aaa !important;
+  }
+}
+
 // ── Price rows ───────────────────────────────────────────────────────────────
 
 .price-row {

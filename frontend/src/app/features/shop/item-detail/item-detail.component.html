@@ -51,6 +51,48 @@
         </div>
       }
 
+      <!--START::Variant Groups-->
+      @if (hasVariants) {
+        <div class="d-flex flex-column gap-4 pt-3">
+          @for (group of variantGroups; track group.type) {
+            <div>
+              <h6 class="fw-semibold text-gray-700 fs-7 mb-2">
+                {{ 'variant.type.' + group.type | translate }}
+              </h6>
+              <div class="d-flex flex-wrap gap-2">
+                @for (v of group.variants; track v.id) {
+                  <label class="variant-chip d-flex align-items-center gap-2 px-3 py-2 rounded border cursor-pointer"
+                    [class.variant-chip--selected]="selectedVariants().get(group.type) === v.id">
+                    <input type="radio" class="d-none"
+                      [name]="'vg-' + group.type"
+                      [value]="v.id"
+                      [checked]="selectedVariants().get(group.type) === v.id"
+                      (change)="selectVariant(group.type, v.id!)" />
+                    @if (v.abbreviation) {
+                      <span class="badge badge-light-dark fs-8">{{ v.abbreviation }}</span>
+                    }
+                  </label>
+                }
+              </div>
+            </div>
+          }
+
+          <!--Selected summary / warning-->
+          @if (allVariantsSelected) {
+            <div class="d-flex align-items-center gap-2 text-success fs-7 fw-semibold">
+              <i class="ki-duotone ki-check-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
+              {{ selectedVariantSummary }}
+            </div>
+          } @else {
+            <div class="d-flex align-items-center gap-2 text-warning fs-7 fw-semibold">
+              <i class="ki-duotone ki-information-5 fs-5"><span class="path1"></span><span class="path2"></span></i>
+              {{ 'variant.selectRequired' | translate }}
+            </div>
+          }
+        </div>
+      }
+      <!--END::Variant Groups-->
+
     </div>
     <!--END::Left - Images-->
 
@@ -150,7 +192,7 @@
       </button>
     } @else {
       <button class="btn btn-sm btn-primary flex-fill"
-        [disabled]="selectedStoreIds().size === 0"
+        [disabled]="selectedStoreIds().size === 0 || !allVariantsSelected"
         (click)="confirmCart()">
         <i class="ki-duotone ki-{{ cartIcon() }} fs-4">
           <span class="path1"></span><span class="path2"></span><span class="path3"></span>

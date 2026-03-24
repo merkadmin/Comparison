@@ -1,8 +1,10 @@
-import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Item } from '../../../core/models/item.model';
 import { StoreItem, SellingPriceType } from '../../../core/models/store-item.model';
 import { Store } from '../../../core/models/store.model';
+import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
+import { ProductItemVariant } from '../../../core/models/product-item-variant.model';
 import { ItemImageService } from '../../../core/services/item-image.service';
 import { UserActivityService } from '../../../core/services/user-activity.service';
 import { IconConfigService } from '../../../core/services/icon-config.service';
@@ -15,7 +17,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   templateUrl: './item-detail.component.html',
   styleUrl: './item-detail.component.less',
 })
-export class ItemDetailComponent {
+export class ItemDetailComponent implements OnInit {
   private imageService = inject(ItemImageService);
   userActivity = inject(UserActivityService);
   private iconConfig = inject(IconConfigService);
@@ -28,15 +30,58 @@ export class ItemDetailComponent {
   @Input() storeItems: StoreItem[] = [];
   @Input() stores: Store[] = [];
   @Input() compareIds = new Set<number>();
+  @Input() itemVariantMaps: ProductItemVariantMap[] = [];
+  @Input() allVariants: ProductItemVariant[] = [];
 
   @Output() closed = new EventEmitter<void>();
   @Output() favoriteToggled = new EventEmitter<number>();
   @Output() cartToggled = new EventEmitter<number>();
   @Output() compareToggled = new EventEmitter<number>();
 
-  activeIdx = signal(0);
-  lightboxIdx = signal<number | null>(null);
+  activeIdx        = signal(0);
+  lightboxIdx      = signal<number | null>(null);
   selectedStoreIds = signal<Set<number>>(new Set());
+  selectedVariants = signal<Map<string, number>>(new Map());
+
+  get variantGroups(): { type: string; variants: ProductItemVariant[] }[] {
+    const groups = new Map<string, ProductItemVariant[]>();
+    for (const map of this.itemVariantMaps) {
+      const v = this.allVariants.find(v => v.id === map.variantId && v.isActive !== false);
+      if (!v) continue;
+      if (!groups.has(v.variantTypeId)) groups.set(v.variantTypeId, []);
+      groups.get(v.variantTypeId)!.push(v);
+    }
+    return Array.from(groups.entries()).map(([type, variants]) => ({ type, variants }));
+  }
+
+  get hasVariants(): boolean { return this.variantGroups.length > 0; }
+
+  get allVariantsSelected(): boolean {
+    return !this.hasVariants || this.variantGroups.every(g => this.selectedVariants().has(g.type));
+  }
+
+  get selectedVariantSummary(): string {
+    const sel = this.selectedVariants();
+    return Array.from(sel.values())
+      .map(id => {
+        const v = this.allVariants.find(v => v.id === id);
+        return v ? (v.abbreviation ?? v.variantValue) : '';
+      })
+      .filter(Boolean)
+      .join(' · ');
+  }
+
+  ngOnInit(): void {
+    const initial = new Map<string, number>();
+    for (const group of this.variantGroups) {
+      if (group.variants.length > 0) initial.set(group.type, group.variants[0].id!);
+    }
+    if (initial.size > 0) this.selectedVariants.set(initial);
+  }
+
+  selectVariant(type: string, variantId: number): void {
+    this.selectedVariants.update(m => new Map(m).set(type, variantId));
+  }
 
   toggleStoreSelection(si: StoreItem): void {
     this.selectedStoreIds.update(s => {
@@ -49,7 +94,7 @@ export class ItemDetailComponent {
   isStoreSelected(si: StoreItem): boolean { return this.selectedStoreIds().has(si.id!); }
 
   confirmCart(): void {
-    if (this.selectedStoreIds().size === 0) return;
+    if (this.selectedStoreIds().size === 0 || !this.allVariantsSelected) return;
     if (!this.inCart()) this.cartToggled.emit(this.item.id!);
   }
 

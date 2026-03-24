@@ -24,12 +24,34 @@
         </div>
         <!--END::Item-->
 
+        <!--START::Variant Type Filter-->
+        <div class="mb-2">
+          <label class="form-label fw-semibold">{{ 'variant.variantType' | translate }}</label>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-sm"
+              [class.btn-primary]="selectedType() === null"
+              [class.btn-light]="selectedType() !== null"
+              (click)="selectType(null)">
+              {{ 'common.all' | translate }}
+            </button>
+            @for (type of variantTypes; track type) {
+              <button type="button" class="btn btn-sm"
+                [class.btn-primary]="selectedType() === type"
+                [class.btn-light]="selectedType() !== type"
+                (click)="selectType(type)">
+                {{ 'variant.type.' + type | translate }}
+              </button>
+            }
+          </div>
+        </div>
+        <!--END::Variant Type Filter-->
+
         <!--START::Variant-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'itemVariantMap.variant' | translate }} <span class="text-danger">*</span></label>
           <select class="form-select" [(ngModel)]="editDraft.variantId">
             <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
-            @for (v of variants; track v.id) {
+            @for (v of filteredVariants(); track v.id) {
               <option [ngValue]="v.id">{{ v.variantTypeId }} — {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}</option>
             }
           </select>
