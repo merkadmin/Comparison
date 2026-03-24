@@ -28,11 +28,14 @@ export class ItemDetailComponent {
   @Output() cartToggled     = new EventEmitter<number>();
   @Output() compareToggled  = new EventEmitter<number>();
 
-  activeIdx   = signal(0);
-  lightboxImg = signal<string | null>(null);
+  activeIdx    = signal(0);
+  lightboxIdx  = signal<number | null>(null);
 
-  openLightbox(): void  { this.lightboxImg.set(this.allImages[this.activeIdx()]); }
-  closeLightbox(): void { this.lightboxImg.set(null); }
+  openLightbox(): void          { this.lightboxIdx.set(this.activeIdx()); }
+  closeLightbox(): void         { this.lightboxIdx.set(null); }
+  lightboxNext(): void          { this.lightboxIdx.update(i => i !== null ? Math.min(i + 1, this.allImages.length - 1) : null); }
+  lightboxPrev(): void          { this.lightboxIdx.update(i => i !== null ? Math.max(i - 1, 0) : null); }
+  lightboxSelect(i: number): void { this.lightboxIdx.set(i); }
 
   get allImages(): string[] {
     const imgs = this.item.images?.length

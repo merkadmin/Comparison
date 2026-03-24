@@ -155,12 +155,49 @@
 <!--END::Modal Panel-->
 
 <!--START::Lightbox-->
-@if (lightboxImg()) {
+@if (lightboxIdx() !== null) {
   <div class="item-lightbox" (click)="closeLightbox()">
-    <button class="item-lightbox__close btn btn-icon btn-sm btn-light" (click)="closeLightbox(); $event.stopPropagation()">
+
+    <!--Close-->
+    <button class="item-lightbox__close btn btn-icon btn-sm btn-light"
+      (click)="closeLightbox(); $event.stopPropagation()">
       <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
     </button>
-    <img [src]="lightboxImg()!" [alt]="item.name" class="item-lightbox__img" (click)="$event.stopPropagation()" />
+
+    <!--Prev-->
+    @if (lightboxIdx()! > 0) {
+      <button class="item-lightbox__nav item-lightbox__nav--prev btn btn-icon btn-sm btn-light"
+        (click)="lightboxPrev(); $event.stopPropagation()">
+        <i class="ki-duotone ki-arrow-left fs-2"><span class="path1"></span><span class="path2"></span></i>
+      </button>
+    }
+
+    <!--Main image-->
+    <div class="item-lightbox__content d-flex flex-column align-items-center gap-4" (click)="$event.stopPropagation()">
+      <img [src]="allImages[lightboxIdx()!]" [alt]="item.name" class="item-lightbox__img" />
+
+      <!--Thumbnails-->
+      @if (allImages.length > 1) {
+        <div class="item-lightbox__thumbs d-flex gap-2 flex-wrap justify-content-center">
+          @for (img of allImages; track img; let i = $index) {
+            <div class="item-lightbox__thumb d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
+              [class.item-lightbox__thumb--active]="lightboxIdx() === i"
+              (click)="lightboxSelect(i)">
+              <img [src]="img" [alt]="item.name + ' ' + (i + 1)" class="item-lightbox__thumb-img" />
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!--Next-->
+    @if (lightboxIdx()! < allImages.length - 1) {
+      <button class="item-lightbox__nav item-lightbox__nav--next btn btn-icon btn-sm btn-light"
+        (click)="lightboxNext(); $event.stopPropagation()">
+        <i class="ki-duotone ki-arrow-right fs-2"><span class="path1"></span><span class="path2"></span></i>
+      </button>
+    }
+
   </div>
 }
 <!--END::Lightbox-->
