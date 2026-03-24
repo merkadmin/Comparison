@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
 import { Item } from '../../../core/models/item.model';
+import { Store } from '../../../core/models/store.model';
 import { ProductItemVariant, VariantType, VARIANT_TYPES } from '../../../core/models/product-item-variant.model';
 
 @Component({
@@ -15,6 +16,7 @@ export class ItemVariantMapOperationComponent {
   @Input() editDraft!: ProductItemVariantMap;
   @Input() isCreating = false;
   @Input() items: Item[] = [];
+  @Input() stores: Store[] = [];
   @Input() variants: ProductItemVariant[] = [];
   @Input() saving = false;
 

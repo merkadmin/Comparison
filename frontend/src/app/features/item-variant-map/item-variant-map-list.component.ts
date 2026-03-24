@@ -6,8 +6,10 @@ import { AuthService } from '../../core/services/auth.service';
 import { ProductItemVariantMapService } from '../../core/services/product-item-variant-map.service';
 import { ItemService } from '../../core/services/item.service';
 import { ProductItemVariantService } from '../../core/services/product-item-variant.service';
+import { StoreService } from '../../core/services/store.service';
 import { ProductItemVariantMap } from '../../core/models/product-item-variant-map.model';
 import { Item } from '../../core/models/item.model';
+import { Store } from '../../core/models/store.model';
 import { ProductItemVariant } from '../../core/models/product-item-variant.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
@@ -33,8 +35,9 @@ import { IconConfigService } from '../../core/services/icon-config.service';
 export class ItemVariantMapListComponent implements OnInit {
   auth              = inject(AuthService);
   private service   = inject(ProductItemVariantMapService);
-  private itemSvc   = inject(ItemService);
+  private itemSvc    = inject(ItemService);
   private variantSvc = inject(ProductItemVariantService);
+  private storeSvc   = inject(StoreService);
   private translate  = inject(TranslateService);
   private toast      = inject(ToastService);
   private iconConfig = inject(IconConfigService);
@@ -45,6 +48,7 @@ export class ItemVariantMapListComponent implements OnInit {
 
   maps          = signal<ProductItemVariantMap[]>([]);
   items         = signal<Item[]>([]);
+  stores        = signal<Store[]>([]);
   variants      = signal<ProductItemVariant[]>([]);
   loading       = signal(false);
   error         = signal<string | null>(null);
@@ -158,6 +162,7 @@ export class ItemVariantMapListComponent implements OnInit {
   ngOnInit(): void {
     this.load();
     this.itemSvc.getAll().subscribe({ next: d => this.items.set(d), error: () => {} });
+    this.storeSvc.getAll().subscribe({ next: d => this.stores.set(d), error: () => {} });
     this.variantSvc.getAll().subscribe({ next: d => this.variants.set(d), error: () => {} });
   }
 

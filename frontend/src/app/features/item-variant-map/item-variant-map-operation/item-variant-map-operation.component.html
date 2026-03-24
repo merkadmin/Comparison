@@ -1,6 +1,6 @@
 <!--START::Edit Modal-->
 <div class="modal fade show d-block modal-inline-backdrop" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-md">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -40,52 +40,52 @@
         </div>
         <!--END::Item-->
 
-        <!--START::Variant Type-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'variant.variantType' | translate }}</label>
-          <select class="form-select" [ngModel]="selectedType()" (ngModelChange)="selectType($event)">
-            <option [ngValue]="null">{{ 'common.all' | translate }} ({{ variants.length }})</option>
-            @for (type of variantTypes; track type) {
-              @if (typeCount[type]) {
-                <option [ngValue]="type">{{ 'variant.type.' + type | translate }} ({{ typeCount[type] }})</option>
+        <!--START::Variant Type + Variant-->
+        <div class="row mb-3">
+          <div class="col-md-5">
+            <label class="form-label fw-semibold">{{ 'variant.variantType' | translate }}</label>
+            <select class="form-select" [ngModel]="selectedType()" (ngModelChange)="selectType($event)">
+              <option [ngValue]="null">{{ 'common.all' | translate }} ({{ variants.length }})</option>
+              @for (type of variantTypes; track type) {
+                @if (typeCount[type]) {
+                  <option [ngValue]="type">{{ 'variant.type.' + type | translate }} ({{ typeCount[type] }})</option>
+                }
               }
-            }
-          </select>
+            </select>
+          </div>
+          <div class="col-md-7">
+            <label class="form-label fw-semibold">{{ 'itemVariantMap.variant' | translate }} <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="editDraft.variantId">
+              <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
+              @for (v of filteredVariants(); track v.id) {
+                <option [ngValue]="v.id">{{ 'variant.type.' + v.variantTypeId | translate }} — {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}</option>
+              }
+            </select>
+          </div>
         </div>
-        <!--END::Variant Type-->
-
-        <!--START::Variant-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'itemVariantMap.variant' | translate }} <span class="text-danger">*</span></label>
-          <select class="form-select" [(ngModel)]="editDraft.variantId">
-            <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
-            @for (v of filteredVariants(); track v.id) {
-              <option [ngValue]="v.id">{{ 'variant.type.' + v.variantTypeId | translate }} — {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}</option>
-            }
-          </select>
-        </div>
-        <!--END::Variant-->
+        <!--END::Variant Type + Variant-->
 
         <hr class="my-3" />
         <p class="text-muted fs-7 mb-3">{{ 'itemVariantMap.pricingOptionalHint' | translate }}</p>
 
-        <!--START::Selling Price-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'itemVariantMap.sellingPrice' | translate }}</label>
-          <input type="number" class="form-control" min="0" step="0.01"
-            [placeholder]="'itemVariantMap.sellingPricePlaceholder' | translate"
-            [(ngModel)]="editDraft.sellingPrice" />
+        <!--START::Selling Price + Store-->
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">{{ 'itemVariantMap.sellingPrice' | translate }}</label>
+            <input type="number" class="form-control" min="0" step="0.01"
+              [(ngModel)]="editDraft.sellingPrice" />
+          </div>
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">{{ 'itemVariantMap.store' | translate }}</label>
+            <select class="form-select" [(ngModel)]="editDraft.storeId">
+              <option [ngValue]="null">{{ 'itemVariantMap.storePlaceholder' | translate }}</option>
+              @for (store of stores; track store.id) {
+                <option [ngValue]="store.id">{{ store.name }}</option>
+              }
+            </select>
+          </div>
         </div>
-        <!--END::Selling Price-->
-
-        <!--START::Store-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'itemVariantMap.store' | translate }}</label>
-          <input type="number" class="form-control"
-            [placeholder]="'itemVariantMap.storePlaceholder' | translate"
-            [(ngModel)]="editDraft.storeId" />
-        </div>
-        <!--END::Store-->
+        <!--END::Selling Price + Store-->
 
         <!--START::Description-->
         <div class="mb-3">
