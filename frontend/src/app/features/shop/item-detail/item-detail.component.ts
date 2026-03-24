@@ -119,12 +119,24 @@ export class ItemDetailComponent implements OnInit {
 
   get itemStoreItems(): StoreItem[] {
     const active = this.storeItems.filter(si => si.itemId === this.item.id && si.isActive !== false);
-    // Keep only the best (lowest) price entry per store, then sort by price
+
+    // Build variant price overrides: storeId → min sellingPrice from variant maps for this item
+    const variantOverrides = new Map<number, number>();
+    for (const vm of this.itemVariantMaps) {
+      if (vm.productItemId !== this.item.id || vm.isActive === false) continue;
+      if (vm.sellingPrice == null || vm.storeId == null) continue;
+      const cur = variantOverrides.get(vm.storeId);
+      if (cur === undefined || vm.sellingPrice < cur) variantOverrides.set(vm.storeId, vm.sellingPrice);
+    }
+
+    // Apply variant override per store, then keep best per store, sort by price
     const bestPerStore = new Map<number, StoreItem>();
     for (const si of active) {
+      const overridePrice = variantOverrides.get(si.storeId);
+      const effectiveSi = overridePrice !== undefined ? { ...si, sellingPrice: overridePrice } : si;
       const existing = bestPerStore.get(si.storeId);
-      if (!existing || si.sellingPrice < existing.sellingPrice)
-        bestPerStore.set(si.storeId, si);
+      if (!existing || effectiveSi.sellingPrice < existing.sellingPrice)
+        bestPerStore.set(si.storeId, effectiveSi);
     }
     return [...bestPerStore.values()].sort((a, b) => a.sellingPrice - b.sellingPrice);
   }

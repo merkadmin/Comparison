@@ -82,10 +82,28 @@ export class ShopByCategoryComponent implements OnInit {
 
   bestPriceMap = computed<Map<number, number>>(() => {
     const map = new Map<number, number>();
-    for (const si of this.storeItems()) {
-      if (si.isActive === false) continue;
-      const cur = map.get(si.itemId);
-      if (cur === undefined || si.sellingPrice < cur) map.set(si.itemId, si.sellingPrice);
+
+    // Build variant-level price map: itemId → min sellingPrice from variant maps
+    const variantPriceMap = new Map<number, number>();
+    for (const vm of this.itemVariantMaps()) {
+      if (vm.isActive === false || vm.sellingPrice == null || vm.storeId == null) continue;
+      const cur = variantPriceMap.get(vm.productItemId);
+      if (cur === undefined || vm.sellingPrice < cur) variantPriceMap.set(vm.productItemId, vm.sellingPrice);
+    }
+
+    // Collect all item IDs from store items
+    const itemIds = new Set(this.storeItems().map(si => si.itemId));
+    for (const itemId of itemIds) {
+      if (variantPriceMap.has(itemId)) {
+        map.set(itemId, variantPriceMap.get(itemId)!);
+      } else {
+        // Fallback: min store item price
+        for (const si of this.storeItems()) {
+          if (si.itemId !== itemId || si.isActive === false) continue;
+          const cur = map.get(itemId);
+          if (cur === undefined || si.sellingPrice < cur) map.set(itemId, si.sellingPrice);
+        }
+      }
     }
     return map;
   });
