@@ -36,7 +36,7 @@ export class ShopByCategoryComponent implements OnInit {
 
   // ── Icon config signals ────────────────────────────────────────────────────
   cartIcon    = this.iconConfig.iconSignal('global.cart',    'basket');
-  compareIcon = this.iconConfig.iconSignal('global.compare', 'arrows-circle');
+  compareIcon = this.iconConfig.iconSignal('global.compare', 'kanban');
   favoriteIcon = this.iconConfig.iconSignal('global.favorite','heart');
 
   // ── State ──────────────────────────────────────────────────────────────────

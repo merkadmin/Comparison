@@ -21,7 +21,7 @@ export class ItemDetailComponent {
   private iconConfig = inject(IconConfigService);
 
   cartIcon = this.iconConfig.iconSignal('global.cart', 'basket');
-  compareIcon = this.iconConfig.iconSignal('global.compare', 'data');
+  compareIcon = this.iconConfig.iconSignal('global.compare', 'kanban');
   favoriteIcon = this.iconConfig.iconSignal('global.favorite', 'heart');
 
   @Input() item!: Item;
