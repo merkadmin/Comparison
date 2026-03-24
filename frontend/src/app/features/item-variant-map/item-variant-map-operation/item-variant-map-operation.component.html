@@ -4,10 +4,26 @@
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title fw-bold">
+        <h5 class="modal-title fw-bold me-auto">
           {{ (isCreating ? 'itemVariantMap.addNew' : 'common.edit') | translate }}
         </h5>
-        <button type="button" class="btn-close" [disabled]="saving" (click)="closed.emit()"></button>
+        <div class="d-flex align-items-center gap-2 me-2">
+          <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+          @if (isCreating) {
+            <button type="button" class="btn btn-sm btn-light-primary"
+              [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
+              (click)="savedAndNew.emit()">
+              @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+              {{ 'common.saveAndNew' | translate }}
+            </button>
+          }
+          <button type="button" class="btn btn-sm btn-primary"
+            [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
+            (click)="saved.emit()">
+            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+            {{ 'common.save' | translate }}
+          </button>
+        </div>
       </div>
 
       <div class="modal-body">
@@ -24,27 +40,19 @@
         </div>
         <!--END::Item-->
 
-        <!--START::Variant Type Filter-->
-        <div class="mb-2">
+        <!--START::Variant Type-->
+        <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'variant.variantType' | translate }}</label>
-          <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-sm"
-              [class.btn-primary]="selectedType() === null"
-              [class.btn-light]="selectedType() !== null"
-              (click)="selectType(null)">
-              {{ 'common.all' | translate }}
-            </button>
+          <select class="form-select" [ngModel]="selectedType()" (ngModelChange)="selectType($event)">
+            <option [ngValue]="null">{{ 'common.all' | translate }} ({{ variants.length }})</option>
             @for (type of variantTypes; track type) {
-              <button type="button" class="btn btn-sm"
-                [class.btn-primary]="selectedType() === type"
-                [class.btn-light]="selectedType() !== type"
-                (click)="selectType(type)">
-                {{ 'variant.type.' + type | translate }}
-              </button>
+              @if (typeCount[type]) {
+                <option [ngValue]="type">{{ 'variant.type.' + type | translate }} ({{ typeCount[type] }})</option>
+              }
             }
-          </div>
+          </select>
         </div>
-        <!--END::Variant Type Filter-->
+        <!--END::Variant Type-->
 
         <!--START::Variant-->
         <div class="mb-3">
@@ -52,7 +60,7 @@
           <select class="form-select" [(ngModel)]="editDraft.variantId">
             <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
             @for (v of filteredVariants(); track v.id) {
-              <option [ngValue]="v.id">{{ v.variantTypeId }} — {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}</option>
+              <option [ngValue]="v.id">{{ 'variant.type.' + v.variantTypeId | translate }} — {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}</option>
             }
           </select>
         </div>
@@ -97,24 +105,6 @@
         </div>
         <!--END::About-->
 
-      </div>
-
-      <div class="modal-footer gap-2">
-        <button type="button" class="btn btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
-        @if (isCreating) {
-          <button type="button" class="btn btn-light-primary"
-            [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
-            (click)="savedAndNew.emit()">
-            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
-            {{ 'common.saveAndNew' | translate }}
-          </button>
-        }
-        <button type="button" class="btn btn-primary"
-          [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
-          (click)="saved.emit()">
-          @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
-          {{ 'common.save' | translate }}
-        </button>
       </div>
 
     </div>

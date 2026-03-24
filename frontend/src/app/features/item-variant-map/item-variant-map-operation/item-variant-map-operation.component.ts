@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
@@ -9,7 +8,7 @@ import { ProductItemVariant, VariantType, VARIANT_TYPES } from '../../../core/mo
 @Component({
   selector: 'app-item-variant-map-operation',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [FormsModule, TranslatePipe],
   templateUrl: './item-variant-map-operation.component.html',
 })
 export class ItemVariantMapOperationComponent {
@@ -25,6 +24,14 @@ export class ItemVariantMapOperationComponent {
 
   readonly variantTypes = VARIANT_TYPES;
   selectedType = signal<VariantType | null>(null);
+
+  get typeCount(): Record<string, number> {
+    const counts: Record<string, number> = {};
+    for (const v of this.variants) {
+      counts[v.variantTypeId] = (counts[v.variantTypeId] ?? 0) + 1;
+    }
+    return counts;
+  }
 
   filteredVariants = computed<ProductItemVariant[]>(() => {
     const type = this.selectedType();
