@@ -154,10 +154,10 @@
     }
 
     <button class="btn btn-sm flex-fill"
-      [class.btn-light-info]="!inCompare()"
-      [class.btn-info]="inCompare()"
+      [class.btn-light-success]="!inCompare()"
+      [class.btn-success]="inCompare()"
       (click)="compareToggled.emit(item.id!)">
-      <i class="ki-duotone ki-arrows-circle fs-4">
+      <i class="ki-duotone ki-arrows-circle fs-4 text-success">
         <span class="path1"></span><span class="path2"></span>
       </i>
       {{ 'item.compare' | translate }}

@@ -123,9 +123,9 @@
                   <!--END::Add to Cart-->
 
                   <!--START::Compare-->
-                  <button class="btn btn-sm flex-fill" [class.btn-light-info]="!inCompare(item.id!)"
-                    [class.btn-info]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
-                    <i class="ki-duotone ki-arrows-circle fs-1">
+                  <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCompare(item.id!)"
+                    [class.btn-success]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
+                    <i class="ki-duotone ki-arrows-circle fs-1 text-success">
                       <span class="path1"></span><span class="path2"></span>
                     </i>
                     {{ 'item.compare' | translate }}
@@ -302,9 +302,9 @@
                     </button>
                     <!--END::Add to Cart-->
                     <!--START::Compare-->
-                    <button class="btn btn-sm" [class.btn-light-info]="!inCompare(item.id!)"
-                      [class.btn-info]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
-                      <i class="ki-duotone ki-arrows-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
+                    <button class="btn btn-sm" [class.btn-light-success]="!inCompare(item.id!)"
+                      [class.btn-success]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
+                      <i class="ki-duotone ki-arrows-circle fs-5 text-success"><span class="path1"></span><span class="path2"></span></i>
                       {{ 'item.compare' | translate }}
                     </button>
                     <!--END::Compare-->
