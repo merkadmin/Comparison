@@ -6,12 +6,12 @@ using PriceRadar.DAL.Documents;
 
 namespace PriceRadar.DAL.Repositories;
 
-public class ItemRepository : BaseRepository<Item, ItemDocument>, IItemRepository
+public class ProductItemRepository : BaseRepository<ProductItem, ProductItemDocument>, IProductItemRepository
 {
-    public ItemRepository(MongoDbContext context)
-        : base(context, context.Items, "items", ItemDocument.FromModel) { }
+    public ProductItemRepository(MongoDbContext context)
+        : base(context, context.ProductItems, "items", ProductItemDocument.FromModel) { }
 
-    public async Task<IEnumerable<Item>> GetByCategoryAsync(long categoryId)
+    public async Task<IEnumerable<ProductItem>> GetByCategoryAsync(long categoryId)
     {
         // Collect the selected category + all its descendants so items in
         // subcategories are included when a parent category is selected.
@@ -22,7 +22,7 @@ public class ItemRepository : BaseRepository<Item, ItemDocument>, IItemRepositor
         var categoryIds = new List<long> { categoryId };
         CollectDescendants(categoryId, allCategories, categoryIds);
 
-        var filter = Builders<ItemDocument>.Filter.In(i => i.ItemCategoryId, categoryIds);
+        var filter = Builders<ProductItemDocument>.Filter.In(i => i.ItemCategoryId, categoryIds);
         var docs = await _collection.Find(filter).ToListAsync();
         return docs.Select(d => d.ToModel());
     }
@@ -36,7 +36,7 @@ public class ItemRepository : BaseRepository<Item, ItemDocument>, IItemRepositor
         }
     }
 
-    public async Task<IEnumerable<Item>> GetByBrandAsync(long brandId)
+    public async Task<IEnumerable<ProductItem>> GetByBrandAsync(long brandId)
     {
         var docs = await _collection.Find(i => i.BrandId == brandId).ToListAsync();
         return docs.Select(d => d.ToModel());

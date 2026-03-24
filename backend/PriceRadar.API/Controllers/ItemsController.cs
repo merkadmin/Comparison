@@ -5,12 +5,12 @@ using PriceRadar.Core.Models;
 
 namespace PriceRadar.API.Controllers;
 
-public class ItemsController : BaseController<Item, IItemRepository>
+public class ItemsController : BaseController<ProductItem, IProductItemRepository>
 {
 	private readonly IItemBrandRepository _brands;
 	private readonly IBaseRepository<ItemCategory> _categories;
 
-	public ItemsController(IItemRepository repo, IItemBrandRepository brands, IBaseRepository<ItemCategory> categories)
+	public ItemsController(IProductItemRepository repo, IItemBrandRepository brands, IBaseRepository<ItemCategory> categories)
 		: base(repo)
 	{
 		_brands     = brands;

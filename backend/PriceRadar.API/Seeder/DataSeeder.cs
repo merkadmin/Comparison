@@ -46,7 +46,7 @@ public class DataSeeder
 		await Task.WhenAll(
 			_context.ItemCategories.Database.GetCollection<MongoDB.Bson.BsonDocument>("ItemCategory").UpdateManyAsync(missing, defaults),
 			_context.ItemBrands.Database.GetCollection<MongoDB.Bson.BsonDocument>("ItemBrand").UpdateManyAsync(missing, defaults),
-			_context.Items.Database.GetCollection<MongoDB.Bson.BsonDocument>("ProductItem").UpdateManyAsync(missing, defaults),
+			_context.ProductItems.Database.GetCollection<MongoDB.Bson.BsonDocument>("ProductItem").UpdateManyAsync(missing, defaults),
 			_context.ItemPackages.Database.GetCollection<MongoDB.Bson.BsonDocument>("ItemPackage").UpdateManyAsync(missing, defaults),
 			_context.Stores.Database.GetCollection<MongoDB.Bson.BsonDocument>("stores").UpdateManyAsync(missing, defaults),
 			_context.TableNames.Database.GetCollection<MongoDB.Bson.BsonDocument>("TableName_s").UpdateManyAsync(missing, defaults)
@@ -177,7 +177,7 @@ public class DataSeeder
 	private async Task SeedItemsAsync()
 	{
 		// Skip if the collection already has data (idempotent guard)
-		if (await _context.Items.CountDocumentsAsync(_ => true) > 0) return;
+		if (await _context.ProductItems.CountDocumentsAsync(_ => true) > 0) return;
 
 		// Load already-seeded categories and brands so we can reference their IDs
 		var categories = await _context.ItemCategories.Find(_ => true).ToListAsync();
@@ -190,7 +190,7 @@ public class DataSeeder
 			?? throw new InvalidOperationException($"[Seeder] Brand '{name}' not found. Drop the ItemBrand collection and restart.");
 
 		// Each item is linked to a brand and a category via their long IDs (foreign keys)
-		var items = new List<ItemDocument>
+		var items = new List<ProductItemDocument>
 		{
 			new()
 			{
@@ -262,7 +262,7 @@ public class DataSeeder
 		foreach (var item in items)
 			item.Id = await _context.GetNextSequenceAsync("items");
 
-		await _context.Items.InsertManyAsync(items);
+		await _context.ProductItems.InsertManyAsync(items);
 		Console.WriteLine($"[Seeder] Inserted {items.Count} items.");
 	}
 
@@ -273,7 +273,7 @@ public class DataSeeder
 		if (await _context.ItemPackages.CountDocumentsAsync(_ => true) > 0) return;
 
 		// Load already-seeded items so we can reference their IDs inside packages
-		var items = await _context.Items.Find(_ => true).ToListAsync();
+		var items = await _context.ProductItems.Find(_ => true).ToListAsync();
 
 		// Helper function to look up an item's long ID by a name substring
 		long ItemId(string name) => items.FirstOrDefault(i => i.Name.Contains(name))?.Id

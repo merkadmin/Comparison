@@ -20,10 +20,10 @@ public abstract class BaseRepository<TModel, TDoc> : IBaseRepository<TModel>
 		string sequenceName,
 		Func<TModel, TDoc> fromModel)
 	{
-		_context      = context;
-		_collection   = collection;
+		_context = context;
+		_collection = collection;
 		_sequenceName = sequenceName;
-		_fromModel    = fromModel;
+		_fromModel = fromModel;
 	}
 
 	private static FilterDefinition<TDoc> NotDeleted =>
@@ -32,16 +32,16 @@ public abstract class BaseRepository<TModel, TDoc> : IBaseRepository<TModel>
 	private static FilterDefinition<TDoc> ActiveOnly =>
 		Builders<TDoc>.Filter.And(
 			Builders<TDoc>.Filter.Eq("IsDeleted", false),
-			Builders<TDoc>.Filter.Eq("IsActive",  true)
+			Builders<TDoc>.Filter.Eq("IsActive", true)
 		);
 
 	private async Task LogAsync(string action, long? entityId = null) =>
 		await _context.Diagnostics.InsertOneAsync(new DiagnosticsDocument
 		{
-			Id        = await _context.GetNextSequenceAsync("diagnostics"),
+			Id = await _context.GetNextSequenceAsync("diagnostics"),
 			TableName = EntityName,
-			Action    = action,
-			EntityId  = entityId,
+			Action = action,
+			EntityId = entityId,
 			Timestamp = DateTime.UtcNow,
 		});
 
@@ -55,7 +55,7 @@ public abstract class BaseRepository<TModel, TDoc> : IBaseRepository<TModel>
 	public async Task<TModel?> GetByIdAsync(long id)
 	{
 		var filter = Builders<TDoc>.Filter.And(Builders<TDoc>.Filter.Eq("_id", id), ActiveOnly);
-		var doc    = await _collection.Find(filter).FirstOrDefaultAsync();
+		var doc = await _collection.Find(filter).FirstOrDefaultAsync();
 		await LogAsync("Search", id);
 		return doc is null ? default : doc.ToModel();
 	}
@@ -63,7 +63,7 @@ public abstract class BaseRepository<TModel, TDoc> : IBaseRepository<TModel>
 	public async Task<TModel> CreateAsync(TModel entity)
 	{
 		var doc = _fromModel(entity);
-		doc.Id  = await _context.GetNextSequenceAsync(_sequenceName);
+		doc.Id = await _context.GetNextSequenceAsync(_sequenceName);
 		await _collection.InsertOneAsync(doc);
 		await LogAsync("Insert", doc.Id);
 		return doc.ToModel();
@@ -72,7 +72,7 @@ public abstract class BaseRepository<TModel, TDoc> : IBaseRepository<TModel>
 	public async Task UpdateAsync(long id, TModel entity)
 	{
 		var doc = _fromModel(entity);
-		doc.Id  = id;
+		doc.Id = id;
 		await _collection.ReplaceOneAsync(Builders<TDoc>.Filter.Eq("_id", id), doc);
 		await LogAsync("Update", id);
 	}
@@ -106,7 +106,7 @@ public abstract class BaseRepository<TModel, TDoc> : IBaseRepository<TModel>
 	public async Task SetActiveManyAsync(IEnumerable<long> ids, bool isActive)
 	{
 		var idList = ids.ToList();
-		var filter  = Builders<TDoc>.Filter.And(
+		var filter = Builders<TDoc>.Filter.And(
 			Builders<TDoc>.Filter.In("_id", idList),
 			NotDeleted);
 		await _collection.UpdateManyAsync(filter,

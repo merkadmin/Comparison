@@ -43,17 +43,17 @@ public static class ExcelService
 		return ms.ToArray();
 	}
 
-	public static List<(Item Item, string? BrandName, string? CategoryName)> ParseItems(Stream stream)
+	public static List<(ProductItem Item, string? BrandName, string? CategoryName)> ParseItems(Stream stream)
 	{
 		using var wb = new XLWorkbook(stream);
 		var ws = wb.Worksheet(1);
-		var list = new List<(Item, string?, string?)>();
+		var list = new List<(ProductItem, string?, string?)>();
 		int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
 		for (int r = 2; r <= lastRow; r++)
 		{
 			var name = ws.Cell(r, 1).GetString().Trim();
 			if (string.IsNullOrEmpty(name)) continue;
-			list.Add((new Item
+			list.Add((new ProductItem
 			{
 				Name             = name,
 				Description      = NullIfEmpty(ws.Cell(r, 2).GetString()),
@@ -148,7 +148,7 @@ public static class ExcelService
 
 	// ── Items ─────────────────────────────────────────────────────────────────
 
-	public static byte[] ExportItemList(IEnumerable<Item> items, IEnumerable<ItemBrand> brands, IEnumerable<ItemCategory> categories)
+	public static byte[] ExportItemList(IEnumerable<ProductItem> items, IEnumerable<ItemBrand> brands, IEnumerable<ItemCategory> categories)
 	{
 		var brandMap    = brands.ToDictionary(b => b.Id, b => b.Name);
 		var categoryMap = categories.ToDictionary(c => c.Id, c => c.Name.En);

@@ -20,8 +20,11 @@ public class MongoDbContext
 	public IMongoCollection<ItemBrandDocument> ItemBrands =>
 		_database.GetCollection<ItemBrandDocument>("ItemBrand");
 
-	public IMongoCollection<ItemDocument> Items =>
-		_database.GetCollection<ItemDocument>("ProductItem");
+	public IMongoCollection<ProductItemDocument> ProductItems =>
+		_database.GetCollection<ProductItemDocument>("ProductItem");
+
+	public IMongoCollection<ProductItemVariantDocument> ProductItemVariants =>
+		_database.GetCollection<ProductItemVariantDocument>("ProductItemVariant");
 
 	public IMongoCollection<ItemPackageDocument> ItemPackages =>
 		_database.GetCollection<ItemPackageDocument>("ItemPackage");
