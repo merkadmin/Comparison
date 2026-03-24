@@ -94,6 +94,17 @@
   }
 }
 
+// ── Price rows ───────────────────────────────────────────────────────────────
+
+.price-row {
+  transition: background 0.15s;
+
+  &--selected {
+    background: rgba(var(--bs-success-rgb), 0.1) !important;
+    outline: 1px solid rgba(var(--bs-success-rgb), 0.35);
+  }
+}
+
 // ── Lightbox ─────────────────────────────────────────────────────────────────
 
 .item-lightbox {

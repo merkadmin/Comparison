@@ -86,6 +86,51 @@ export class ShopByCategoryComponent implements OnInit {
     return cat.name[lang] || cat.name['en'];
   }
 
+  cartPickerItemId = signal<number | null>(null);
+  // pending selections per item: itemId -> Set of storeItem IDs checked but not yet confirmed
+  cartPending      = signal<Map<number, Set<number>>>(new Map());
+
+  getItemStoreItems(itemId: number): StoreItem[] {
+    const active = this.storeItems().filter(si => si.itemId === itemId && si.isActive !== false);
+    const best = new Map<number, StoreItem>();
+    for (const si of active) {
+      const cur = best.get(si.storeId);
+      if (!cur || si.sellingPrice < cur.sellingPrice) best.set(si.storeId, si);
+    }
+    return [...best.values()].sort((a, b) => a.sellingPrice - b.sellingPrice);
+  }
+
+  getStoreName(storeId: number): string {
+    return this.stores().find(s => s.id === storeId)?.name ?? String(storeId);
+  }
+
+  isStorePending(itemId: number, siId: number): boolean {
+    return this.cartPending().get(itemId)?.has(siId) ?? false;
+  }
+
+  pendingCount(itemId: number): number {
+    return this.cartPending().get(itemId)?.size ?? 0;
+  }
+
+  toggleStorePending(itemId: number, siId: number): void {
+    this.cartPending.update(m => {
+      const n = new Map(m);
+      const s = new Set(n.get(itemId) ?? []);
+      s.has(siId) ? s.delete(siId) : s.add(siId);
+      n.set(itemId, s);
+      return n;
+    });
+  }
+
+  cartButtonClick(itemId: number): void {
+    if (this.inCart(itemId)) {
+      this.cartPending.update(m => { const n = new Map(m); n.delete(itemId); return n; });
+      this.userActivity.toggleCart(itemId);
+    } else if (this.pendingCount(itemId) > 0) {
+      this.userActivity.toggleCart(itemId);
+    }
+  }
+
   getBestPrice(itemId: number): number | null { return this.bestPriceMap().get(itemId) ?? null; }
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }

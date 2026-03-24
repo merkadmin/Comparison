@@ -180,25 +180,56 @@
                 <!--END::Card Info-->
 
                 <!--START::User Actions-->
-                <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
-                  <button class="btn btn-sm flex-fill"
-                    [class.btn-light-success]="!inCart(item.id!)"
-                    [class.btn-success]="inCart(item.id!)"
-                    (click)="toggleCart(item.id!); $event.stopPropagation()">
-                    <i class="ki-duotone ki-basket fs-1">
-                      <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                    </i>
-                    {{ (inCart(item.id!) ? 'item.removeFromCart' : 'item.addToCart') | translate }}
-                  </button>
-                  <button class="btn btn-sm flex-fill"
-                    [class.btn-light-info]="!inCompare(item.id!)"
-                    [class.btn-info]="inCompare(item.id!)"
-                    (click)="toggleCompare(item.id!); $event.stopPropagation()">
-                    <i class="ki-duotone ki-arrows-circle fs-1">
-                      <span class="path1"></span><span class="path2"></span>
-                    </i>
-                    {{ 'item.compare' | translate }}
-                  </button>
+                <div class="card-footer bg-transparent border-top-0 d-flex flex-column gap-2 p-3" (click)="$event.stopPropagation()">
+                  <div class="d-flex gap-2">
+                    <button class="btn btn-sm flex-fill"
+                      [class.btn-success]="inCart(item.id!)"
+                      [class.btn-primary]="!inCart(item.id!) && pendingCount(item.id!) > 0"
+                      [class.btn-light-success]="!inCart(item.id!) && pendingCount(item.id!) === 0"
+                      [disabled]="!inCart(item.id!) && pendingCount(item.id!) === 0"
+                      (click)="cartButtonClick(item.id!)">
+                      <i class="ki-duotone ki-basket fs-1">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                      </i>
+                      @if (inCart(item.id!)) {
+                        {{ 'item.removeFromCart' | translate }}
+                      } @else if (pendingCount(item.id!) > 0) {
+                        {{ 'item.addToCart' | translate }} ({{ pendingCount(item.id!) }})
+                      } @else {
+                        {{ 'item.addToCart' | translate }}
+                      }
+                    </button>
+                    <button class="btn btn-sm flex-fill"
+                      [class.btn-light-info]="!inCompare(item.id!)"
+                      [class.btn-info]="inCompare(item.id!)"
+                      (click)="toggleCompare(item.id!)">
+                      <i class="ki-duotone ki-arrows-circle fs-1">
+                        <span class="path1"></span><span class="path2"></span>
+                      </i>
+                      {{ 'item.compare' | translate }}
+                    </button>
+                  </div>
+
+                  <!--Store Prices (always visible)-->
+                  @if (getItemStoreItems(item.id!).length > 0) {
+                    <div class="border rounded p-2 d-flex flex-column gap-1">
+                      @for (si of getItemStoreItems(item.id!); track si.id) {
+                        <div class="d-flex align-items-center justify-content-between px-2 py-1 rounded hover-bg-light cursor-pointer"
+                          (click)="!inCart(item.id!) && toggleStorePending(item.id!, si.id!)">
+                          <span class="fw-semibold text-gray-800 fs-7">{{ getStoreName(si.storeId) }}</span>
+                          <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold text-primary fs-7">{{ si.sellingPrice | number:'1.2-2' }}</span>
+                            <div class="form-check form-check-sm form-check-custom form-check-solid">
+                              <input class="form-check-input" type="checkbox"
+                                [checked]="isStorePending(item.id!, si.id!)"
+                                [disabled]="inCart(item.id!)"
+                                (click)="$event.stopPropagation(); !inCart(item.id!) && toggleStorePending(item.id!, si.id!)" />
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
                 <!--END::User Actions-->
 

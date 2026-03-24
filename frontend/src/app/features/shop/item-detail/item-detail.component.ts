@@ -28,8 +28,29 @@ export class ItemDetailComponent {
   @Output() cartToggled     = new EventEmitter<number>();
   @Output() compareToggled  = new EventEmitter<number>();
 
-  activeIdx    = signal(0);
-  lightboxIdx  = signal<number | null>(null);
+  activeIdx        = signal(0);
+  lightboxIdx      = signal<number | null>(null);
+  selectedStoreIds = signal<Set<number>>(new Set());
+
+  toggleStoreSelection(si: StoreItem): void {
+    this.selectedStoreIds.update(s => {
+      const n = new Set(s);
+      n.has(si.id!) ? n.delete(si.id!) : n.add(si.id!);
+      return n;
+    });
+  }
+
+  isStoreSelected(si: StoreItem): boolean { return this.selectedStoreIds().has(si.id!); }
+
+  confirmCart(): void {
+    if (this.selectedStoreIds().size === 0) return;
+    if (!this.inCart()) this.cartToggled.emit(this.item.id!);
+  }
+
+  removeFromCart(): void {
+    this.selectedStoreIds.set(new Set());
+    this.cartToggled.emit(this.item.id!);
+  }
 
   openLightbox(): void          { this.lightboxIdx.set(this.activeIdx()); }
   closeLightbox(): void         { this.lightboxIdx.set(null); }
