@@ -169,20 +169,6 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     this.router.navigate(['/shop/by-category', cat.id]);
   }
 
-  goBack(): void {
-    this.searchQuery.set('');
-    const stack = this.navStack();
-    if (this.selectedLeaf()) {
-      stack.length > 0
-        ? this.router.navigate(['/shop/by-category', stack[stack.length - 1].id])
-        : this.router.navigate(['/shop']);
-    } else {
-      stack.length > 1
-        ? this.router.navigate(['/shop/by-category', stack[stack.length - 2].id])
-        : this.router.navigate(['/shop']);
-    }
-  }
-
   navigateTo(index: number): void {
     this.router.navigate(['/shop/by-category', this.navStack()[index].id]);
   }

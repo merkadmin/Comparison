@@ -1,5 +1,17 @@
 <!--START::Breadcrumb-->
-<div class="d-flex flex-column me-auto">
+<div class="d-flex align-items-center gap-2 me-auto">
+
+  <!--START::Back Arrow-->
+  @if (navStack.length > 0 || selectedLeaf) {
+    <button class="btn btn-icon btn-light btn-sm flex-shrink-0" (click)="goBack()">
+      <i class="ki-duotone ki-arrow-left fs-2">
+        <span class="path1"></span><span class="path2"></span>
+      </i>
+    </button>
+  }
+  <!--END::Back Arrow-->
+
+  <div class="d-flex flex-column">
   <div class="d-flex align-items-center gap-2 flex-nowrap overflow-hidden">
 
     @if (navStack.length > 0 || selectedLeaf) {
@@ -45,5 +57,7 @@
   } @else {
     <h3 class="card-title fw-bold text-gray-800 mb-0 mt-1 fs-1">{{ localize(selectedLeaf) }}</h3>
   }
+  </div>
+
 </div>
 <!--END::Breadcrumb-->

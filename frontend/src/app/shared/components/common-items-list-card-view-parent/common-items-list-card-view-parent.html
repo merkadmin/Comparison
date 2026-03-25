@@ -3,25 +3,11 @@
     <!--START::Header-->
     <div class="card-header border-0 pt-6 pb-4 d-flex align-items-center gap-3 flex-wrap">
 
-        <!--START::Back Arrow-->
-        @if (navStack().length > 0 || selectedLeaf()) {
-        <button 
-            class="btn btn-icon btn-light btn-sm me-1" 
-            (click)="goBack()">
-            <i 
-                class="ki-duotone ki-arrow-left fs-2">
-                <span 
-                    class="path1"></span><span class="path2">
-                </span>
-            </i>
-        </button>
-        }
-        <!--END::Back Arrow-->
-
         <!--START::Breadcrumb-->
         <app-common-breadcrumb
           [navStack]="navStack()"
           [selectedLeaf]="selectedLeaf()"
+          (backClicked)="searchQuery.set('')"
           (rootClicked)="goToRoot()"
           (crumbClicked)="navigateTo($event)" />
         <!--END::Breadcrumb-->
