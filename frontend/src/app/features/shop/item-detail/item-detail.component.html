@@ -100,10 +100,10 @@
         <!--END::Store Prices-->
 
         <div class="d-flex flex-column gap-2">
-          @for (si of itemStoreItems; track si.id) {
-          <div class="price-row d-flex align-items-center justify-content-between px-3 py-2 rounded"
+          @for (si of itemStoreItems; track si.storeId) {
+          <div class="price-row d-flex align-items-center justify-content-between px-3 py-2 rounded cursor-pointer"
             [class.price-row--selected]="isStoreSelected(si)" [class.bg-light]="!isStoreSelected(si)"
-            (click)="!inCart() && toggleStoreSelection(si)">
+            (click)="onStoreRowClick(si)">
             <span class="fw-semibold text-gray-800 fs-3">{{ getStoreName(si.storeId) }}</span>
             <div class="d-flex align-items-center gap-2">
               @let rowPrice = getStoreVariantPrice(si.storeId);
@@ -113,7 +113,7 @@
               </span>
               <div class="form-check form-check-sm form-check-custom form-check-solid form-check-solid ms-2">
                 <input class="form-check-input" type="radio" [checked]="isStoreSelected(si)" [disabled]="inCart()"
-                  (click)="$event.stopPropagation(); !inCart() && toggleStoreSelection(si)" />
+                  (click)="$event.stopPropagation(); onStoreRowClick(si)" />
               </div>
             </div>
           </div>

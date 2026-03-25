@@ -156,6 +156,32 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     return this.bestPriceMap().get(itemId)?.sellingPrice ?? null;
   }
   
+  // ── Card Lightbox ───────────────────────────────────────────────────────────
+  lightboxItem = signal<Item | null>(null);
+  lightboxIdx  = signal<number>(0);
+
+  getItemImages(item: Item): string[] {
+    if (item.images?.length) return item.images.map(p => this.imageService.resolveUrl(p));
+    if (item.imageUrl) return [item.imageUrl];
+    return [];
+  }
+
+  openLightbox(item: Item, idx = 0): void {
+    if (!this.getItemImages(item).length) return;
+    this.lightboxItem.set(item);
+    this.lightboxIdx.set(idx);
+  }
+
+  closeLightbox(): void { this.lightboxItem.set(null); }
+
+  lightboxNext(): void {
+    const max = this.getItemImages(this.lightboxItem()!).length - 1;
+    this.lightboxIdx.update(i => Math.min(i + 1, max));
+  }
+
+  lightboxPrev(): void { this.lightboxIdx.update(i => Math.max(i - 1, 0)); }
+  lightboxSelect(i: number): void { this.lightboxIdx.set(i); }
+
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
   inCart(id: number): boolean { return this.userActivity.cartIds().has(id); }

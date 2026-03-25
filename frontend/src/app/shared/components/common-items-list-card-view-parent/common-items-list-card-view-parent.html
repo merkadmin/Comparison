@@ -98,13 +98,12 @@
         <div class="row g-4">
             @for (item of filteredItems(); track item.id) {
             <div [class]="colClass()">
-                <div 
-                    class="item-card card h-100 shadow-sm border-0 cursor-pointer" 
-                    (click)="openDetail(item)">
+                <div class="item-card card h-100 shadow-sm border-0">
 
                     <!--START::Card Image-->
                     <div
-                        class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center position-relative">
+                        class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center position-relative cursor-pointer"
+                        (click)="openLightbox(item, 0)">
                         @if (item.images && item.images.length > 0) {
                         <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
                         @if (item.images.length > 1) {
@@ -161,39 +160,19 @@
                     </div>
                     <!--END::Card Info-->
 
-                    <div class="card-footer bg-transparent border-top-0 d-flex flex-column gap-2 p-3"
-                        (click)="$event.stopPropagation()">
+                    <div class="card-footer bg-transparent border-top-0 d-flex flex-column gap-2 p-3">
 
                         <!--START::User Actions-->
                         <div class="d-flex gap-2">
 
-                            <!--START::Cart Button-->
-                            <button class="btn btn-sm flex-fill" [class.btn-success]="inCart(item.id!)"
-                                [class.btn-primary]="!inCart(item.id!)"
-                                [disabled]="!inCart(item.id!) && pendingCount(item.id!) === 0"
-                                (click)="cartButtonClick(item.id!)">
-                                <i class="ki-duotone ki-{{ cartIcon() }} fs-1">
-                                    <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-                                </i>
-                                @if (inCart(item.id!)) {
-                                {{ 'item.removeFromCart' | translate }}
-                                } @else if (pendingCount(item.id!) > 0) {
-                                {{ 'item.addToCart' | translate }} ({{ pendingCount(item.id!) }})
-                                } @else {
-                                {{ 'item.addToCart' | translate }}
-                                }
-                            </button>
-                            <!--END::Cart Button-->
-
-                            <!--START::Compare Button-->
-                            <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCompare(item.id!)"
-                                [class.btn-success]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
+                            <!--START::Radar Button-->
+                            <button class="btn btn-sm btn-primary flex-fill" (click)="openDetail(item)">
                                 <i class="ki-duotone ki-{{ compareIcon() }} fs-1">
                                     <span class="path1"></span><span class="path2"></span>
                                 </i>
-                                {{ 'item.compare' | translate }}
+                                Radar
                             </button>
-                            <!--END::Compare Button-->
+                            <!--END::Radar Button-->
 
                         </div>
                         <!--END::User Actions-->
@@ -202,8 +181,7 @@
                         @if (getItemStoreItems(item.id!).length > 0) {
                         <div class="border rounded p-2 d-flex flex-column gap-1">
                             @for (si of getItemStoreItems(item.id!); track si.id) {
-                            <div class="d-flex align-items-center justify-content-between px-2 py-1 rounded hover-bg-light cursor-pointer"
-                                (click)="!inCart(item.id!) && toggleStorePending(item.id!, si.id!)">
+                            <div class="d-flex align-items-center justify-content-between px-2 py-1 rounded">
 
                                 <!--START::Store Name-->
                                 <span class="fw-semibold text-gray-800 fs-7">
@@ -211,25 +189,12 @@
                                 </span>
                                 <!--END::Store Name-->
 
-                                <!--START::Selling Price Selection-->
-                                <div class="d-flex align-items-center gap-2">
+                                <!--START::Selling Price-->
+                                <span class="fw-bold text-primary fs-7">
+                                    {{ si.sellingPrice | number:'1.2-2' }}
+                                </span>
+                                <!--END::Selling Price-->
 
-                                    <!--START::Selling Price-->
-                                    <span class="fw-bold text-primary fs-7">
-                                        {{ si.sellingPrice | number:'1.2-2' }}
-                                    </span>
-                                    <!--END::Selling Price-->
-
-                                    <!--START::Store Pending Checkbox-->
-                                    <div class="form-check form-check-sm form-check-custom form-check-solid">
-                                        <input class="form-check-input" type="checkbox"
-                                            [checked]="isStorePending(item.id!, si.id!)" [disabled]="inCart(item.id!)"
-                                            (click)="$event.stopPropagation(); !inCart(item.id!) && toggleStorePending(item.id!, si.id!)" />
-                                    </div>
-                                    <!--END::Store Pending Checkbox-->
-
-                                </div>
-                                <!--END::Selling Price Selection-->
                             </div>
                             }
                         </div>
@@ -249,4 +214,51 @@
 
     </div>
 </div>
+
+<!--START::Card Lightbox-->
+@if (lightboxItem() !== null) {
+@let lbImages = getItemImages(lightboxItem()!);
+<div class="card-lightbox" (click)="closeLightbox()">
+
+  <!--Close-->
+  <button class="card-lightbox__close btn btn-icon btn-sm btn-light"
+    (click)="closeLightbox(); $event.stopPropagation()">
+    <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
+  </button>
+
+  <!--Prev-->
+  @if (lightboxIdx() > 0) {
+  <button class="card-lightbox__nav card-lightbox__nav--prev btn btn-icon btn-sm btn-light"
+    (click)="lightboxPrev(); $event.stopPropagation()">
+    <i class="ki-duotone ki-arrow-left fs-2"><span class="path1"></span><span class="path2"></span></i>
+  </button>
+  }
+
+  <!--Content-->
+  <div class="card-lightbox__content" (click)="$event.stopPropagation()">
+    <img [src]="lbImages[lightboxIdx()]" [alt]="lightboxItem()!.name" class="card-lightbox__img" />
+
+    @if (lbImages.length > 1) {
+    <div class="card-lightbox__thumbs d-flex gap-2">
+      @for (img of lbImages; track img; let i = $index) {
+      <div class="card-lightbox__thumb" [class.card-lightbox__thumb--active]="lightboxIdx() === i"
+        (click)="lightboxSelect(i)">
+        <img [src]="img" [alt]="lightboxItem()!.name + ' ' + (i + 1)" class="card-lightbox__thumb-img" />
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <!--Next-->
+  @if (lightboxIdx() < lbImages.length - 1) {
+  <button class="card-lightbox__nav card-lightbox__nav--next btn btn-icon btn-sm btn-light"
+    (click)="lightboxNext(); $event.stopPropagation()">
+    <i class="ki-duotone ki-arrow-right fs-2"><span class="path1"></span><span class="path2"></span></i>
+  </button>
+  }
+
+</div>
+}
+<!--END::Card Lightbox-->
 

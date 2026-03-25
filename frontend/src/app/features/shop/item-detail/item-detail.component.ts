@@ -175,10 +175,33 @@ export class ItemDetailComponent implements OnInit {
     this.selectedVariants.update(m => new Map(m).set(type, variantId));
   }
 
-  toggleStoreSelection(si: ProductItemVariantMap): void {
-    this.selectedStoreId.update(cur => cur === si.storeId ? null : si.storeId);
-    this.selectedVariants.set(new Map()); // reset variant selection on store change
+  onStoreRowClick(si: ProductItemVariantMap): void {
+    if (this.inCart()) return;
+    const newStoreId = this.selectedStoreId() === si.storeId ? null : si.storeId;
+    this.selectedStoreId.set(newStoreId);
+
+    if (newStoreId === null) {
+      this.selectedVariants.set(new Map());
+      return;
+    }
+
+    const storeMaps = this.itemVariantMaps
+      .filter(m => m.storeId === newStoreId && m.isActive !== false);
+    const bestMap = storeMaps.length
+      ? storeMaps.reduce((b, m) => m.sellingPrice < b.sellingPrice ? m : b)
+      : null;
+
+    const initial = new Map<string, number>();
+    if (bestMap) {
+      for (const entry of bestMap.variants) {
+        const v = this.allVariants.find(v => v.id === entry.variantId);
+        if (v) initial.set(v.variantTypeId, v.id!);
+      }
+    }
+    this.selectedVariants.set(initial);
   }
+
+  toggleStoreSelection(si: ProductItemVariantMap): void { this.onStoreRowClick(si); }
 
   isStoreSelected(si: ProductItemVariantMap): boolean { return this.selectedStoreId() === si.storeId; }
 
