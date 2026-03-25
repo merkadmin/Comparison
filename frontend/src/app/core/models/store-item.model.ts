@@ -10,3 +10,9 @@ export interface StoreItem {
   isActive?: boolean;
   createdAt?: string;
 }
+
+export interface ItemBestPrice {
+  itemId: number;
+  storeId: number;
+  sellingPrice: number;
+}

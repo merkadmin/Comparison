@@ -8,7 +8,6 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ItemService } from '../../core/services/item.service';
 import { StoreItemService } from '../../core/services/store-item.service';
-import { ProductItemVariantMapService } from '../../core/services/product-item-variant-map.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemImageService } from '../../core/services/item-image.service';
@@ -16,8 +15,7 @@ import { ProductItemTypeService } from '../../core/services/product-item-type.se
 import { ProductInformationService } from '../../core/services/product-information.service';
 import { UserActivityService } from '../../core/services/user-activity.service';
 import { Item } from '../../core/models/item.model';
-import { StoreItem } from '../../core/models/store-item.model';
-import { ProductItemVariantMap } from '../../core/models/product-item-variant-map.model';
+import { ItemBestPrice } from '../../core/models/store-item.model';
 import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
 import { ItemBrand } from '../../core/models/item-brand.model';
 import { ProductItemType } from '../../core/models/product-item-type.model';
@@ -54,7 +52,6 @@ export class ItemListComponent implements OnInit, OnDestroy {
   editIcon     = this.iconConfig.iconSignal('global.edit',    'pencil');
   deleteIcon   = this.iconConfig.iconSignal('global.delete',  'trash');
   private storeItemService    = inject(StoreItemService);
-  private variantMapService   = inject(ProductItemVariantMapService);
   private categoryService = inject(ItemCategoryService);
   private brandService = inject(ItemBrandService);
   private imageService = inject(ItemImageService);
@@ -215,37 +212,12 @@ export class ItemListComponent implements OnInit, OnDestroy {
   }
 
   items = signal<Item[]>([]);
-  storeItems      = signal<StoreItem[]>([]);
-  itemVariantMaps = signal<ProductItemVariantMap[]>([]);
+  bestPrices = signal<ItemBestPrice[]>([]);
 
-  bestPriceMap = computed<Map<number, number>>(() => {
-    const map = new Map<number, number>();
-
-    // Build variant-level price map: itemId → min sellingPrice from variant maps
-    const variantPriceMap = new Map<number, number>();
-    for (const vm of this.itemVariantMaps()) {
-      if (vm.isActive === false || vm.sellingPrice == null || vm.storeId == null) continue;
-      const cur = variantPriceMap.get(vm.productItemId);
-      if (cur === undefined || vm.sellingPrice < cur) variantPriceMap.set(vm.productItemId, vm.sellingPrice);
-    }
-
-    // Collect all item IDs from store items
-    const itemIds = new Set(this.storeItems().map(si => si.itemId));
-    for (const itemId of itemIds) {
-      if (variantPriceMap.has(itemId)) {
-        map.set(itemId, variantPriceMap.get(itemId)!);
-      } else {
-        // Fallback: min store item price
-        for (const si of this.storeItems()) {
-          if (si.itemId !== itemId || si.isActive === false) continue;
-          const cur = map.get(itemId);
-          if (cur === undefined || si.sellingPrice < cur) map.set(itemId, si.sellingPrice);
-        }
-      }
-    }
-    return map;
-  });
-  getBestPrice(itemId: number): number | null { return this.bestPriceMap().get(itemId) ?? null; }
+  bestPriceMap = computed<Map<number, ItemBestPrice>>(() =>
+    new Map(this.bestPrices().map(bp => [bp.itemId, bp]))
+  );
+  getBestPrice(itemId: number): number | null { return this.bestPriceMap().get(itemId)?.sellingPrice ?? null; }
 
   /** Override in subclasses to lock the component into favorites-only mode. */
   protected get favoritesOnly(): boolean { return this.route.snapshot.data['favoritesOnly'] ?? false; }
@@ -297,8 +269,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => { } });
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => { } });
-    this.storeItemService.getAll().subscribe({ next: si => this.storeItems.set(si), error: () => { } });
-    this.variantMapService.getAll().subscribe({ next: d => this.itemVariantMaps.set(d), error: () => { } });
+    this.storeItemService.getBestPrices().subscribe({ next: bp => this.bestPrices.set(bp), error: () => { } });
     this.typeService.getAll().subscribe({ next: t => this.productItemTypes.set(t), error: () => { } });
     this.infoService.getAll().subscribe({ next: i => this.productInfos.set(i), error: () => { } });
     this.userActivity.loadAll();

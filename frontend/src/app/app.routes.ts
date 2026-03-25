@@ -33,6 +33,7 @@ export const routes: Routes = [
       { path: 'stores', component: StoreListComponent },
       { path: 'store-items', component: StoreItemListComponent },
       { path: 'shop', component: ShopByCategoryComponent },
+      { path: 'shop/by-category/:categoryId', component: ShopByCategoryComponent },
       { path: 'app-setup/set-icons', component: SetIconsComponent },
       { path: 'app-setup/pages', component: PagesComponent },
       { path: 'product-item-variants', component: ProductItemVariantListComponent },

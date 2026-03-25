@@ -1,0 +1,49 @@
+<!--START::Breadcrumb-->
+<div class="d-flex flex-column me-auto">
+  <div class="d-flex align-items-center gap-2 flex-nowrap overflow-hidden">
+
+    @if (navStack.length > 0 || selectedLeaf) {
+      <span class="fw-semibold text-muted fs-7 cursor-pointer text-hover-primary text-nowrap"
+        (click)="rootClicked.emit()">
+        {{ 'nav.shopByCategory' | translate }}
+      </span>
+    } @else {
+      <span class="fw-bold text-gray-800 fs-7 text-nowrap">{{ 'nav.shopByCategory' | translate }}</span>
+    }
+
+    @for (crumb of navStack; track crumb.id; let i = $index) {
+      <i class="ki-duotone ki-right fs-8 text-muted flex-shrink-0">
+        <span class="path1"></span><span class="path2"></span>
+      </i>
+      @if (i < navStack.length - 1 || selectedLeaf) {
+        <span class="fw-semibold text-muted fs-7 cursor-pointer text-hover-primary text-nowrap"
+          (click)="crumbClicked.emit(i)">
+          {{ localize(crumb) }}
+        </span>
+      } @else {
+        <span class="fw-bold text-gray-800 fs-7 text-nowrap">{{ localize(crumb) }}</span>
+      }
+    }
+
+    @if (selectedLeaf) {
+      <i class="ki-duotone ki-right fs-8 text-muted flex-shrink-0">
+        <span class="path1"></span><span class="path2"></span>
+      </i>
+      <span class="fw-bold text-gray-800 fs-7 text-nowrap">{{ localize(selectedLeaf) }}</span>
+    }
+
+  </div>
+
+  @if (!selectedLeaf) {
+    <h3 class="card-title fw-bold text-gray-800 mb-0 mt-1">
+      @if (navStack.length > 0) {
+        {{ localize(navStack[navStack.length - 1]) }}
+      } @else {
+        {{ 'nav.shopByCategory' | translate }}
+      }
+    </h3>
+  } @else {
+    <h3 class="card-title fw-bold text-gray-800 mb-0 mt-1 fs-1">{{ localize(selectedLeaf) }}</h3>
+  }
+</div>
+<!--END::Breadcrumb-->

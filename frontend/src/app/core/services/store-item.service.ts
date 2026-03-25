@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { StoreItem } from '../models/store-item.model';
+import { StoreItem, ItemBestPrice } from '../models/store-item.model';
 
 @Injectable({ providedIn: 'root' })
 export class StoreItemService {
@@ -9,6 +9,18 @@ export class StoreItemService {
 
   getAll(): Observable<StoreItem[]> {
     return this.api.get<StoreItem[]>('/store-items/getAll');
+  }
+
+  getEffectivePrices(): Observable<StoreItem[]> {
+    return this.api.get<StoreItem[]>('/store-items/effective-prices');
+  }
+
+  getBestPrices(): Observable<ItemBestPrice[]> {
+    return this.api.get<ItemBestPrice[]>('/store-items/best-prices');
+  }
+
+  getBestPricesByCategory(categoryId: number): Observable<ItemBestPrice[]> {
+    return this.api.get<ItemBestPrice[]>(`/store-items/best-prices/by-category/${categoryId}`);
   }
 
   create(item: StoreItem): Observable<StoreItem> {
