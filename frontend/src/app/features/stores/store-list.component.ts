@@ -1,10 +1,15 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin, of, switchMap } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../core/services/auth.service';
 import { StoreService } from '../../core/services/store.service';
+import { StoreItemService } from '../../core/services/store-item.service';
 import { Store, StoreType } from '../../core/models/store.model';
+import { StoreItemDraft } from '../../core/models/store-item.model';
+import { Item } from '../../core/models/item.model';
+import { ItemService } from '../../core/services/item.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -25,6 +30,8 @@ import { computedColClass } from '../../shared/helpers/grid-columns.helper';
 export class StoreListComponent implements OnInit {
   auth = inject(AuthService);
   private service = inject(StoreService);
+  private storeItemService = inject(StoreItemService);
+  private itemService = inject(ItemService);
   private translate = inject(TranslateService);
   private toast = inject(ToastService);
 
@@ -40,6 +47,10 @@ export class StoreListComponent implements OnInit {
   isCreating = signal(false);
   saving = signal(false);
   editDraft: Store = { name: '', type: StoreType.Online, country: '' };
+  draftStoreItems: StoreItemDraft[] = [];
+
+  // ── Items (for store items dropdown) ──────────────────────────────────────
+  items = signal<Item[]>([]);
 
   // ── Data ──────────────────────────────────────────────────────────────────
   stores = signal<Store[]>([]);
@@ -68,12 +79,14 @@ export class StoreListComponent implements OnInit {
 
   openCreate(): void {
     this.editDraft = { name: '', type: StoreType.Online, country: '' };
+    this.draftStoreItems = [];
     this.isCreating.set(true);
     this.editingId.set(0);
   }
 
   openEdit(store: Store): void {
     this.editDraft = { ...store };
+    this.draftStoreItems = [];
     this.isCreating.set(false);
     this.editingId.set(store.id!);
   }
@@ -89,22 +102,45 @@ export class StoreListComponent implements OnInit {
       this.closeEdit();
     };
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); };
+
     if (this.isCreating()) {
-      this.service.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
+      this.service.create(this.editDraft).pipe(
+        switchMap(store => {
+          if (this.draftStoreItems.length === 0) return of(null);
+          return forkJoin(
+            this.draftStoreItems.map(item => this.storeItemService.create({ ...item, storeId: store.id! }))
+          );
+        })
+      ).subscribe({ next: onSuccess, error: onError });
     } else {
-      this.service.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
+      this.service.update(this.editingId()!, this.editDraft).pipe(
+        switchMap(() => {
+          if (this.draftStoreItems.length === 0) return of(null);
+          return forkJoin(
+            this.draftStoreItems.map(item => this.storeItemService.create({ ...item, storeId: this.editingId()! }))
+          );
+        })
+      ).subscribe({ next: onSuccess, error: onError });
     }
   }
 
   saveEditAndNew(): void {
     if (!this.isCreating()) return;
     this.saving.set(true);
-    this.service.create(this.editDraft).subscribe({
+    this.service.create(this.editDraft).pipe(
+      switchMap(store => {
+        if (this.draftStoreItems.length === 0) return of(null);
+        return forkJoin(
+          this.draftStoreItems.map(item => this.storeItemService.create({ ...item, storeId: store.id! }))
+        );
+      })
+    ).subscribe({
       next: () => {
         this.saving.set(false);
         this.toast.success(this.translate.translate('store.saveSuccess'));
         this.load();
         this.editDraft = { name: '', type: StoreType.Online, country: '' };
+        this.draftStoreItems = [];
       },
       error: () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); },
     });
@@ -134,7 +170,10 @@ export class StoreListComponent implements OnInit {
   }
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.load();
+    this.itemService.getAll().subscribe({ next: data => this.items.set(data) });
+  }
 
   load(): void {
     this.loading.set(true);

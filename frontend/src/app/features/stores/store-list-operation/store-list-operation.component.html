@@ -1,6 +1,6 @@
 <!--START::Create / Edit Modal-->
 <div class="modal fade show d-block modal-inline-backdrop" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
 
       <div class="modal-header">
@@ -63,10 +63,113 @@
         </div>
         <!--END::Logo URL-->
 
-      </div>
+        <!--START::Store Items Section-->
+        <div class="separator separator-dashed my-5"></div>
 
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <h6 class="fw-bold fs-5 mb-0">{{ 'storeItem.storeItemsSection' | translate }}</h6>
+          <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving" (click)="openAddItem()">
+            <i class="ki-duotone ki-plus fs-5"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'storeItem.addItem' | translate }}
+          </button>
+        </div>
+
+        <table class="table align-middle table-row-dashed fs-6 gy-4">
+          <thead>
+            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+              <th class="w-30px">{{ 'common.number' | translate }}</th>
+              <th class="min-w-175px">{{ 'storeItem.item' | translate }}</th>
+              <th class="min-w-120px">{{ 'storeItem.sellingPrice' | translate }}</th>
+              <th class="min-w-120px">{{ 'storeItem.priceType' | translate }}</th>
+              <th class="min-w-110px">{{ 'storeItem.availableQty' | translate }}</th>
+              <th class="min-w-130px">{{ 'storeItem.isDeliveryAvailable' | translate }}</th>
+              <th class="text-end min-w-100px">{{ 'common.actions' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody class="text-gray-600 fw-semibold">
+
+            @if (draftStoreItems.length === 0) {
+              <tr>
+                <td colspan="7" class="text-center text-muted py-8">{{ 'common.noData' | translate }}</td>
+              </tr>
+            }
+
+            @for (row of draftStoreItems; track $index; let i = $index) {
+              <tr>
+                <td>{{ i + 1 }}</td>
+
+                <!--Item Name-->
+                <td>
+                  <span class="text-gray-800 fw-bold text-hover-primary fs-6">{{ getItemName(row.itemId) }}</span>
+                </td>
+
+                <!--Selling Price-->
+                <td class="fw-bold text-gray-800">{{ row.sellingPrice | number:'1.2-2' }}</td>
+
+                <!--Price Type-->
+                <td>
+                  @if (row.sellingPriceTypeId === 'Regular') {
+                    <span class="badge badge-light-primary">{{ 'storeItem.priceType.Regular' | translate }}</span>
+                  } @else if (row.sellingPriceTypeId === 'Premium') {
+                    <span class="badge badge-light-warning">{{ 'storeItem.priceType.Premium' | translate }}</span>
+                  } @else {
+                    <span class="badge badge-light-danger">{{ 'storeItem.priceType.Offer' | translate }}</span>
+                  }
+                </td>
+
+                <!--Quantity-->
+                <td>{{ row.quantity }}</td>
+
+                <!--Delivery-->
+                <td>
+                  @if (row.isDeliverAvailable) {
+                    <span class="badge badge-light-success">{{ 'common.yes' | translate }}</span>
+                  } @else {
+                    <span class="badge badge-light-secondary">{{ 'common.no' | translate }}</span>
+                  }
+                </td>
+
+                <!--Actions-->
+                <td class="text-end">
+                  <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving" (click)="openEditItem(i)">
+                      <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
+                      {{ 'common.edit' | translate }}
+                    </button>
+                    <app-common-drop-down-menu-action-button
+                      mainLabelKey="common.delete"
+                      mainIconClass="ki-trash"
+                      [mainIconPaths]="5"
+                      mainIconSize="5"
+                      mainColor="light-danger"
+                      [menuEnd]="true"
+                      [disabled]="saving"
+                      (mainClick)="removeItem(i)"
+                      [menuItems]="getItemRowMenuItems(i)" />
+                  </div>
+                </td>
+              </tr>
+            }
+
+          </tbody>
+        </table>
+        <!--END::Store Items Section-->
+
+      </div>
 
     </div>
   </div>
 </div>
 <!--END::Create / Edit Modal-->
+
+<!--START::Store Item Sub-Modal-->
+@if (editingItemIndex !== null) {
+  <app-store-item-draft-operation
+    [draft]="currentItemDraft"
+    [items]="items"
+    [isEditing]="editingItemIndex >= 0"
+    (closed)="closeItemModal()"
+    (saved)="confirmItem()"
+    (savedAndNew)="confirmItemAndNew()" />
+}
+<!--END::Store Item Sub-Modal-->

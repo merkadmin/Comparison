@@ -9,6 +9,8 @@ namespace PriceRadar.Core.Models
 		public long StoreId { get; set; }
 		public decimal SellingPrice { get; set; }
 		public DBSellingPriceType SellingPriceTypeId { get; set; } = DBSellingPriceType.Regular;
+		public int Quantity { get; set; } = 0;
+		public bool IsDeliverAvailable { get; set; } = false;
 		public bool IsActive { get; set; } = true;
 		public bool IsDeleted { get; set; } = false;
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -12,32 +12,38 @@ namespace PriceRadar.DAL.Documents
 		public long StoreId { get; set; }
 		public decimal SellingPrice { get; set; }
 		public DBSellingPriceType SellingPriceTypeId { get; set; } = DBSellingPriceType.Regular;
+		public int Quantity { get; set; } = 0;
+		public bool IsDeliverAvailable { get; set; } = false;
 		public bool IsActive { get; set; } = true;
 		public bool IsDeleted { get; set; } = false;
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 		public Store_Item ToModel() => new()
 		{
-			Id                 = Id,
-			ItemId             = ItemId,
-			StoreId            = StoreId,
-			SellingPrice       = SellingPrice,
-			SellingPriceTypeId = SellingPriceTypeId,
-			IsActive           = IsActive,
-			IsDeleted          = IsDeleted,
-			CreatedAt          = CreatedAt,
+			Id                  = Id,
+			ItemId              = ItemId,
+			StoreId             = StoreId,
+			SellingPrice        = SellingPrice,
+			SellingPriceTypeId  = SellingPriceTypeId,
+			Quantity            = Quantity,
+			IsDeliverAvailable  = IsDeliverAvailable,
+			IsActive            = IsActive,
+			IsDeleted           = IsDeleted,
+			CreatedAt           = CreatedAt,
 		};
 
 		public static Store_ItemDocuement FromModel(Store_Item storeItem) => new()
 		{
-			Id                 = storeItem.Id,
-			ItemId             = storeItem.ItemId,
-			StoreId            = storeItem.StoreId,
-			SellingPrice       = storeItem.SellingPrice,
-			SellingPriceTypeId = storeItem.SellingPriceTypeId,
-			IsActive           = storeItem.IsActive,
-			IsDeleted          = storeItem.IsDeleted,
-			CreatedAt          = storeItem.CreatedAt,
+			Id                  = storeItem.Id,
+			ItemId              = storeItem.ItemId,
+			StoreId             = storeItem.StoreId,
+			SellingPrice        = storeItem.SellingPrice,
+			SellingPriceTypeId  = storeItem.SellingPriceTypeId,
+			Quantity            = storeItem.Quantity,
+			IsDeliverAvailable  = storeItem.IsDeliverAvailable,
+			IsActive            = storeItem.IsActive,
+			IsDeleted           = storeItem.IsDeleted,
+			CreatedAt           = storeItem.CreatedAt,
 		};
 	}
 }

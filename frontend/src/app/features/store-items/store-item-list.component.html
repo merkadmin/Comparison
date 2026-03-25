@@ -40,17 +40,6 @@
     </app-common-select>
     <!--END::Filters-->
 
-    <!--START::Add Button (Admin)-->
-    <div slot="add">
-      @if (auth.isAdmin()) {
-        <button class="btn btn-sm btn-primary" (click)="openCreate()">
-          <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
-          {{ 'storeItem.addNew' | translate }}
-        </button>
-      }
-    </div>
-    <!--END::Add Button (Admin)-->
-
   </app-common-list-header-actions>
   <!--END::Header Actions-->
 

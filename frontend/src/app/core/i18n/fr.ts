@@ -81,6 +81,10 @@ export const fr: Record<string, string> = {
   'storeItem.saveError': 'Échec de l\'enregistrement de l\'article en magasin.',
   'storeItem.importSuccess': 'Articles en magasin importés avec succès.',
   'storeItem.importError': 'Échec de l\'importation. Veuillez vérifier le format du fichier.',
+  'storeItem.storeItemsSection': 'Articles du magasin',
+  'storeItem.addItem': 'Ajouter un article',
+  'storeItem.availableQty': 'Quantité disponible',
+  'storeItem.isDeliveryAvailable': 'Livraison disponible',
 
   // Stores
   'store.title': 'Magasins',

@@ -81,6 +81,10 @@ export const en: Record<string, string> = {
   'storeItem.saveError': 'Failed to save store item.',
   'storeItem.importSuccess': 'Store items imported successfully.',
   'storeItem.importError': 'Failed to import store items. Please check the file format.',
+  'storeItem.storeItemsSection': 'Store Items',
+  'storeItem.addItem': 'Add Item',
+  'storeItem.availableQty': 'Available Quantity',
+  'storeItem.isDeliveryAvailable': 'Delivery Available',
 
   // Stores
   'store.title': 'Stores',

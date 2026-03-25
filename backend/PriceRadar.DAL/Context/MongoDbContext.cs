@@ -29,6 +29,9 @@ public class MongoDbContext
 	public IMongoCollection<ProductItem_VariantDocument> ProductItem_Variants =>
 		_database.GetCollection<ProductItem_VariantDocument>("ProductItem_Variant");
 
+	public IMongoCollection<Store_ItemDocuement> Store_Items =>
+		_database.GetCollection<Store_ItemDocuement>("Store_Item");
+
 	public IMongoCollection<ItemPackageDocument> ItemPackages =>
 		_database.GetCollection<ItemPackageDocument>("ItemPackage");
 

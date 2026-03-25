@@ -81,6 +81,10 @@ export const ar: Record<string, string> = {
   'storeItem.saveError': 'فشل حفظ منتج المتجر.',
   'storeItem.importSuccess': 'تم استيراد منتجات المتاجر بنجاح.',
   'storeItem.importError': 'فشل استيراد منتجات المتاجر. يرجى التحقق من صيغة الملف.',
+  'storeItem.storeItemsSection': 'منتجات المتجر',
+  'storeItem.addItem': 'إضافة منتج',
+  'storeItem.availableQty': 'الكمية المتاحة',
+  'storeItem.isDeliveryAvailable': 'التوصيل متاح',
 
   // Stores
   'store.title': 'المتاجر',
