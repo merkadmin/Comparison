@@ -258,6 +258,7 @@ export const fr: Record<string, string> = {
   'variant.deactivateBulkConfirm': 'Désactiver les variantes sélectionnées ?',
   'variant.deactivateBulkText': 'Vous êtes sur le point de désactiver {count} variante(s).',
   'variant.selectRequired': 'Veuillez sélectionner toutes les options avant d\'ajouter au panier.',
+  'variant.noMatch': 'Aucun prix disponible pour cette combinaison de variantes.',
   'variant.filterByItem': 'Filtrer par article',
   'variant.allItems': 'Tous les articles',
   'variant.saveSuccess': 'Variante enregistrée avec succès.',

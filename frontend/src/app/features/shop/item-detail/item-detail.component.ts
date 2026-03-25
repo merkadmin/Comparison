@@ -87,7 +87,7 @@ export class ItemDetailComponent implements OnInit {
     return this.selectedStoreMap?.about || this.item.aboutThisItem || '';
   }
 
-  /** Price for the exact selected store + variant combination, or null if not fully matched. */
+  /** Price for the exact selected store + variant combination, or null if no match. */
   get selectedVariantPrice(): number | null {
     const storeId = this.selectedStoreId();
     if (storeId === null) return null;
@@ -100,7 +100,39 @@ export class ItemDetailComponent implements OnInit {
     return match?.sellingPrice ?? null;
   }
 
+  /** The price to display in the Best Price badge — cascades through variant → store → overall best. */
+  get displayBestPrice(): number | null {
+    if (this.selectedVariantPrice !== null) return this.selectedVariantPrice;
+    const storeId = this.selectedStoreId();
+    if (storeId !== null) {
+      return this.itemStoreItems.find(si => si.storeId === storeId)?.sellingPrice ?? null;
+    }
+    return this.itemStoreItems[0]?.sellingPrice ?? null;
+  }
+
   get hasVariants(): boolean { return this.variantGroups.length > 0; }
+
+  /**
+   * True only when ALL variant groups are selected but no record matches the combination.
+   * Partial selection never triggers the warning — we just show the closest price.
+   */
+  get noVariantMatch(): boolean {
+    return this.selectedStoreId() !== null &&
+      this.allVariantsSelected &&
+      this.hasVariants &&
+      this.selectedVariantPrice === null;
+  }
+
+  /** Returns the variant-matched price for a given store, or null if no match for current selection. */
+  getStoreVariantPrice(storeId: number): number | null {
+    const selectedIds = [...this.selectedVariants().values()];
+    if (selectedIds.length === 0) return null;
+    const storeMaps = this.itemVariantMaps.filter(m => m.storeId === storeId);
+    const match = storeMaps.find(m =>
+      selectedIds.every(id => m.variants.some(e => e.variantId === id))
+    );
+    return match?.sellingPrice ?? null;
+  }
 
   get allVariantsSelected(): boolean {
     return !this.hasVariants || this.variantGroups.every(g => this.selectedVariants().has(g.type));

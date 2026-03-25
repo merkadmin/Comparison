@@ -258,6 +258,7 @@ export const en: Record<string, string> = {
   'variant.deactivateBulkConfirm': 'Deactivate selected variants?',
   'variant.deactivateBulkText': 'You are about to deactivate {count} variants.',
   'variant.selectRequired': 'Please select all options before adding to cart.',
+  'variant.noMatch': 'No price available for this variant combination.',
   'variant.filterByItem': 'Filter by Item',
   'variant.allItems': 'All Items',
   'variant.saveSuccess': 'Variant saved successfully.',

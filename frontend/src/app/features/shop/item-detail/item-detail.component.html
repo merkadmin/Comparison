@@ -48,12 +48,20 @@
       @if (itemStoreItems.length > 0) {
       <div class="item-detail-panel__best-price d-flex align-items-center gap-2 pb-3 flex-wrap">
         <span class="text-muted fw-semibold fs-3">{{ 'item.bestPrice' | translate }}</span>
-        <span class="fw-bold best-price-value fs-1">
-          {{ (selectedVariantPrice ?? itemStoreItems[0].sellingPrice) | number:'1.2-2' }}
-        </span>
-        <span class="badge badge-light-success fs-4">
-          {{ selectedStoreId() !== null ? getStoreName(selectedStoreId()!) : getStoreName(itemStoreItems[0].storeId) }}
-        </span>
+        @if (noVariantMatch) {
+          <span class="fw-bold fs-1 text-muted">--</span>
+          <span class="no-variant-label fw-semibold fs-6">
+            <i class="ki-duotone ki-information-5 fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'variant.noMatch' | translate }}
+          </span>
+        } @else {
+          <span class="fw-bold best-price-value fs-1">
+            {{ displayBestPrice | number:'1.2-2' }}
+          </span>
+          <span class="badge badge-light-success fs-4">
+            {{ selectedStoreId() !== null ? getStoreName(selectedStoreId()!) : getStoreName(itemStoreItems[0].storeId) }}
+          </span>
+        }
       </div>
       }
       <!--END::Best Price-->
@@ -98,7 +106,11 @@
             (click)="!inCart() && toggleStoreSelection(si)">
             <span class="fw-semibold text-gray-800 fs-6">{{ getStoreName(si.storeId) }}</span>
             <div class="d-flex align-items-center gap-2">
-              <span class="fw-bold text-primary fs-5">{{ si.sellingPrice | number:'1.2-2' }}</span>
+              @let rowPrice = getStoreVariantPrice(si.storeId);
+              <span class="fw-bold fs-5" [class.text-primary]="rowPrice === null || rowPrice === si.sellingPrice"
+                [class.text-success]="rowPrice !== null && rowPrice !== si.sellingPrice">
+                {{ (rowPrice ?? si.sellingPrice) | number:'1.2-2' }}
+              </span>
               <div class="form-check form-check-sm form-check-custom form-check-solid form-check-solid ms-2">
                 <input class="form-check-input" type="radio" [checked]="isStoreSelected(si)" [disabled]="inCart()"
                   (click)="$event.stopPropagation(); !inCart() && toggleStoreSelection(si)" />

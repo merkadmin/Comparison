@@ -258,6 +258,7 @@ export const ar: Record<string, string> = {
   'variant.deactivateBulkConfirm': 'تعطيل المتغيرات المحددة؟',
   'variant.deactivateBulkText': 'أنت على وشك تعطيل {count} متغير/متغيرات.',
   'variant.selectRequired': 'يرجى اختيار جميع الخيارات قبل الإضافة إلى السلة.',
+  'variant.noMatch': 'لا يوجد سعر لهذا التوليف من المتغيرات.',
   'variant.filterByItem': 'تصفية حسب المنتج',
   'variant.allItems': 'جميع المنتجات',
   'variant.saveSuccess': 'تم حفظ المتغير بنجاح.',
