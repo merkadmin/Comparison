@@ -1,11 +1,16 @@
+export interface ProductItemVariantEntry {
+  productItemVariantId?: number;
+  variantId: number;
+}
+
 export interface ProductItemVariantMap {
   id?: number;
   productItemId: number;
-  variantId: number;
-  sellingPrice: number;
   storeId: number;
+  sellingPrice: number;
   description?: string | null;
   about?: string | null;
+  variants: ProductItemVariantEntry[];
   isActive?: boolean;
   isDeleted?: boolean;
   createdAt?: Date;
@@ -14,7 +19,7 @@ export interface ProductItemVariantMap {
 export interface ItemPriceDto {
   storeId: number;
   sellingPrice: number;
-  variantId?: number | null;
+  variantIds?: number[];
   description?: string | null;
   about?: string | null;
   source: 'variant' | 'store_item';

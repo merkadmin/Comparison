@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
@@ -18,7 +18,7 @@ interface VariantRow {
   imports: [FormsModule, TranslatePipe],
   templateUrl: './item-variant-map-operation.component.html',
 })
-export class ItemVariantMapOperationComponent {
+export class ItemVariantMapOperationComponent implements OnInit {
   @Input() editDraft!: ProductItemVariantMap;
   @Input() isCreating = false;
   @Input() items: Item[] = [];
@@ -29,26 +29,44 @@ export class ItemVariantMapOperationComponent {
   @Output() closed      = new EventEmitter<void>();
   @Output() saved       = new EventEmitter<void>();
   @Output() savedAndNew = new EventEmitter<void>();
-  @Output() bulkSaved   = new EventEmitter<ProductItemVariantMap[]>();
+  @Output() bulkSaved      = new EventEmitter<ProductItemVariantMap>();
+  @Output() bulkSavedAndNew = new EventEmitter<ProductItemVariantMap>();
 
   readonly variantTypes = VARIANT_TYPES;
 
-  // ── Create-mode (bulk) draft ──────────────────────────────────────────────
+  // ── Shared rows (used in both create and edit modes) ──────────────────────
+  rows = signal<VariantRow[]>([]);
+  private rowCounter = 0;
+
+  // ── Create-mode (bulk) draft signals ─────────────────────────────────────
   bulkItemId       = signal(0);
   bulkStoreId      = signal(0);
   bulkSellingPrice = signal<number>(0);
   bulkDescription  = signal('');
   bulkAbout        = signal('');
-  rows             = signal<VariantRow[]>([{ id: '0', type: null, variantId: 0 }]);
-  private rowCounter = 0;
 
   isBulkValid = computed(() =>
     this.bulkItemId() > 0 &&
     this.bulkStoreId() > 0 &&
     this.bulkSellingPrice() > 0 &&
-    this.rows().length > 0 &&
     this.rows().every(r => r.variantId > 0)
   );
+
+  isEditValid = computed(() =>
+    this.editDraft?.productItemId > 0 &&
+    this.editDraft?.storeId > 0 &&
+    this.rows().every(r => r.variantId > 0)
+  );
+
+  ngOnInit(): void {
+    if (!this.isCreating && this.editDraft?.variants?.length) {
+      const rows: VariantRow[] = this.editDraft.variants.map(entry => {
+        const v = this.variants.find(v => v.id === entry.variantId);
+        return { id: String(++this.rowCounter), type: (v?.variantTypeId as VariantType) ?? null, variantId: entry.variantId };
+      });
+      this.rows.set(rows);
+    }
+  }
 
   addRow(): void {
     this.rows.update(rows => [...rows, { id: String(++this.rowCounter), type: null, variantId: 0 }]);
@@ -70,34 +88,44 @@ export class ItemVariantMapOperationComponent {
     return type ? this.variants.filter(v => v.variantTypeId === type) : this.variants;
   }
 
-  saveBulk(): void {
-    const records: ProductItemVariantMap[] = this.rows().map(row => ({
+  private buildRecord(): ProductItemVariantMap {
+    const variants = this.rows().map(r => ({ variantId: r.variantId }));
+    return {
       productItemId: this.bulkItemId(),
       storeId:       this.bulkStoreId(),
       sellingPrice:  this.bulkSellingPrice(),
-      variantId:     row.variantId,
       description:   this.bulkDescription() || null,
       about:         this.bulkAbout() || null,
-    }));
-    this.bulkSaved.emit(records);
+      variants,
+    };
   }
 
-  // ── Edit-mode helpers ─────────────────────────────────────────────────────
-  selectedType = signal<VariantType | null>(null);
-
-  filteredVariants = computed<ProductItemVariant[]>(() => {
-    const type = this.selectedType();
-    return type ? this.variants.filter(v => v.variantTypeId === type) : this.variants;
-  });
-
-  get typeCount(): Record<string, number> {
-    const counts: Record<string, number> = {};
-    for (const v of this.variants) counts[v.variantTypeId] = (counts[v.variantTypeId] ?? 0) + 1;
-    return counts;
+  private resetBulkRows(): void {
+    this.rows.set([]);
+    this.bulkItemId.set(0);
+    this.bulkStoreId.set(0);
+    this.bulkSellingPrice.set(0);
+    this.bulkDescription.set('');
+    this.bulkAbout.set('');
   }
 
-  selectType(type: VariantType | null): void {
-    this.selectedType.set(type);
-    this.editDraft.variantId = 0;
+  saveBulk(): void {
+    this.bulkSaved.emit(this.buildRecord());
+  }
+
+  saveBulkAndNew(): void {
+    this.bulkSavedAndNew.emit(this.buildRecord());
+    this.resetBulkRows();
+  }
+
+  // ── Edit-mode save ────────────────────────────────────────────────────────
+  onSaved(): void {
+    this.editDraft.variants = this.rows().map(r => ({ variantId: r.variantId }));
+    this.saved.emit();
+  }
+
+  onSavedAndNew(): void {
+    this.editDraft.variants = this.rows().map(r => ({ variantId: r.variantId }));
+    this.savedAndNew.emit();
   }
 }

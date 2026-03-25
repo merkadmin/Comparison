@@ -13,6 +13,12 @@
             {{ 'common.cancel' | translate }}
           </button>
           @if (isCreating) {
+            <button type="button" class="btn btn-sm btn-light-primary"
+              [disabled]="saving || !isBulkValid()"
+              (click)="saveBulkAndNew()">
+              @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+              {{ 'common.saveAndNew' | translate }}
+            </button>
             <button type="button" class="btn btn-sm btn-primary"
               [disabled]="saving || !isBulkValid()"
               (click)="saveBulk()">
@@ -21,14 +27,14 @@
             </button>
           } @else {
             <button type="button" class="btn btn-sm btn-light-primary"
-              [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
-              (click)="savedAndNew.emit()">
+              [disabled]="saving || !editDraft.productItemId || !editDraft.storeId"
+              (click)="onSavedAndNew()">
               @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
               {{ 'common.saveAndNew' | translate }}
             </button>
             <button type="button" class="btn btn-sm btn-primary"
-              [disabled]="saving || !editDraft.productItemId || !editDraft.variantId"
-              (click)="saved.emit()">
+              [disabled]="saving || !editDraft.productItemId || !editDraft.storeId"
+              (click)="onSaved()">
               @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
               {{ 'common.save' | translate }}
             </button>
@@ -93,61 +99,6 @@
             </div>
           </div>
 
-          <!--Variants Table-->
-          <div class="mb-2">
-            <label class="form-label fw-semibold">{{ 'variant.title' | translate }}</label>
-            <table class="table table-bordered align-middle mb-3">
-              <thead class="table-light">
-                <tr class="fw-semibold text-muted fs-7 text-uppercase">
-                  <th class="w-40px text-center">#</th>
-                  <th>{{ 'itemVariantMap.variantType' | translate }}</th>
-                  <th>{{ 'itemVariantMap.variant' | translate }}</th>
-                  <th class="w-50px"></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (row of rows(); track row.id; let i = $index) {
-                <tr>
-                  <td class="text-center text-muted fw-semibold">{{ i + 1 }}</td>
-                  <td>
-                    <select class="form-select form-select-sm"
-                      [ngModel]="row.type" (ngModelChange)="updateRowType(row.id, $event)">
-                      <option [ngValue]="null">— {{ 'variant.variantType' | translate }} —</option>
-                      @for (type of variantTypes; track type) {
-                        <option [ngValue]="type">{{ 'variant.type.' + type | translate }}</option>
-                      }
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select form-select-sm"
-                      [ngModel]="row.variantId" (ngModelChange)="updateRowVariantId(row.id, +$event)">
-                      <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
-                      @for (v of getRowVariants(row.type); track v.id) {
-                        <option [ngValue]="v.id">
-                          {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}
-                        </option>
-                      }
-                    </select>
-                  </td>
-                  <td class="text-center">
-                    <button class="btn btn-icon btn-sm btn-light-danger" [disabled]="rows().length === 1"
-                      (click)="removeRow(row.id)">
-                      <i class="ki-duotone ki-trash fs-5">
-                        <span class="path1"></span><span class="path2"></span>
-                        <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-                      </i>
-                    </button>
-                  </td>
-                </tr>
-                }
-              </tbody>
-            </table>
-            <button type="button" class="btn btn-sm btn-light-primary" (click)="addRow()">
-              <i class="ki-duotone ki-plus fs-4"><span class="path1"></span><span class="path2"></span></i>
-              {{ 'common.add' | translate }}
-            </button>
-          </div>
-
         }
         <!--END::CREATE MODE-->
 
@@ -165,34 +116,6 @@
                 <option [ngValue]="item.id">{{ item.name }}</option>
               }
             </select>
-          </div>
-
-          <!--Variant Type + Variant-->
-          <div class="row mb-3">
-            <div class="col-md-5">
-              <label class="form-label fw-semibold">{{ 'variant.variantType' | translate }}</label>
-              <select class="form-select" [ngModel]="selectedType()" (ngModelChange)="selectType($event)">
-                <option [ngValue]="null">{{ 'common.all' | translate }} ({{ variants.length }})</option>
-                @for (type of variantTypes; track type) {
-                  @if (typeCount[type]) {
-                    <option [ngValue]="type">{{ 'variant.type.' + type | translate }} ({{ typeCount[type] }})</option>
-                  }
-                }
-              </select>
-            </div>
-            <div class="col-md-7">
-              <label class="form-label fw-semibold">
-                {{ 'itemVariantMap.variant' | translate }} <span class="text-danger">*</span>
-              </label>
-              <select class="form-select" [(ngModel)]="editDraft.variantId">
-                <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
-                @for (v of filteredVariants(); track v.id) {
-                  <option [ngValue]="v.id">
-                    {{ 'variant.type.' + v.variantTypeId | translate }} — {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}
-                  </option>
-                }
-              </select>
-            </div>
           </div>
 
           <!--Selling Price + Store-->
@@ -230,6 +153,67 @@
 
         }
         <!--END::EDIT MODE-->
+
+        <!--START::Variants Table (shared)-->
+        <div class="mb-2">
+          <label class="form-label fw-semibold">{{ 'variant.title' | translate }}</label>
+          <table class="table table-bordered align-middle mb-3">
+            <thead class="table-light">
+              <tr class="fw-semibold text-muted fs-7 text-uppercase">
+                <th class="w-40px text-center">#</th>
+                <th>{{ 'itemVariantMap.variantType' | translate }}</th>
+                <th>{{ 'itemVariantMap.variant' | translate }}</th>
+                <th class="w-50px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (rows().length === 0) {
+                <tr>
+                  <td colspan="4" class="text-center text-muted py-4">{{ 'common.noData' | translate }}</td>
+                </tr>
+              }
+              @for (row of rows(); track row.id; let i = $index) {
+              <tr>
+                <td class="text-center text-muted fw-semibold">{{ i + 1 }}</td>
+                <td>
+                  <select class="form-select form-select-sm"
+                    [ngModel]="row.type" (ngModelChange)="updateRowType(row.id, $event)">
+                    <option [ngValue]="null">— {{ 'variant.variantType' | translate }} —</option>
+                    @for (type of variantTypes; track type) {
+                      <option [ngValue]="type">{{ 'variant.type.' + type | translate }}</option>
+                    }
+                  </select>
+                </td>
+                <td>
+                  <select class="form-select form-select-sm"
+                    [ngModel]="row.variantId" (ngModelChange)="updateRowVariantId(row.id, +$event)">
+                    <option [ngValue]="0" disabled>{{ 'itemVariantMap.selectVariant' | translate }}</option>
+                    @for (v of getRowVariants(row.type); track v.id) {
+                      <option [ngValue]="v.id">
+                        {{ v.variantValue }}{{ v.abbreviation ? ' (' + v.abbreviation + ')' : '' }}
+                      </option>
+                    }
+                  </select>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-icon btn-sm btn-light-danger"
+                    (click)="removeRow(row.id)">
+                    <i class="ki-duotone ki-trash fs-5">
+                      <span class="path1"></span><span class="path2"></span>
+                      <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                    </i>
+                  </button>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-sm btn-light-primary" (click)="addRow()">
+            <i class="ki-duotone ki-plus fs-4"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'common.add' | translate }}
+          </button>
+        </div>
+        <!--END::Variants Table-->
 
       </div>
 

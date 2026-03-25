@@ -48,8 +48,12 @@
       @if (itemStoreItems.length > 0) {
       <div class="item-detail-panel__best-price d-flex align-items-center gap-2 pb-3 flex-wrap">
         <span class="text-muted fw-semibold fs-3">{{ 'item.bestPrice' | translate }}</span>
-        <span class="fw-bold best-price-value fs-1">{{ itemStoreItems[0].sellingPrice | number:'1.2-2' }}</span>
-        <span class="badge badge-light-success fs-4">{{ getStoreName(itemStoreItems[0].storeId) }}</span>
+        <span class="fw-bold best-price-value fs-1">
+          {{ (selectedVariantPrice ?? itemStoreItems[0].sellingPrice) | number:'1.2-2' }}
+        </span>
+        <span class="badge badge-light-success fs-4">
+          {{ selectedStoreId() !== null ? getStoreName(selectedStoreId()!) : getStoreName(itemStoreItems[0].storeId) }}
+        </span>
       </div>
       }
       <!--END::Best Price-->

@@ -20,7 +20,7 @@ public class ProductItem_VariantsController : BaseController<ProductItem_Variant
     public async Task<IActionResult> GetByVariant(long variantId)
     {
         var all = await Repo.GetAllAsync();
-        return Ok(all.Where(v => v.VariantId == variantId));
+        return Ok(all.Where(v => v.Variants.Any(e => e.VariantId == variantId)));
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class ProductItem_VariantsController : BaseController<ProductItem_Variant
             .Select(v => new ItemPriceDto(
                 StoreId:      v.StoreId,
                 SellingPrice: v.SellingPrice,
-                VariantId:    v.VariantId,
+                VariantIds:   v.Variants.Select(e => e.VariantId).ToList(),
                 Description:  v.Description,
                 About:        v.About,
                 Source:       "variant"))
@@ -61,5 +61,5 @@ public class ProductItem_VariantsController : BaseController<ProductItem_Variant
     }
 
     public record SetActiveManyRequest(IEnumerable<long> Ids, bool IsActive);
-    public record ItemPriceDto(long StoreId, decimal SellingPrice, long? VariantId, string? Description, string? About, string Source);
+    public record ItemPriceDto(long StoreId, decimal SellingPrice, List<long> VariantIds, string? Description, string? About, string Source);
 }

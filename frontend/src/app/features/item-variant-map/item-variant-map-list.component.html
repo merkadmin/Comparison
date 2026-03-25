@@ -82,9 +82,7 @@
             }
             <th class="w-30px">{{ 'common.number' | translate }}</th>
             <th class="min-w-180px">{{ 'itemVariantMap.item' | translate }}</th>
-            <th class="min-w-120px">{{ 'itemVariantMap.variantType' | translate }}</th>
-            <th class="min-w-120px">{{ 'itemVariantMap.variantValue' | translate }}</th>
-            <th class="min-w-80px">{{ 'variant.abbreviation' | translate }}</th>
+            <th class="min-w-200px">{{ 'variant.title' | translate }}</th>
             <th class="min-w-120px">{{ 'itemVariantMap.store' | translate }}</th>
             <th class="min-w-100px">{{ 'itemVariantMap.price' | translate }}</th>
             <th class="min-w-80px">{{ 'common.status' | translate }}</th>
@@ -97,13 +95,12 @@
         <tbody class="text-gray-600 fw-semibold">
           @if (filteredMaps().length === 0) {
             <tr>
-              <td [attr.colspan]="auth.isAdmin() ? 11 : 9" class="text-center text-muted py-10">
+              <td [attr.colspan]="auth.isAdmin() ? 9 : 7" class="text-center text-muted py-10">
                 {{ 'common.noData' | translate }}
               </td>
             </tr>
           }
           @for (m of filteredMaps(); track m.id; let i = $index) {
-            @let v = getVariant(m.variantId);
             <tr [class.table-active]="isSelected(m.id!)">
               @if (auth.isAdmin()) {
                 <td>
@@ -118,19 +115,17 @@
                 <span class="text-gray-800 fw-bold text-hover-primary fs-5">{{ getItemName(m.productItemId) }}</span>
               </td>
               <td>
-                @if (v) {
-                  <span class="fs-5">{{ 'variant.type.' + v.variantTypeId | translate }}</span>
-                } @else { <span class="text-muted">—</span> }
-              </td>
-              <td>
-                @if (v?.variantValue) {
-                  <span class="badge badge-light-primary fs-5">{{ v!.variantValue }}</span>
-                } @else { <span class="text-muted">—</span> }
-              </td>
-              <td>
-                @if (v?.abbreviation) {
-                  <span class="badge badge-light-dark fs-5">{{ v!.abbreviation }}</span>
-                } @else { <span class="text-muted">—</span> }
+                @if (m.variants.length === 0) {
+                  <span class="text-muted">—</span>
+                }
+                <div class="d-flex flex-wrap gap-1">
+                  @for (entry of m.variants; track entry.variantId) {
+                    @let v = getVariant(entry.variantId);
+                    @if (v?.abbreviation) {
+                      <span class="badge badge-light-primary fs-7">{{ v!.abbreviation }}</span>
+                    }
+                  }
+                </div>
               </td>
               <td>
                 <span class="text-gray-700 fs-5">{{ getStoreName(m.storeId) }}</span>
@@ -182,7 +177,6 @@
       }
       <div class="row g-4">
         @for (m of filteredMaps(); track m.id) {
-          @let v = getVariant(m.variantId);
           <div [class]="colClass()">
             <div class="card border shadow-sm h-100"
               [class.opacity-50]="m.isActive === false">
@@ -199,14 +193,16 @@
                 </div>
 
                 <!--Variant Info-->
-                @if (v) {
+                @if (m.variants.length > 0) {
                   <div class="d-flex flex-wrap gap-2">
-                    <span class="badge badge-light-primary">{{ 'variant.type.' + v.variantTypeId | translate }}</span>
-                    @if (v.variantValue) {
-                      <span class="badge badge-light-info">{{ v.variantValue }}</span>
-                    }
-                    @if (v.abbreviation) {
-                      <span class="badge badge-light-dark">{{ v.abbreviation }}</span>
+                    @for (entry of m.variants; track entry.variantId) {
+                      @let v = getVariant(entry.variantId);
+                      @if (v) {
+                        <span class="badge badge-light-primary">{{ v.variantValue }}</span>
+                        @if (v.abbreviation) {
+                          <span class="badge badge-light-dark">{{ v.abbreviation }}</span>
+                        }
+                      }
                     }
                   </div>
                 }
@@ -268,5 +264,6 @@
     (closed)="closeEdit()"
     (saved)="saveEdit()"
     (savedAndNew)="saveEditAndNew()"
-    (bulkSaved)="saveBulk($event)" />
+    (bulkSaved)="saveBulk($event)"
+    (bulkSavedAndNew)="saveBulkAndNew($event)" />
 }

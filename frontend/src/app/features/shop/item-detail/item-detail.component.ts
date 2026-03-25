@@ -52,19 +52,31 @@ export class ItemDetailComponent implements OnInit {
 
     const groups = new Map<string, ProductItemVariant[]>();
     for (const map of maps) {
-      const v = this.allVariants.find(v => v.id === map.variantId && v.isActive !== false);
-      if (!v) continue;
-      if (!groups.has(v.variantTypeId)) groups.set(v.variantTypeId, []);
-      if (!groups.get(v.variantTypeId)!.some(e => e.id === v.id))
-        groups.get(v.variantTypeId)!.push(v);
+      for (const entry of map.variants) {
+        const v = this.allVariants.find(v => v.id === entry.variantId && v.isActive !== false);
+        if (!v) continue;
+        if (!groups.has(v.variantTypeId)) groups.set(v.variantTypeId, []);
+        if (!groups.get(v.variantTypeId)!.some(e => e.id === v.id))
+          groups.get(v.variantTypeId)!.push(v);
+      }
     }
     return Array.from(groups.entries()).map(([type, variants]) => ({ type, variants }));
   }
 
-  get selectedStoreMap(): ProductItemVariantMap | null {
+  /** Finds the variant-map record matching the selected store + all selected variants. */
+  private get matchingMap(): ProductItemVariantMap | null {
     const storeId = this.selectedStoreId();
     if (storeId === null) return null;
-    return this.itemVariantMaps.find(m => m.storeId === storeId) ?? null;
+    const storeMaps = this.itemVariantMaps.filter(m => m.storeId === storeId);
+    const selectedIds = [...this.selectedVariants().values()];
+    if (selectedIds.length === 0) return storeMaps[0] ?? null;
+    return storeMaps.find(m =>
+      selectedIds.every(id => m.variants.some(e => e.variantId === id))
+    ) ?? storeMaps[0] ?? null;
+  }
+
+  get selectedStoreMap(): ProductItemVariantMap | null {
+    return this.matchingMap;
   }
 
   get effectiveDescription(): string {
@@ -73,6 +85,19 @@ export class ItemDetailComponent implements OnInit {
 
   get effectiveAbout(): string {
     return this.selectedStoreMap?.about || this.item.aboutThisItem || '';
+  }
+
+  /** Price for the exact selected store + variant combination, or null if not fully matched. */
+  get selectedVariantPrice(): number | null {
+    const storeId = this.selectedStoreId();
+    if (storeId === null) return null;
+    const selectedIds = [...this.selectedVariants().values()];
+    if (selectedIds.length === 0) return null;
+    const storeMaps = this.itemVariantMaps.filter(m => m.storeId === storeId);
+    const match = storeMaps.find(m =>
+      selectedIds.every(id => m.variants.some(e => e.variantId === id))
+    );
+    return match?.sellingPrice ?? null;
   }
 
   get hasVariants(): boolean { return this.variantGroups.length > 0; }

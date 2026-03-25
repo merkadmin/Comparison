@@ -65,7 +65,7 @@ export class ItemVariantMapListComponent implements OnInit {
   isCreating     = signal(false);
   saving         = signal(false);
   selectedItemId = signal<number | null>(null);
-  editDraft: ProductItemVariantMap = { productItemId: 0, variantId: 0, storeId: 0, sellingPrice: 0 };
+  editDraft: ProductItemVariantMap = { productItemId: 0, storeId: 0, sellingPrice: 0, variants: [] };
 
   private itemMap    = computed(() => new Map(this.items().map(i => [i.id!, i])));
   private variantMap = computed(() => new Map(this.variants().map(v => [v.id!, v])));
@@ -82,8 +82,10 @@ export class ItemVariantMapListComponent implements OnInit {
       if (itemId !== null && m.productItemId !== itemId) return false;
       if (!q) return true;
       const item = this.getItemName(m.productItemId).toLowerCase();
-      const v = this.getVariant(m.variantId);
-      const vStr = v ? `${v.variantTypeId} ${v.variantValue} ${v.abbreviation ?? ''}`.toLowerCase() : '';
+      const vStr = m.variants.map(e => {
+        const v = this.getVariant(e.variantId);
+        return v ? `${v.variantTypeId} ${v.variantValue} ${v.abbreviation ?? ''}` : '';
+      }).join(' ').toLowerCase();
       return item.includes(q) || vStr.includes(q);
     });
   });
@@ -104,7 +106,7 @@ export class ItemVariantMapListComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.editDraft = { productItemId: 0, variantId: 0, storeId: 0, sellingPrice: 0 };
+    this.editDraft = { productItemId: 0, storeId: 0, sellingPrice: 0, variants: [] };
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -117,14 +119,27 @@ export class ItemVariantMapListComponent implements OnInit {
 
   closeEdit(): void { this.editingId.set(null); this.isCreating.set(false); }
 
-  saveBulk(items: import('../../core/models/product-item-variant-map.model').ProductItemVariantMap[]): void {
+  saveBulk(item: ProductItemVariantMap): void {
     this.saving.set(true);
-    this.service.createBulk(items).subscribe({
+    this.service.create(item).subscribe({
       next: () => {
         this.saving.set(false);
         this.toast.success(this.translate.translate('itemVariantMap.saveSuccess'));
         this.load();
         this.closeEdit();
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('itemVariantMap.saveError')); },
+    });
+  }
+
+  saveBulkAndNew(item: ProductItemVariantMap): void {
+    this.saving.set(true);
+    this.service.create(item).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('itemVariantMap.saveSuccess'));
+        this.load();
+        // modal stays open — rows already reset by the operation component
       },
       error: () => { this.saving.set(false); this.toast.error(this.translate.translate('itemVariantMap.saveError')); },
     });
@@ -154,7 +169,7 @@ export class ItemVariantMapListComponent implements OnInit {
         this.saving.set(false);
         this.toast.success(this.translate.translate('itemVariantMap.saveSuccess'));
         this.load();
-        this.editDraft = { productItemId: 0, variantId: 0, storeId: 0, sellingPrice: 0 };
+        this.editDraft = { productItemId: 0, storeId: 0, sellingPrice: 0, variants: [] };
       },
       error: () => { this.saving.set(false); this.toast.error(this.translate.translate('itemVariantMap.saveError')); },
     });
