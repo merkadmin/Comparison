@@ -222,7 +222,7 @@ export const fr: Record<string, string> = {
   // Product Item Variants
   'nav.productItemVariants': 'Variantes',
   'nav.itemVariantMap': 'Variantes d\'articles',
-  'variant.title': 'Variantes d\'articles',
+  'variant.title': 'Variantes',
   'variant.single': 'Variante',
   'variant.addNew': 'Ajouter une variante',
   'variant.item': 'Article',
@@ -284,6 +284,7 @@ export const fr: Record<string, string> = {
   'itemVariantMap.sellingPrice': 'Prix de vente',
   'itemVariantMap.sellingPricePlaceholder': 'Optionnel — remplace le prix de l\'article en magasin',
   'itemVariantMap.store': 'Magasin',
+  'itemVariantMap.price': 'Prix',
   'itemVariantMap.storePlaceholder': 'Optionnel — ID du magasin',
   'itemVariantMap.description': 'Description',
   'itemVariantMap.descriptionPlaceholder': 'Description optionnelle pour cette variante',

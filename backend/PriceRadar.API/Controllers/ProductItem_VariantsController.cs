@@ -7,13 +7,7 @@ namespace PriceRadar.API.Controllers;
 [Route("api/item-variant-map")]
 public class ProductItem_VariantsController : BaseController<ProductItem_Variant, IProductItem_VariantRepository>
 {
-    private readonly IStore_ItemRepository _storeItems;
-
-    public ProductItem_VariantsController(IProductItem_VariantRepository repo, IStore_ItemRepository storeItems)
-        : base(repo)
-    {
-        _storeItems = storeItems;
-    }
+    public ProductItem_VariantsController(IProductItem_VariantRepository repo) : base(repo) { }
 
     [HttpGet("by-item/{itemId:long}")]
     public async Task<IActionResult> GetByItem(long itemId)
@@ -30,44 +24,33 @@ public class ProductItem_VariantsController : BaseController<ProductItem_Variant
     }
 
     /// <summary>
-    /// Returns selling prices and store IDs for a product item.
-    /// If any variant-map records for this item have SellingPrice + StoreId set,
-    /// those are returned. Otherwise falls back to Store_Item records.
+    /// Returns selling prices and store IDs for a product item from variant-map records.
     /// </summary>
     [HttpGet("prices/{itemId:long}")]
     public async Task<IActionResult> GetPrices(long itemId)
     {
-        var allMaps = await Repo.GetAllAsync();
-        var itemMaps = allMaps.Where(v => v.ProductItemId == itemId && v.IsActive && !v.IsDeleted).ToList();
-
-        var variantPrices = itemMaps
-            .Where(v => v.SellingPrice.HasValue && v.StoreId.HasValue)
+        var all = await Repo.GetAllAsync();
+        var prices = all
+            .Where(v => v.ProductItemId == itemId && v.IsActive && !v.IsDeleted)
             .Select(v => new ItemPriceDto(
-                StoreId:      v.StoreId!.Value,
-                SellingPrice: v.SellingPrice!.Value,
+                StoreId:      v.StoreId,
+                SellingPrice: v.SellingPrice,
                 VariantId:    v.VariantId,
                 Description:  v.Description,
                 About:        v.About,
                 Source:       "variant"))
             .ToList();
 
-        if (variantPrices.Count > 0)
-            return Ok(variantPrices);
+        return Ok(prices);
+    }
 
-        // Fallback: use Store_Item records for this item
-        var storeItems = await _storeItems.GetAllAsync();
-        var fallback = storeItems
-            .Where(s => s.ItemId == itemId && s.IsActive && !s.IsDeleted)
-            .Select(s => new ItemPriceDto(
-                StoreId:      s.StoreId,
-                SellingPrice: s.SellingPrice,
-                VariantId:    null,
-                Description:  null,
-                About:        null,
-                Source:       "store_item"))
-            .ToList();
-
-        return Ok(fallback);
+    [HttpPost("bulk")]
+    public async Task<IActionResult> CreateBulk([FromBody] List<ProductItem_Variant> items)
+    {
+        var results = new List<ProductItem_Variant>();
+        foreach (var item in items)
+            results.Add(await Repo.CreateAsync(item));
+        return Ok(results);
     }
 
     [HttpPatch("bulk/active")]

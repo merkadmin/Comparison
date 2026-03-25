@@ -56,9 +56,6 @@ public class MongoDbContext
 	public IMongoCollection<StoreDocument> Stores =>
 		_database.GetCollection<StoreDocument>("Store");
 
-	public IMongoCollection<Store_ItemDocuement> Store_Items =>
-		_database.GetCollection<Store_ItemDocuement>("Store_Item");
-
 	// ── Static lookup collections (_s = static/seed) ─────────────────────────
 	public IMongoCollection<StaticLookupDocument> StoreTypes =>
 		_database.GetCollection<StaticLookupDocument>("StoreType_s");

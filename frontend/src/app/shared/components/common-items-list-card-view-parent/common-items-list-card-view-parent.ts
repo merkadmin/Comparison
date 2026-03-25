@@ -5,7 +5,7 @@ import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
 import { Item } from '../../../core/models/item.model';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
 import { ProductItemVariant } from '../../../core/models/product-item-variant.model';
-import { StoreItem, ItemBestPrice } from '../../../core/models/store-item.model';
+import { ItemBestPrice } from '../../../core/models/store-item.model';
 import { Store } from '../../../core/models/store.model';
 import { IconConfigService } from '../../../core/services/icon-config.service';
 import { ItemCategoryService } from '../../../core/services/item-category.service';
@@ -13,20 +13,18 @@ import { ItemImageService } from '../../../core/services/item-image.service';
 import { ItemService } from '../../../core/services/item.service';
 import { ProductItemVariantMapService } from '../../../core/services/product-item-variant-map.service';
 import { ProductItemVariantService } from '../../../core/services/product-item-variant.service';
-import { StoreItemService } from '../../../core/services/store-item.service';
 import { StoreService } from '../../../core/services/store.service';
 import { TranslateService } from '../../../core/services/translate.service';
 import { UserActivityService } from '../../../core/services/user-activity.service';
 import { computedColClass } from '../../helpers/grid-columns.helper';
 import { GridColumns } from '../commonActions/common-grid-columns-button/common-grid-columns-button';
 import { DecimalPipe } from "@angular/common";
-import { ItemDetailComponent } from "../../../features/shop/item-detail/item-detail.component";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CommonBreadcrumb } from "../common-breadcrumb/common-breadcrumb";
 
 @Component({
   selector: 'app-common-items-list-card-view-parent',
-  imports: [ItemDetailComponent, TranslatePipe, DecimalPipe, CommonBreadcrumb],
+  imports: [TranslatePipe, DecimalPipe, CommonBreadcrumb],
   templateUrl: './common-items-list-card-view-parent.html',
   styleUrl: './common-items-list-card-view-parent.less',
 })
@@ -34,7 +32,6 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private itemService = inject(ItemService);
-  private storeItemService = inject(StoreItemService);
   private storeService = inject(StoreService);
   private categoryService = inject(ItemCategoryService);
   private imageService = inject(ItemImageService);
@@ -57,9 +54,8 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   navStack = signal<IItemCategory[]>([]);
   selectedLeaf = signal<IItemCategory | null>(null);
   items = signal<Item[]>([]);
-  storeItems = signal<StoreItem[]>([]);
   stores = signal<Store[]>([]);
-  selectedItem = signal<Item | null>(null);
+
   loadingItems = signal(false);
   loadingCats = signal(false);
   itemVariantMaps = signal<ProductItemVariantMap[]>([]);
@@ -111,12 +107,12 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     return this.itemVariantMaps().filter(m => m.productItemId === itemId);
   }
 
-  getItemStoreItems(itemId: number): StoreItem[] {
-    const active = this.storeItems().filter(si => si.itemId === itemId && si.isActive !== false);
-    const best = new Map<number, StoreItem>();
-    for (const si of active) {
-      const cur = best.get(si.storeId);
-      if (!cur || si.sellingPrice < cur.sellingPrice) best.set(si.storeId, si);
+  getItemStoreItems(itemId: number): ProductItemVariantMap[] {
+    const active = this.itemVariantMaps().filter(m => m.productItemId === itemId && m.isActive !== false);
+    const best = new Map<number, ProductItemVariantMap>();
+    for (const m of active) {
+      const cur = best.get(m.storeId);
+      if (!cur || m.sellingPrice < cur.sellingPrice) best.set(m.storeId, m);
     }
     return [...best.values()].sort((a, b) => a.sellingPrice - b.sellingPrice);
   }
@@ -152,7 +148,14 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     }
   }
 
-  getBestPrice(itemId: number): number | null { return this.bestPriceMap().get(itemId)?.sellingPrice ?? null; }
+  getBestPrice(itemId: number, storeId?: number): number | null {
+    if (storeId !== undefined) {
+      const match = this.itemVariantMaps().find(m => m.productItemId === itemId && m.storeId === storeId && m.isActive !== false);
+      return match?.sellingPrice ?? null;
+    }
+    return this.bestPriceMap().get(itemId)?.sellingPrice ?? null;
+  }
+  
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
   inCart(id: number): boolean { return this.userActivity.cartIds().has(id); }
@@ -179,8 +182,9 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
-  openDetail(item: Item): void { this.selectedItem.set(item); }
-  closeDetail(): void { this.selectedItem.set(null); }
+  openDetail(item: Item): void {
+    this.router.navigate(['/shop/by-category', this.selectedLeaf()!.id, 'item', item.id]);
+  }
 
   ngOnInit(): void {
     this.loadingCats.set(true);
@@ -195,7 +199,6 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
       },
       error: () => { this.loadingCats.set(false); }
     });
-    this.storeItemService.getEffectivePrices().subscribe({ next: si => this.storeItems.set(si), error: () => { } });
     this.storeService.getAll().subscribe({ next: s => this.stores.set(s), error: () => { } });
     this.variantMapSvc.getAll().subscribe({ next: d => this.itemVariantMaps.set(d), error: () => { } });
     this.variantSvc.getAll().subscribe({ next: d => this.allVariants.set(d), error: () => { } });
@@ -251,7 +254,7 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   private loadItemsForLeaf(categoryId: number): void {
     this.loadingItems.set(true);
     this.bestPrices.set([]);
-    this.storeItemService.getBestPricesByCategory(categoryId)
+    this.itemService.getBestPricesByCategory(categoryId)
       .subscribe({ next: bp => this.bestPrices.set(bp), error: () => { } });
     this.itemService.getByCategory(categoryId).subscribe({
       next: data => {

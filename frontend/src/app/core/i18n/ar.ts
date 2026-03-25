@@ -222,7 +222,7 @@ export const ar: Record<string, string> = {
   // Product Item Variants
   'nav.productItemVariants': 'المتغيرات',
   'nav.itemVariantMap': 'متغيرات المنتج',
-  'variant.title': 'متغيرات المنتج',
+  'variant.title': 'المتغيرات',
   'variant.single': 'متغير',
   'variant.addNew': 'إضافة متغير',
   'variant.item': 'المنتج',
@@ -284,6 +284,7 @@ export const ar: Record<string, string> = {
   'itemVariantMap.sellingPrice': 'سعر البيع',
   'itemVariantMap.sellingPricePlaceholder': 'اختياري — يستبدل سعر المتجر',
   'itemVariantMap.store': 'المتجر',
+  'itemVariantMap.price': 'السعر',
   'itemVariantMap.storePlaceholder': 'اختياري — معرّف المتجر',
   'itemVariantMap.description': 'الوصف',
   'itemVariantMap.descriptionPlaceholder': 'وصف اختياري لهذا المتغير',

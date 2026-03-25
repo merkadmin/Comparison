@@ -85,6 +85,8 @@
             <th class="min-w-120px">{{ 'itemVariantMap.variantType' | translate }}</th>
             <th class="min-w-120px">{{ 'itemVariantMap.variantValue' | translate }}</th>
             <th class="min-w-80px">{{ 'variant.abbreviation' | translate }}</th>
+            <th class="min-w-120px">{{ 'itemVariantMap.store' | translate }}</th>
+            <th class="min-w-100px">{{ 'itemVariantMap.price' | translate }}</th>
             <th class="min-w-80px">{{ 'common.status' | translate }}</th>
             <th class="min-w-100px">{{ 'common.created' | translate }}</th>
             @if (auth.isAdmin()) {
@@ -95,7 +97,7 @@
         <tbody class="text-gray-600 fw-semibold">
           @if (filteredMaps().length === 0) {
             <tr>
-              <td [attr.colspan]="auth.isAdmin() ? 9 : 7" class="text-center text-muted py-10">
+              <td [attr.colspan]="auth.isAdmin() ? 11 : 9" class="text-center text-muted py-10">
                 {{ 'common.noData' | translate }}
               </td>
             </tr>
@@ -128,6 +130,14 @@
               <td>
                 @if (v?.abbreviation) {
                   <span class="badge badge-light-dark fs-5">{{ v!.abbreviation }}</span>
+                } @else { <span class="text-muted">—</span> }
+              </td>
+              <td>
+                <span class="text-gray-700 fs-5">{{ getStoreName(m.storeId) }}</span>
+              </td>
+              <td>
+                @if (m.sellingPrice != null) {
+                  <span class="fw-bold text-primary fs-5">{{ m.sellingPrice | number:'1.2-2' }}</span>
                 } @else { <span class="text-muted">—</span> }
               </td>
               <td>
@@ -201,6 +211,16 @@
                   </div>
                 }
 
+                <!--Store & Price-->
+                <div class="d-flex align-items-center justify-content-between">
+                  <span class="text-gray-700 fs-7">{{ getStoreName(m.storeId) }}</span>
+                  @if (m.sellingPrice != null) {
+                    <span class="fw-bold text-primary fs-6">{{ m.sellingPrice | number:'1.2-2' }}</span>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </div>
+
                 <!--Created-->
                 @if (m.createdAt) {
                   <span class="text-muted fs-8 mt-auto">{{ m.createdAt | date:'mediumDate' }}</span>
@@ -247,5 +267,6 @@
     [saving]="saving()"
     (closed)="closeEdit()"
     (saved)="saveEdit()"
-    (savedAndNew)="saveEditAndNew()" />
+    (savedAndNew)="saveEditAndNew()"
+    (bulkSaved)="saveBulk($event)" />
 }

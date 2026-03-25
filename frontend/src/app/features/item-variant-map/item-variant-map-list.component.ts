@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../core/services/auth.service';
@@ -25,7 +25,7 @@ import { IconConfigService } from '../../core/services/icon-config.service';
   selector: 'app-item-variant-map-list',
   standalone: true,
   imports: [
-    CommonModule, FormsModule, TranslatePipe,
+    CommonModule, FormsModule, TranslatePipe, DecimalPipe,
     CommonDropDownMenuActionButton, CommonListHeaderActions,
     ItemVariantMapOperationComponent,
   ],
@@ -65,13 +65,15 @@ export class ItemVariantMapListComponent implements OnInit {
   isCreating     = signal(false);
   saving         = signal(false);
   selectedItemId = signal<number | null>(null);
-  editDraft: ProductItemVariantMap = { productItemId: 0, variantId: 0 };
+  editDraft: ProductItemVariantMap = { productItemId: 0, variantId: 0, storeId: 0, sellingPrice: 0 };
 
   private itemMap    = computed(() => new Map(this.items().map(i => [i.id!, i])));
   private variantMap = computed(() => new Map(this.variants().map(v => [v.id!, v])));
+  private storeMap   = computed(() => new Map(this.stores().map(s => [s.id!, s])));
 
   getItemName(id: number): string { return this.itemMap().get(id)?.name ?? String(id); }
   getVariant(id: number): ProductItemVariant | undefined { return this.variantMap().get(id); }
+  getStoreName(id: number | null | undefined): string { return id != null ? (this.storeMap().get(id)?.name ?? String(id)) : '—'; }
 
   filteredMaps = computed<ProductItemVariantMap[]>(() => {
     const q      = this.searchQuery().trim().toLowerCase();
@@ -102,7 +104,7 @@ export class ItemVariantMapListComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.editDraft = { productItemId: 0, variantId: 0 };
+    this.editDraft = { productItemId: 0, variantId: 0, storeId: 0, sellingPrice: 0 };
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -114,6 +116,19 @@ export class ItemVariantMapListComponent implements OnInit {
   }
 
   closeEdit(): void { this.editingId.set(null); this.isCreating.set(false); }
+
+  saveBulk(items: import('../../core/models/product-item-variant-map.model').ProductItemVariantMap[]): void {
+    this.saving.set(true);
+    this.service.createBulk(items).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('itemVariantMap.saveSuccess'));
+        this.load();
+        this.closeEdit();
+      },
+      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('itemVariantMap.saveError')); },
+    });
+  }
 
   saveEdit(): void {
     this.saving.set(true);
@@ -139,7 +154,7 @@ export class ItemVariantMapListComponent implements OnInit {
         this.saving.set(false);
         this.toast.success(this.translate.translate('itemVariantMap.saveSuccess'));
         this.load();
-        this.editDraft = { productItemId: 0, variantId: 0 };
+        this.editDraft = { productItemId: 0, variantId: 0, storeId: 0, sellingPrice: 0 };
       },
       error: () => { this.saving.set(false); this.toast.error(this.translate.translate('itemVariantMap.saveError')); },
     });

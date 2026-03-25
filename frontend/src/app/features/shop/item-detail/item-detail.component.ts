@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Item } from '../../../core/models/item.model';
-import { StoreItem, SellingPriceType } from '../../../core/models/store-item.model';
 import { Store } from '../../../core/models/store.model';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
 import { ProductItemVariant } from '../../../core/models/product-item-variant.model';
@@ -22,16 +21,18 @@ export class ItemDetailComponent implements OnInit {
   userActivity = inject(UserActivityService);
   private iconConfig = inject(IconConfigService);
 
-  cartIcon = this.iconConfig.iconSignal('global.cart', 'basket');
+  cartIcon    = this.iconConfig.iconSignal('global.cart',    'basket');
   compareIcon = this.iconConfig.iconSignal('global.compare', 'kanban');
   favoriteIcon = this.iconConfig.iconSignal('global.favorite', 'heart');
 
   @Input() item!: Item;
-  @Input() storeItems: StoreItem[] = [];
+  @Input() storeItems: ProductItemVariantMap[] = [];
   @Input() stores: Store[] = [];
   @Input() compareIds = new Set<number>();
   @Input() itemVariantMaps: ProductItemVariantMap[] = [];
   @Input() allVariants: ProductItemVariant[] = [];
+
+  @Input() isPage = false;
 
   @Output() closed = new EventEmitter<void>();
   @Output() favoriteToggled = new EventEmitter<number>();
@@ -40,18 +41,38 @@ export class ItemDetailComponent implements OnInit {
 
   activeIdx        = signal(0);
   lightboxIdx      = signal<number | null>(null);
-  selectedStoreIds = signal<Set<number>>(new Set());
+  selectedStoreId  = signal<number | null>(null);   // storeId of selected store row (radio)
   selectedVariants = signal<Map<string, number>>(new Map());
 
   get variantGroups(): { type: string; variants: ProductItemVariant[] }[] {
+    const storeId = this.selectedStoreId();
+    const maps = storeId !== null
+      ? this.itemVariantMaps.filter(m => m.storeId === storeId)
+      : this.itemVariantMaps;
+
     const groups = new Map<string, ProductItemVariant[]>();
-    for (const map of this.itemVariantMaps) {
+    for (const map of maps) {
       const v = this.allVariants.find(v => v.id === map.variantId && v.isActive !== false);
       if (!v) continue;
       if (!groups.has(v.variantTypeId)) groups.set(v.variantTypeId, []);
-      groups.get(v.variantTypeId)!.push(v);
+      if (!groups.get(v.variantTypeId)!.some(e => e.id === v.id))
+        groups.get(v.variantTypeId)!.push(v);
     }
     return Array.from(groups.entries()).map(([type, variants]) => ({ type, variants }));
+  }
+
+  get selectedStoreMap(): ProductItemVariantMap | null {
+    const storeId = this.selectedStoreId();
+    if (storeId === null) return null;
+    return this.itemVariantMaps.find(m => m.storeId === storeId) ?? null;
+  }
+
+  get effectiveDescription(): string {
+    return this.selectedStoreMap?.description || this.item.briefDescription || this.item.description || '';
+  }
+
+  get effectiveAbout(): string {
+    return this.selectedStoreMap?.about || this.item.aboutThisItem || '';
   }
 
   get hasVariants(): boolean { return this.variantGroups.length > 0; }
@@ -61,8 +82,7 @@ export class ItemDetailComponent implements OnInit {
   }
 
   get selectedVariantSummary(): string {
-    const sel = this.selectedVariants();
-    return Array.from(sel.values())
+    return Array.from(this.selectedVariants().values())
       .map(id => {
         const v = this.allVariants.find(v => v.id === id);
         return v ? (v.abbreviation ?? v.variantValue) : '';
@@ -83,23 +103,20 @@ export class ItemDetailComponent implements OnInit {
     this.selectedVariants.update(m => new Map(m).set(type, variantId));
   }
 
-  toggleStoreSelection(si: StoreItem): void {
-    this.selectedStoreIds.update(s => {
-      const n = new Set(s);
-      n.has(si.id!) ? n.delete(si.id!) : n.add(si.id!);
-      return n;
-    });
+  toggleStoreSelection(si: ProductItemVariantMap): void {
+    this.selectedStoreId.update(cur => cur === si.storeId ? null : si.storeId);
+    this.selectedVariants.set(new Map()); // reset variant selection on store change
   }
 
-  isStoreSelected(si: StoreItem): boolean { return this.selectedStoreIds().has(si.id!); }
+  isStoreSelected(si: ProductItemVariantMap): boolean { return this.selectedStoreId() === si.storeId; }
 
   confirmCart(): void {
-    if (this.selectedStoreIds().size === 0 || !this.allVariantsSelected) return;
+    if (this.selectedStoreId() === null || !this.allVariantsSelected) return;
     if (!this.inCart()) this.cartToggled.emit(this.item.id!);
   }
 
   removeFromCart(): void {
-    this.selectedStoreIds.set(new Set());
+    this.selectedStoreId.set(null);
     this.cartToggled.emit(this.item.id!);
   }
 
@@ -117,28 +134,18 @@ export class ItemDetailComponent implements OnInit {
     return imgs;
   }
 
-  get itemStoreItems(): StoreItem[] {
-    const active = this.storeItems.filter(si => si.itemId === this.item.id && si.isActive !== false);
-    const bestPerStore = new Map<number, StoreItem>();
-    for (const si of active) {
-      const existing = bestPerStore.get(si.storeId);
-      if (!existing || si.sellingPrice < existing.sellingPrice) bestPerStore.set(si.storeId, si);
+  get itemStoreItems(): ProductItemVariantMap[] {
+    const active = this.storeItems.filter(m => m.productItemId === this.item.id && m.isActive !== false);
+    const best = new Map<number, ProductItemVariantMap>();
+    for (const m of active) {
+      const existing = best.get(m.storeId);
+      if (!existing || m.sellingPrice < existing.sellingPrice) best.set(m.storeId, m);
     }
-    return [...bestPerStore.values()].sort((a, b) => a.sellingPrice - b.sellingPrice);
+    return [...best.values()].sort((a, b) => a.sellingPrice - b.sellingPrice);
   }
 
   getStoreName(storeId: number): string {
     return this.stores.find(s => s.id === storeId)?.name ?? String(storeId);
-  }
-
-  priceTypeLabel(type: SellingPriceType): string {
-    return SellingPriceType[type] ?? String(type);
-  }
-
-  priceTypeBadge(type: SellingPriceType): string {
-    if (type === SellingPriceType.Offer) return 'badge-light-danger';
-    if (type === SellingPriceType.Premium) return 'badge-light-warning';
-    return 'badge-light-success';
   }
 
   isFavorite(): boolean { return this.userActivity.favoriteIds().has(this.item.id!); }

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { Item } from '../models/item.model';
+import { ItemBestPrice } from '../models/store-item.model';
 
 @Injectable({ providedIn: 'root' })
 export class ItemService {
@@ -21,6 +22,14 @@ export class ItemService {
 
   getByBrand(brandId: number): Observable<Item[]> {
     return this.api.get<Item[]>(`/items/by-brand/${brandId}`);
+  }
+
+  getBestPrices(): Observable<ItemBestPrice[]> {
+    return this.api.get<ItemBestPrice[]>('/items/best-prices');
+  }
+
+  getBestPricesByCategory(categoryId: number): Observable<ItemBestPrice[]> {
+    return this.api.get<ItemBestPrice[]>(`/items/best-prices/by-category/${categoryId}`);
   }
 
   create(item: Item): Observable<Item> {

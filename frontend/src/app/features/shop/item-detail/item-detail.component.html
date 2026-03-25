@@ -1,17 +1,10 @@
 <!--START::Modal Overlay-->
+@if (!isPage) {
 <div class="item-detail-overlay" (click)="closed.emit()"></div>
+}
 
 <!--START::Modal Panel-->
-<div class="item-detail-panel card shadow-lg">
-
-  <!--START::Header-->
-  <div class="item-detail-panel__header d-flex align-items-center gap-3 px-6 py-4 border-bottom">
-    <h4 class="fw-bold text-gray-800 mb-0 flex-grow-1 lh-sm">{{ item.name }}</h4>
-    <button class="btn btn-icon btn-sm btn-light" (click)="closed.emit()">
-      <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
-    </button>
-  </div>
-  <!--END::Header-->
+<div class="card shadow-lg" [class.item-detail-panel]="!isPage" [class.item-detail-panel--page]="isPage">
 
   <!--START::Body-->
   <div class="item-detail-panel__body d-flex gap-6 p-6 overflow-auto">
@@ -20,78 +13,30 @@
     <div class="item-detail-panel__gallery d-flex flex-column gap-3">
 
       <!--Main Image (click to enlarge)-->
-      <div class="item-detail-panel__main-img d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
+      <div
+        class="item-detail-panel__main-img d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
         (click)="allImages.length > 0 && openLightbox()">
         @if (allImages.length > 0) {
-          <img [src]="allImages[activeIdx()]" [alt]="item.name" class="item-detail-panel__main-img-el" />
+        <img [src]="allImages[activeIdx()]" [alt]="item.name" class="item-detail-panel__main-img-el" />
         } @else {
-          <span class="fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
+        <span class="fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
         }
       </div>
 
       <!--Thumbnails (click to switch, no lightbox)-->
       @if (allImages.length > 1) {
-        <div class="item-detail-panel__thumbs d-flex gap-2 flex-wrap">
-          @for (img of allImages; track img; let i = $index) {
-            <div class="item-detail-panel__thumb d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
-              [class.item-detail-panel__thumb--active]="activeIdx() === i"
-              (click)="activeIdx.set(i)">
-              <img [src]="img" [alt]="item.name + ' ' + (i + 1)" class="item-detail-panel__thumb-img" />
-            </div>
-          }
+      <div class="item-detail-panel__thumbs d-flex gap-2 flex-wrap">
+        @for (img of allImages; track img; let i = $index) {
+        <div
+          class="item-detail-panel__thumb d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
+          [class.item-detail-panel__thumb--active]="activeIdx() === i" (click)="activeIdx.set(i)">
+          <img [src]="img" [alt]="item.name + ' ' + (i + 1)" class="item-detail-panel__thumb-img" />
         </div>
+        }
+      </div>
       }
 
-      <!--Best Price-->
-      @if (itemStoreItems.length > 0) {
-        <div class="item-detail-panel__best-price d-flex align-items-center gap-2 pt-3 flex-wrap">
-          <span class="text-muted fs-7 fw-semibold">{{ 'item.bestPrice' | translate }}</span>
-          <span class="fw-bold fs-2 best-price-value">{{ itemStoreItems[0].sellingPrice | number:'1.2-2' }}</span>
-          <span class="badge badge-light-primary fs-7">{{ getStoreName(itemStoreItems[0].storeId) }}</span>
-        </div>
-      }
 
-      <!--START::Variant Groups-->
-      @if (hasVariants) {
-        <div class="d-flex flex-column gap-3 pt-3">
-          @for (group of variantGroups; track group.type) {
-            <div class="variant-group">
-              <h6 class="fw-semibold text-gray-700 fs-7 mb-1">
-                {{ 'variant.type.' + group.type | translate }}
-              </h6>
-              <div class="variant-list">
-                @for (v of group.variants; track v.id) {
-                  <div class="variant-list-item d-flex align-items-center gap-3 px-3 py-2 cursor-pointer"
-                    [class.variant-list-item--selected]="selectedVariants().get(group.type) === v.id"
-                    (click)="selectVariant(group.type, v.id!)">
-                    <div class="variant-list-item__radio">
-                      <span class="variant-list-item__dot"></span>
-                    </div>
-                    @if (v.abbreviation) {
-                      <span class="badge badge-light-dark fs-8 me-1">{{ v.abbreviation }}</span>
-                    }
-                    <span class="text-gray-800 fs-7">{{ v.variantValue }}</span>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-
-          <!--Selected summary / warning-->
-          @if (allVariantsSelected) {
-            <div class="d-flex align-items-center gap-2 text-success fs-7 fw-semibold">
-              <i class="ki-duotone ki-check-circle fs-5"><span class="path1"></span><span class="path2"></span></i>
-              {{ selectedVariantSummary }}
-            </div>
-          } @else {
-            <div class="d-flex align-items-center gap-2 text-warning fs-7 fw-semibold">
-              <i class="ki-duotone ki-information-5 fs-5"><span class="path1"></span><span class="path2"></span></i>
-              {{ 'variant.selectRequired' | translate }}
-            </div>
-          }
-        </div>
-      }
-      <!--END::Variant Groups-->
 
     </div>
     <!--END::Left - Images-->
@@ -99,79 +44,136 @@
     <!--START::Right - Details-->
     <div class="item-detail-panel__info d-flex flex-column gap-4 flex-grow-1 min-w-0">
 
-      <!--Store Prices-->
+      <!--START::Best Price-->
       @if (itemStoreItems.length > 0) {
-        <div>
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h6 class="fw-bold text-gray-700 mb-0 fs-6">{{ 'item.prices' | translate }}</h6>
-            @if (selectedStoreIds().size > 0 && !inCart()) {
-              <span class="badge badge-light-primary fs-8">{{ selectedStoreIds().size }} selected</span>
-            }
-          </div>
-
-          <div class="d-flex flex-column gap-2">
-            @for (si of itemStoreItems; track si.id) {
-              <div class="price-row d-flex align-items-center justify-content-between px-3 py-2 rounded"
-                [class.price-row--selected]="isStoreSelected(si)"
-                [class.bg-light]="!isStoreSelected(si)"
-                (click)="!inCart() && toggleStoreSelection(si)">
-                <span class="fw-semibold text-gray-800 fs-6">{{ getStoreName(si.storeId) }}</span>
-                <div class="d-flex align-items-center gap-2">
-                  <span class="badge {{ priceTypeBadge(si.sellingPriceTypeId) }} fs-8">
-                    {{ 'storeItem.priceType.' + priceTypeLabel(si.sellingPriceTypeId) | translate }}
-                  </span>
-                  <span class="fw-bold text-primary fs-5">{{ si.sellingPrice | number:'1.2-2' }}</span>
-                  <div class="form-check form-check-sm form-check-custom form-check-solid ms-2">
-                    <input class="form-check-input" type="checkbox"
-                      [checked]="isStoreSelected(si)"
-                      [disabled]="inCart()"
-                      (click)="$event.stopPropagation(); toggleStoreSelection(si)" />
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
+      <div class="item-detail-panel__best-price d-flex align-items-center gap-2 pb-3 flex-wrap">
+        <span class="text-muted fw-semibold fs-3">{{ 'item.bestPrice' | translate }}</span>
+        <span class="fw-bold best-price-value fs-1">{{ itemStoreItems[0].sellingPrice | number:'1.2-2' }}</span>
+        <span class="badge badge-light-success fs-4">{{ getStoreName(itemStoreItems[0].storeId) }}</span>
+      </div>
       }
+      <!--END::Best Price-->
+
+      @if (itemStoreItems.length > 0) {
+      <div>
+        <!--START::Store Prices-->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+
+          <!--START::Store Prices Title-->
+          <h6 class="fw-bold text-gray-700 mb-0 fs-5">{{ 'item.prices' | translate }}</h6>
+          <!--START::Selected Store Badge-->
+
+          <!--START::Selected Store Badge + Variant Summary-->
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            
+            <!--START::Selected Store Badge-->
+            @if (selectedStoreId() !== null && !inCart()) {
+            <span class="badge badge-light-success fs-4">
+              <i class="ki-duotone ki-check fs-1"><span class="path1"></span><span class="path2"></span></i>
+              {{ getStoreName(selectedStoreId()!) }}
+            </span>
+            }
+            <!--END::Selected Store Badge-->
+
+            @if (hasVariants && allVariantsSelected) {
+              <span class="badge badge-light-success fs-4">
+                <i class="ki-duotone ki-check fs-1"><span class="path1"></span><span class="path2"></span></i>
+                {{ selectedVariantSummary }}
+              </span>
+            }
+          </div>
+          <!--END::Selected Store Badge + Variant Summary-->
+          
+        </div>
+        <!--END::Store Prices-->
+
+        <div class="d-flex flex-column gap-2">
+          @for (si of itemStoreItems; track si.id) {
+          <div class="price-row d-flex align-items-center justify-content-between px-3 py-2 rounded"
+            [class.price-row--selected]="isStoreSelected(si)" [class.bg-light]="!isStoreSelected(si)"
+            (click)="!inCart() && toggleStoreSelection(si)">
+            <span class="fw-semibold text-gray-800 fs-6">{{ getStoreName(si.storeId) }}</span>
+            <div class="d-flex align-items-center gap-2">
+              <span class="fw-bold text-primary fs-5">{{ si.sellingPrice | number:'1.2-2' }}</span>
+              <div class="form-check form-check-sm form-check-custom form-check-solid form-check-solid ms-2">
+                <input class="form-check-input" type="radio" [checked]="isStoreSelected(si)" [disabled]="inCart()"
+                  (click)="$event.stopPropagation(); !inCart() && toggleStoreSelection(si)" />
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!--START::Variant Groups-->
+      @if (hasVariants) {
+      <div class="d-flex flex-column gap-2">
+        @if (!allVariantsSelected) {
+        <div class="d-flex align-items-center gap-2 text-warning fs-7 fw-semibold">
+          <i class="ki-duotone ki-information-5 fs-5"><span class="path1"></span><span class="path2"></span></i>
+          {{ 'variant.selectRequired' | translate }}
+        </div>
+        }
+        <div class="row g-3">
+          @for (group of variantGroups; track group.type) {
+          <div class="col-4">
+            <h6 class="fw-semibold text-gray-700 fs-5 mb-1">
+              {{ 'variant.type.' + group.type | translate }}
+            </h6>
+            <div class="variant-list">
+              @for (v of group.variants; track v.id) {
+              <div class="variant-list-item d-flex align-items-center gap-3 px-3 py-2 cursor-pointer"
+                [class.variant-list-item--selected]="selectedVariants().get(group.type) === v.id"
+                (click)="selectVariant(group.type, v.id!)">
+                <div class="variant-list-item__radio">
+                  <span class="variant-list-item__dot"></span>
+                </div>
+                @if (v.abbreviation) {
+                <span class="badge badge-light-dark fs-8 me-1">{{ v.abbreviation }}</span>
+                }
+                <span class="text-gray-800 fs-7">{{ v.variantValue }}</span>
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+
+      </div>
+      }
+      <!--END::Variant Groups-->
 
       <!--Item Meta-->
       <div class="d-flex flex-column gap-2">
         @if (item.modelName) {
-          <div class="d-flex gap-2 align-items-center">
-            <span class="text-muted fs-7 fw-semibold item-meta-label">{{ 'item.modelName' | translate }}</span>
-            <span class="text-gray-800 fs-6">{{ item.modelName }}</span>
-          </div>
+        <div class="d-flex gap-2 align-items-center">
+          <span class="text-muted fs-7 fw-semibold item-meta-label">{{ 'item.modelName' | translate }}</span>
+          <span class="text-gray-800 fs-6">{{ item.modelName }}</span>
+        </div>
         }
         @if (item.barcode) {
-          <div class="d-flex gap-2 align-items-center">
-            <span class="text-muted fs-7 fw-semibold item-meta-label">{{ 'common.barcode' | translate }}</span>
-            <span class="text-gray-800 fs-6 font-monospace">{{ item.barcode }}</span>
-          </div>
+        <div class="d-flex gap-2 align-items-center">
+          <span class="text-muted fs-7 fw-semibold item-meta-label">{{ 'common.barcode' | translate }}</span>
+          <span class="text-gray-800 fs-6 font-monospace">{{ item.barcode }}</span>
+        </div>
         }
       </div>
 
-      <!--Brief Description-->
-      @if (item.briefDescription) {
-        <div>
-          <h6 class="fw-bold text-gray-700 mb-1 fs-6">{{ 'item.briefDescription' | translate }}</h6>
-          <p class="text-muted fs-6 mb-0">{{ item.briefDescription }}</p>
-        </div>
-      }
-
       <!--Description-->
-      @if (item.description) {
-        <div>
-          <h6 class="fw-bold text-gray-700 mb-1 fs-6">{{ 'common.description' | translate }}</h6>
-          <p class="text-muted fs-6 mb-0">{{ item.description }}</p>
-        </div>
+      @if (effectiveDescription) {
+      <div>
+        <h6 class="fw-bold text-gray-700 mb-1 fs-6">{{ 'common.description' | translate }}</h6>
+        <p class="text-muted fs-6 mb-0">{{ effectiveDescription }}</p>
+      </div>
       }
 
       <!--About This Item-->
-      @if (item.aboutThisItem) {
-        <div>
-          <h6 class="fw-bold text-gray-700 mb-1 fs-6">{{ 'item.aboutThisItem' | translate }}</h6>
-          <p class="text-muted fs-6 mb-0 about-text">{{ item.aboutThisItem }}</p>
-        </div>
+      @if (effectiveAbout) {
+      <div>
+        <h6 class="fw-bold text-gray-700 mb-1 fs-6">{{ 'item.aboutThisItem' | translate }}</h6>
+        <p class="text-muted fs-6 mb-0 about-text">{{ effectiveAbout }}</p>
+      </div>
       }
 
     </div>
@@ -181,32 +183,27 @@
   <!--END::Body-->
 
   <!--START::Footer Actions-->
+  @if (!isPage) {
   <div class="item-detail-panel__footer d-flex gap-3 px-6 py-4 border-top">
 
     @if (inCart()) {
-      <button class="btn btn-sm btn-success flex-fill" (click)="removeFromCart()">
-        <i class="ki-duotone ki-{{ cartIcon() }} fs-4">
-          <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-        </i>
-        {{ 'item.removeFromCart' | translate }}
-      </button>
+    <button class="btn btn-sm btn-success flex-fill" (click)="removeFromCart()">
+      <i class="ki-duotone ki-{{ cartIcon() }} fs-4">
+        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+      </i>
+      {{ 'item.removeFromCart' | translate }}
+    </button>
     } @else {
-      <button class="btn btn-sm btn-primary flex-fill"
-        [disabled]="selectedStoreIds().size === 0 || !allVariantsSelected"
-        (click)="confirmCart()">
-        <i class="ki-duotone ki-{{ cartIcon() }} fs-4">
-          <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-        </i>
-        {{ 'item.addToCart' | translate }}
-        @if (selectedStoreIds().size > 0) {
-          ({{ selectedStoreIds().size }})
-        }
-      </button>
+    <button class="btn btn-sm btn-primary flex-fill" [disabled]="selectedStoreId() === null || !allVariantsSelected"
+      (click)="confirmCart()">
+      <i class="ki-duotone ki-{{ cartIcon() }} fs-4">
+        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+      </i>
+      {{ 'item.addToCart' | translate }}
+    </button>
     }
 
-    <button class="btn btn-sm flex-fill"
-      [class.btn-light-success]="!inCompare()"
-      [class.btn-success]="inCompare()"
+    <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCompare()" [class.btn-success]="inCompare()"
       (click)="compareToggled.emit(item.id!)">
       <i class="ki-duotone ki-{{ compareIcon() }} fs-4">
         <span class="path1"></span><span class="path2"></span>
@@ -214,18 +211,16 @@
       {{ 'item.compare' | translate }}
     </button>
 
-    <button class="btn btn-sm btn-icon"
-      [class.btn-light-danger]="isFavorite()"
-      [class.btn-light]="!isFavorite()"
+    <button class="btn btn-sm btn-icon" [class.btn-light-danger]="isFavorite()" [class.btn-light]="!isFavorite()"
       (click)="favoriteToggled.emit(item.id!)">
-      <i class="ki-duotone ki-{{ favoriteIcon() }} fs-3"
-        [class.text-danger]="isFavorite()"
+      <i class="ki-duotone ki-{{ favoriteIcon() }} fs-3" [class.text-danger]="isFavorite()"
         [class.text-gray-400]="!isFavorite()">
         <span class="path1"></span><span class="path2"></span>
       </i>
     </button>
 
   </div>
+  }
   <!--END::Footer Actions-->
 
 </div>
@@ -233,48 +228,48 @@
 
 <!--START::Lightbox-->
 @if (lightboxIdx() !== null) {
-  <div class="item-lightbox" (click)="closeLightbox()">
+<div class="item-lightbox" (click)="closeLightbox()">
 
-    <!--Close-->
-    <button class="item-lightbox__close btn btn-icon btn-sm btn-light"
-      (click)="closeLightbox(); $event.stopPropagation()">
-      <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
-    </button>
+  <!--Close-->
+  <button class="item-lightbox__close btn btn-icon btn-sm btn-light"
+    (click)="closeLightbox(); $event.stopPropagation()">
+    <i class="ki-duotone ki-cross fs-2"><span class="path1"></span><span class="path2"></span></i>
+  </button>
 
-    <!--Prev-->
-    @if (lightboxIdx()! > 0) {
-      <button class="item-lightbox__nav item-lightbox__nav--prev btn btn-icon btn-sm btn-light"
-        (click)="lightboxPrev(); $event.stopPropagation()">
-        <i class="ki-duotone ki-arrow-left fs-2"><span class="path1"></span><span class="path2"></span></i>
-      </button>
-    }
+  <!--Prev-->
+  @if (lightboxIdx()! > 0) {
+  <button class="item-lightbox__nav item-lightbox__nav--prev btn btn-icon btn-sm btn-light"
+    (click)="lightboxPrev(); $event.stopPropagation()">
+    <i class="ki-duotone ki-arrow-left fs-2"><span class="path1"></span><span class="path2"></span></i>
+  </button>
+  }
 
-    <!--Main image-->
-    <div class="item-lightbox__content d-flex flex-column align-items-center gap-4" (click)="$event.stopPropagation()">
-      <img [src]="allImages[lightboxIdx()!]" [alt]="item.name" class="item-lightbox__img" />
+  <!--Main image-->
+  <div class="item-lightbox__content d-flex flex-column align-items-center gap-4" (click)="$event.stopPropagation()">
+    <img [src]="allImages[lightboxIdx()!]" [alt]="item.name" class="item-lightbox__img" />
 
-      <!--Thumbnails-->
-      @if (allImages.length > 1) {
-        <div class="item-lightbox__thumbs d-flex gap-2 flex-wrap justify-content-center">
-          @for (img of allImages; track img; let i = $index) {
-            <div class="item-lightbox__thumb d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
-              [class.item-lightbox__thumb--active]="lightboxIdx() === i"
-              (click)="lightboxSelect(i)">
-              <img [src]="img" [alt]="item.name + ' ' + (i + 1)" class="item-lightbox__thumb-img" />
-            </div>
-          }
-        </div>
+    <!--Thumbnails-->
+    @if (allImages.length > 1) {
+    <div class="item-lightbox__thumbs d-flex gap-2 flex-wrap justify-content-center">
+      @for (img of allImages; track img; let i = $index) {
+      <div
+        class="item-lightbox__thumb d-flex align-items-center justify-content-center bg-white rounded border cursor-pointer"
+        [class.item-lightbox__thumb--active]="lightboxIdx() === i" (click)="lightboxSelect(i)">
+        <img [src]="img" [alt]="item.name + ' ' + (i + 1)" class="item-lightbox__thumb-img" />
+      </div>
       }
     </div>
+    }
+  </div>
 
-    <!--Next-->
-    @if (lightboxIdx()! < allImages.length - 1) {
-      <button class="item-lightbox__nav item-lightbox__nav--next btn btn-icon btn-sm btn-light"
-        (click)="lightboxNext(); $event.stopPropagation()">
-        <i class="ki-duotone ki-arrow-right fs-2"><span class="path1"></span><span class="path2"></span></i>
-      </button>
+  <!--Next-->
+  @if (lightboxIdx()! < allImages.length - 1) { <button
+    class="item-lightbox__nav item-lightbox__nav--next btn btn-icon btn-sm btn-light"
+    (click)="lightboxNext(); $event.stopPropagation()">
+    <i class="ki-duotone ki-arrow-right fs-2"><span class="path1"></span><span class="path2"></span></i>
+    </button>
     }
 
-  </div>
+</div>
 }
 <!--END::Lightbox-->

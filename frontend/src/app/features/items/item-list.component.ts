@@ -7,7 +7,6 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ItemService } from '../../core/services/item.service';
-import { StoreItemService } from '../../core/services/store-item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemImageService } from '../../core/services/item-image.service';
@@ -51,7 +50,6 @@ export class ItemListComponent implements OnInit, OnDestroy {
   addIcon      = this.iconConfig.iconSignal('global.add',     'plus');
   editIcon     = this.iconConfig.iconSignal('global.edit',    'pencil');
   deleteIcon   = this.iconConfig.iconSignal('global.delete',  'trash');
-  private storeItemService    = inject(StoreItemService);
   private categoryService = inject(ItemCategoryService);
   private brandService = inject(ItemBrandService);
   private imageService = inject(ItemImageService);
@@ -269,7 +267,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => { } });
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => { } });
-    this.storeItemService.getBestPrices().subscribe({ next: bp => this.bestPrices.set(bp), error: () => { } });
+    this.itemService.getBestPrices().subscribe({ next: bp => this.bestPrices.set(bp), error: () => { } });
     this.typeService.getAll().subscribe({ next: t => this.productItemTypes.set(t), error: () => { } });
     this.infoService.getAll().subscribe({ next: i => this.productInfos.set(i), error: () => { } });
     this.userActivity.loadAll();

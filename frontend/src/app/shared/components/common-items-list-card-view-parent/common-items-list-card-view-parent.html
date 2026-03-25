@@ -98,7 +98,9 @@
         <div class="row g-4">
             @for (item of filteredItems(); track item.id) {
             <div [class]="colClass()">
-                <div class="item-card card h-100 shadow-sm border-0 cursor-pointer" (click)="openDetail(item)">
+                <div 
+                    class="item-card card h-100 shadow-sm border-0 cursor-pointer" 
+                    (click)="openDetail(item)">
 
                     <!--START::Card Image-->
                     <div
@@ -132,25 +134,40 @@
 
                     <!--START::Card Info-->
                     <div class="card-body d-flex flex-column gap-3 p-4">
+
+                        <!--START::Name-->
                         <h6 class="fw-bold text-gray-800 mb-0 lh-sm fs-2">{{ item.name }}</h6>
+                        <!--END::Name-->
+
+                        <!--START::Description-->
                         @if (item.briefDescription || item.description) {
-                        <p class="text-muted fs-7 mb-0 item-card__desc fs-3">{{ item.briefDescription ||
-                            item.description }}</p>
+                        <p class="text-muted fs-7 mb-0 item-card__desc fs-3">
+                            {{ item.briefDescription || item.description }}
+                        </p>
                         }
+                        <!--END::Description-->
+
+                        <!--START::Best Price-->
                         @if (getBestPrice(item.id!) !== null) {
                         <div class="d-flex align-items-center gap-1 mt-auto pt-2 border-top">
                             <span class="text-muted fs-6">{{ 'item.bestPrice' | translate }}:</span>
-                            <span class="fw-bold text-primary fs-1 best-price">{{ getBestPrice(item.id!) |
-                                number:'1.2-2' }}</span>
+                            <span class="fw-bold text-primary fs-1 best-price">
+                                {{ getBestPrice(item.id!) | number:'1.2-2' }}
+                            </span>
                         </div>
                         }
+                        <!--END::Best Price-->
+
                     </div>
                     <!--END::Card Info-->
 
-                    <!--START::User Actions-->
                     <div class="card-footer bg-transparent border-top-0 d-flex flex-column gap-2 p-3"
                         (click)="$event.stopPropagation()">
+
+                        <!--START::User Actions-->
                         <div class="d-flex gap-2">
+
+                            <!--START::Cart Button-->
                             <button class="btn btn-sm flex-fill" [class.btn-success]="inCart(item.id!)"
                                 [class.btn-primary]="!inCart(item.id!)"
                                 [disabled]="!inCart(item.id!) && pendingCount(item.id!) === 0"
@@ -166,6 +183,9 @@
                                 {{ 'item.addToCart' | translate }}
                                 }
                             </button>
+                            <!--END::Cart Button-->
+
+                            <!--START::Compare Button-->
                             <button class="btn btn-sm flex-fill" [class.btn-light-success]="!inCompare(item.id!)"
                                 [class.btn-success]="inCompare(item.id!)" (click)="toggleCompare(item.id!)">
                                 <i class="ki-duotone ki-{{ compareIcon() }} fs-1">
@@ -173,30 +193,49 @@
                                 </i>
                                 {{ 'item.compare' | translate }}
                             </button>
-                        </div>
+                            <!--END::Compare Button-->
 
-                        <!--Store Prices (always visible)-->
+                        </div>
+                        <!--END::User Actions-->
+
+                        <!--START::Store Prices (always visible)-->
                         @if (getItemStoreItems(item.id!).length > 0) {
                         <div class="border rounded p-2 d-flex flex-column gap-1">
                             @for (si of getItemStoreItems(item.id!); track si.id) {
                             <div class="d-flex align-items-center justify-content-between px-2 py-1 rounded hover-bg-light cursor-pointer"
                                 (click)="!inCart(item.id!) && toggleStorePending(item.id!, si.id!)">
-                                <span class="fw-semibold text-gray-800 fs-7">{{ getStoreName(si.storeId) }}</span>
+
+                                <!--START::Store Name-->
+                                <span class="fw-semibold text-gray-800 fs-7">
+                                    {{ getStoreName(si.storeId) }}
+                                </span>
+                                <!--END::Store Name-->
+
+                                <!--START::Selling Price Selection-->
                                 <div class="d-flex align-items-center gap-2">
-                                    <span class="fw-bold text-primary fs-7">{{ si.sellingPrice | number:'1.2-2'
-                                        }}</span>
+
+                                    <!--START::Selling Price-->
+                                    <span class="fw-bold text-primary fs-7">
+                                        {{ si.sellingPrice | number:'1.2-2' }}
+                                    </span>
+                                    <!--END::Selling Price-->
+
+                                    <!--START::Store Pending Checkbox-->
                                     <div class="form-check form-check-sm form-check-custom form-check-solid">
                                         <input class="form-check-input" type="checkbox"
                                             [checked]="isStorePending(item.id!, si.id!)" [disabled]="inCart(item.id!)"
                                             (click)="$event.stopPropagation(); !inCart(item.id!) && toggleStorePending(item.id!, si.id!)" />
                                     </div>
+                                    <!--END::Store Pending Checkbox-->
+
                                 </div>
+                                <!--END::Selling Price Selection-->
                             </div>
                             }
                         </div>
                         }
+                        <!--END::Store Prices-->
                     </div>
-                    <!--END::User Actions-->
 
                 </div>
             </div>
@@ -211,11 +250,3 @@
     </div>
 </div>
 
-<!--START::Item Detail Modal-->
-@if (selectedItem(); as item) {
-<app-item-detail [item]="item" [storeItems]="storeItems()" [stores]="stores()" [compareIds]="compareIds()"
-    [itemVariantMaps]="getItemVariantMaps(item.id!)" [allVariants]="allVariants()" (closed)="closeDetail()"
-    (favoriteToggled)="toggleFavorite($event)" (cartToggled)="toggleCart($event)"
-    (compareToggled)="toggleCompare($event)" />
-}
-<!--END::Item Detail Modal-->

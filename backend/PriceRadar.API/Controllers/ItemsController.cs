@@ -9,12 +9,18 @@ public class ItemsController : BaseController<ProductItem, IProductItemRepositor
 {
 	private readonly IItemBrandRepository _brands;
 	private readonly IBaseRepository<ItemCategory> _categories;
+	private readonly IProductItem_VariantRepository _variantMaps;
 
-	public ItemsController(IProductItemRepository repo, IItemBrandRepository brands, IBaseRepository<ItemCategory> categories)
+	public ItemsController(
+		IProductItemRepository repo,
+		IItemBrandRepository brands,
+		IBaseRepository<ItemCategory> categories,
+		IProductItem_VariantRepository variantMaps)
 		: base(repo)
 	{
-		_brands     = brands;
-		_categories = categories;
+		_brands      = brands;
+		_categories  = categories;
+		_variantMaps = variantMaps;
 	}
 
 	[HttpGet("by-category/{categoryId:long}")]
@@ -24,6 +30,45 @@ public class ItemsController : BaseController<ProductItem, IProductItemRepositor
 	[HttpGet("by-brand/{brandId:long}")]
 	public async Task<IActionResult> GetByBrand(long brandId) =>
 		Ok(await Repo.GetByBrandAsync(brandId));
+
+	/// <summary>
+	/// Returns the single best (minimum) selling price per item across all stores.
+	/// </summary>
+	[HttpGet("best-prices")]
+	public async Task<IActionResult> GetBestPrices()
+	{
+		var maps = await _variantMaps.GetAllAsync();
+		var best = new Dictionary<long, BestPriceDto>();
+		foreach (var vm in maps.Where(vm => vm.IsActive && !vm.IsDeleted))
+		{
+			if (!best.TryGetValue(vm.ProductItemId, out var cur) || vm.SellingPrice < cur.SellingPrice)
+				best[vm.ProductItemId] = new BestPriceDto(vm.ProductItemId, vm.StoreId, vm.SellingPrice);
+		}
+		return Ok(best.Values);
+	}
+
+	/// <summary>
+	/// Returns the best selling price per item for all items in a given category.
+	/// </summary>
+	[HttpGet("best-prices/by-category/{categoryId:long}")]
+	public async Task<IActionResult> GetBestPricesByCategory(long categoryId)
+	{
+		var itemIds = (await Repo.GetByCategoryAsync(categoryId))
+			.Select(i => i.Id).ToHashSet();
+		if (itemIds.Count == 0)
+			return Ok(Array.Empty<BestPriceDto>());
+
+		var maps = await _variantMaps.GetAllAsync();
+		var best = new Dictionary<long, BestPriceDto>();
+		foreach (var vm in maps.Where(vm => vm.IsActive && !vm.IsDeleted && itemIds.Contains(vm.ProductItemId)))
+		{
+			if (!best.TryGetValue(vm.ProductItemId, out var cur) || vm.SellingPrice < cur.SellingPrice)
+				best[vm.ProductItemId] = new BestPriceDto(vm.ProductItemId, vm.StoreId, vm.SellingPrice);
+		}
+		return Ok(best.Values);
+	}
+
+	public record BestPriceDto(long ItemId, long StoreId, decimal SellingPrice);
 
 	[HttpGet("export-template")]
 	public IActionResult ExportTemplate()

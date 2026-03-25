@@ -27,6 +27,10 @@ export class ProductItemVariantMapService {
     return this.api.post<ProductItemVariantMap>('/item-variant-map', map);
   }
 
+  createBulk(maps: ProductItemVariantMap[]): Observable<ProductItemVariantMap[]> {
+    return this.api.post<ProductItemVariantMap[]>('/item-variant-map/bulk', maps);
+  }
+
   update(id: number, map: ProductItemVariantMap): Observable<void> {
     return this.api.put<void>(`/item-variant-map/${id}`, map);
   }

@@ -2,8 +2,8 @@ export interface ProductItemVariantMap {
   id?: number;
   productItemId: number;
   variantId: number;
-  sellingPrice?: number | null;
-  storeId?: number | null;
+  sellingPrice: number;
+  storeId: number;
   description?: string | null;
   about?: string | null;
   isActive?: boolean;
