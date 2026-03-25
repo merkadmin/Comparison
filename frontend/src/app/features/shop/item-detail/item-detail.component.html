@@ -104,10 +104,10 @@
           <div class="price-row d-flex align-items-center justify-content-between px-3 py-2 rounded"
             [class.price-row--selected]="isStoreSelected(si)" [class.bg-light]="!isStoreSelected(si)"
             (click)="!inCart() && toggleStoreSelection(si)">
-            <span class="fw-semibold text-gray-800 fs-6">{{ getStoreName(si.storeId) }}</span>
+            <span class="fw-semibold text-gray-800 fs-3">{{ getStoreName(si.storeId) }}</span>
             <div class="d-flex align-items-center gap-2">
               @let rowPrice = getStoreVariantPrice(si.storeId);
-              <span class="fw-bold fs-5" [class.text-primary]="rowPrice === null || rowPrice === si.sellingPrice"
+              <span class="fw-bold fs-3" [class.text-primary]="rowPrice === null || rowPrice === si.sellingPrice"
                 [class.text-success]="rowPrice !== null && rowPrice !== si.sellingPrice">
                 {{ (rowPrice ?? si.sellingPrice) | number:'1.2-2' }}
               </span>

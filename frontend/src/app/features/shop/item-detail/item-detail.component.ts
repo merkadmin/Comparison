@@ -149,11 +149,26 @@ export class ItemDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Find the map entry with the absolute lowest price for this item
+    const activeMaps = this.storeItems.filter(
+      m => m.productItemId === this.item.id && m.isActive !== false
+    );
+    if (activeMaps.length === 0) return;
+
+    const bestMap = activeMaps.reduce((best, m) =>
+      m.sellingPrice < best.sellingPrice ? m : best
+    );
+
+    // Auto-select the store that has the best price
+    this.selectedStoreId.set(bestMap.storeId);
+
+    // Pre-select all variants from that best-price combination
     const initial = new Map<string, number>();
-    for (const group of this.variantGroups) {
-      if (group.variants.length > 0) initial.set(group.type, group.variants[0].id!);
+    for (const entry of bestMap.variants) {
+      const v = this.allVariants.find(v => v.id === entry.variantId);
+      if (v) initial.set(v.variantTypeId, v.id!);
     }
-    if (initial.size > 0) this.selectedVariants.set(initial);
+    this.selectedVariants.set(initial);
   }
 
   selectVariant(type: string, variantId: number): void {
