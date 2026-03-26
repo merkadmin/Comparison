@@ -82,6 +82,7 @@ export const ar: Record<string, string> = {
   'store.deleteBulkText': 'سيتم حذف {count} متجر/متاجر نهائياً.',
   'store.saveSuccess': 'تم حفظ المتجر بنجاح.',
   'store.saveError': 'فشل حفظ المتجر.',
+  'store.duplicateName': 'يوجد متجر بهذا الاسم مسبقاً.',
 
   // Item Categories
   'category.title': 'تصنيفات المنتجات',

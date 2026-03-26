@@ -81,6 +81,7 @@ export const fr: Record<string, string> = {
   'store.deleteBulkText': '{count} magasin(s) seront supprimés définitivement.',
   'store.saveSuccess': 'Magasin enregistré avec succès.',
   'store.saveError': 'Échec de l\'enregistrement du magasin.',
+  'store.duplicateName': 'Un magasin avec ce nom existe déjà.',
 
   // Item Categories
   'category.title': 'Catégories d\'articles',

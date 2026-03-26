@@ -25,7 +25,7 @@ public class Store_ItemsController : BaseController<Store_Item, IStore_ItemRepos
         var existing = await Repo.GetAllAsync();
         var ids = existing.Where(i => i.StoreId == storeId).Select(i => i.Id).ToList();
         if (ids.Count > 0)
-            await Repo.DeleteManyAsync(ids);
+            await Repo.HardDeleteManyAsync(ids);
 
         var created = new List<Store_Item>();
         foreach (var item in items)

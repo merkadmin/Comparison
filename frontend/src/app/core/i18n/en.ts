@@ -82,6 +82,7 @@ export const en: Record<string, string> = {
   'store.deleteBulkText': '{count} store(s) will be permanently deleted.',
   'store.saveSuccess': 'Store saved successfully.',
   'store.saveError': 'Failed to save store.',
+  'store.duplicateName': 'A store with this name already exists.',
 
   // Item Categories
   'category.title': 'Item Categories',

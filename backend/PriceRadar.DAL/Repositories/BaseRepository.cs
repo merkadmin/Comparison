@@ -93,6 +93,20 @@ public abstract class BaseRepository<TModel, TDoc> : IBaseRepository<TModel>
 			await LogAsync("Delete", id);
 	}
 
+	public async Task HardDeleteAsync(long id)
+	{
+		await _collection.DeleteOneAsync(Builders<TDoc>.Filter.Eq("_id", id));
+		await LogAsync("HardDelete", id);
+	}
+
+	public async Task HardDeleteManyAsync(IEnumerable<long> ids)
+	{
+		var idList = ids.ToList();
+		await _collection.DeleteManyAsync(Builders<TDoc>.Filter.In("_id", idList));
+		foreach (var id in idList)
+			await LogAsync("HardDelete", id);
+	}
+
 	public async Task SetActiveAsync(long id, bool isActive)
 	{
 		var filter = Builders<TDoc>.Filter.And(

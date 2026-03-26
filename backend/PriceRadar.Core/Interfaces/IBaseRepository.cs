@@ -11,6 +11,8 @@ public interface IBaseRepository<T>
 	Task UpdateAsync(long id, T entity);
 	Task DeleteAsync(long id);
 	Task DeleteManyAsync(IEnumerable<long> ids);
+	Task HardDeleteAsync(long id);
+	Task HardDeleteManyAsync(IEnumerable<long> ids);
 	Task SetActiveAsync(long id, bool isActive);
 	Task SetActiveManyAsync(IEnumerable<long> ids, bool isActive);
 }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -20,13 +20,25 @@ export interface StoreItemRow {
   imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './store-list-operation.component.html',
 })
-export class StoreListOperationComponent implements OnInit {
+export class StoreListOperationComponent {
   @Input() editDraft!: Store;
   @Input() isCreating = false;
   @Input() storeTypes: StoreType[] = [];
   @Input() saving = false;
   @Input() productItems: Item[] = [];
-  @Input() existingStoreItems: StoreItem[] = [];
+
+  @Input() set existingStoreItems(items: StoreItem[]) {
+    if (!this.isCreating && items.length > 0) {
+      this.rowCounter = 0;
+      this.rows.set(items.map(item => ({
+        id: String(++this.rowCounter),
+        productItemId: item.productItemId,
+        availableQuantity: item.availableQuantity,
+        sellingPrice: item.sellingPrice,
+        isDeliveryAvailable: item.isDeliveryAvailable,
+      })));
+    }
+  }
 
   @Output() closed        = new EventEmitter<void>();
   @Output() saved         = new EventEmitter<void>();
@@ -35,19 +47,6 @@ export class StoreListOperationComponent implements OnInit {
 
   rows = signal<StoreItemRow[]>([]);
   private rowCounter = 0;
-
-  ngOnInit(): void {
-    if (!this.isCreating && this.existingStoreItems.length) {
-      const rows: StoreItemRow[] = this.existingStoreItems.map(item => ({
-        id: String(++this.rowCounter),
-        productItemId: item.productItemId,
-        availableQuantity: item.availableQuantity,
-        sellingPrice: item.sellingPrice,
-        isDeliveryAvailable: item.isDeliveryAvailable,
-      }));
-      this.rows.set(rows);
-    }
-  }
 
   addRow(): void {
     this.rows.update(rows => [...rows, {

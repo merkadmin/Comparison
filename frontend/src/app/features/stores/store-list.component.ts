@@ -88,6 +88,7 @@ export class StoreListComponent implements OnInit {
   openEdit(store: Store): void {
     this.editDraft = { ...store };
     this.draftStoreItems = [];
+    this.existingStoreItems.set([]);
     this.isCreating.set(false);
     this.editingId.set(store.id!);
     this.storeItemService.getByStore(store.id!).subscribe({
@@ -110,9 +111,17 @@ export class StoreListComponent implements OnInit {
       }));
   }
 
+  private onSaveError(err: { status?: number }): void {
+    this.saving.set(false);
+    const msg = err?.status === 409
+      ? this.translate.translate('store.duplicateName')
+      : this.translate.translate('store.saveError');
+    this.toast.error(msg);
+  }
+
   saveEdit(): void {
     this.saving.set(true);
-    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); };
+    const onError = (err: { status?: number }) => this.onSaveError(err);
 
     if (this.isCreating()) {
       this.service.create(this.editDraft).pipe(
@@ -169,7 +178,7 @@ export class StoreListComponent implements OnInit {
         this.draftStoreItems = [];
         this.existingStoreItems.set([]);
       },
-      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); },
+      error: (err: { status?: number }) => this.onSaveError(err),
     });
   }
 
