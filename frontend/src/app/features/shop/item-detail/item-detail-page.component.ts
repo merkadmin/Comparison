@@ -138,7 +138,7 @@ export class ItemDetailPageComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/shop/by-category', this.categoryId()]);
+    this.router.navigate(['/shop-by-category/by-category', this.categoryId()]);
   }
 
   getItemVariantMaps(itemId: number): ProductItemVariantMap[] {

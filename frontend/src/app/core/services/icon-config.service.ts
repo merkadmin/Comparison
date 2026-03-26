@@ -51,7 +51,7 @@ export const APP_PAGES: AppPage[] = [
     slots: [GLOBAL.add, GLOBAL.edit, GLOBAL.delete, GLOBAL.search, GLOBAL.import, GLOBAL.export],
   },
   {
-    key: 'shop', label: 'Shop by Category', route: '/shop', navIcon: 'category',
+    key: 'shop', label: 'Shop by Category', route: '/shop-by-category', navIcon: 'category',
     slots: [GLOBAL.cart, GLOBAL.compare, GLOBAL.favorite, GLOBAL.search],
   },
   {

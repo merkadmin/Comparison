@@ -195,21 +195,21 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   // ── Navigation ─────────────────────────────────────────────────────────────
 
   selectCategory(cat: IItemCategory): void {
-    this.router.navigate(['/shop/by-category', cat.id]);
+    this.router.navigate(['/shop-by-category/by-category', cat.id]);
   }
 
   navigateTo(index: number): void {
-    this.router.navigate(['/shop/by-category', this.navStack()[index].id]);
+    this.router.navigate(['/shop-by-category/by-category', this.navStack()[index].id]);
   }
 
   goToRoot(): void {
-    this.router.navigate(['/shop']);
+    this.router.navigate(['/shop-by-category']);
   }
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   openDetail(item: Item): void {
-    this.router.navigate(['/shop/by-category', this.selectedLeaf()!.id, 'item', item.id]);
+    this.router.navigate(['/shop-by-category/by-category', this.selectedLeaf()!.id, 'item', item.id]);
   }
 
   ngOnInit(): void {

@@ -19,9 +19,9 @@ export class CommonBreadcrumb {
   @Input() selectedLeaf: IItemCategory | null = null;
 
   /** Route navigated to when at root level (no stack, no leaf). */
-  @Input() rootRoute: string = '/shop';
-  /** Base route segment used for category navigation, e.g. '/shop/by-category'. */
-  @Input() categoryRoute: string = '/shop/by-category';
+  @Input() rootRoute: string = '/shop-by-category';
+  /** Base route segment used for category navigation, e.g. '/shop-by-category/by-category'. */
+  @Input() categoryRoute: string = '/shop-by-category/by-category';
 
   /** Emitted after back navigation — parent can use this to clear search etc. */
   @Output() backClicked  = new EventEmitter<void>();
