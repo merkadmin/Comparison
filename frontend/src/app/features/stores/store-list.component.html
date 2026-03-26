@@ -88,7 +88,7 @@
 
               <!--START::Card Info-->
               <div class="card-body d-flex flex-column gap-2 p-4">
-                @if (store.type === 'Online') {
+                @if (store.storeTypeId === 'Online') {
                   <span class="badge badge-light-success w-fit-content fs-5">{{ 'store.online' | translate }}</span>
                 } @else {
                   <span class="badge badge-light-primary w-fit-content fs-5">{{ 'store.physical' | translate }}</span>
@@ -222,7 +222,7 @@
 
               <!--START::Type-->
               <td>
-                @if (store.type === 'Online') {
+                @if (store.storeTypeId === 'Online') {
                   <span class="badge badge-light-success">{{ 'store.online' | translate }}</span>
                 } @else {
                   <span class="badge badge-light-primary">{{ 'store.physical' | translate }}</span>
@@ -286,9 +286,10 @@
     [isCreating]="isCreating()"
     [storeTypes]="storeTypes"
     [saving]="saving()"
-    [items]="items()"
-    [draftStoreItems]="draftStoreItems"
+    [productItems]="productItems()"
+    [existingStoreItems]="existingStoreItems()"
     (closed)="closeEdit()"
+    (rowsReady)="draftStoreItems = $event"
     (saved)="saveEdit()"
     (savedAndNew)="saveEditAndNew()" />
 }

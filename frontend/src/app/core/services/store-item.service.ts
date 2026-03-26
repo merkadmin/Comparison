@@ -1,17 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { StoreItemDraft } from '../models/store-item.model';
-
-export interface StoreItemPayload extends StoreItemDraft {
-  storeId: number;
-}
+import { StoreItem } from '../models/store-item.model';
 
 @Injectable({ providedIn: 'root' })
 export class StoreItemService {
   private api = inject(ApiService);
 
-  create(item: StoreItemPayload): Observable<unknown> {
-    return this.api.post<unknown>('/store-items', item);
+  getByStore(storeId: number): Observable<StoreItem[]> {
+    return this.api.get<StoreItem[]>(`/store-items/by-store/${storeId}`);
+  }
+
+  replaceByStore(storeId: number, items: StoreItem[]): Observable<StoreItem[]> {
+    return this.api.put<StoreItem[]>(`/store-items/by-store/${storeId}`, items);
   }
 }

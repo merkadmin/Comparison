@@ -29,10 +29,7 @@ public class MongoDbContext
 	public IMongoCollection<ProductItem_VariantDocument> ProductItem_Variants =>
 		_database.GetCollection<ProductItem_VariantDocument>("ProductItem_Variant");
 
-	public IMongoCollection<Store_ItemDocuement> Store_Items =>
-		_database.GetCollection<Store_ItemDocuement>("Store_Item");
-
-	public IMongoCollection<ItemPackageDocument> ItemPackages =>
+public IMongoCollection<ItemPackageDocument> ItemPackages =>
 		_database.GetCollection<ItemPackageDocument>("ItemPackage");
 
 	private IMongoCollection<SequenceDocument> Sequences =>
@@ -58,6 +55,9 @@ public class MongoDbContext
 
 	public IMongoCollection<StoreDocument> Stores =>
 		_database.GetCollection<StoreDocument>("Store");
+
+	public IMongoCollection<Store_ItemDocument> Store_Items =>
+		_database.GetCollection<Store_ItemDocument>("Store_Item");
 
 	// ── Static lookup collections (_s = static/seed) ─────────────────────────
 	public IMongoCollection<StaticLookupDocument> StoreTypes =>

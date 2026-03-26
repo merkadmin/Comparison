@@ -1,21 +1,21 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { switchMap, of } from 'rxjs';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../core/services/auth.service';
 import { StoreService } from '../../core/services/store.service';
-import { StoreItemService } from '../../core/services/store-item.service';
 import { Store, StoreType } from '../../core/models/store.model';
-import { StoreItemDraft } from '../../core/models/store-item.model';
-import { Item } from '../../core/models/item.model';
+import { StoreItem } from '../../core/models/store-item.model';
+import { StoreItemService } from '../../core/services/store-item.service';
 import { ItemService } from '../../core/services/item.service';
+import { Item } from '../../core/models/item.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { ToastService } from '../../core/services/toast.service';
 import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
-import { StoreListOperationComponent } from './store-list-operation/store-list-operation.component';
+import { StoreListOperationComponent, StoreItemRow } from './store-list-operation/store-list-operation.component';
 import { GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { ViewMode } from '../../shared/components/commonActions/common-view-mode/common-view-mode';
 import { computedColClass } from '../../shared/helpers/grid-columns.helper';
@@ -37,6 +37,10 @@ export class StoreListComponent implements OnInit {
 
   readonly storeTypes: StoreType[] = [StoreType.Online, StoreType.Physical];
 
+  productItems = signal<Item[]>([]);
+  existingStoreItems = signal<StoreItem[]>([]);
+  draftStoreItems: StoreItemRow[] = [];
+
   // ── View ──────────────────────────────────────────────────────────────────
   viewMode = signal<ViewMode>('cards');
   colsPerRow = signal<GridColumns>(5);
@@ -46,11 +50,7 @@ export class StoreListComponent implements OnInit {
   editingId = signal<number | null>(null);
   isCreating = signal(false);
   saving = signal(false);
-  editDraft: Store = { name: '', type: StoreType.Online, country: '' };
-  draftStoreItems: StoreItemDraft[] = [];
-
-  // ── Items (for store items dropdown) ──────────────────────────────────────
-  items = signal<Item[]>([]);
+  editDraft: Store = { name: '', storeTypeId: StoreType.Online, country: '' };
 
   // ── Data ──────────────────────────────────────────────────────────────────
   stores = signal<Store[]>([]);
@@ -78,8 +78,9 @@ export class StoreListComponent implements OnInit {
   ];
 
   openCreate(): void {
-    this.editDraft = { name: '', type: StoreType.Online, country: '' };
+    this.editDraft = { name: '', storeTypeId: StoreType.Online, country: '' };
     this.draftStoreItems = [];
+    this.existingStoreItems.set([]);
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -89,38 +90,63 @@ export class StoreListComponent implements OnInit {
     this.draftStoreItems = [];
     this.isCreating.set(false);
     this.editingId.set(store.id!);
+    this.storeItemService.getByStore(store.id!).subscribe({
+      next: items => this.existingStoreItems.set(items),
+      error: () => this.existingStoreItems.set([]),
+    });
   }
 
   closeEdit(): void { this.editingId.set(null); }
 
+  private buildStoreItems(storeId: number): StoreItem[] {
+    return this.draftStoreItems
+      .filter(r => r.productItemId > 0)
+      .map(r => ({
+        storeId,
+        productItemId: r.productItemId,
+        availableQuantity: r.availableQuantity,
+        sellingPrice: r.sellingPrice,
+        isDeliveryAvailable: r.isDeliveryAvailable,
+      }));
+  }
+
   saveEdit(): void {
     this.saving.set(true);
-    const onSuccess = () => {
-      this.saving.set(false);
-      this.toast.success(this.translate.translate('store.saveSuccess'));
-      this.load();
-      this.closeEdit();
-    };
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); };
 
     if (this.isCreating()) {
       this.service.create(this.editDraft).pipe(
         switchMap(store => {
-          if (this.draftStoreItems.length === 0) return of(null);
-          return forkJoin(
-            this.draftStoreItems.map(item => this.storeItemService.create({ ...item, storeId: store.id! }))
-          );
+          const items = this.buildStoreItems(store.id!);
+          return items.length > 0
+            ? this.storeItemService.replaceByStore(store.id!, items)
+            : of(null);
         })
-      ).subscribe({ next: onSuccess, error: onError });
+      ).subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.toast.success(this.translate.translate('store.saveSuccess'));
+          this.load();
+          this.closeEdit();
+        },
+        error: onError,
+      });
     } else {
-      this.service.update(this.editingId()!, this.editDraft).pipe(
+      const storeId = this.editingId()!;
+      this.service.update(storeId, this.editDraft).pipe(
         switchMap(() => {
-          if (this.draftStoreItems.length === 0) return of(null);
-          return forkJoin(
-            this.draftStoreItems.map(item => this.storeItemService.create({ ...item, storeId: this.editingId()! }))
-          );
+          const items = this.buildStoreItems(storeId);
+          return this.storeItemService.replaceByStore(storeId, items);
         })
-      ).subscribe({ next: onSuccess, error: onError });
+      ).subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.toast.success(this.translate.translate('store.saveSuccess'));
+          this.load();
+          this.closeEdit();
+        },
+        error: onError,
+      });
     }
   }
 
@@ -129,18 +155,19 @@ export class StoreListComponent implements OnInit {
     this.saving.set(true);
     this.service.create(this.editDraft).pipe(
       switchMap(store => {
-        if (this.draftStoreItems.length === 0) return of(null);
-        return forkJoin(
-          this.draftStoreItems.map(item => this.storeItemService.create({ ...item, storeId: store.id! }))
-        );
+        const items = this.buildStoreItems(store.id!);
+        return items.length > 0
+          ? this.storeItemService.replaceByStore(store.id!, items)
+          : of(null);
       })
     ).subscribe({
       next: () => {
         this.saving.set(false);
         this.toast.success(this.translate.translate('store.saveSuccess'));
         this.load();
-        this.editDraft = { name: '', type: StoreType.Online, country: '' };
+        this.editDraft = { name: '', storeTypeId: StoreType.Online, country: '' };
         this.draftStoreItems = [];
+        this.existingStoreItems.set([]);
       },
       error: () => { this.saving.set(false); this.toast.error(this.translate.translate('store.saveError')); },
     });
@@ -172,7 +199,7 @@ export class StoreListComponent implements OnInit {
   // ── Lifecycle ─────────────────────────────────────────────────────────────
   ngOnInit(): void {
     this.load();
-    this.itemService.getAll().subscribe({ next: data => this.items.set(data) });
+    this.itemService.getAll().subscribe({ next: items => this.productItems.set(items) });
   }
 
   load(): void {

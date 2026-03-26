@@ -4,10 +4,12 @@ export interface ItemBestPrice {
   sellingPrice: number;
 }
 
-export interface StoreItemDraft {
-  itemId: number;
+export interface StoreItem {
+  id?: number;
+  storeId: number;
+  productItemId: number;
+  availableQuantity: number;
   sellingPrice: number;
-  sellingPriceTypeId: string;
-  quantity: number;
-  isDeliverAvailable: boolean;
+  isDeliveryAvailable: boolean;
+  isActive?: boolean;
 }

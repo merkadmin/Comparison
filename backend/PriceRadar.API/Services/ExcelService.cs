@@ -341,51 +341,6 @@ public static class ExcelService
 		return ms.ToArray();
 	}
 
-	public static byte[] ExportStoreItemList(IEnumerable<Store_Item> storeItems)
-	{
-		using var wb = new XLWorkbook();
-		var ws = wb.AddWorksheet("StoreItems");
-		string[] headers = { "Id", "ItemId", "StoreId", "SellingPrice", "PriceType", "IsActive" };
-		WriteHeaders(ws, headers);
-
-		int row = 2;
-		foreach (var si in storeItems)
-		{
-			ws.Cell(row, 1).Value = si.Id;
-			ws.Cell(row, 2).Value = si.ItemId;
-			ws.Cell(row, 3).Value = si.StoreId;
-			ws.Cell(row, 4).Value = si.SellingPrice;
-			ws.Cell(row, 5).Value = si.SellingPriceTypeId.ToString();
-			ws.Cell(row, 6).Value = si.IsActive;
-			row++;
-		}
-
-		ws.Columns().AdjustToContents();
-		using var ms = new MemoryStream();
-		wb.SaveAs(ms);
-		return ms.ToArray();
-	}
-
-	public static List<Store_Item> ParseStoreItems(Stream stream)
-	{
-		using var wb = new XLWorkbook(stream);
-		var ws = wb.Worksheet(1);
-		var list = new List<Store_Item>();
-		int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
-		for (int r = 2; r <= lastRow; r++)
-		{
-			if (!ws.Cell(r, 1).TryGetValue<long>(out var itemId) || itemId == 0) continue;
-			if (!ws.Cell(r, 2).TryGetValue<long>(out var storeId) || storeId == 0) continue;
-			ws.Cell(r, 3).TryGetValue<decimal>(out var price);
-			var typeStr = ws.Cell(r, 4).GetString().Trim();
-			var priceType = typeStr.Equals("Premium", StringComparison.OrdinalIgnoreCase) ? DBSellingPriceType.Premium
-			              : typeStr.Equals("Offer",   StringComparison.OrdinalIgnoreCase) ? DBSellingPriceType.Offer
-			              : DBSellingPriceType.Regular;
-			list.Add(new Store_Item { ItemId = itemId, StoreId = storeId, SellingPrice = price, SellingPriceTypeId = priceType });
-		}
-		return list;
-	}
-
 	// ── Stores ───────────────────────────────────────────────────────────────
 
 	public static byte[] GetStoreTemplate()
