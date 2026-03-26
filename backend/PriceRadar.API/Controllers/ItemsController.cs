@@ -23,6 +23,16 @@ public class ItemsController : BaseController<ProductItem, IProductItemRepositor
 		_variantMaps = variantMaps;
 	}
 
+	[HttpGet("search")]
+	public async Task<IActionResult> Search([FromQuery] string q)
+	{
+		if (string.IsNullOrWhiteSpace(q)) return Ok(Array.Empty<ProductItem>());
+		var all = await Repo.GetAllAsync();
+		return Ok(all
+			.Where(i => i.IsActive && i.Name.Contains(q, StringComparison.OrdinalIgnoreCase))
+			.Take(10));
+	}
+
 	[HttpGet("by-category/{categoryId:long}")]
 	public async Task<IActionResult> GetByCategory(long categoryId) =>
 		Ok(await Repo.GetByCategoryAsync(categoryId));

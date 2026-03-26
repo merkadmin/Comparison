@@ -72,6 +72,71 @@
       </div>
       <!--end::Breadcrumb-->
 
+      <!--begin::Global Product Search-->
+      <div class="d-flex align-items-center flex-grow-1 mx-4 mx-lg-6 position-relative"
+           style="max-width: 420px;"
+           (click)="$event.stopPropagation()">
+
+        <div class="input-group input-group-sm w-100">
+          <span class="input-group-text bg-transparent border-end-0 pe-1">
+            <i class="ki-duotone ki-magnifier fs-4 text-muted">
+              <span class="path1"></span><span class="path2"></span>
+            </i>
+          </span>
+          <input type="text" class="form-control border-start-0 ps-1 bg-transparent"
+            [placeholder]="'common.searchItems' | translate"
+            [(ngModel)]="globalSearch"
+            (ngModelChange)="onSearchInput()"
+            (keydown.enter)="submitSearch()"
+            (focus)="onSearchInput()" />
+          @if (globalSearch.length > 0) {
+            <button class="btn btn-sm btn-outline-secondary border-start-0 px-2" (click)="clearSearch()">
+              <i class="ki-duotone ki-cross fs-6"><span class="path1"></span><span class="path2"></span></i>
+            </button>
+          }
+        </div>
+
+        <!--begin::Suggestions Dropdown-->
+        @if (showSuggestions()) {
+          <div class="position-absolute bg-body border rounded shadow-sm w-100 py-1"
+               style="top: calc(100% + 4px); left: 0; z-index: 1055; max-height: 360px; overflow-y: auto;">
+
+            @for (item of suggestions(); track item.id) {
+              <div class="menu-item px-2">
+                <div class="menu-link d-flex align-items-center gap-3 px-3 py-2 rounded cursor-pointer"
+                     (click)="selectSuggestion(item)">
+                  <!--Thumbnail-->
+                  @if (item.imageUrl || item.images?.length) {
+                    <img [src]="item.imageUrl ?? item.images![0]" class="rounded object-fit-cover flex-shrink-0"
+                         style="width:36px;height:36px;" [alt]="item.name" />
+                  } @else {
+                    <div class="rounded bg-light-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                         style="width:36px;height:36px;">
+                      <span class="fw-bold text-primary fs-6">{{ item.name.charAt(0).toUpperCase() }}</span>
+                    </div>
+                  }
+                  <!--Name-->
+                  <span class="fw-semibold text-gray-800 fs-7 text-truncate">{{ item.name }}</span>
+                </div>
+              </div>
+            }
+
+            <!--View all results-->
+            <div class="border-top mx-3 mt-1 pt-1 pb-1">
+              <div class="px-1 py-2 cursor-pointer text-primary fw-semibold fs-7 d-flex align-items-center gap-2"
+                   (click)="submitSearch()">
+                <i class="ki-duotone ki-magnifier fs-5"><span class="path1"></span><span class="path2"></span></i>
+                {{ 'common.searchAll' | translate }} "{{ globalSearch }}"
+              </div>
+            </div>
+
+          </div>
+        }
+        <!--end::Suggestions Dropdown-->
+
+      </div>
+      <!--end::Global Product Search-->
+
       <!--begin::Navbar-->
       <div class="app-navbar flex-shrink-0" id="kt_app_header_navbar">
 

@@ -34,6 +34,8 @@ export const fr: Record<string, string> = {
   'common.images': 'Images',
   'common.uploadImages': 'Télécharger des images',
   'common.saveAndNew': 'Enregistrer et nouveau',
+  'common.searchItems': 'Rechercher des produits...',
+  'common.searchAll': 'Voir tous les résultats pour',
 
   // Navigation
   'nav.dashboard': 'Tableau de bord',

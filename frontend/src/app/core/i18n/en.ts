@@ -34,6 +34,8 @@ export const en: Record<string, string> = {
   'common.images': 'Images',
   'common.uploadImages': 'Upload',
   'common.saveAndNew': 'Save & New',
+  'common.searchItems': 'Search products...',
+  'common.searchAll': 'See all results for',
 
   // Navigation
   'nav.dashboard': 'Home',

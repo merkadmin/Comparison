@@ -12,8 +12,8 @@
           (crumbClicked)="navigateTo($event)" />
         <!--END::Breadcrumb-->
 
-        <!--START::Search (only when viewing items)-->
-        @if (selectedLeaf()) {
+        <!--START::Search (only when viewing leaf category items, not in global search mode)-->
+        @if (selectedLeaf() && !isSearchMode()) {
         <div class="ms-auto">
             <div class="input-group input-group-sm w-250px">
                 <span class="input-group-text border-end-0 bg-transparent">
@@ -42,7 +42,7 @@
         <!--END::Loading Categories-->
 
         <!--START::Category Tiles-->
-        @if (!loadingCats() && !selectedLeaf()) {
+        @if (!loadingCats() && !selectedLeaf() && !isSearchMode()) {
         @if (visibleCategories().length === 0) {
         <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
         }
@@ -75,8 +75,8 @@
         }
         <!--END::Category Tiles-->
 
-        <!--START::Items View (leaf node)-->
-        @if (selectedLeaf()) {
+        <!--START::Items View (leaf node or search mode)-->
+        @if (selectedLeaf() || isSearchMode()) {
 
         <!--START::Loading Items-->
         @if (loadingItems()) {

@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
 import { Item } from '../../../core/models/item.model';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
@@ -43,6 +43,7 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
 
   private _routeSub!: Subscription;
   private _pendingCategoryId: number | null = null;
+  isSearchMode = signal(false);
 
   // ── Icon config signals ────────────────────────────────────────────────────
   cartIcon = this.iconConfig.iconSignal('global.cart', 'basket');
@@ -209,7 +210,8 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   openDetail(item: Item): void {
-    this.router.navigate(['/shop-by-category/by-category', this.selectedLeaf()!.id, 'item', item.id]);
+    const catId = this.selectedLeaf()?.id ?? item.itemCategoryId;
+    this.router.navigate(['/shop-by-category/by-category', catId, 'item', item.id]);
   }
 
   ngOnInit(): void {
@@ -230,16 +232,30 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     this.variantSvc.getAll().subscribe({ next: d => this.allVariants.set(d), error: () => { } });
     this.userActivity.loadAll();
 
-    this._routeSub = this.route.paramMap.subscribe(params => {
-      const idStr = params.get('categoryId');
-      if (idStr) {
-        const id = +idStr;
+    this._routeSub = combineLatest([
+      this.route.paramMap,
+      this.route.queryParamMap,
+    ]).subscribe(([params, queryParams]) => {
+      const categoryId = params.get('categoryId');
+      const q = queryParams.get('q') ?? '';
+
+      if (q) {
+        this.isSearchMode.set(true);
+        this.navStack.set([]);
+        this.selectedLeaf.set(null);
+        this.searchQuery.set(q);
+        this.loadAllItems();
+      } else if (categoryId) {
+        this.isSearchMode.set(false);
+        this.searchQuery.set('');
+        const id = +categoryId;
         if (this.allCategories().length > 0) {
           this.restoreFromCategoryId(id);
         } else {
           this._pendingCategoryId = id;
         }
       } else {
+        this.isSearchMode.set(false);
         this.navStack.set([]);
         this.selectedLeaf.set(null);
         this.items.set([]);
@@ -275,6 +291,29 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
       this.loadItemsForLeaf(target.id!);
     }
     this.searchQuery.set('');
+  }
+
+  private loadAllItems(): void {
+    this.loadingItems.set(true);
+    this.bestPrices.set([]);
+    this.itemService.getBestPrices().subscribe({ next: bp => this.bestPrices.set(bp), error: () => {} });
+    this.itemService.getAll().subscribe({
+      next: data => {
+        this.loadingItems.set(false);
+        const needImages = data.filter(i => !(i.images?.length)).map(i => i.id!);
+        if (needImages.length === 0) { this.items.set(data); return; }
+        this.imageService.getImagesBulk(needImages).subscribe({
+          next: imageMap => {
+            this.items.set(data.map(item => ({
+              ...item,
+              images: item.images?.length ? item.images : (imageMap[item.id!] ?? []),
+            })));
+          },
+          error: () => { this.items.set(data); },
+        });
+      },
+      error: () => { this.loadingItems.set(false); },
+    });
   }
 
   private loadItemsForLeaf(categoryId: number): void {

@@ -1,10 +1,14 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { map } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs/operators';
 import { TranslateService } from '../../core/services/translate.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { ItemCategoryService } from '../../core/services/item-category.service';
+import { ItemService } from '../../core/services/item.service';
+import { Item } from '../../core/models/item.model';
 import { AuthService } from '../../core/services/auth.service';
 import { UserActivityService } from '../../core/services/user-activity.service';
 
@@ -27,15 +31,16 @@ const breadcrumbMap: Record<string, BreadcrumbItem[]> = {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, TranslatePipe],
+  imports: [RouterLink, FormsModule, TranslatePipe],
   templateUrl: './header.component.html',
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy {
   translate        = inject(TranslateService);
   auth             = inject(AuthService);
   userActivity     = inject(UserActivityService);
   private router   = inject(Router);
   private catSvc   = inject(ItemCategoryService);
+  private itemSvc  = inject(ItemService);
 
   isDark = signal(document.documentElement.getAttribute('data-bs-theme') === 'dark');
 
@@ -49,7 +54,22 @@ export class HeaderComponent {
 
   cartCount = computed(() => this.userActivity.cartIds().size);
 
+  /** Global product search input value */
+  globalSearch = '';
+  suggestions  = signal<Item[]>([]);
+  showSuggestions = signal(false);
+
+  private searchInput$ = new Subject<string>();
+  private destroy$     = new Subject<void>();
+
   constructor() {
+    // Sync search input with URL ?q= param so back/forward navigation updates it
+    effect(() => {
+      const url = this.currentUrl();
+      const match = url.match(/[?&]q=([^&]*)/);
+      this.globalSearch = match ? decodeURIComponent(match[1]) : '';
+    });
+
     // Whenever the URL changes, check for categoryId and fetch the category name
     effect(() => {
       const url = this.currentUrl();
@@ -98,6 +118,57 @@ export class HeaderComponent {
 
   get currentFlag(): string {
     return this.flagMap[this.translate.currentLang()] ?? '';
+  }
+
+  ngOnInit(): void {
+    this.searchInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(term => term.trim().length >= 1 ? this.itemSvc.search(term.trim()) : of([])),
+      takeUntil(this.destroy$),
+    ).subscribe(items => {
+      this.suggestions.set(items);
+      this.showSuggestions.set(items.length > 0);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  @HostListener('document:click')
+  closeSuggestions(): void {
+    this.showSuggestions.set(false);
+  }
+
+  onSearchInput(): void {
+    const term = this.globalSearch.trim();
+    if (!term) {
+      this.suggestions.set([]);
+      this.showSuggestions.set(false);
+    }
+    this.searchInput$.next(this.globalSearch);
+  }
+
+  selectSuggestion(item: Item): void {
+    this.globalSearch = item.name;
+    this.showSuggestions.set(false);
+    this.router.navigate(['/shop-by-category/by-category', item.itemCategoryId, 'item', item.id]);
+  }
+
+  submitSearch(): void {
+    const term = this.globalSearch.trim();
+    if (term) {
+      this.router.navigate(['/shop-by-category'], { queryParams: { q: term } });
+    } else {
+      this.router.navigate(['/shop-by-category']);
+    }
+  }
+
+  clearSearch(): void {
+    this.globalSearch = '';
+    this.router.navigate(['/shop-by-category']);
   }
 
   toggleTheme(): void {

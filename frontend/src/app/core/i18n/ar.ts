@@ -34,6 +34,8 @@ export const ar: Record<string, string> = {
   'common.images': 'الصور',
   'common.uploadImages': 'رفع الصور',
   'common.saveAndNew': 'حفظ وجديد',
+  'common.searchItems': 'بحث عن منتجات...',
+  'common.searchAll': 'عرض كل نتائج',
 
   // Navigation
   'nav.dashboard': 'لوحة التحكم',

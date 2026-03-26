@@ -12,6 +12,10 @@ export class ItemService {
     return this.api.get<Item[]>('/items/getAll');
   }
 
+  search(q: string): Observable<Item[]> {
+    return this.api.get<Item[]>(`/items/search?q=${encodeURIComponent(q)}`);
+  }
+
   getById(id: number): Observable<Item> {
     return this.api.get<Item>(`/items/${id}`);
   }
