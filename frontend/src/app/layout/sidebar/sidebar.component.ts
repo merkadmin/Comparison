@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateService } from '../../core/services/translate.service';
@@ -14,7 +14,7 @@ import { AuthService } from '../../core/services/auth.service';
   imports: [CommonModule, RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './sidebar.component.html',
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, AfterViewInit {
   translate = inject(TranslateService);
   auth = inject(AuthService);
   private catSvc = inject(ItemCategoryService);
@@ -26,6 +26,14 @@ export class SidebarComponent implements OnInit {
       next: data => this.categories.set(data.slice(0, 10)),
       error: () => { }
     });
+  }
+
+  ngAfterViewInit(): void {
+    // Metronic's KTMenu initialises before Angular renders, so re-init here
+    // to pick up the conditionally rendered admin menu items.
+    const kt = (window as any);
+    kt.KTMenu?.init();
+    kt.KTDrawer?.init();
   }
 
   localize(ls: MultiLangString): string {

@@ -10,8 +10,10 @@
     <!--begin::Wrapper-->
     <div class="app-wrapper flex-column flex-row-fluid" id="kt_app_wrapper">
 
-      <!--begin::Sidebar-->
-      <app-sidebar></app-sidebar>
+      <!--begin::Sidebar (admin only)-->
+      @if (auth.isAdmin()) {
+        <app-sidebar></app-sidebar>
+      }
       <!--end::Sidebar-->
 
       <!--begin::Main-->

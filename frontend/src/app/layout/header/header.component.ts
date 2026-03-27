@@ -1,5 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, inject, signal, computed, effect } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Subject, of } from 'rxjs';
@@ -31,7 +31,7 @@ const breadcrumbMap: Record<string, BreadcrumbItem[]> = {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink, FormsModule, TranslatePipe],
+  imports: [RouterLink, RouterLinkActive, FormsModule, TranslatePipe],
   templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit, OnDestroy {

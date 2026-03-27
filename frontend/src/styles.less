@@ -2,6 +2,16 @@
 /* Metronic CSS is loaded via index.html link tags */
 
 /* =====================================================
+   Full-width header — override Metronic's sidebar-push
+   behaviour so the header always spans 100% of the page
+   ===================================================== */
+@media (min-width: 992px) {
+  [data-kt-app-header-fixed="true"][data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-header="true"] .app-header {
+    left: 0 !important;
+  }
+}
+
+/* =====================================================
    SweetAlert2 toast — theme-aware overrides
    Metronic overrides background/color on .swal2-popup
    which breaks the default toast appearance.
@@ -151,11 +161,11 @@ html[dir="rtl"] {
     }
   }
 
-  /* 3. Header: flip left offset to right offset */
+  /* 3. Header: full width in RTL (no right offset either) */
   @media (min-width: 992px) {
     [data-kt-app-header-fixed="true"][data-kt-app-sidebar-fixed="true"][data-kt-app-sidebar-push-header="true"] .app-header {
       left: 0 !important;
-      right: ~"calc(var(--bs-app-sidebar-width) + var(--bs-app-sidebar-gap-start, 0px) + var(--bs-app-sidebar-gap-end, 0px))" !important;
+      right: 0 !important;
     }
   }
 
