@@ -58,6 +58,7 @@ export const fr: Record<string, string> = {
   'nav.appSetup': 'Configuration',
   'nav.pages': 'Pages',
   'nav.setIcons': 'Icônes',
+  'nav.storeVariantOrders': 'Ordre d\'affichage des variantes',
 
   // Store Items
   'storeItem.title': 'Articles du magasin',
@@ -85,6 +86,24 @@ export const fr: Record<string, string> = {
   'store.saveSuccess': 'Magasin enregistré avec succès.',
   'store.saveError': 'Échec de l\'enregistrement du magasin.',
   'store.duplicateName': 'Un magasin avec ce nom existe déjà.',
+
+  // Store Variant Orders
+  'storeVariantOrder.title': 'Ordre d\'affichage des variantes',
+  'storeVariantOrder.addNew': 'Ajouter un ordre',
+  'storeVariantOrder.store': 'Magasin',
+  'storeVariantOrder.allStores': 'Tous les magasins',
+  'storeVariantOrder.variant': 'Variante',
+  'storeVariantOrder.orderIndex': 'Index d\'ordre',
+  'storeVariantOrder.selectStore': 'Sélectionner un magasin',
+  'storeVariantOrder.selectVariant': 'Sélectionner une variante',
+  'storeVariantOrder.deleteConfirm': 'Supprimer cet ordre ?',
+  'storeVariantOrder.deleteBulkConfirm': 'Supprimer les ordres sélectionnés ?',
+  'storeVariantOrder.deleteBulkText': 'Vous allez supprimer {count} ordre(s). Cette action est irréversible.',
+  'storeVariantOrder.deleteSelected': 'Supprimer la sélection',
+  'storeVariantOrder.saveSuccess': 'Ordre enregistré avec succès.',
+  'storeVariantOrder.saveError': 'Échec de l\'enregistrement de l\'ordre.',
+  'storeVariantOrder.importSuccess': 'Ordres importés avec succès.',
+  'storeVariantOrder.importError': 'Échec de l\'importation. Veuillez vérifier le format du fichier.',
 
   // Item Categories
   'category.title': 'Catégories d\'articles',

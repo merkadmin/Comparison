@@ -59,6 +59,9 @@ public IMongoCollection<ItemPackageDocument> ItemPackages =>
 	public IMongoCollection<Store_ItemDocument> Store_Items =>
 		_database.GetCollection<Store_ItemDocument>("Store_Item");
 
+	public IMongoCollection<Store_VariantOrderDocument> Store_VariantOrders =>
+		_database.GetCollection<Store_VariantOrderDocument>("Store_VariantOrder");
+
 	// ── Static lookup collections (_s = static/seed) ─────────────────────────
 	public IMongoCollection<StaticLookupDocument> StoreTypes =>
 		_database.GetCollection<StaticLookupDocument>("StoreType_s");

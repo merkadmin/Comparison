@@ -58,6 +58,7 @@ export const ar: Record<string, string> = {
   'nav.appSetup': 'إعداد التطبيق',
   'nav.pages': 'الصفحات',
   'nav.setIcons': 'الأيقونات',
+  'nav.storeVariantOrders': 'ترتيب عرض المتغيرات',
 
 
   // Store Items
@@ -86,6 +87,24 @@ export const ar: Record<string, string> = {
   'store.saveSuccess': 'تم حفظ المتجر بنجاح.',
   'store.saveError': 'فشل حفظ المتجر.',
   'store.duplicateName': 'يوجد متجر بهذا الاسم مسبقاً.',
+
+  // Store Variant Orders
+  'storeVariantOrder.title': 'ترتيب عرض المتغيرات',
+  'storeVariantOrder.addNew': 'إضافة ترتيب',
+  'storeVariantOrder.store': 'المتجر',
+  'storeVariantOrder.allStores': 'كل المتاجر',
+  'storeVariantOrder.variant': 'المتغير',
+  'storeVariantOrder.orderIndex': 'رقم الترتيب',
+  'storeVariantOrder.selectStore': 'اختر متجراً',
+  'storeVariantOrder.selectVariant': 'اختر متغيراً',
+  'storeVariantOrder.deleteConfirm': 'حذف هذا الترتيب؟',
+  'storeVariantOrder.deleteBulkConfirm': 'حذف الترتيبات المحددة؟',
+  'storeVariantOrder.deleteBulkText': 'سيتم حذف {count} ترتيب/ترتيبات نهائياً.',
+  'storeVariantOrder.deleteSelected': 'حذف المحدد',
+  'storeVariantOrder.saveSuccess': 'تم حفظ الترتيب بنجاح.',
+  'storeVariantOrder.saveError': 'فشل حفظ الترتيب.',
+  'storeVariantOrder.importSuccess': 'تم استيراد الترتيبات بنجاح.',
+  'storeVariantOrder.importError': 'فشل استيراد الترتيبات. يرجى التحقق من صيغة الملف.',
 
   // Item Categories
   'category.title': 'تصنيفات المنتجات',

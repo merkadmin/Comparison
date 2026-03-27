@@ -259,17 +259,6 @@
                         </div>
                         <!--END::User Actions-->
 
-                        <!--START::Variant Colors-->
-                        @let variantColors = getItemVariantColors(item.id!);
-                        @if (variantColors.length > 0) {
-                        <div class="d-flex flex-wrap gap-1 mb-1">
-                          @for (vc of variantColors; track vc.color) {
-                            <div class="variant-color-dot" [style.background]="vc.color" [title]="vc.label"></div>
-                          }
-                        </div>
-                        }
-                        <!--END::Variant Colors-->
-
                         <!--START::Store Prices (always visible)-->
                         @if (getItemStoreItems(item.id!).length > 0) {
                         <div class="border rounded p-2 d-flex flex-column gap-1">

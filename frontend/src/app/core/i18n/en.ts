@@ -58,6 +58,7 @@ export const en: Record<string, string> = {
   'nav.appSetup': 'Application Setup',
   'nav.pages': 'Pages',
   'nav.setIcons': 'Set Icons',
+  'nav.storeVariantOrders': 'Variant Display Order',
 
 
   // Store Items
@@ -86,6 +87,24 @@ export const en: Record<string, string> = {
   'store.saveSuccess': 'Store saved successfully.',
   'store.saveError': 'Failed to save store.',
   'store.duplicateName': 'A store with this name already exists.',
+
+  // Store Variant Orders
+  'storeVariantOrder.title': 'Variant Display Order',
+  'storeVariantOrder.addNew': 'Add Order',
+  'storeVariantOrder.store': 'Store',
+  'storeVariantOrder.allStores': 'All Stores',
+  'storeVariantOrder.variant': 'Variant',
+  'storeVariantOrder.orderIndex': 'Order Index',
+  'storeVariantOrder.selectStore': 'Select a store',
+  'storeVariantOrder.selectVariant': 'Select a variant',
+  'storeVariantOrder.deleteConfirm': 'Delete this order?',
+  'storeVariantOrder.deleteBulkConfirm': 'Delete selected orders?',
+  'storeVariantOrder.deleteBulkText': 'You are about to delete {count} orders. This cannot be undone.',
+  'storeVariantOrder.deleteSelected': 'Delete Selected',
+  'storeVariantOrder.saveSuccess': 'Order saved successfully.',
+  'storeVariantOrder.saveError': 'Failed to save order.',
+  'storeVariantOrder.importSuccess': 'Orders imported successfully.',
+  'storeVariantOrder.importError': 'Failed to import orders. Please check the file format.',
 
   // Item Categories
   'category.title': 'Product Categories',

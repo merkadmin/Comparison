@@ -14,6 +14,7 @@ import { SetIconsComponent } from './features/app-setup/set-icons/set-icons.comp
 import { PagesComponent } from './features/app-setup/pages/pages.component';
 import { ProductItemVariantListComponent } from './features/product-item-variants/product-item-variant-list.component';
 import { ItemVariantMapListComponent } from './features/item-variant-map/item-variant-map-list.component';
+import { StoreVariantOrderListComponent } from './features/store-variant-orders/store-variant-order-list.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -38,6 +39,7 @@ export const routes: Routes = [
       { path: 'app-setup/pages', component: PagesComponent },
       { path: 'variants', component: ProductItemVariantListComponent },
       { path: 'productItem-variants', component: ItemVariantMapListComponent },
+      { path: 'store-variant-orders', component: StoreVariantOrderListComponent },
     ],
   },
   { path: '**', redirectTo: '' },

@@ -425,6 +425,80 @@ public static class ExcelService
 		return list;
 	}
 
+	// ── Store Variant Orders ─────────────────────────────────────────────────
+
+	public static byte[] GetStoreVariantOrderTemplate()
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("StoreVariantOrders");
+		string[] headers = ["StoreId*", "VariantId*", "OrderIndex*"];
+		WriteHeaders(ws, headers);
+
+		// Example row
+		ws.Cell(2, 1).Value = 1;
+		ws.Cell(2, 2).Value = 1;
+		ws.Cell(2, 3).Value = 0;
+		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
+		ws.Row(2).Style.Font.Italic = true;
+
+		// Note row
+		ws.Cell(3, 1).Value = "↑ Example row — delete before importing";
+		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
+		ws.Cell(3, 1).Style.Font.Italic = true;
+		ws.Range(3, 1, 3, headers.Length).Merge();
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static byte[] ExportStoreVariantOrderList(IEnumerable<Store_VariantOrder> orders)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("StoreVariantOrders");
+		string[] headers = { "Id", "StoreId", "VariantId", "OrderIndex", "IsActive", "CreatedAt" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var o in orders)
+		{
+			ws.Cell(row, 1).Value = o.Id;
+			ws.Cell(row, 2).Value = o.StoreId;
+			ws.Cell(row, 3).Value = o.VariantId;
+			ws.Cell(row, 4).Value = o.OrderIndex;
+			ws.Cell(row, 5).Value = o.IsActive;
+			ws.Cell(row, 6).Value = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss");
+			row++;
+		}
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static List<Store_VariantOrder> ParseStoreVariantOrders(Stream stream)
+	{
+		using var wb = new XLWorkbook(stream);
+		var ws = wb.Worksheet(1);
+		var list = new List<Store_VariantOrder>();
+		int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+		for (int r = 2; r <= lastRow; r++)
+		{
+			if (!ws.Cell(r, 1).TryGetValue<long>(out var storeId) || storeId == 0) continue;
+			if (!ws.Cell(r, 2).TryGetValue<long>(out var variantId) || variantId == 0) continue;
+			ws.Cell(r, 3).TryGetValue<int>(out var orderIndex);
+			list.Add(new Store_VariantOrder
+			{
+				StoreId    = storeId,
+				VariantId  = variantId,
+				OrderIndex = orderIndex,
+			});
+		}
+		return list;
+	}
+
 	// ── Helpers ───────────────────────────────────────────────────────────────
 
 	private static void WriteHeaders(IXLWorksheet ws, string[] headers)
