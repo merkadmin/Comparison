@@ -112,7 +112,7 @@ export const en: Record<string, string> = {
   'category.saveError': 'Failed to save category.',
 
   // Item Brands
-  'brand.title': 'Item Brands',
+  'brand.title': 'Brands',
   'brand.single': 'Brand',
   'brand.deleteConfirm': 'Delete this brand?',
   'brand.deleteBulkConfirm': 'Delete selected brands?',

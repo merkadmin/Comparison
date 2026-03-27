@@ -94,10 +94,46 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     return result;
   });
 
+  /** Full category tree flattened in depth-first order for the sidebar. */
+  sortedCategoryTree = computed<IItemCategory[]>(() => {
+    const all = this.allCategories();
+    const flatten = (parentId: number | null): IItemCategory[] =>
+      all
+        .filter(c => (c.parentCategoryId ?? null) === parentId)
+        .flatMap(c => [c, ...flatten(c.id ?? null)]);
+    return flatten(null);
+  });
+
+  getCategoryDepth(cat: IItemCategory): number {
+    let depth = 0;
+    let parentId = cat.parentCategoryId;
+    const all = this.allCategories();
+    while (parentId && depth < 10) {
+      depth++;
+      parentId = all.find(c => c.id === parentId)?.parentCategoryId;
+    }
+    return depth;
+  }
+
+  isCategoryActive(cat: IItemCategory): boolean {
+    if (this.selectedLeaf()?.id === cat.id) return true;
+    return this.navStack().some(c => c.id === cat.id);
+  }
+
+  selectCategoryFromSidebar(cat: IItemCategory): void {
+    this.router.navigate(['/shop-by-category/by-category', cat.id]);
+  }
+
   /** Brands that actually appear in the currently loaded items. */
   visibleBrands = computed<ItemBrand[]>(() => {
-    const brandIds = new Set(this.items().map(i => i.brandId));
-    return this.allBrands().filter(b => brandIds.has(b.id!));
+    const seen = new Map<number, ItemBrand>();
+    for (const item of this.items()) {
+      const id = item.brandId;
+      if (!id || seen.has(id)) continue;
+      const brand = item.brand ?? this.allBrands().find(b => b.id === id);
+      if (brand) seen.set(id, brand);
+    }
+    return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name));
   });
 
   bestPriceMap = computed<Map<number, ItemBestPrice>>(() =>
