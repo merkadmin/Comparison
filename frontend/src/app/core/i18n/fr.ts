@@ -87,6 +87,7 @@ export const fr: Record<string, string> = {
 
   // Item Categories
   'category.title': 'Catégories d\'articles',
+  'category.filterByParent': 'Filtrer par catégorie',
   'category.single': 'Catégorie',
   'category.parentCategory': 'Catégorie parente',
   'category.deleteConfirm': 'Supprimer cette catégorie ?',
@@ -129,6 +130,8 @@ export const fr: Record<string, string> = {
   'item.single': 'Article',
   'item.brand': 'Marque',
   'item.category': 'Catégorie',
+  'item.selectCategory': 'Sélectionner une catégorie',
+  'item.selectLastCategory': 'Continuez à sélectionner jusqu\'à atteindre la catégorie la plus spécifique.',
   'item.categories': 'Catégories',
   'item.filterByCategory': 'Filtrer par catégorie',
   'item.filterByBrand': 'Filtrer par marque',

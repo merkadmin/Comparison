@@ -29,13 +29,6 @@
         </div>
         <!--END::Name-->
 
-        <!--START::Description-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.description" />
-        </div>
-        <!--END::Description-->
-
         <!--START::Barcode-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'common.barcode' | translate }}</label>
@@ -88,12 +81,50 @@
 
         <!--START::Category-->
         <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.category' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.itemCategoryId">
-            @for (c of categories; track c.id) {
-              <option [ngValue]="c.id">{{ localize(c.name) }}</option>
+          <label class="form-label fw-semibold">
+            {{ 'item.category' | translate }} <span class="text-danger">*</span>
+          </label>
+
+          <div class="d-flex align-items-center gap-2">
+
+            <!--Back arrow-->
+            @if (categoryNavStack.length > 0) {
+              <button type="button" class="btn btn-icon btn-sm btn-light flex-shrink-0"
+                      title="{{ 'common.back' | translate }}"
+                      (click)="goBackCategory()">
+                <i class="ki-duotone ki-arrow-left fs-4">
+                  <span class="path1"></span><span class="path2"></span>
+                </i>
+              </button>
             }
-          </select>
+
+            <div class="flex-grow-1">
+              <!--Current level label-->
+              @if (currentLevelName) {
+                <div class="text-muted fs-8 mb-1">{{ currentLevelName }}</div>
+              }
+              <select class="form-select"
+                      [ngModel]="selectedCategoryInLevel"
+                      (ngModelChange)="onCategoryChange($event)">
+                <option [ngValue]="null">— {{ 'item.selectCategory' | translate }} —</option>
+                @for (c of currentLevelCategories; track c.id) {
+                  <option [ngValue]="c.id">
+                    {{ localize(c.name) }}{{ hasChildren(c.id!) ? ' ›' : '' }}
+                  </option>
+                }
+              </select>
+            </div>
+
+          </div>
+
+          @if (!isLeafSelected) {
+            <div class="d-flex align-items-center gap-1 text-muted fs-7 mt-2">
+              <i class="ki-duotone ki-information-5 fs-6 text-warning">
+                <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+              </i>
+              {{ 'item.selectLastCategory' | translate }}
+            </div>
+          }
         </div>
         <!--END::Category-->
 
@@ -115,20 +146,6 @@
           </select>
         </div>
         <!--END::Type-->
-
-        <!--START::Brief Description-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.briefDescription' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.briefDescription" />
-        </div>
-        <!--END::Brief Description-->
-
-        <!--START::About This Item-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.aboutThisItem' | translate }}</label>
-          <textarea class="form-control" rows="3" [(ngModel)]="editDraft.aboutThisItem"></textarea>
-        </div>
-        <!--END::About This Item-->
 
         <!--START::Product Information-->
         <div class="mb-3">
@@ -162,6 +179,27 @@
           </button>
         </div>
         <!--END::Store Prices-->
+
+        <!--START::Brief Description-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.briefDescription' | translate }}</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="editDraft.briefDescription"></textarea>
+        </div>
+        <!--END::Brief Description-->
+
+        <!--START::Description-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="editDraft.description"></textarea>
+        </div>
+        <!--END::Description-->
+
+        <!--START::About This Item-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'item.aboutThisItem' | translate }}</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="editDraft.aboutThisItem"></textarea>
+        </div>
+        <!--END::About This Item-->
 
       </div>
 

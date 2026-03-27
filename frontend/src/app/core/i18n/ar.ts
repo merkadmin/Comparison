@@ -88,6 +88,7 @@ export const ar: Record<string, string> = {
 
   // Item Categories
   'category.title': 'تصنيفات المنتجات',
+  'category.filterByParent': 'تصفية حسب التصنيف',
   'category.single': 'تصنيف',
   'category.parentCategory': 'التصنيف الأب',
   'category.deleteConfirm': 'هل تريد حذف هذا التصنيف؟',
@@ -130,6 +131,8 @@ export const ar: Record<string, string> = {
   'item.single': 'منتج',
   'item.brand': 'الماركة',
   'item.category': 'التصنيف',
+  'item.selectCategory': 'اختر تصنيفاً',
+  'item.selectLastCategory': 'استمر في الاختيار حتى تصل إلى أدق تصنيف.',
   'item.categories': 'التصنيفات',
   'item.filterByCategory': 'تصفية حسب التصنيف',
   'item.filterByBrand': 'تصفية حسب الماركة',

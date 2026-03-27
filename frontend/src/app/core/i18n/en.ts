@@ -87,7 +87,8 @@ export const en: Record<string, string> = {
   'store.duplicateName': 'A store with this name already exists.',
 
   // Item Categories
-  'category.title': 'Item Categories',
+  'category.title': 'Product Categories',
+  'category.filterByParent': 'Filter by category',
   'category.single': 'Category',
   'category.parentCategory': 'Parent Category',
   'category.deleteConfirm': 'Delete this category?',
@@ -130,6 +131,8 @@ export const en: Record<string, string> = {
   'item.single': 'Item',
   'item.brand': 'Brand',
   'item.category': 'Category',
+  'item.selectCategory': 'Select category',
+  'item.selectLastCategory': 'Keep selecting until you reach the most specific category.',
   'item.categories': 'Categories',
   'item.filterByCategory': 'Filter by Category',
   'item.filterByBrand': 'Filter by Brand',

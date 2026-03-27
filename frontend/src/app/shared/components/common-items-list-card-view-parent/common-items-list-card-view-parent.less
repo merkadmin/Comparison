@@ -45,6 +45,20 @@
   color: var(--bs-success) !important;
 }
 
+.brand-filter-sidebar {
+  position: sticky;
+  top: 80px;
+}
+
+.brand-filter-item {
+  transition: background 0.15s;
+  &:hover { background: var(--bs-light); }
+  &.active {
+    background: var(--bs-light-primary, rgba(var(--bs-primary-rgb), 0.1));
+    span { color: var(--bs-primary); }
+  }
+}
+
 .hover-bg-light {
   transition: background 0.15s;
   &:hover { background: var(--bs-light); }

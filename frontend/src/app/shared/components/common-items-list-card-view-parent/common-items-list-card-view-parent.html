@@ -77,6 +77,42 @@
 
         <!--START::Items View (leaf node or search mode)-->
         @if (selectedLeaf() || isSearchMode()) {
+        <div class="d-flex gap-4 align-items-start">
+
+          <!--START::Brand Filter Sidebar-->
+          @if (!loadingItems() && visibleBrands().length > 0) {
+          <div class="brand-filter-sidebar flex-shrink-0 border rounded p-4" style="width: 200px;">
+
+            <div class="fw-bold text-gray-700 fs-7 text-uppercase mb-3">
+              {{ 'item.filterByBrand' | translate }}
+            </div>
+
+            <!--All Brands-->
+            <div class="brand-filter-item d-flex align-items-center gap-2 py-2 px-2 rounded cursor-pointer mb-1"
+                 [class.active]="selectedBrandId() === null"
+                 (click)="selectedBrandId.set(null)">
+              <span class="fw-semibold fs-7">{{ 'item.allBrands' | translate }}</span>
+            </div>
+
+            @for (brand of visibleBrands(); track brand.id) {
+            <div class="brand-filter-item d-flex align-items-center gap-2 py-2 px-2 rounded cursor-pointer mb-1"
+                 [class.active]="selectedBrandId() === brand.id"
+                 (click)="selectedBrandId.set(brand.id!)">
+              @if (brand.logoUrl) {
+                <img [src]="brand.logoUrl" [alt]="brand.name"
+                     class="rounded object-fit-contain flex-shrink-0"
+                     style="width:20px;height:20px;" />
+              }
+              <span class="fw-semibold fs-7 text-truncate">{{ brand.name }}</span>
+            </div>
+            }
+
+          </div>
+          }
+          <!--END::Brand Filter Sidebar-->
+
+          <!--START::Items Content-->
+          <div class="flex-grow-1 min-w-0">
 
         <!--START::Loading Items-->
         @if (loadingItems()) {
@@ -209,6 +245,10 @@
         }
         <!--END::Items Grid-->
 
+          </div>
+          <!--END::Items Content-->
+
+        </div><!-- end flex wrapper -->
         }
         <!--END::Items View-->
 

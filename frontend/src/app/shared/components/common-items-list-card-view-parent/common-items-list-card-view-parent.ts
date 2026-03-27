@@ -8,6 +8,7 @@ import { ProductItemVariant } from '../../../core/models/product-item-variant.mo
 import { ItemBestPrice } from '../../../core/models/store-item.model';
 import { Store } from '../../../core/models/store.model';
 import { IconConfigService } from '../../../core/services/icon-config.service';
+import { ItemBrandService } from '../../../core/services/item-brand.service';
 import { ItemCategoryService } from '../../../core/services/item-category.service';
 import { ItemImageService } from '../../../core/services/item-image.service';
 import { ItemService } from '../../../core/services/item.service';
@@ -21,6 +22,7 @@ import { GridColumns } from '../commonActions/common-grid-columns-button/common-
 import { DecimalPipe } from "@angular/common";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CommonBreadcrumb } from "../common-breadcrumb/common-breadcrumb";
+import { ItemBrand } from '../../../core/models/item-brand.model';
 
 @Component({
   selector: 'app-common-items-list-card-view-parent',
@@ -34,6 +36,7 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   private itemService = inject(ItemService);
   private storeService = inject(StoreService);
   private categoryService = inject(ItemCategoryService);
+  private brandService = inject(ItemBrandService);
   private imageService = inject(ItemImageService);
   private translate = inject(TranslateService);
   userActivity = inject(UserActivityService);
@@ -66,6 +69,8 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   compareIds = signal<Set<number>>(new Set());
   colsPerRow = signal<GridColumns>(4);
   colClass = computedColClass(this.colsPerRow);
+  allBrands = signal<ItemBrand[]>([]);
+  selectedBrandId = signal<number | null>(null);
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
@@ -82,7 +87,17 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
 
   filteredItems = computed<Item[]>(() => {
     const q = this.searchQuery().trim().toLowerCase();
-    return q ? this.items().filter(i => i.name.toLowerCase().includes(q)) : this.items();
+    const brandId = this.selectedBrandId();
+    let result = this.items();
+    if (q) result = result.filter(i => i.name.toLowerCase().includes(q));
+    if (brandId !== null) result = result.filter(i => i.brandId === brandId);
+    return result;
+  });
+
+  /** Brands that actually appear in the currently loaded items. */
+  visibleBrands = computed<ItemBrand[]>(() => {
+    const brandIds = new Set(this.items().map(i => i.brandId));
+    return this.allBrands().filter(b => brandIds.has(b.id!));
   });
 
   bestPriceMap = computed<Map<number, ItemBestPrice>>(() =>
@@ -228,6 +243,7 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
       error: () => { this.loadingCats.set(false); }
     });
     this.storeService.getAll().subscribe({ next: s => this.stores.set(s), error: () => { } });
+    this.brandService.getAll().subscribe({ next: b => this.allBrands.set(b), error: () => { } });
     this.variantMapSvc.getAll().subscribe({ next: d => this.itemVariantMaps.set(d), error: () => { } });
     this.variantSvc.getAll().subscribe({ next: d => this.allVariants.set(d), error: () => { } });
     this.userActivity.loadAll();
@@ -236,6 +252,7 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
       this.route.paramMap,
       this.route.queryParamMap,
     ]).subscribe(([params, queryParams]) => {
+      this.selectedBrandId.set(null);
       const categoryId = params.get('categoryId');
       const q = queryParams.get('q') ?? '';
 

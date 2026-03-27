@@ -12,6 +12,19 @@
 }
 
 /* =====================================================
+   No-sidebar layout (non-admin users)
+   Strip all sidebar-driven offsets from wrapper,
+   toolbar, and footer so content is truly full-width.
+   ===================================================== */
+@media (min-width: 992px) {
+  body.no-sidebar {
+    .app-wrapper   { margin-left: 0 !important; margin-right: 0 !important; }
+    .app-toolbar   { left: 0 !important; right: 0 !important; }
+    .app-footer    { left: 0 !important; right: 0 !important; }
+  }
+}
+
+/* =====================================================
    SweetAlert2 toast — theme-aware overrides
    Metronic overrides background/color on .swal2-popup
    which breaks the default toast appearance.
@@ -153,9 +166,9 @@ html[dir="rtl"] {
     right: 0 !important;
   }
 
-  /* 2. App wrapper: flip margin from left to right */
+  /* 2. App wrapper: flip margin from left to right (admin sidebar only) */
   @media (min-width: 992px) {
-    [data-kt-app-sidebar-fixed="true"] .app-wrapper {
+    &:not(.no-sidebar) [data-kt-app-sidebar-fixed="true"] .app-wrapper {
       margin-left: 0 !important;
       margin-right: ~"calc(var(--bs-app-sidebar-width) + var(--bs-app-sidebar-gap-start, 0px) + var(--bs-app-sidebar-gap-end, 0px))" !important;
     }
