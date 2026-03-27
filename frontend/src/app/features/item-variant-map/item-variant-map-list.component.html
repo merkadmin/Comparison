@@ -117,15 +117,21 @@
               <td>
                 @if (m.variants.length === 0) {
                   <span class="text-muted">—</span>
-                }
-                <div class="d-flex flex-wrap gap-1">
-                  @for (entry of m.variants; track entry.variantId) {
-                    @let v = getVariant(entry.variantId);
-                    @if (v?.abbreviation) {
-                      <span class="badge badge-light-primary fs-7">{{ v!.abbreviation }}</span>
+                } @else {
+                  <div class="d-flex flex-wrap gap-1">
+                    @for (entry of getSortedVariants(m.variants); track entry.variantId) {
+                      @let v = getVariant(entry.variantId);
+                      @if (v) {
+                        <span class="badge fs-7"
+                              [class.badge-light-primary]="!v.color"
+                              [style.background]="v.color ?? null"
+                              [style.color]="v.color ? '#fff' : null">
+                          {{ 'variant.type.' + v.variantTypeId | translate }}: {{ v.variantValue }}
+                        </span>
+                      }
                     }
-                  }
-                </div>
+                  </div>
+                }
               </td>
               <td>
                 <span class="text-gray-700 fs-5">{{ getStoreName(m.storeId) }}</span>
@@ -195,13 +201,15 @@
                 <!--Variant Info-->
                 @if (m.variants.length > 0) {
                   <div class="d-flex flex-wrap gap-2">
-                    @for (entry of m.variants; track entry.variantId) {
+                    @for (entry of getSortedVariants(m.variants); track entry.variantId) {
                       @let v = getVariant(entry.variantId);
                       @if (v) {
-                        <span class="badge badge-light-primary">{{ v.variantValue }}</span>
-                        @if (v.abbreviation) {
-                          <span class="badge badge-light-dark">{{ v.abbreviation }}</span>
-                        }
+                        <span class="badge"
+                              [class.badge-light-primary]="!v.color"
+                              [style.background]="v.color ?? null"
+                              [style.color]="v.color ? '#fff' : null">
+                          {{ 'variant.type.' + v.variantTypeId | translate }}: {{ v.variantValue }}
+                        </span>
                       }
                     }
                   </div>

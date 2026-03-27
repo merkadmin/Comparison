@@ -241,6 +241,7 @@ export const ar: Record<string, string> = {
   'variant.variantValuePlaceholder': 'مثال: أحمر، XL، 256GB',
   'variant.abbreviation': 'الاختصار',
   'variant.abbreviationPlaceholder': 'مثال: XL، S، 256',
+  'variant.color': 'اللون',
   'variant.deleteConfirm': 'حذف هذا المتغير؟',
   'variant.deleteBulkConfirm': 'حذف المتغيرات المحددة؟',
   'variant.deleteBulkText': 'أنت على وشك حذف {count} متغير/متغيرات. لا يمكن التراجع عن ذلك.',

@@ -100,22 +100,16 @@ export class ItemVariantMapOperationComponent implements OnInit {
     };
   }
 
-  private resetBulkRows(): void {
-    this.rows.set([]);
-    this.bulkItemId.set(0);
-    this.bulkStoreId.set(0);
-    this.bulkSellingPrice.set(0);
-    this.bulkDescription.set('');
-    this.bulkAbout.set('');
-  }
-
   saveBulk(): void {
     this.bulkSaved.emit(this.buildRecord());
   }
 
   saveBulkAndNew(): void {
     this.bulkSavedAndNew.emit(this.buildRecord());
-    this.resetBulkRows();
+    // Only reset Item, Store, and Price — keep the variants table and text fields
+    this.bulkItemId.set(0);
+    this.bulkStoreId.set(0);
+    this.bulkSellingPrice.set(0);
   }
 
   // ── Edit-mode save ────────────────────────────────────────────────────────

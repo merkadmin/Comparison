@@ -11,6 +11,7 @@ namespace PriceRadar.DAL.Documents
 		public DBVariantType VariantTypeId { get; set; }
 		public string VariantValue { get; set; } = string.Empty;
 		public string? Abbreviation { get; set; } = string.Empty;
+		public string? Color { get; set; }
 		public bool IsActive { get; set; } = true;
 		public bool IsDeleted { get; set; } = false;
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -23,6 +24,7 @@ namespace PriceRadar.DAL.Documents
 			VariantTypeId = VariantTypeId,
 			VariantValue = VariantValue,
 			Abbreviation = Abbreviation,
+			Color = Color,
 			CreatedAt = CreatedAt,
 		};
 
@@ -34,6 +36,7 @@ namespace PriceRadar.DAL.Documents
 			VariantTypeId = v.VariantTypeId,
 			VariantValue = v.VariantValue,
 			Abbreviation = v.Abbreviation,
+			Color = v.Color,
 			CreatedAt = v.CreatedAt,
 		};
 	}

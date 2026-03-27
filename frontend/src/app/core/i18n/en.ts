@@ -241,6 +241,7 @@ export const en: Record<string, string> = {
   'variant.variantValuePlaceholder': 'e.g. Red, XL, 256GB',
   'variant.abbreviation': 'Abbreviation',
   'variant.abbreviationPlaceholder': 'e.g. XL, S, 256',
+  'variant.color': 'Color',
   'variant.deleteConfirm': 'Delete this variant?',
   'variant.deleteBulkConfirm': 'Delete selected variants?',
   'variant.deleteBulkText': 'You are about to delete {count} variants. This cannot be undone.',

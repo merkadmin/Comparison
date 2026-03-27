@@ -16,6 +16,7 @@ export interface ProductItemVariant {
   variantTypeId: VariantType;
   variantValue: string;
   abbreviation?: string;
+  color?: string;
   isActive?: boolean;
   isDeleted?: boolean;
   createdAt?: Date;

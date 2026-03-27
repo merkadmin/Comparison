@@ -74,6 +74,14 @@ export class ItemVariantMapListComponent implements OnInit {
   getItemName(id: number): string { return this.itemMap().get(id)?.name ?? String(id); }
   getVariant(id: number): ProductItemVariant | undefined { return this.variantMap().get(id); }
   getStoreName(id: number | null | undefined): string { return id != null ? (this.storeMap().get(id)?.name ?? String(id)) : '—'; }
+  getSortedVariants(entries: { variantId: number }[]): { variantId: number }[] {
+    return [...entries].sort((a, b) => {
+      const va = this.getVariant(a.variantId);
+      const vb = this.getVariant(b.variantId);
+      if (!va || !vb) return 0;
+      return String(va.variantTypeId).localeCompare(String(vb.variantTypeId));
+    });
+  }
 
   filteredMaps = computed<ProductItemVariantMap[]>(() => {
     const q      = this.searchQuery().trim().toLowerCase();

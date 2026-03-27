@@ -105,6 +105,7 @@
             <th class="min-w-150px">{{ 'variant.variantType' | translate }}</th>
             <th class="min-w-120px">{{ 'variant.variantValue' | translate }}</th>
             <th class="min-w-100px">{{ 'variant.abbreviation' | translate }}</th>
+            <th class="min-w-80px">{{ 'variant.color' | translate }}</th>
             <th class="min-w-80px">{{ 'common.status' | translate }}</th>
             <th class="min-w-100px">{{ 'common.created' | translate }}</th>
             @if (auth.isAdmin()) {
@@ -115,7 +116,7 @@
         <tbody class="text-gray-600 fw-semibold">
           @if (filteredVariants().length === 0) {
             <tr>
-              <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">
+              <td [attr.colspan]="auth.isAdmin() ? 8 : 6" class="text-center text-muted py-10">
                 {{ 'common.noData' | translate }}
               </td>
             </tr>
@@ -142,6 +143,14 @@
               <td>
                 @if (v.abbreviation) {
                   <span class="badge badge-light-dark">{{ v.abbreviation }}</span>
+                } @else { <span class="text-muted">—</span> }
+              </td>
+              <td>
+                @if (v.color) {
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="variant-color-dot" [style.background]="v.color"></div>
+                    <span class="text-muted fs-8">{{ v.color }}</span>
+                  </div>
                 } @else { <span class="text-muted">—</span> }
               </td>
               <td>
@@ -199,9 +208,12 @@
                   </span>
                 </div>
 
-                <!--Variant Value / Abbreviation-->
-                @if (v.variantValue || v.abbreviation) {
-                  <div class="d-flex flex-wrap gap-2">
+                <!--Variant Value / Abbreviation / Color-->
+                @if (v.variantValue || v.abbreviation || v.color) {
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    @if (v.color) {
+                      <div class="variant-color-dot" [style.background]="v.color" [title]="v.color"></div>
+                    }
                     @if (v.variantValue) {
                       <span class="badge badge-light-info">{{ v.variantValue }}</span>
                     }

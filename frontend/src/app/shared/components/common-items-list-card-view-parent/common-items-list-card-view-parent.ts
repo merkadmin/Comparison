@@ -116,11 +116,15 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   }
 
   isCategoryActive(cat: IItemCategory): boolean {
-    if (this.selectedLeaf()?.id === cat.id) return true;
-    return this.navStack().some(c => c.id === cat.id);
+    return this.selectedLeaf()?.id === cat.id;
+  }
+
+  isLeafCategory(cat: IItemCategory): boolean {
+    return !this.hasChildren(cat);
   }
 
   selectCategoryFromSidebar(cat: IItemCategory): void {
+    if (!this.isLeafCategory(cat)) return;
     this.router.navigate(['/shop-by-category/by-category', cat.id]);
   }
 
@@ -198,6 +202,21 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     } else if (this.pendingCount(itemId) > 0) {
       this.userActivity.toggleCart(itemId);
     }
+  }
+
+  /** Unique colored variants (color + label) for an item's active mappings. */
+  getItemVariantColors(itemId: number): { color: string; label: string }[] {
+    const seen = new Set<number>();
+    const result: { color: string; label: string }[] = [];
+    for (const map of this.itemVariantMaps().filter(m => m.productItemId === itemId && m.isActive !== false)) {
+      for (const entry of map.variants) {
+        if (seen.has(entry.variantId)) continue;
+        seen.add(entry.variantId);
+        const v = this.allVariants().find(v => v.id === entry.variantId);
+        if (v?.color) result.push({ color: v.color, label: v.variantValue });
+      }
+    }
+    return result;
   }
 
   getBestPrice(itemId: number, storeId?: number): number | null {

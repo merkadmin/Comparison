@@ -239,6 +239,7 @@ export const fr: Record<string, string> = {
   'variant.variantValue': 'Valeur de la variante',
   'variant.abbreviation': 'Abréviation',
   'variant.abbreviationPlaceholder': 'ex. XL, S, 256',
+  'variant.color': 'Couleur',
   'variant.variantValuePlaceholder': 'ex. Rouge, XL, 256 Go',
   'variant.deleteConfirm': 'Supprimer cette variante ?',
   'variant.deleteBulkConfirm': 'Supprimer les variantes sélectionnées ?',

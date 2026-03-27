@@ -35,6 +35,42 @@
         </div>
         <!--END::Variant Type-->
 
+        <!--START::Color-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'variant.color' | translate }}</label>
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            @for (c of colorPalette; track c) {
+              <div class="variant-color-swatch cursor-pointer"
+                   [style.background]="c"
+                   [class.variant-color-swatch--selected]="editDraft.color === c"
+                   [class.variant-color-swatch--dark]="c === '#FFFFFF' || c === '#D1D5DB'"
+                   [title]="c"
+                   (click)="editDraft.color = c">
+              </div>
+            }
+            <div class="variant-color-swatch variant-color-swatch--clear cursor-pointer"
+                 [class.variant-color-swatch--selected]="!editDraft.color"
+                 title="No color"
+                 (click)="editDraft.color = undefined">
+              <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+            </div>
+          </div>
+          @if (editDraft.color) {
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <div class="variant-color-swatch variant-color-swatch--preview"
+                   [style.background]="editDraft.color"
+                   [class.variant-color-swatch--dark]="editDraft.color === '#FFFFFF' || editDraft.color === '#D1D5DB'">
+              </div>
+              <input type="color" class="form-control form-control-color p-1"
+                     style="width:40px;height:34px;"
+                     [(ngModel)]="editDraft.color"
+                     [disabled]="saving" />
+              <span class="text-muted fs-7">{{ editDraft.color }}</span>
+            </div>
+          }
+        </div>
+        <!--END::Color-->
+
         <!--START::Variant Value-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'variant.variantValue' | translate }}</label>

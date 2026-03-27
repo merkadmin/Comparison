@@ -79,13 +79,56 @@
         @if (selectedLeaf() || isSearchMode()) {
         <div class="d-flex gap-4 align-items-start">
 
-          <!--START::Brand Filter Sidebar-->
-          @if (!loadingItems()) {
-          <div class="brand-filter-sidebar flex-shrink-0 border rounded p-4" style="width: 200px;">
+          <!--START::Filter Sidebar-->
+          @if (!loadingCats()) {
+          <div class="brand-filter-sidebar flex-shrink-0 border rounded p-3" style="width: 220px;">
 
-            <div class="fw-bold text-gray-700 fs-7 text-uppercase mb-3">
+            <!--START::Category Filter-->
+            <div class="fw-bold text-gray-700 fs-7 text-uppercase mb-2">
+              {{ 'item.filterByCategory' | translate }}
+            </div>
+
+            @if (selectedLeaf()) {
+            <div class="d-flex align-items-center gap-1 mb-2 px-2 py-1 rounded bg-light-primary">
+              <i class="ki-duotone ki-category fs-7 text-primary">
+                <span class="path1"></span><span class="path2"></span>
+                <span class="path3"></span><span class="path4"></span>
+              </i>
+              <span class="fw-semibold fs-7 text-primary text-truncate">{{ localize(selectedLeaf()!) }}</span>
+            </div>
+            }
+
+            <div class="category-filter-tree">
+              @for (cat of sortedCategoryTree(); track cat.id) {
+                @if (hasChildren(cat)) {
+                  <!--Parent node: non-selectable group label-->
+                  <div class="py-1 mb-1 text-muted"
+                       [style.padding-left.px]="8 + getCategoryDepth(cat) * 14">
+                    <span class="fs-8 fw-bold text-uppercase text-truncate d-block">{{ localize(cat) }}</span>
+                  </div>
+                } @else {
+                  <!--Leaf node: selectable-->
+                  <div class="brand-filter-item d-flex align-items-center py-1 rounded cursor-pointer mb-1"
+                       [class.active]="isCategoryActive(cat)"
+                       [style.padding-left.px]="8 + getCategoryDepth(cat) * 14"
+                       (click)="selectCategoryFromSidebar(cat)">
+                    <span class="fs-7 text-truncate">{{ localize(cat) }}</span>
+                  </div>
+                }
+              }
+            </div>
+            <!--END::Category Filter-->
+
+            <hr class="my-3" />
+
+            <!--START::Brand Filter-->
+            <div class="fw-bold text-gray-700 fs-7 text-uppercase mb-2">
               {{ 'item.filterByBrand' | translate }}
             </div>
+
+            @if (loadingItems()) {
+            <div class="text-muted fs-8 px-2">{{ 'common.loading' | translate }}</div>
+            } @else {
 
             <!--All Brands-->
             <div class="brand-filter-item d-flex align-items-center gap-2 py-2 px-2 rounded cursor-pointer mb-1"
@@ -107,9 +150,12 @@
             </div>
             }
 
+            }
+            <!--END::Brand Filter-->
+
           </div>
           }
-          <!--END::Brand Filter Sidebar-->
+          <!--END::Filter Sidebar-->
 
           <!--START::Items Content-->
           <div class="flex-grow-1 min-w-0">
@@ -212,6 +258,17 @@
 
                         </div>
                         <!--END::User Actions-->
+
+                        <!--START::Variant Colors-->
+                        @let variantColors = getItemVariantColors(item.id!);
+                        @if (variantColors.length > 0) {
+                        <div class="d-flex flex-wrap gap-1 mb-1">
+                          @for (vc of variantColors; track vc.color) {
+                            <div class="variant-color-dot" [style.background]="vc.color" [title]="vc.label"></div>
+                          }
+                        </div>
+                        }
+                        <!--END::Variant Colors-->
 
                         <!--START::Store Prices (always visible)-->
                         @if (getItemStoreItems(item.id!).length > 0) {
