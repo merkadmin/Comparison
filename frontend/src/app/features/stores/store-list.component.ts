@@ -13,7 +13,7 @@ import { Item } from '../../core/models/item.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { ToastService } from '../../core/services/toast.service';
-import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { StoreListOperationComponent, StoreItemRow } from './store-list-operation/store-list-operation.component';
 import { GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
@@ -23,7 +23,7 @@ import { computedColClass } from '../../shared/helpers/grid-columns.helper';
 @Component({
   selector: 'app-store-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonDropDownMenuActionButton, CommonListHeaderActions, StoreListOperationComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonListHeaderActions, StoreListOperationComponent],
   templateUrl: './store-list.component.html',
   styleUrl: './store-list.component.less',
 })

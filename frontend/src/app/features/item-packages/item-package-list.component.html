@@ -114,10 +114,9 @@
                   </td>
                   @if (auth.isAdmin()) {
                   <td class="text-end d-flex justify-content-end gap-2">
-                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(pkg)">
+                    <button class="btn btn-sm btn-icon btn-light-primary" [title]="'common.edit' | translate" (click)="openEdit(pkg)">
                       <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
-                      {{ 'common.edit' | translate }}
-                    </button>
+                                          </button>
                     <button class="btn btn-sm btn-light-danger" (click)="delete(pkg.id!)">
                       <i class="ki-duotone ki-trash fs-5">
                         <span class="path1"></span><span class="path2"></span>

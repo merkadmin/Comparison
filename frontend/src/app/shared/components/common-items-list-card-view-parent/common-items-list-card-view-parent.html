@@ -27,6 +27,41 @@
         }
         <!--END::Search-->
 
+        <!--START::View Controls-->
+        @if (selectedLeaf() || isSearchMode()) {
+        <div class="d-flex align-items-center gap-2" [class.ms-auto]="!(selectedLeaf() && !isSearchMode())">
+
+          <!--List/Grid toggle-->
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-icon"
+                    [class.btn-success]="viewMode() === 'list'"
+                    [class.btn-light]="viewMode() !== 'list'"
+                    (click)="viewMode.set('list')" title="List view">
+              <i class="ki-duotone ki-row-horizontal fs-3">
+                <span class="path1"></span><span class="path2"></span>
+              </i>
+            </button>
+            <button class="btn btn-icon"
+                    [class.btn-success]="viewMode() === 'grid'"
+                    [class.btn-light]="viewMode() !== 'grid'"
+                    (click)="viewMode.set('grid')" title="Grid view">
+              <i class="ki-duotone ki-element-equal fs-3">
+                <span class="path1"></span><span class="path2"></span>
+              </i>
+            </button>
+          </div>
+
+          <!--Column picker (grid only)-->
+          @if (viewMode() === 'grid') {
+          <app-common-grid-columns-button
+            [columns]="colsPerRow()"
+            (columnsChange)="colsPerRow.set($event)" />
+          }
+
+        </div>
+        }
+        <!--END::View Controls-->
+
     </div>
     <!--END::Header-->
 
@@ -83,8 +118,81 @@
           @if (!loadingCats()) {
           <div class="brand-filter-sidebar flex-shrink-0 border rounded p-3" style="width: 220px;">
 
+            <!--START::Brand Filter-->
+            <div class="filter-section-title fs-5 mb-2">
+              {{ 'item.filterByBrand' | translate }}
+            </div>
+
+            @if (loadingItems()) {
+            <div class="text-muted fs-8 px-2">{{ 'common.loading' | translate }}</div>
+            } @else {
+
+            <!--All Brands-->
+            <div class="brand-filter-item d-flex align-items-center gap-2 py-2 px-2 rounded cursor-pointer mb-1"
+                 [class.active]="selectedBrandId() === null"
+                 (click)="selectedBrandId.set(null)">
+              <span class="fw-semibold fs-7">{{ 'item.allBrands' | translate }}</span>
+            </div>
+
+            @for (brand of visibleBrands(); track brand.id) {
+            <div class="brand-filter-item d-flex align-items-center gap-2 py-2 px-2 rounded cursor-pointer mb-1"
+                 [class.active]="selectedBrandId() === brand.id"
+                 (click)="selectedBrandId.set(brand.id!)">
+              @if (brand.logoUrl) {
+                <img [src]="brand.logoUrl" [alt]="brand.name"
+                     class="rounded object-fit-contain flex-shrink-0"
+                     style="width:20px;height:20px;" />
+              }
+              <span class="fw-semibold fs-7 text-truncate">{{ brand.name }}</span>
+            </div>
+            }
+
+            }
+            <!--END::Brand Filter-->
+
+            @if (!loadingItems() && visibleVariantGroups().length > 0) {
+            <hr class="my-3" />
+
+            <!--START::Variant Filter-->
+            <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+              <div class="filter-section-title fs-5 flex-grow-1">
+                {{ 'item.filterByVariant' | translate }}
+              </div>
+              @if (selectedVariantIds().size > 0) {
+              <button class="btn btn-sm btn-light-danger px-2 py-1" (click)="clearVariantFilter()">
+                <i class="ki-duotone ki-cross fs-7"><span class="path1"></span><span class="path2"></span></i>
+              </button>
+              }
+            </div>
+
+            @for (group of visibleVariantGroups(); track group.type) {
+              <div class="mb-3">
+                <div class="fs-8 fw-bold text-muted text-uppercase mb-2">
+                  {{ 'variant.type.' + group.type | translate }}
+                </div>
+                <div class="d-flex flex-wrap gap-1">
+                  @for (v of group.variants; track v.id) {
+                    @let isSelected = selectedVariantIds().has(v.id!);
+                    <span class="badge cursor-pointer user-select-none fs-8"
+                          [class.badge-light-secondary]="!v.color && !isSelected"
+                          [class.badge-secondary]="!v.color && isSelected"
+                          [style.background]="v.color && !isSelected ? v.color + 'cc' : v.color && isSelected ? v.color : null"
+                          [style.color]="v.color ? '#fff' : null"
+                          [style.box-shadow]="isSelected ? '0 0 0 2px #009ef7' : 'none'"
+                          (click)="toggleVariantFilter(v.id!)">
+                      {{ v.abbreviation ?? v.variantValue }}
+                    </span>
+                  }
+                </div>
+              </div>
+            }
+            <!--END::Variant Filter-->
+            }
+
+            <hr class="my-3" />
+
             <!--START::Category Filter-->
-            <div class="fw-bold text-gray-700 fs-7 text-uppercase mb-2">
+            <div class="filter-section-title fs-5 mb-2">
               {{ 'item.filterByCategory' | translate }}
             </div>
 
@@ -119,39 +227,50 @@
             </div>
             <!--END::Category Filter-->
 
+            @if (!loadingItems() && priceRange().min < priceRange().max) {
             <hr class="my-3" />
 
-            <!--START::Brand Filter-->
-            <div class="fw-bold text-gray-700 fs-7 text-uppercase mb-2">
-              {{ 'item.filterByBrand' | translate }}
+            <!--START::Price Filter-->
+            <div class="filter-section-title fs-5 mb-3">
+              {{ 'item.filterByPrice' | translate }}
             </div>
 
-            @if (loadingItems()) {
-            <div class="text-muted fs-8 px-2">{{ 'common.loading' | translate }}</div>
-            } @else {
+            <div class="d-flex flex-column gap-2">
 
-            <!--All Brands-->
-            <div class="brand-filter-item d-flex align-items-center gap-2 py-2 px-2 rounded cursor-pointer mb-1"
-                 [class.active]="selectedBrandId() === null"
-                 (click)="selectedBrandId.set(null)">
-              <span class="fw-semibold fs-7">{{ 'item.allBrands' | translate }}</span>
-            </div>
+              <!--Min/Max labels-->
+              <div class="d-flex justify-content-between fs-8 text-muted">
+                <span>{{ 'item.priceMin' | translate }}: <strong class="text-gray-700">{{ (selectedPriceMin() ?? priceRange().min) | number:'1.0-0' }}</strong></span>
+                <span>{{ 'item.priceMax' | translate }}: <strong class="text-gray-700">{{ (selectedPriceMax() ?? priceRange().max) | number:'1.0-0' }}</strong></span>
+              </div>
 
-            @for (brand of visibleBrands(); track brand.id) {
-            <div class="brand-filter-item d-flex align-items-center gap-2 py-2 px-2 rounded cursor-pointer mb-1"
-                 [class.active]="selectedBrandId() === brand.id"
-                 (click)="selectedBrandId.set(brand.id!)">
-              @if (brand.logoUrl) {
-                <img [src]="brand.logoUrl" [alt]="brand.name"
-                     class="rounded object-fit-contain flex-shrink-0"
-                     style="width:20px;height:20px;" />
+              <!--Min slider-->
+              <input type="range" class="form-range"
+                     [min]="priceRange().min" [max]="priceRange().max" step="1"
+                     [value]="selectedPriceMin() ?? priceRange().min"
+                     (input)="setPriceMin(+$any($event.target).value)" />
+
+              <!--Max slider-->
+              <input type="range" class="form-range"
+                     [min]="priceRange().min" [max]="priceRange().max" step="1"
+                     [value]="selectedPriceMax() ?? priceRange().max"
+                     (input)="setPriceMax(+$any($event.target).value)" />
+
+              <!--Range summary-->
+              <div class="d-flex align-items-center justify-content-between fs-8 text-muted mt-1">
+                <span>{{ priceRange().min | number:'1.0-0' }}</span>
+                <span>{{ priceRange().max | number:'1.0-0' }}</span>
+              </div>
+
+              @if (selectedPriceMin() !== null || selectedPriceMax() !== null) {
+              <button class="btn btn-sm btn-light-danger mt-1" (click)="resetPriceFilter()">
+                <i class="ki-duotone ki-cross fs-6"><span class="path1"></span><span class="path2"></span></i>
+                {{ 'item.resetPrice' | translate }}
+              </button>
               }
-              <span class="fw-semibold fs-7 text-truncate">{{ brand.name }}</span>
-            </div>
-            }
 
+            </div>
+            <!--END::Price Filter-->
             }
-            <!--END::Brand Filter-->
 
           </div>
           }
@@ -176,7 +295,7 @@
         <!--END::Empty Items-->
 
         <!--START::Items Grid-->
-        @if (!loadingItems() && filteredItems().length > 0) {
+        @if (!loadingItems() && filteredItems().length > 0 && viewMode() === 'grid') {
         <div class="row g-4">
             @for (item of filteredItems(); track item.id) {
             <div [class]="colClass()">
@@ -189,18 +308,13 @@
                         @if (item.images && item.images.length > 0) {
                         <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
                         @if (item.images.length > 1) {
-                        <span class="position-absolute bottom-0 end-0 badge badge-dark m-1 fs-8">+{{ item.images.length
-                            - 1
-                            }}</span>
+                        <span class="position-absolute bottom-0 end-0 badge badge-dark m-1 fs-8">+{{ item.images.length - 1 }}</span>
                         }
                         } @else if (item.imageUrl) {
                         <img [src]="item.imageUrl" [alt]="item.name" class="item-card__img" />
                         } @else {
-                        <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase()
-                            }}</span>
+                        <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
                         }
-
-                        <!--Favorite Icon-->
                         <button
                             class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-1 bg-white bg-opacity-75 border-0 rounded-circle"
                             (click)="toggleFavorite(item.id!); $event.stopPropagation()">
@@ -213,75 +327,36 @@
                     </div>
                     <!--END::Card Image-->
 
-                    <!--START::Card Info-->
                     <div class="card-body d-flex flex-column gap-3 p-4">
-
-                        <!--START::Name-->
                         <h6 class="fw-bold text-gray-800 mb-0 lh-sm fs-2">{{ item.name }}</h6>
-                        <!--END::Name-->
-
-                        <!--START::Description-->
                         @if (item.briefDescription || item.description) {
-                        <p class="text-muted fs-7 mb-0 item-card__desc fs-3">
-                            {{ item.briefDescription || item.description }}
-                        </p>
+                        <p class="text-muted fs-7 mb-0 item-card__desc fs-3">{{ item.briefDescription || item.description }}</p>
                         }
-                        <!--END::Description-->
-
-                        <!--START::Best Price-->
                         @if (getBestPrice(item.id!) !== null) {
                         <div class="d-flex align-items-center gap-1 mt-auto pt-2 border-top">
                             <span class="text-muted fs-6">{{ 'item.bestPrice' | translate }}:</span>
-                            <span class="fw-bold text-primary fs-1 best-price">
-                                {{ getBestPrice(item.id!) | number:'1.2-2' }}
-                            </span>
+                            <span class="fw-bold text-primary fs-1 best-price">{{ getBestPrice(item.id!) | number:'1.2-2' }}</span>
                         </div>
                         }
-                        <!--END::Best Price-->
-
                     </div>
-                    <!--END::Card Info-->
 
                     <div class="card-footer bg-transparent border-top-0 d-flex flex-column gap-2 p-3">
-
-                        <!--START::User Actions-->
                         <div class="d-flex gap-2">
-
-                            <!--START::Radar Button-->
-                            <button class="btn btn-sm btn-primary flex-fill" (click)="openDetail(item)">
-                                <i class="ki-duotone ki-{{ compareIcon() }} fs-1">
-                                    <span class="path1"></span><span class="path2"></span>
-                                </i>
+                            <button class="btn btn-sm btn-success flex-fill" (click)="openDetail(item)">
+                                <i class="ki-duotone ki-{{ compareIcon() }} fs-1"><span class="path1"></span><span class="path2"></span></i>
                                 Radar
                             </button>
-                            <!--END::Radar Button-->
-
                         </div>
-                        <!--END::User Actions-->
-
-                        <!--START::Store Prices (always visible)-->
                         @if (getItemStoreItems(item.id!).length > 0) {
                         <div class="border rounded p-2 d-flex flex-column gap-1">
                             @for (si of getItemStoreItems(item.id!); track si.id) {
                             <div class="d-flex align-items-center justify-content-between px-2 py-1 rounded">
-
-                                <!--START::Store Name-->
-                                <span class="fw-semibold text-gray-800 fs-7">
-                                    {{ getStoreName(si.storeId) }}
-                                </span>
-                                <!--END::Store Name-->
-
-                                <!--START::Selling Price-->
-                                <span class="fw-bold text-primary fs-7">
-                                    {{ si.sellingPrice | number:'1.2-2' }}
-                                </span>
-                                <!--END::Selling Price-->
-
+                                <span class="fw-semibold text-gray-800 fs-7">{{ getStoreName(si.storeId) }}</span>
+                                <span class="fw-bold text-primary fs-7">{{ si.sellingPrice | number:'1.2-2' }}</span>
                             </div>
                             }
                         </div>
                         }
-                        <!--END::Store Prices-->
                     </div>
 
                 </div>
@@ -290,6 +365,67 @@
         </div>
         }
         <!--END::Items Grid-->
+
+        <!--START::Items List-->
+        @if (!loadingItems() && filteredItems().length > 0 && viewMode() === 'list') {
+        <div class="d-flex flex-column gap-3">
+            @for (item of filteredItems(); track item.id) {
+            <div class="item-list-row card border shadow-sm d-flex flex-row align-items-stretch gap-0 overflow-hidden">
+
+                <!--Image-->
+                <div class="item-list-row__img-wrap bg-light d-flex align-items-center justify-content-center flex-shrink-0 cursor-pointer position-relative"
+                     style="width:110px;min-height:90px;"
+                     (click)="openLightbox(item, 0)">
+                    @if (item.images && item.images.length > 0) {
+                    <img [src]="imgUrl(item.images[0])" [alt]="item.name" style="max-width:100px;max-height:80px;object-fit:contain;" />
+                    } @else if (item.imageUrl) {
+                    <img [src]="item.imageUrl" [alt]="item.name" style="max-width:100px;max-height:80px;object-fit:contain;" />
+                    } @else {
+                    <span class="fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
+                    }
+                    <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-0 bg-white bg-opacity-75 border-0 rounded-circle"
+                            (click)="toggleFavorite(item.id!); $event.stopPropagation()">
+                        <i class="ki-duotone ki-{{ favoriteIcon() }} fs-5"
+                           [class.text-danger]="isFavorite(item.id!)"
+                           [class.text-gray-400]="!isFavorite(item.id!)">
+                            <span class="path1"></span><span class="path2"></span>
+                        </i>
+                    </button>
+                </div>
+
+                <!--Info-->
+                <div class="d-flex flex-grow-1 align-items-center gap-4 px-4 py-3 flex-wrap">
+                    <div class="d-flex flex-column gap-1 flex-grow-1 min-w-0">
+                        <span class="fw-bold text-gray-800 fs-5 lh-sm">{{ item.name }}</span>
+                        @if (item.briefDescription || item.description) {
+                        <span class="text-muted fs-7 item-card__desc">{{ item.briefDescription || item.description }}</span>
+                        }
+                    </div>
+
+                    <!--Store prices-->
+                    @if (getItemStoreItems(item.id!).length > 0) {
+                    <div class="d-flex flex-column gap-1 flex-shrink-0">
+                        @for (si of getItemStoreItems(item.id!); track si.id) {
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fw-semibold text-gray-700 fs-7" style="min-width:80px;">{{ getStoreName(si.storeId) }}</span>
+                            <span class="fw-bold text-primary fs-6">{{ si.sellingPrice | number:'1.2-2' }}</span>
+                        </div>
+                        }
+                    </div>
+                    }
+
+                    <!--Radar button-->
+                    <button class="btn btn-sm btn-success flex-shrink-0" (click)="openDetail(item)">
+                        <i class="ki-duotone ki-{{ compareIcon() }} fs-4"><span class="path1"></span><span class="path2"></span></i>
+                        Radar
+                    </button>
+                </div>
+
+            </div>
+            }
+        </div>
+        }
+        <!--END::Items List-->
 
           </div>
           <!--END::Items Content-->

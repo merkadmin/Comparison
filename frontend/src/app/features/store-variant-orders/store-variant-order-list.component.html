@@ -84,7 +84,7 @@
             }
             <th class="w-30px">{{ 'common.number' | translate }}</th>
             <th class="min-w-150px">{{ 'storeVariantOrder.store' | translate }}</th>
-            <th class="min-w-200px">{{ 'storeVariantOrder.variant' | translate }}</th>
+            <th class="min-w-200px">{{ 'variant.variantType' | translate }}</th>
             <th class="min-w-100px">{{ 'storeVariantOrder.orderIndex' | translate }}</th>
             <th class="min-w-80px">{{ 'common.status' | translate }}</th>
             <th class="min-w-100px">{{ 'common.created' | translate }}</th>
@@ -116,7 +116,13 @@
                 <span class="text-gray-800 fw-bold fs-6">{{ getStoreName(o.storeId) }}</span>
               </td>
               <td>
-                <span class="badge badge-light-primary fs-7">{{ getVariantLabel(o.variantId) }}</span>
+                @let typeColor = getTypeColor(o.variantTypeId);
+                <span class="badge fs-7"
+                      [class.badge-light-primary]="!typeColor"
+                      [style.background]="typeColor ?? null"
+                      [style.color]="typeColor ? '#fff' : null">
+                  {{ 'variant.type.' + o.variantTypeId | translate }}
+                </span>
               </td>
               <td>
                 <span class="fw-bold text-gray-700 fs-6">{{ o.orderIndex }}</span>
@@ -132,20 +138,17 @@
               @if (auth.isAdmin()) {
                 <td class="text-end">
                   <div class="d-flex justify-content-end gap-2">
-                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(o)">
+                    <button class="btn btn-sm btn-icon btn-light-primary" [title]="'common.edit' | translate" (click)="openEdit(o)">
                       <i class="ki-duotone ki-{{ editIcon() }} fs-5">
                         <span class="path1"></span><span class="path2"></span>
                       </i>
-                      {{ 'common.edit' | translate }}
-                    </button>
-                    <app-common-drop-down-menu-action-button
-                      [mainLabelKey]="o.isActive !== false ? 'common.deactivate' : 'common.activate'"
-                      [mainIconClass]="o.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-                      [mainColor]="o.isActive !== false ? 'light-warning' : 'light-success'"
-                      mainIconSize="5"
-                      [menuEnd]="true"
-                      (mainClick)="setActive(o.id!, o.isActive === false)"
-                      [menuItems]="getRowMenuItems(o.id!)" />
+                                          </button>
+                    <button class="btn btn-sm btn-icon btn-warning text-dark" [title]="(o.isActive !== false ? 'common.deactivate' : 'common.activate') | translate" (click)="setActive(o.id!, o.isActive === false)">
+  <i [class]="'ki-duotone fs-5 ' + (o.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle')"><span class="path1"></span><span class="path2"></span></i>
+</button>
+<button class="btn btn-sm btn-icon btn-light-danger" [title]="'common.delete' | translate" (click)="delete(o.id!)">
+  <i class="ki-duotone ki-trash fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+</button>
                   </div>
                 </td>
               }
@@ -177,7 +180,7 @@
                   </span>
                 </div>
 
-                <span class="badge badge-light-primary fs-7 w-fit">{{ getVariantLabel(o.variantId) }}</span>
+                <span class="badge badge-light-primary fs-7 w-fit">{{ 'variant.type.' + o.variantTypeId | translate }}</span>
 
                 <div class="d-flex align-items-center gap-2">
                   <span class="text-muted fs-7">{{ 'storeVariantOrder.orderIndex' | translate }}:</span>
@@ -192,20 +195,17 @@
 
               @if (auth.isAdmin()) {
                 <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
-                  <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(o)">
+                  <button class="btn btn-sm btn-icon btn-light-primary" [title]="'common.edit' | translate" (click)="openEdit(o)">
                     <i class="ki-duotone ki-{{ editIcon() }} fs-5">
                       <span class="path1"></span><span class="path2"></span>
                     </i>
-                    {{ 'common.edit' | translate }}
-                  </button>
-                  <app-common-drop-down-menu-action-button
-                    [mainLabelKey]="o.isActive !== false ? 'common.deactivate' : 'common.activate'"
-                    [mainIconClass]="o.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-                    [mainColor]="o.isActive !== false ? 'light-warning' : 'light-success'"
-                    mainIconSize="5"
-                    [menuEnd]="true"
-                    (mainClick)="setActive(o.id!, o.isActive === false)"
-                    [menuItems]="getRowMenuItems(o.id!)" />
+                                      </button>
+                  <button class="btn btn-sm btn-icon btn-warning text-dark" [title]="(o.isActive !== false ? 'common.deactivate' : 'common.activate') | translate" (click)="setActive(o.id!, o.isActive === false)">
+  <i [class]="'ki-duotone fs-5 ' + (o.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle')"><span class="path1"></span><span class="path2"></span></i>
+</button>
+<button class="btn btn-sm btn-icon btn-light-danger" [title]="'common.delete' | translate" (click)="delete(o.id!)">
+  <i class="ki-duotone ki-trash fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+</button>
                 </div>
               }
             </div>
@@ -223,8 +223,8 @@
     [editDraft]="editDraft"
     [isCreating]="isCreating()"
     [stores]="stores()"
-    [variants]="variants()"
     [saving]="saving()"
+    [nextOrderIndex]="orders().length"
     (closed)="closeEdit()"
     (saved)="saveEdit()"
     (savedAndNew)="saveEditAndNew()" />

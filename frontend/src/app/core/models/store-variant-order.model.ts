@@ -1,7 +1,9 @@
+import { VariantType } from './product-item-variant.model';
+
 export interface StoreVariantOrder {
   id?: number;
   storeId: number;
-  variantId: number;
+  variantTypeId: VariantType;
   orderIndex: number;
   isActive?: boolean;
   isDeleted?: boolean;

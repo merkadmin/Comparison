@@ -4,6 +4,7 @@ import { Item } from '../../../core/models/item.model';
 import { Store } from '../../../core/models/store.model';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
 import { ProductItemVariant } from '../../../core/models/product-item-variant.model';
+import { StoreVariantOrder } from '../../../core/models/store-variant-order.model';
 import { ItemImageService } from '../../../core/services/item-image.service';
 import { UserActivityService } from '../../../core/services/user-activity.service';
 import { IconConfigService } from '../../../core/services/icon-config.service';
@@ -32,6 +33,7 @@ export class ItemDetailComponent implements OnInit {
   @Input() itemVariantMaps: ProductItemVariantMap[] = [];
   @Input() allVariants: ProductItemVariant[] = [];
 
+  @Input() storeVariantOrders: StoreVariantOrder[] = [];
   @Input() isPage = false;
 
   @Output() closed = new EventEmitter<void>();
@@ -50,17 +52,63 @@ export class ItemDetailComponent implements OnInit {
       ? this.itemVariantMaps.filter(m => m.storeId === storeId)
       : this.itemVariantMaps;
 
-    const groups = new Map<string, ProductItemVariant[]>();
-    for (const map of maps) {
+    // Collect all distinct types present in the maps
+    const allTypes = new Set<string>();
+    for (const map of maps)
       for (const entry of map.variants) {
         const v = this.allVariants.find(v => v.id === entry.variantId && v.isActive !== false);
-        if (!v) continue;
-        if (!groups.has(v.variantTypeId)) groups.set(v.variantTypeId, []);
-        if (!groups.get(v.variantTypeId)!.some(e => e.id === v.id))
-          groups.get(v.variantTypeId)!.push(v);
+        if (v) allTypes.add(v.variantTypeId);
+      }
+
+    // Build a global order map: minimum orderIndex per type across ALL active store orders
+    const globalOrderMap = new Map<string, number>();
+    for (const o of this.storeVariantOrders) {
+      if (!o.isActive) continue;
+      const key = String(o.variantTypeId);
+      if (!globalOrderMap.has(key) || o.orderIndex < globalOrderMap.get(key)!) {
+        globalOrderMap.set(key, o.orderIndex);
       }
     }
-    return Array.from(groups.entries()).map(([type, variants]) => ({ type, variants }));
+    // When a specific store is selected, override with that store's own orderIndex values
+    if (storeId !== null) {
+      for (const o of this.storeVariantOrders) {
+        if (!o.isActive || o.storeId !== storeId) continue;
+        globalOrderMap.set(String(o.variantTypeId), o.orderIndex);
+      }
+    }
+
+    // Sort types by orderIndex — always consistent regardless of store selection
+    const sortedTypes = [...allTypes].sort((a, b) => {
+      const oa = globalOrderMap.has(a) ? globalOrderMap.get(a)! : Number.MAX_SAFE_INTEGER;
+      const ob = globalOrderMap.has(b) ? globalOrderMap.get(b)! : Number.MAX_SAFE_INTEGER;
+      return oa !== ob ? oa - ob : a.localeCompare(b);
+    });
+
+    // Build cascading groups: each group is filtered by all selections from previous groups
+    const result: { type: string; variants: ProductItemVariant[] }[] = [];
+    const selectedSoFar: number[] = [];
+
+    for (const type of sortedTypes) {
+      const eligibleMaps = selectedSoFar.length > 0
+        ? maps.filter(m => selectedSoFar.every(id => m.variants.some(e => e.variantId === id)))
+        : maps;
+
+      const variants: ProductItemVariant[] = [];
+      for (const map of eligibleMaps)
+        for (const entry of map.variants) {
+          const v = this.allVariants.find(
+            v => v.id === entry.variantId && v.isActive !== false && v.variantTypeId === type
+          );
+          if (v && !variants.some(e => e.id === v.id)) variants.push(v);
+        }
+
+      if (variants.length > 0) result.push({ type, variants });
+
+      const selId = this.selectedVariants().get(type);
+      if (selId !== undefined) selectedSoFar.push(selId);
+    }
+
+    return result;
   }
 
   /** Finds the variant-map record matching the selected store + all selected variants. */
@@ -172,7 +220,23 @@ export class ItemDetailComponent implements OnInit {
   }
 
   selectVariant(type: string, variantId: number): void {
-    this.selectedVariants.update(m => new Map(m).set(type, variantId));
+    const groups = this.variantGroups;
+    const typeIdx = groups.findIndex(g => g.type === type);
+    const newMap = new Map(this.selectedVariants());
+    newMap.set(type, variantId);
+    // Clear downstream selections so cascading filter re-evaluates
+    for (let i = typeIdx + 1; i < groups.length; i++) {
+      newMap.delete(groups[i].type);
+    }
+    this.selectedVariants.set(newMap);
+    // Auto-select the first available variant in each downstream group
+    for (let i = typeIdx + 1; i < groups.length; i++) {
+      const currentGroups = this.variantGroups;
+      const downstream = currentGroups.find(g => g.type === groups[i].type);
+      if (downstream?.variants.length) {
+        this.selectedVariants.update(m => new Map(m).set(downstream.type, downstream.variants[0].id!));
+      }
+    }
   }
 
   onStoreRowClick(si: ProductItemVariantMap): void {

@@ -48,13 +48,24 @@
 .brand-filter-sidebar {
   position: sticky;
   top: 80px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
+}
+
+.filter-section-title {
+  background: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  [data-bs-theme="dark"] & {
+    background: var(--bs-secondary);
+    color: var(--bs-secondary-color);
+  }
 }
 
 .category-filter-tree {
-  max-height: 260px;
-  overflow-y: auto;
 }
 
 .brand-filter-item {

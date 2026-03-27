@@ -11,6 +11,8 @@ import { ProductItemVariantMap } from '../../../core/models/product-item-variant
 import { ProductItemVariant } from '../../../core/models/product-item-variant.model';
 import { UserActivityService } from '../../../core/services/user-activity.service';
 import { IconConfigService } from '../../../core/services/icon-config.service';
+import { StoreVariantOrderService } from '../../../core/services/store-variant-order.service';
+import { StoreVariantOrder } from '../../../core/models/store-variant-order.model';
 import { ItemDetailComponent } from './item-detail.component';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 
@@ -85,6 +87,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
           [compareIds]="compareIds()"
           [itemVariantMaps]="getItemVariantMaps(it.id!)"
           [allVariants]="allVariants()"
+          [storeVariantOrders]="storeVariantOrders()"
           (closed)="goBack()"
           (favoriteToggled)="toggleFavorite($event)"
           (cartToggled)="toggleCart($event)"
@@ -99,8 +102,9 @@ export class ItemDetailPageComponent implements OnInit {
   private router     = inject(Router);
   private itemSvc    = inject(ItemService);
   private storeSvc   = inject(StoreService);
-  private variantMapSvc = inject(ProductItemVariantMapService);
-  private variantSvc = inject(ProductItemVariantService);
+  private variantMapSvc     = inject(ProductItemVariantMapService);
+  private variantSvc        = inject(ProductItemVariantService);
+  private variantOrderSvc   = inject(StoreVariantOrderService);
   userActivity       = inject(UserActivityService);
 
   private iconConfig = inject(IconConfigService);
@@ -109,13 +113,14 @@ export class ItemDetailPageComponent implements OnInit {
   compareIcon  = this.iconConfig.iconSignal('global.compare', 'kanban');
   favoriteIcon = this.iconConfig.iconSignal('global.favorite','heart');
 
-  categoryId      = signal<number | null>(null);
-  item            = signal<Item | null>(null);
-  stores          = signal<Store[]>([]);
-  itemVariantMaps = signal<ProductItemVariantMap[]>([]);
-  allVariants     = signal<ProductItemVariant[]>([]);
-  compareIds      = signal<Set<number>>(new Set());
-  loading         = signal(true);
+  categoryId         = signal<number | null>(null);
+  item               = signal<Item | null>(null);
+  stores             = signal<Store[]>([]);
+  itemVariantMaps    = signal<ProductItemVariantMap[]>([]);
+  allVariants        = signal<ProductItemVariant[]>([]);
+  storeVariantOrders = signal<StoreVariantOrder[]>([]);
+  compareIds         = signal<Set<number>>(new Set());
+  loading            = signal(true);
 
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
   inCart(id: number): boolean     { return this.userActivity.cartIds().has(id); }
@@ -129,6 +134,7 @@ export class ItemDetailPageComponent implements OnInit {
     this.storeSvc.getAll().subscribe({ next: d => this.stores.set(d), error: () => {} });
     this.variantMapSvc.getAll().subscribe({ next: d => this.itemVariantMaps.set(d), error: () => {} });
     this.variantSvc.getAll().subscribe({ next: d => this.allVariants.set(d), error: () => {} });
+    this.variantOrderSvc.getAll().subscribe({ next: d => this.storeVariantOrders.set(d), error: () => {} });
     this.userActivity.loadAll();
 
     this.itemSvc.getById(itemId).subscribe({

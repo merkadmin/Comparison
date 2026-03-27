@@ -431,12 +431,12 @@ public static class ExcelService
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("StoreVariantOrders");
-		string[] headers = ["StoreId*", "VariantId*", "OrderIndex*"];
+		string[] headers = ["StoreId*", "VariantTypeId* (e.g. Color, Size, RamSize)", "OrderIndex*"];
 		WriteHeaders(ws, headers);
 
 		// Example row
 		ws.Cell(2, 1).Value = 1;
-		ws.Cell(2, 2).Value = 1;
+		ws.Cell(2, 2).Value = "Color";
 		ws.Cell(2, 3).Value = 0;
 		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
 		ws.Row(2).Style.Font.Italic = true;
@@ -457,7 +457,7 @@ public static class ExcelService
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("StoreVariantOrders");
-		string[] headers = { "Id", "StoreId", "VariantId", "OrderIndex", "IsActive", "CreatedAt" };
+		string[] headers = { "Id", "StoreId", "VariantTypeId", "OrderIndex", "IsActive", "CreatedAt" };
 		WriteHeaders(ws, headers);
 
 		int row = 2;
@@ -465,7 +465,7 @@ public static class ExcelService
 		{
 			ws.Cell(row, 1).Value = o.Id;
 			ws.Cell(row, 2).Value = o.StoreId;
-			ws.Cell(row, 3).Value = o.VariantId;
+			ws.Cell(row, 3).Value = o.VariantTypeId.ToString();
 			ws.Cell(row, 4).Value = o.OrderIndex;
 			ws.Cell(row, 5).Value = o.IsActive;
 			ws.Cell(row, 6).Value = o.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss");
@@ -487,13 +487,14 @@ public static class ExcelService
 		for (int r = 2; r <= lastRow; r++)
 		{
 			if (!ws.Cell(r, 1).TryGetValue<long>(out var storeId) || storeId == 0) continue;
-			if (!ws.Cell(r, 2).TryGetValue<long>(out var variantId) || variantId == 0) continue;
+			var typeStr = ws.Cell(r, 2).GetString().Trim();
+			if (!Enum.TryParse<DBVariantType>(typeStr, true, out var variantTypeId)) continue;
 			ws.Cell(r, 3).TryGetValue<int>(out var orderIndex);
 			list.Add(new Store_VariantOrder
 			{
-				StoreId    = storeId,
-				VariantId  = variantId,
-				OrderIndex = orderIndex,
+				StoreId       = storeId,
+				VariantTypeId = variantTypeId,
+				OrderIndex    = orderIndex,
 			});
 		}
 		return list;

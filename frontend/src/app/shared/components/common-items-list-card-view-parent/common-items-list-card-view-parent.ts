@@ -18,7 +18,7 @@ import { StoreService } from '../../../core/services/store.service';
 import { TranslateService } from '../../../core/services/translate.service';
 import { UserActivityService } from '../../../core/services/user-activity.service';
 import { computedColClass } from '../../helpers/grid-columns.helper';
-import { GridColumns } from '../commonActions/common-grid-columns-button/common-grid-columns-button';
+import { GridColumns, CommonGridColumnsButton } from '../commonActions/common-grid-columns-button/common-grid-columns-button';
 import { DecimalPipe } from "@angular/common";
 import { TranslatePipe } from "../../pipes/translate.pipe";
 import { CommonBreadcrumb } from "../common-breadcrumb/common-breadcrumb";
@@ -26,7 +26,7 @@ import { ItemBrand } from '../../../core/models/item-brand.model';
 
 @Component({
   selector: 'app-common-items-list-card-view-parent',
-  imports: [TranslatePipe, DecimalPipe, CommonBreadcrumb],
+  imports: [TranslatePipe, DecimalPipe, CommonBreadcrumb, CommonGridColumnsButton],
   templateUrl: './common-items-list-card-view-parent.html',
   styleUrl: './common-items-list-card-view-parent.less',
 })
@@ -67,10 +67,14 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   bestPrices = signal<ItemBestPrice[]>([]);
   searchQuery = signal('');
   compareIds = signal<Set<number>>(new Set());
+  viewMode = signal<'grid' | 'list'>('grid');
   colsPerRow = signal<GridColumns>(4);
   colClass = computedColClass(this.colsPerRow);
   allBrands = signal<ItemBrand[]>([]);
   selectedBrandId = signal<number | null>(null);
+  selectedPriceMin = signal<number | null>(null);
+  selectedPriceMax = signal<number | null>(null);
+  selectedVariantIds = signal<Set<number>>(new Set());
 
   // ── Derived ────────────────────────────────────────────────────────────────
 
@@ -88,10 +92,68 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   filteredItems = computed<Item[]>(() => {
     const q = this.searchQuery().trim().toLowerCase();
     const brandId = this.selectedBrandId();
+    const pMin = this.selectedPriceMin();
+    const pMax = this.selectedPriceMax();
+    const variantIds = this.selectedVariantIds();
+    const maps = this.itemVariantMaps();
+    const allVariants = this.allVariants();
     let result = this.items();
     if (q) result = result.filter(i => i.name.toLowerCase().includes(q));
     if (brandId !== null) result = result.filter(i => i.brandId === brandId);
+    if (pMin !== null || pMax !== null) {
+      result = result.filter(i => {
+        const active = maps.filter(m => m.productItemId === i.id! && m.isActive !== false);
+        if (!active.length) return false;
+        const best = Math.min(...active.map(m => m.sellingPrice));
+        if (pMin !== null && best < pMin) return false;
+        if (pMax !== null && best > pMax) return false;
+        return true;
+      });
+    }
+    if (variantIds.size > 0) {
+      // Group selected IDs by variant type for AND-across-types, OR-within-type logic
+      const byType = new Map<string, Set<number>>();
+      for (const id of variantIds) {
+        const v = allVariants.find(v => v.id === id);
+        if (!v) continue;
+        const type = String(v.variantTypeId);
+        if (!byType.has(type)) byType.set(type, new Set());
+        byType.get(type)!.add(id);
+      }
+      result = result.filter(i => {
+        const active = maps.filter(m => m.productItemId === i.id! && m.isActive !== false);
+        return [...byType.entries()].every(([, ids]) =>
+          active.some(m => m.variants.some(e => ids.has(e.variantId)))
+        );
+      });
+    }
     return result;
+  });
+
+  priceRange = computed<{ min: number; max: number }>(() => {
+    const itemIds = new Set(this.items().map(i => i.id!));
+    const prices = this.itemVariantMaps()
+      .filter(m => itemIds.has(m.productItemId) && m.isActive !== false)
+      .map(m => m.sellingPrice);
+    if (!prices.length) return { min: 0, max: 0 };
+    return { min: Math.min(...prices), max: Math.max(...prices) };
+  });
+
+  visibleVariantGroups = computed<{ type: string; variants: ProductItemVariant[] }[]>(() => {
+    const itemIds = new Set(this.items().map(i => i.id!));
+    const maps = this.itemVariantMaps().filter(m => itemIds.has(m.productItemId) && m.isActive !== false);
+    const typeMap = new Map<string, ProductItemVariant[]>();
+    for (const map of maps) {
+      for (const entry of map.variants) {
+        const v = this.allVariants().find(v => v.id === entry.variantId && v.isActive !== false);
+        if (!v) continue;
+        const key = String(v.variantTypeId);
+        if (!typeMap.has(key)) typeMap.set(key, []);
+        const arr = typeMap.get(key)!;
+        if (!arr.some(e => e.id === v.id)) arr.push(v);
+      }
+    }
+    return [...typeMap.entries()].map(([type, variants]) => ({ type, variants }));
   });
 
   /** Full category tree flattened in depth-first order for the sidebar. */
@@ -219,6 +281,31 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     return result;
   }
 
+  setPriceMin(value: number): void {
+    const max = this.selectedPriceMax() ?? this.priceRange().max;
+    this.selectedPriceMin.set(Math.min(value, max));
+  }
+
+  setPriceMax(value: number): void {
+    const min = this.selectedPriceMin() ?? this.priceRange().min;
+    this.selectedPriceMax.set(Math.max(value, min));
+  }
+
+  resetPriceFilter(): void {
+    this.selectedPriceMin.set(null);
+    this.selectedPriceMax.set(null);
+  }
+
+  toggleVariantFilter(variantId: number): void {
+    this.selectedVariantIds.update(s => {
+      const n = new Set(s);
+      n.has(variantId) ? n.delete(variantId) : n.add(variantId);
+      return n;
+    });
+  }
+
+  clearVariantFilter(): void { this.selectedVariantIds.set(new Set()); }
+
   getBestPrice(itemId: number, storeId?: number): number | null {
     if (storeId !== undefined) {
       const match = this.itemVariantMaps().find(m => m.productItemId === itemId && m.storeId === storeId && m.isActive !== false);
@@ -308,6 +395,9 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
       this.route.queryParamMap,
     ]).subscribe(([params, queryParams]) => {
       this.selectedBrandId.set(null);
+      this.selectedPriceMin.set(null);
+      this.selectedPriceMax.set(null);
+      this.selectedVariantIds.set(new Set());
       const categoryId = params.get('categoryId');
       const q = queryParams.get('q') ?? '';
 

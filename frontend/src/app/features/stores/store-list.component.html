@@ -8,7 +8,7 @@
     [selectedCount]="selectedIds().size"
     bulkMainLabelKey="common.deactivate"
     bulkMainIconClass="ki-minus-circle"
-    bulkMainColor="light-warning"
+    bulkMainColor="light-danger"
     [bulkMenuItems]="bulkMenuItems"
     searchPlaceholderKey="common.search"
     [importing]="importing()"
@@ -109,22 +109,17 @@
               @if (auth.isAdmin()) {
                 <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
                   <!--START::Edit-->
-                  <button class="btn btn-sm btn-light-primary flex-fill" (click)="openEdit(store)">
+                  <button class="btn btn-sm btn-icon btn-light-primary" [title]="'common.edit' | translate" (click)="openEdit(store)">
                     <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
-                    {{ 'common.edit' | translate }}
-                  </button>
+                                      </button>
                   <!--END::Edit-->
                   <!--START::Activate / Deactivate / Delete-->
-                  <app-common-drop-down-menu-action-button
-                    [mainLabelKey]="store.isActive !== false ? 'common.deactivate' : 'common.activate'"
-                    [mainIconClass]="store.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-                    [mainColor]="store.isActive !== false ? 'light-warning' : 'light-success'"
-                    mainIconSize="6"
-                    mainButtonClass="w-100"
-                    groupClass="flex-fill"
-                    [menuEnd]="true"
-                    (mainClick)="setActive(store.id!, store.isActive === false)"
-                    [menuItems]="getRowMenuItems(store.id!)" />
+                  <button class="btn btn-sm btn-icon btn-warning text-dark" [title]="(store.isActive !== false ? 'common.deactivate' : 'common.activate') | translate" (click)="setActive(store.id!, store.isActive === false)">
+  <i [class]="'ki-duotone fs-6 ' + (store.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle')"><span class="path1"></span><span class="path2"></span></i>
+</button>
+<button class="btn btn-sm btn-icon btn-light-danger" [title]="'common.delete' | translate" (click)="delete(store.id!)">
+  <i class="ki-duotone ki-trash fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+</button>
                   <!--END::Activate / Deactivate / Delete-->
                 </div>
               }
@@ -249,20 +244,17 @@
                 <td class="text-end">
                   <div class="d-flex justify-content-end gap-2">
                     <!--START::Edit-->
-                    <button class="btn btn-sm btn-light-primary" (click)="openEdit(store)">
+                    <button class="btn btn-sm btn-icon btn-light-primary" [title]="'common.edit' | translate" (click)="openEdit(store)">
                       <i class="ki-duotone ki-pencil fs-5"><span class="path1"></span><span class="path2"></span></i>
-                      {{ 'common.edit' | translate }}
-                    </button>
+                                          </button>
                     <!--END::Edit-->
                     <!--START::Activate / Deactivate / Delete-->
-                    <app-common-drop-down-menu-action-button
-                      [mainLabelKey]="store.isActive !== false ? 'common.deactivate' : 'common.activate'"
-                      [mainIconClass]="store.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle'"
-                      [mainColor]="store.isActive !== false ? 'light-warning' : 'light-success'"
-                      mainIconSize="5"
-                      [menuEnd]="true"
-                      (mainClick)="setActive(store.id!, store.isActive === false)"
-                      [menuItems]="getRowMenuItems(store.id!)" />
+                    <button class="btn btn-sm btn-icon btn-warning text-dark" [title]="(store.isActive !== false ? 'common.deactivate' : 'common.activate') | translate" (click)="setActive(store.id!, store.isActive === false)">
+  <i [class]="'ki-duotone fs-5 ' + (store.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle')"><span class="path1"></span><span class="path2"></span></i>
+</button>
+<button class="btn btn-sm btn-icon btn-light-danger" [title]="'common.delete' | translate" (click)="delete(store.id!)">
+  <i class="ki-duotone ki-trash fs-5"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+</button>
                     <!--END::Activate / Deactivate / Delete-->
                   </div>
                 </td>

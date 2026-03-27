@@ -61,15 +61,23 @@ export class ItemVariantMapListComponent implements OnInit {
   importError   = signal<string | null>(null);
   importSuccess = signal(false);
 
-  editingId      = signal<number | null>(null);
-  isCreating     = signal(false);
-  saving         = signal(false);
-  selectedItemId = signal<number | null>(null);
+  editingId       = signal<number | null>(null);
+  isCreating      = signal(false);
+  saving          = signal(false);
+  selectedItemId  = signal<number | null>(null);
+  selectedStoreId = signal<number | null>(null);
   editDraft: ProductItemVariantMap = { productItemId: 0, storeId: 0, sellingPrice: 0, variants: [] };
 
   private itemMap    = computed(() => new Map(this.items().map(i => [i.id!, i])));
   private variantMap = computed(() => new Map(this.variants().map(v => [v.id!, v])));
   private storeMap   = computed(() => new Map(this.stores().map(s => [s.id!, s])));
+
+  filteredItemsForStore = computed<Item[]>(() => {
+    const storeId = this.selectedStoreId();
+    if (storeId === null) return this.items();
+    const itemIds = new Set(this.maps().filter(m => m.storeId === storeId).map(m => m.productItemId));
+    return this.items().filter(i => itemIds.has(i.id!));
+  });
 
   getItemName(id: number): string { return this.itemMap().get(id)?.name ?? String(id); }
   getVariant(id: number): ProductItemVariant | undefined { return this.variantMap().get(id); }
@@ -84,17 +92,20 @@ export class ItemVariantMapListComponent implements OnInit {
   }
 
   filteredMaps = computed<ProductItemVariantMap[]>(() => {
-    const q      = this.searchQuery().trim().toLowerCase();
-    const itemId = this.selectedItemId();
+    const q       = this.searchQuery().trim().toLowerCase();
+    const itemId  = this.selectedItemId();
+    const storeId = this.selectedStoreId();
     return this.maps().filter(m => {
-      if (itemId !== null && m.productItemId !== itemId) return false;
+      if (itemId  !== null && m.productItemId !== itemId)  return false;
+      if (storeId !== null && m.storeId       !== storeId) return false;
       if (!q) return true;
       const item = this.getItemName(m.productItemId).toLowerCase();
+      const store = this.getStoreName(m.storeId).toLowerCase();
       const vStr = m.variants.map(e => {
         const v = this.getVariant(e.variantId);
         return v ? `${v.variantTypeId} ${v.variantValue} ${v.abbreviation ?? ''}` : '';
       }).join(' ').toLowerCase();
-      return item.includes(q) || vStr.includes(q);
+      return item.includes(q) || store.includes(q) || vStr.includes(q);
     });
   });
 
@@ -111,6 +122,14 @@ export class ItemVariantMapListComponent implements OnInit {
     return [
       { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) },
     ];
+  }
+
+  onStoreChange(storeId: number | null): void {
+    this.selectedStoreId.set(storeId);
+    const validIds = new Set(this.filteredItemsForStore().map(i => i.id!));
+    if (this.selectedItemId() !== null && !validIds.has(this.selectedItemId()!)) {
+      this.selectedItemId.set(null);
+    }
   }
 
   openCreate(): void {

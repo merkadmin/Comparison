@@ -5,14 +5,14 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../core/services/auth.service';
 import { StoreVariantOrderService } from '../../core/services/store-variant-order.service';
 import { StoreService } from '../../core/services/store.service';
-import { ProductItemVariantService } from '../../core/services/product-item-variant.service';
 import { StoreVariantOrder } from '../../core/models/store-variant-order.model';
 import { Store } from '../../core/models/store.model';
-import { ProductItemVariant } from '../../core/models/product-item-variant.model';
+import { VariantType, ProductItemVariant } from '../../core/models/product-item-variant.model';
+import { ProductItemVariantService } from '../../core/services/product-item-variant.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { ToastService } from '../../core/services/toast.service';
-import { CommonDropDownMenuActionButton, ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { ActionMenuItem } from '../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { CommonListHeaderActions } from '../../shared/components/common-list-header-actions/common-list-header-actions';
 import { GridColumns } from '../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { computedColClass } from '../../shared/helpers/grid-columns.helper';
@@ -24,7 +24,7 @@ import { IconConfigService } from '../../core/services/icon-config.service';
   standalone: true,
   imports: [
     CommonModule, FormsModule, TranslatePipe,
-    CommonDropDownMenuActionButton, CommonListHeaderActions,
+    CommonListHeaderActions,
     StoreVariantOrderListOperationComponent,
   ],
   templateUrl: './store-variant-order-list.component.html',
@@ -33,9 +33,9 @@ import { IconConfigService } from '../../core/services/icon-config.service';
 export class StoreVariantOrderListComponent implements OnInit {
   auth            = inject(AuthService);
   private service = inject(StoreVariantOrderService);
-  private storeSvc   = inject(StoreService);
-  private variantSvc = inject(ProductItemVariantService);
-  private translate  = inject(TranslateService);
+  private storeSvc    = inject(StoreService);
+  private variantSvc  = inject(ProductItemVariantService);
+  private translate   = inject(TranslateService);
   private toast      = inject(ToastService);
   private iconConfig = inject(IconConfigService);
 
@@ -43,13 +43,13 @@ export class StoreVariantOrderListComponent implements OnInit {
   editIcon   = this.iconConfig.iconSignal('global.edit',   'pencil');
   deleteIcon = this.iconConfig.iconSignal('global.delete', 'trash');
 
-  orders        = signal<StoreVariantOrder[]>([]);
-  stores        = signal<Store[]>([]);
-  variants      = signal<ProductItemVariant[]>([]);
-  loading       = signal(false);
-  error         = signal<string | null>(null);
-  searchQuery   = signal('');
-  selectedIds   = signal<Set<number>>(new Set());
+  orders          = signal<StoreVariantOrder[]>([]);
+  stores          = signal<Store[]>([]);
+  variants        = signal<ProductItemVariant[]>([]);
+  loading         = signal(false);
+  error           = signal<string | null>(null);
+  searchQuery     = signal('');
+  selectedIds     = signal<Set<number>>(new Set());
   selectedStoreId = signal<number | null>(null);
 
   viewMode   = signal<'list' | 'cards'>('list');
@@ -63,15 +63,14 @@ export class StoreVariantOrderListComponent implements OnInit {
   editingId  = signal<number | null>(null);
   isCreating = signal(false);
   saving     = signal(false);
-  editDraft: StoreVariantOrder = { storeId: 0, variantId: 0, orderIndex: 0 };
+  editDraft: StoreVariantOrder = { storeId: 0, variantTypeId: 'Color', orderIndex: 0 };
 
-  private storeMap   = computed(() => new Map(this.stores().map(s => [s.id!, s])));
-  private variantMap = computed(() => new Map(this.variants().map(v => [v.id!, v])));
+  private storeMap = computed(() => new Map(this.stores().map(s => [s.id!, s])));
 
   getStoreName(id: number): string { return this.storeMap().get(id)?.name ?? String(id); }
-  getVariantLabel(id: number): string {
-    const v = this.variantMap().get(id);
-    return v ? `${v.variantTypeId}: ${v.variantValue}` : String(id);
+
+  getTypeColor(type: VariantType): string | null {
+    return this.variants().find(v => v.variantTypeId === type && !!v.color)?.color ?? null;
   }
 
   filteredOrders = computed<StoreVariantOrder[]>(() => {
@@ -82,7 +81,7 @@ export class StoreVariantOrderListComponent implements OnInit {
       .filter(o => {
         if (!q) return true;
         return this.getStoreName(o.storeId).toLowerCase().includes(q)
-          || this.getVariantLabel(o.variantId).toLowerCase().includes(q);
+          || String(o.variantTypeId).toLowerCase().includes(q);
       })
       .sort((a, b) => a.orderIndex - b.orderIndex);
   });
@@ -103,7 +102,7 @@ export class StoreVariantOrderListComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.editDraft = { storeId: 0, variantId: 0, orderIndex: 0 };
+    this.editDraft = { storeId: 0, variantTypeId: 'Color', orderIndex: this.orders().length };
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -140,7 +139,7 @@ export class StoreVariantOrderListComponent implements OnInit {
         this.saving.set(false);
         this.toast.success(this.translate.translate('storeVariantOrder.saveSuccess'));
         this.load();
-        this.editDraft = { storeId: 0, variantId: 0, orderIndex: 0 };
+        this.editDraft = { storeId: 0, variantTypeId: 'Color', orderIndex: this.orders().length + 1 };
       },
       error: () => { this.saving.set(false); this.toast.error(this.translate.translate('storeVariantOrder.saveError')); },
     });

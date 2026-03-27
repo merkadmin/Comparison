@@ -1,4 +1,5 @@
 using MongoDB.Bson.Serialization.Attributes;
+using PriceRadar.Core.enums;
 using PriceRadar.Core.Models;
 
 namespace PriceRadar.DAL.Documents
@@ -9,7 +10,7 @@ namespace PriceRadar.DAL.Documents
 		[BsonId]
 		public long Id { get; set; }
 		public long StoreId { get; set; }
-		public long VariantId { get; set; }
+		public DBVariantType VariantTypeId { get; set; }
 		public int OrderIndex { get; set; }
 		public bool IsActive { get; set; } = true;
 		public bool IsDeleted { get; set; } = false;
@@ -19,7 +20,7 @@ namespace PriceRadar.DAL.Documents
 		{
 			Id = Id,
 			StoreId = StoreId,
-			VariantId = VariantId,
+			VariantTypeId = VariantTypeId,
 			OrderIndex = OrderIndex,
 			IsActive = IsActive,
 			IsDeleted = IsDeleted,
@@ -30,7 +31,7 @@ namespace PriceRadar.DAL.Documents
 		{
 			Id = m.Id,
 			StoreId = m.StoreId,
-			VariantId = m.VariantId,
+			VariantTypeId = m.VariantTypeId,
 			OrderIndex = m.OrderIndex,
 			IsActive = m.IsActive,
 			IsDeleted = m.IsDeleted,
