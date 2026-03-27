@@ -361,14 +361,12 @@
     [categories]="categories()"
     [productItemTypes]="productItemTypes()"
     [productInfos]="productInfos()"
-    [uploadingImages]="uploadingImages()"
     [saving]="saving()"
     (closed)="closeEdit()"
     (saved)="saveEdit()"
     (savedAndNew)="saveEditAndNew()"
     (priceAdded)="addPrice()"
     (priceRemoved)="removePrice($event)"
-    (imageFilesSelected)="onImageFilesSelected($event)"
-    (imageRemoved)="removeImage($event)" />
+    (imageRemoved)="removeImage($event)" #operationComp />
 }
 <!--END::Edit Modal-->

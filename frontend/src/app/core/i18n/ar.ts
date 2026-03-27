@@ -33,6 +33,7 @@ export const ar: Record<string, string> = {
   'common.add': 'إضافة',
   'common.images': 'الصور',
   'common.uploadImages': 'رفع الصور',
+  'common.new': 'جديد',
   'common.saveAndNew': 'حفظ وجديد',
   'common.searchItems': 'بحث عن منتجات...',
   'common.searchAll': 'عرض كل نتائج',

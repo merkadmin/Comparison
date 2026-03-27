@@ -33,6 +33,7 @@ export const fr: Record<string, string> = {
   'common.add': 'Ajouter',
   'common.images': 'Images',
   'common.uploadImages': 'Télécharger des images',
+  'common.new': 'Nouveau',
   'common.saveAndNew': 'Enregistrer et nouveau',
   'common.searchItems': 'Rechercher des produits...',
   'common.searchAll': 'Voir tous les résultats pour',

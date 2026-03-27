@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal, computed, ViewChild } from '@angular/core';
 import { SelectOption } from '../../shared/components/common-select/common-select.component';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -79,6 +79,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   saving = signal(false);
   editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
   uploadingImages = signal(false);
+  @ViewChild('operationComp') operationComp?: ItemListOperationComponent;
   productItemTypes = signal<ProductItemType[]>([]);
   productInfos = signal<ProductInformation[]>([]);
   compareIds = signal<Set<number>>(new Set());
@@ -101,35 +102,72 @@ export class ItemListComponent implements OnInit, OnDestroy {
     this.editingId.set(item.id!);
   }
 
-  closeEdit(): void { this.editingId.set(null); this.isCreating.set(false); }
+  closeEdit(): void {
+    this.editingId.set(null);
+    this.isCreating.set(false);
+  }
 
   saveEdit(): void {
     this.saving.set(true);
-    const onSuccess = () => {
-      this.saving.set(false);
-      this.toast.success(this.translate.translate('item.saveSuccess'));
-      this.loadItems();
-      this.closeEdit();
-    };
+    const pending = [...(this.operationComp?.pendingFiles ?? [])];
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('item.saveError')); };
+
+    const finalize = (itemId: number, baseItem: Item) => {
+      const done = () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('item.saveSuccess'));
+        this.loadItems();
+        this.closeEdit();
+      };
+      if (!pending.length) { done(); return; }
+      this.imageService.upload(itemId, baseItem.itemCategoryId, pending).subscribe({
+        next: paths => {
+          const updated = { ...baseItem, images: [...(baseItem.images ?? []), ...paths] };
+          this.itemService.update(itemId, updated).subscribe({ next: done, error: onError });
+        },
+        error: onError
+      });
+    };
+
     if (this.isCreating()) {
-      this.itemService.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
+      this.itemService.create(this.editDraft).subscribe({
+        next: savedItem => finalize(savedItem.id!, savedItem),
+        error: onError
+      });
     } else {
-      this.itemService.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
+      const id = this.editingId()!;
+      this.itemService.update(id, this.editDraft).subscribe({
+        next: () => finalize(id, this.editDraft),
+        error: onError
+      });
     }
   }
 
   saveEditAndNew(): void {
     if (!this.isCreating()) return;
     this.saving.set(true);
+    const pending = [...(this.operationComp?.pendingFiles ?? [])];
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('item.saveError')); };
+
+    const reset = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('item.saveSuccess'));
+      this.loadItems();
+      this.editDraft = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
+    };
+
     this.itemService.create(this.editDraft).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.toast.success(this.translate.translate('item.saveSuccess'));
-        this.loadItems();
-        this.editDraft = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
+      next: savedItem => {
+        if (!pending.length) { reset(); return; }
+        this.imageService.upload(savedItem.id!, savedItem.itemCategoryId, pending).subscribe({
+          next: paths => {
+            const updated = { ...savedItem, images: [...(savedItem.images ?? []), ...paths] };
+            this.itemService.update(savedItem.id!, updated).subscribe({ next: reset, error: onError });
+          },
+          error: onError
+        });
       },
-      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('item.saveError')); },
+      error: onError
     });
   }
 
@@ -143,26 +181,6 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
   /** Resolve a stored relative path to a full URL for display. */
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
-
-  onImageFilesSelected(event: Event): void {
-    const id = this.editingId();
-    if (!id) return;
-    const files = Array.from((event.target as HTMLInputElement).files ?? []);
-    if (!files.length) return;
-
-    this.uploadingImages.set(true);
-    this.imageService.upload(id, this.editDraft.itemCategoryId, files).subscribe({
-      next: (paths) => {
-        this.editDraft.images = [...(this.editDraft.images ?? []), ...paths];
-        this.uploadingImages.set(false);
-        (event.target as HTMLInputElement).value = '';
-      },
-      error: () => {
-        this.uploadingImages.set(false);
-        (event.target as HTMLInputElement).value = '';
-      }
-    });
-  }
 
   onImagesUploaded(itemId: number, newPaths: string[]): void {
     const item = this.items().find(i => i.id === itemId);

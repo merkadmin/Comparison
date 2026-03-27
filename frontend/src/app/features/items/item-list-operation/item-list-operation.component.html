@@ -39,21 +39,10 @@
         <!--START::Images-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'common.images' | translate }}</label>
-          <div class="d-flex gap-2 mb-2">
-            <input #imgFileInput type="file" accept="image/*" multiple class="d-none"
-              (change)="imageFilesSelected.emit($event)" />
-            <button type="button" class="btn btn-light-primary btn-sm" [disabled]="uploadingImages"
-              (click)="imgFileInput.click()">
-              @if (uploadingImages) {
-                <span class="spinner-border spinner-border-sm me-1"></span>
-              } @else {
-                <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
-              }
-              {{ 'common.uploadImages' | translate }}
-            </button>
-          </div>
-          @if (editDraft.images && editDraft.images.length > 0) {
-            <div class="d-flex flex-wrap gap-3 mt-2">
+
+          <!--START::Image Thumbnails-->
+          @if ((editDraft.images && editDraft.images.length > 0) || pendingPreviewUrls.length > 0) {
+            <div class="d-flex flex-wrap gap-3 mb-3">
               @for (img of editDraft.images; track img; let i = $index) {
                 <div class="position-relative">
                   <img [src]="imgUrl(img)" class="item-img-thumb" />
@@ -63,8 +52,30 @@
                   </button>
                 </div>
               }
+              @for (url of pendingPreviewUrls; track url; let i = $index) {
+                <div class="position-relative">
+                  <img [src]="url" class="item-img-thumb" />
+                  <span class="badge badge-light-warning position-absolute bottom-0 start-0 fs-9">{{ 'common.new' | translate }}</span>
+                  <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0 item-img-remove-btn"
+                    (click)="removePendingImage(i)">
+                    <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+                  </button>
+                </div>
+              }
             </div>
           }
+          <!--END::Image Thumbnails-->
+
+          <!--START::Upload Button-->
+          <div class="d-flex gap-2">
+            <input #imgFileInput type="file" accept="image/*" multiple class="d-none"
+              (change)="onFilesSelected($event)" />
+            <button type="button" class="btn btn-light-primary btn-sm" (click)="imgFileInput.click()">
+              <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+              {{ 'common.uploadImages' | translate }}
+            </button>
+          </div>
+          <!--END::Upload Button-->
         </div>
         <!--END::Images-->
 
@@ -85,11 +96,12 @@
             {{ 'item.category' | translate }} <span class="text-danger">*</span>
           </label>
 
-          <div class="d-flex align-items-center gap-2">
-
-            <!--Back arrow-->
+          @if (currentLevelName) {
+            <div class="text-muted fs-8 mb-1">{{ currentLevelName }}</div>
+          }
+          <div class="input-group">
             @if (categoryNavStack.length > 0) {
-              <button type="button" class="btn btn-icon btn-sm btn-light flex-shrink-0"
+              <button type="button" class="btn btn-light px-3"
                       title="{{ 'common.back' | translate }}"
                       (click)="goBackCategory()">
                 <i class="ki-duotone ki-arrow-left fs-4">
@@ -97,24 +109,16 @@
                 </i>
               </button>
             }
-
-            <div class="flex-grow-1">
-              <!--Current level label-->
-              @if (currentLevelName) {
-                <div class="text-muted fs-8 mb-1">{{ currentLevelName }}</div>
+            <select class="form-select"
+                    [ngModel]="selectedCategoryInLevel"
+                    (ngModelChange)="onCategoryChange($event)">
+              <option [ngValue]="null">— {{ 'item.selectCategory' | translate }} —</option>
+              @for (c of currentLevelCategories; track c.id) {
+                <option [ngValue]="c.id">
+                  {{ localize(c.name) }}{{ hasChildren(c.id!) ? ' ›' : '' }}
+                </option>
               }
-              <select class="form-select"
-                      [ngModel]="selectedCategoryInLevel"
-                      (ngModelChange)="onCategoryChange($event)">
-                <option [ngValue]="null">— {{ 'item.selectCategory' | translate }} —</option>
-                @for (c of currentLevelCategories; track c.id) {
-                  <option [ngValue]="c.id">
-                    {{ localize(c.name) }}{{ hasChildren(c.id!) ? ' ›' : '' }}
-                  </option>
-                }
-              </select>
-            </div>
-
+            </select>
           </div>
 
           @if (!isLeafSelected) {

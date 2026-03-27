@@ -28,8 +28,12 @@ export class ItemListOperationComponent implements OnChanges {
   @Input() categories: IItemCategory[] = [];
   @Input() productItemTypes: ProductItemType[] = [];
   @Input() productInfos: ProductInformation[] = [];
-  @Input() uploadingImages = false;
   @Input() saving = false;
+
+  /** Locally staged files selected by the user — not yet uploaded to the server. */
+  pendingFiles: File[] = [];
+  /** Object URLs for previewing pending files. */
+  pendingPreviewUrls: string[] = [];
 
   /** The parentCategoryId whose children are currently visible in the select. null = root. */
   currentCategoryParentId: number | null = null;
@@ -39,9 +43,35 @@ export class ItemListOperationComponent implements OnChanges {
   categoryNavStack: (number | null)[] = [];
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['editDraft'] || changes['categories']) {
+    if (changes['editDraft']) {
+      this.clearPendingFiles();
       this.initCategoryPath();
     }
+    if (changes['categories']) {
+      this.initCategoryPath();
+    }
+  }
+
+  private clearPendingFiles(): void {
+    this.pendingPreviewUrls.forEach(url => URL.revokeObjectURL(url));
+    this.pendingFiles = [];
+    this.pendingPreviewUrls = [];
+  }
+
+  onFilesSelected(event: Event): void {
+    const files = Array.from((event.target as HTMLInputElement).files ?? []);
+    if (!files.length) return;
+    files.forEach(f => {
+      this.pendingFiles = [...this.pendingFiles, f];
+      this.pendingPreviewUrls = [...this.pendingPreviewUrls, URL.createObjectURL(f)];
+    });
+    (event.target as HTMLInputElement).value = '';
+  }
+
+  removePendingImage(index: number): void {
+    URL.revokeObjectURL(this.pendingPreviewUrls[index]);
+    this.pendingFiles = this.pendingFiles.filter((_, i) => i !== index);
+    this.pendingPreviewUrls = this.pendingPreviewUrls.filter((_, i) => i !== index);
   }
 
   private initCategoryPath(): void {
@@ -97,7 +127,7 @@ export class ItemListOperationComponent implements OnChanges {
     }
     if (this.hasChildren(categoryId)) {
       // Drill into this category's children.
-      this.categoryNavStack.push(this.currentCategoryParentId);
+      this.categoryNavStack = [...this.categoryNavStack, this.currentCategoryParentId];
       this.currentCategoryParentId = categoryId;
       this.selectedCategoryInLevel = null;
       this.editDraft.itemCategoryId = 0;
@@ -110,18 +140,23 @@ export class ItemListOperationComponent implements OnChanges {
 
   goBackCategory(): void {
     if (!this.categoryNavStack.length) return;
-    this.currentCategoryParentId = this.categoryNavStack.pop() ?? null;
-    this.selectedCategoryInLevel = null;
+    const drilledIntoId = this.currentCategoryParentId; // the category we drilled into
+    const newStack = [...this.categoryNavStack];
+    const poppedParent = newStack.pop() ?? null;
+    this.categoryNavStack = newStack;
+    this.currentCategoryParentId = poppedParent;
+    // Select the category we drilled into so the select visibly reflects the state change.
+    // If we're back at root (poppedParent is null), drilledIntoId is still a valid ID — shown selected.
+    this.selectedCategoryInLevel = drilledIntoId;
     this.editDraft.itemCategoryId = 0;
   }
 
-  @Output() closed              = new EventEmitter<void>();
-  @Output() saved               = new EventEmitter<void>();
-  @Output() savedAndNew         = new EventEmitter<void>();
-  @Output() priceAdded          = new EventEmitter<void>();
-  @Output() priceRemoved        = new EventEmitter<number>();
-  @Output() imageFilesSelected  = new EventEmitter<Event>();
-  @Output() imageRemoved        = new EventEmitter<number>();
+  @Output() closed       = new EventEmitter<void>();
+  @Output() saved        = new EventEmitter<void>();
+  @Output() savedAndNew  = new EventEmitter<void>();
+  @Output() priceAdded   = new EventEmitter<void>();
+  @Output() priceRemoved = new EventEmitter<number>();
+  @Output() imageRemoved = new EventEmitter<number>();
 
   imgUrl(path: string): string {
     return this.imageSvc.resolveUrl(path);
