@@ -59,6 +59,14 @@ export const ar: Record<string, string> = {
   'nav.stores': 'المتاجر',
   'nav.shopByCategory': 'تسوق حسب القسم',
   'nav.shopByBrand': 'تسوق حسب الماركة',
+  'nav.shopBySpecs': 'تسوق حسب المواصفات',
+
+  // Shop by Specs
+  'specs.filterBySpec': 'تصفية حسب المواصفة',
+  'specs.selected': 'محدد',
+  'specs.clearAll': 'مسح الكل',
+  'specs.active': 'نشط',
+  'specs.selectPrompt': 'اختر مواصفة أو أكثر لاستعراض المنتجات.',
   'nav.showAll': 'عرض الكل',
   'nav.favorites': 'المفضلة',
   'nav.settings': 'الإعدادات',

@@ -149,6 +149,8 @@ export class ItemDetailPageComponent implements OnInit {
   goBack(): void {
     if (this.brandId()) {
       this.router.navigate(['/shop-by-brand/by-brand', this.brandId()]);
+    } else if (this.route.snapshot.url.some(s => s.path === 'shop-by-specs')) {
+      this.router.navigate(['/shop-by-specs']);
     } else {
       this.router.navigate(['/shop-by-category/by-category', this.categoryId()]);
     }

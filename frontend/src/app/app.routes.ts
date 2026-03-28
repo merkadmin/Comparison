@@ -10,6 +10,7 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { StoreListComponent } from './features/stores/store-list.component';
 import { ShopByCategoryComponent } from './features/shop/shop-by-category.component';
 import { ShopByBrandComponent } from './features/shop/shop-by-brand.component';
+import { ShopBySpecsComponent } from './features/shop/shop-by-specs.component';
 import { ItemDetailPageComponent } from './features/shop/item-detail/item-detail-page.component';
 import { SetIconsComponent } from './features/app-setup/set-icons/set-icons.component';
 import { PagesComponent } from './features/app-setup/pages/pages.component';
@@ -39,6 +40,8 @@ export const routes: Routes = [
       { path: 'shop-by-brand', component: ShopByBrandComponent },
       { path: 'shop-by-brand/by-brand/:brandId', component: ShopByBrandComponent },
       { path: 'shop-by-brand/by-brand/:brandId/item/:itemId', component: ItemDetailPageComponent },
+      { path: 'shop-by-specs', component: ShopBySpecsComponent },
+      { path: 'shop-by-specs/item/:itemId', component: ItemDetailPageComponent },
       { path: 'app-setup/set-icons', component: SetIconsComponent },
       { path: 'app-setup/pages', component: PagesComponent },
       { path: 'variants', component: ProductItemVariantListComponent },

@@ -59,6 +59,14 @@ export const en: Record<string, string> = {
   'nav.stores': 'Stores',
   'nav.shopByCategory': 'Shop by Category',
   'nav.shopByBrand': 'Shop by Brand',
+  'nav.shopBySpecs': 'Shop by Specifications',
+
+  // Shop by Specs
+  'specs.filterBySpec': 'Filter by Specification',
+  'specs.selected': 'selected',
+  'specs.clearAll': 'Clear All',
+  'specs.active': 'active',
+  'specs.selectPrompt': 'Select one or more specifications to browse products.',
   'nav.showAll': 'Show All',
   'nav.favorites': 'Favorites',
   'nav.settings': 'Settings',
