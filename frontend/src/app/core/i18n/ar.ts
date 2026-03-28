@@ -155,6 +155,7 @@ export const ar: Record<string, string> = {
   'category.editTitle': 'تعديل تصنيف المنتج',
   'category.saveSuccess': 'تم حفظ التصنيف بنجاح.',
   'category.saveError': 'فشل حفظ التصنيف.',
+  'category.loadError': 'فشل تحميل التصنيفات.',
 
   // Item Brands
   'brand.title': 'ماركات المنتجات',

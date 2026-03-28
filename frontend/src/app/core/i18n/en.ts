@@ -155,6 +155,7 @@ export const en: Record<string, string> = {
   'category.editTitle': 'Edit Product Category',
   'category.saveSuccess': 'Category saved successfully.',
   'category.saveError': 'Failed to save category.',
+  'category.loadError': 'Failed to load categories.',
 
   // Item Brands
   'brand.title': 'Brands',

@@ -148,6 +148,7 @@ export const fr: Record<string, string> = {
   'category.editTitle': 'Modifier la catégorie de produit',
   'category.saveSuccess': 'Catégorie enregistrée avec succès.',
   'category.saveError': 'Échec de l\'enregistrement de la catégorie.',
+  'category.loadError': 'Échec du chargement des catégories.',
 
   // Item Brands
   'brand.title': 'Marques d\'articles',
