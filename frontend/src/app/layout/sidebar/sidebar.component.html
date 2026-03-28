@@ -99,7 +99,7 @@
         }
         <!--END::Settings (Admin only)-->
 
-        <!-- Shop by Category -->
+        <!-- Shop by Category / Brand -->
         @if (!auth.isAdmin()) {
         <div class="menu-item">
           <a class="menu-link" routerLink="/shop-by-category" routerLinkActive="active">
@@ -110,6 +110,16 @@
               </i>
             </span>
             <span class="menu-title">{{ 'nav.shopByCategory' | translate }}</span>
+          </a>
+        </div>
+        <div class="menu-item">
+          <a class="menu-link" routerLink="/shop-by-brand" routerLinkActive="active">
+            <span class="menu-icon">
+              <i class="ki-duotone ki-tag fs-2">
+                <span class="path1"></span><span class="path2"></span>
+              </i>
+            </span>
+            <span class="menu-title">{{ 'nav.shopByBrand' | translate }}</span>
           </a>
         </div>
         }

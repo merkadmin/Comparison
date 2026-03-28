@@ -58,6 +58,7 @@ export const en: Record<string, string> = {
   'nav.priceHistory': 'Price History',
   'nav.stores': 'Stores',
   'nav.shopByCategory': 'Shop by Category',
+  'nav.shopByBrand': 'Shop by Brand',
   'nav.showAll': 'Show All',
   'nav.favorites': 'Favorites',
   'nav.settings': 'Settings',

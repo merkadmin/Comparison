@@ -114,6 +114,7 @@ export class ItemDetailPageComponent implements OnInit {
   favoriteIcon = this.iconConfig.iconSignal('global.favorite','heart');
 
   categoryId         = signal<number | null>(null);
+  brandId            = signal<number | null>(null);
   item               = signal<Item | null>(null);
   stores             = signal<Store[]>([]);
   itemVariantMaps    = signal<ProductItemVariantMap[]>([]);
@@ -127,9 +128,11 @@ export class ItemDetailPageComponent implements OnInit {
   inCompare(id: number): boolean  { return this.compareIds().has(id); }
 
   ngOnInit(): void {
-    const catId  = +this.route.snapshot.paramMap.get('categoryId')!;
-    const itemId = +this.route.snapshot.paramMap.get('itemId')!;
-    this.categoryId.set(catId);
+    const catId   = this.route.snapshot.paramMap.get('categoryId');
+    const bId     = this.route.snapshot.paramMap.get('brandId');
+    const itemId  = +this.route.snapshot.paramMap.get('itemId')!;
+    if (catId) this.categoryId.set(+catId);
+    if (bId)   this.brandId.set(+bId);
 
     this.storeSvc.getAll().subscribe({ next: d => this.stores.set(d), error: () => {} });
     this.variantMapSvc.getAll().subscribe({ next: d => this.itemVariantMaps.set(d), error: () => {} });
@@ -144,7 +147,11 @@ export class ItemDetailPageComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/shop-by-category/by-category', this.categoryId()]);
+    if (this.brandId()) {
+      this.router.navigate(['/shop-by-brand/by-brand', this.brandId()]);
+    } else {
+      this.router.navigate(['/shop-by-category/by-category', this.categoryId()]);
+    }
   }
 
   getItemVariantMaps(itemId: number): ProductItemVariantMap[] {

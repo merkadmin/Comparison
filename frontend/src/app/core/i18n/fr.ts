@@ -52,6 +52,7 @@ export const fr: Record<string, string> = {
   'nav.priceHistory': 'Historique des prix',
   'nav.stores': 'Magasins',
   'nav.shopByCategory': 'Acheter par catégorie',
+  'nav.shopByBrand': 'Acheter par marque',
   'nav.showAll': 'Tout afficher',
   'nav.favorites': 'Favoris',
   'nav.settings': 'Paramètres',

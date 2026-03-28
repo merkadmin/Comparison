@@ -58,6 +58,7 @@ export const ar: Record<string, string> = {
   'nav.priceHistory': 'تاريخ الأسعار',
   'nav.stores': 'المتاجر',
   'nav.shopByCategory': 'تسوق حسب القسم',
+  'nav.shopByBrand': 'تسوق حسب الماركة',
   'nav.showAll': 'عرض الكل',
   'nav.favorites': 'المفضلة',
   'nav.settings': 'الإعدادات',
