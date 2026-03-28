@@ -4,7 +4,7 @@
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title fw-bold me-auto">{{ (isCreating ? 'item.addNew' : 'common.edit') | translate }}</h5>
+        <h5 class="modal-title fw-bold me-auto">{{ (isCreating ? 'item.addTitle' : 'item.editTitle') | translate }}</h5>
         <div class="d-flex align-items-center gap-2 me-2">
           <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
           @if (isCreating) {
@@ -96,6 +96,22 @@
             {{ 'item.category' | translate }} <span class="text-danger">*</span>
           </label>
 
+          <!--START::Selected Category Chips-->
+          @if (editDraft.categoryIds.length > 0) {
+            <div class="d-flex flex-wrap gap-2 mb-2">
+              @for (id of editDraft.categoryIds; track id) {
+                <span class="badge badge-light-primary d-flex align-items-center gap-1 fs-7 py-2 px-3">
+                  {{ getCategoryLabel(id) }}
+                  <button type="button" class="btn btn-icon btn-xs p-0 ms-1" (click)="removeCategoryId(id)">
+                    <i class="ki-duotone ki-cross fs-9 text-primary"><span class="path1"></span><span class="path2"></span></i>
+                  </button>
+                </span>
+              }
+            </div>
+          }
+          <!--END::Selected Category Chips-->
+
+          <!--START::Category Navigator-->
           @if (currentLevelName) {
             <div class="text-muted fs-8 mb-1">{{ currentLevelName }}</div>
           }
@@ -120,15 +136,7 @@
               }
             </select>
           </div>
-
-          @if (!isLeafSelected) {
-            <div class="d-flex align-items-center gap-1 text-muted fs-7 mt-2">
-              <i class="ki-duotone ki-information-5 fs-6 text-warning">
-                <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-              </i>
-              {{ 'item.selectLastCategory' | translate }}
-            </div>
-          }
+          <!--END::Category Navigator-->
         </div>
         <!--END::Category-->
 
@@ -139,50 +147,26 @@
         </div>
         <!--END::Model Name-->
 
-        <!--START::Type-->
+        <!--START::Product Types-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'item.type' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.productItemTypeId">
-            <option [ngValue]="null">—</option>
-            @for (t of productItemTypes; track t.id) {
-              <option [ngValue]="t.id">{{ t.type }}</option>
-            }
-          </select>
-        </div>
-        <!--END::Type-->
-
-        <!--START::Product Information-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.productInformation' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.productInformationId">
-            <option [ngValue]="null">—</option>
-            @for (info of productInfos; track info.id) {
-              <option [ngValue]="info.id">{{ info.information }}</option>
-            }
-          </select>
-        </div>
-        <!--END::Product Information-->
-
-        <!--START::Store Prices-->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'item.prices' | translate }}</label>
-          @for (price of (editDraft.prices ?? []); track $index; let i = $index) {
-            <div class="d-flex gap-2 mb-2 align-items-center">
-              <input type="number" class="form-control form-control-sm w-120px" [placeholder]="'item.storeId' | translate"
-                [(ngModel)]="editDraft.prices![i].storeId" />
-              <input type="number" class="form-control form-control-sm" [placeholder]="'item.price' | translate"
-                [(ngModel)]="editDraft.prices![i].price" />
-              <button type="button" class="btn btn-icon btn-sm btn-light-danger" (click)="priceRemoved.emit(i)">
-                <i class="ki-duotone ki-cross fs-4"><span class="path1"></span><span class="path2"></span></i>
-              </button>
+          @if (productTypes.length > 0) {
+            <div class="d-flex flex-wrap gap-2 mt-1">
+              @for (t of productTypes; track t.id) {
+                <button type="button"
+                  class="btn btn-sm"
+                  [class.btn-primary]="isProductTypeSelected(t.id!)"
+                  [class.btn-light]="!isProductTypeSelected(t.id!)"
+                  (click)="toggleProductType(t.id!)">
+                  {{ t.type }}
+                </button>
+              }
             </div>
+          } @else {
+            <div class="text-muted fs-7">—</div>
           }
-          <button type="button" class="btn btn-sm btn-light-primary" (click)="priceAdded.emit()">
-            <i class="ki-duotone ki-plus fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
-            {{ 'item.addPrice' | translate }}
-          </button>
         </div>
-        <!--END::Store Prices-->
+        <!--END::Product Types-->
 
         <!--START::Brief Description-->
         <div class="mb-3">

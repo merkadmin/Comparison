@@ -154,7 +154,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   selectSuggestion(item: Item): void {
     this.globalSearch = item.name;
     this.showSuggestions.set(false);
-    this.router.navigate(['/shop-by-category/by-category', item.itemCategoryId, 'item', item.id]);
+    this.router.navigate(['/shop-by-category/by-category', item.categoryIds[0], 'item', item.id]);
   }
 
   submitSearch(): void {

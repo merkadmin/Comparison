@@ -71,6 +71,8 @@ export const fr: Record<string, string> = {
   // Stores
   'store.title': 'Magasins',
   'store.addNew': 'Ajouter un magasin',
+  'store.addTitle': 'Ajouter un nouveau magasin',
+  'store.editTitle': 'Modifier le magasin',
   'store.type': 'Type',
   'store.online': 'En ligne',
   'store.physical': 'Physique',
@@ -90,6 +92,8 @@ export const fr: Record<string, string> = {
   // Store Variant Orders
   'storeVariantOrder.title': 'Ordre d\'affichage des variantes',
   'storeVariantOrder.addNew': 'Ajouter un ordre',
+  'storeVariantOrder.addTitle': 'Ajouter un nouvel ordre de variante',
+  'storeVariantOrder.editTitle': "Modifier l'ordre de variante",
   'storeVariantOrder.store': 'Magasin',
   'storeVariantOrder.allStores': 'Tous les magasins',
   'storeVariantOrder.variant': 'Variante',
@@ -126,6 +130,8 @@ export const fr: Record<string, string> = {
   'category.searchPlaceholder': 'Rechercher des catégories...',
   'category.noParent': 'Sélectionnez la catégorie parente',
   'category.addNew': 'Ajouter une catégorie',
+  'category.addTitle': 'Ajouter une nouvelle catégorie de produit',
+  'category.editTitle': 'Modifier la catégorie de produit',
   'category.saveSuccess': 'Catégorie enregistrée avec succès.',
   'category.saveError': 'Échec de l\'enregistrement de la catégorie.',
 
@@ -141,12 +147,16 @@ export const fr: Record<string, string> = {
   'brand.deactivateBulkConfirm': 'Désactiver les marques sélectionnées ?',
   'brand.deactivateBulkText': 'Vous êtes sur le point de désactiver {count} marques.',
   'brand.addNew': 'Ajouter une marque',
+  'brand.addTitle': 'Ajouter une nouvelle marque',
+  'brand.editTitle': 'Modifier la marque',
   'brand.saveSuccess': 'Marque enregistrée avec succès.',
   'brand.saveError': 'Échec de l\'enregistrement de la marque.',
 
   // Items
   'item.title': 'Articles',
   'item.addNew': 'Ajouter un article',
+  'item.addTitle': 'Ajouter un nouveau produit',
+  'item.editTitle': 'Modifier le produit',
   'item.single': 'Article',
   'item.brand': 'Marque',
   'item.category': 'Catégorie',
@@ -238,6 +248,8 @@ export const fr: Record<string, string> = {
   'variant.title': 'Variantes',
   'variant.single': 'Variante',
   'variant.addNew': 'Ajouter une variante',
+  'variant.addTitle': 'Ajouter une nouvelle variante de produit',
+  'variant.editTitle': 'Modifier la variante de produit',
   'variant.item': 'Article',
   'variant.selectItem': 'Sélectionner un article',
   'variant.variantType': 'Type de variante',
@@ -283,6 +295,8 @@ export const fr: Record<string, string> = {
   // Item Variant Map
   'itemVariantMap.title': 'Variantes d\'articles',
   'itemVariantMap.addNew': 'Ajouter une association',
+  'itemVariantMap.addTitle': 'Ajouter une nouvelle association de variante',
+  'itemVariantMap.editTitle': "Modifier l'association de variante",
   'itemVariantMap.item': 'Article',
   'itemVariantMap.variant': 'Variante',
   'itemVariantMap.variantType': 'Type de variante',

@@ -8,8 +8,7 @@ import { Item } from '../../../core/models/item.model';
 import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
 import { MultiLangString } from '../../../core/models/interfaces/LocalizedString';
 import { ItemBrand } from '../../../core/models/item-brand.model';
-import { ProductItemType } from '../../../core/models/product-item-type.model';
-import { ProductInformation } from '../../../core/models/product-information.model';
+import { ProductType } from '../../../core/models/product-type.model';
 
 @Component({
   selector: 'app-item-list-operation',
@@ -26,8 +25,7 @@ export class ItemListOperationComponent implements OnChanges {
   @Input() isCreating = false;
   @Input() brands: ItemBrand[] = [];
   @Input() categories: IItemCategory[] = [];
-  @Input() productItemTypes: ProductItemType[] = [];
-  @Input() productInfos: ProductInformation[] = [];
+  @Input() productTypes: ProductType[] = [];
   @Input() saving = false;
 
   /** Locally staged files selected by the user — not yet uploaded to the server. */
@@ -75,28 +73,9 @@ export class ItemListOperationComponent implements OnChanges {
   }
 
   private initCategoryPath(): void {
-    const catId = this.editDraft?.itemCategoryId;
     this.currentCategoryParentId = null;
     this.selectedCategoryInLevel = null;
     this.categoryNavStack = [];
-    if (!catId || !this.categories.length) return;
-
-    const cat = this.categories.find(c => c.id === catId);
-    if (!cat) return;
-
-    // Show the level that contains the saved category.
-    this.currentCategoryParentId = cat.parentCategoryId ?? null;
-    this.selectedCategoryInLevel = catId;
-
-    // Build the back-navigation stack (root → parent of current level).
-    const stack: (number | null)[] = [];
-    let levelParent: number | null | undefined = cat.parentCategoryId;
-    while (levelParent != null) {
-      const levelCat = this.categories.find(c => c.id === levelParent);
-      stack.unshift(levelCat?.parentCategoryId ?? null);
-      levelParent = levelCat?.parentCategoryId;
-    }
-    this.categoryNavStack = stack;
   }
 
   get currentLevelCategories(): IItemCategory[] {
@@ -115,51 +94,60 @@ export class ItemListOperationComponent implements OnChanges {
     return this.categories.some(c => c.parentCategoryId === categoryId);
   }
 
-  get isLeafSelected(): boolean {
-    return !!this.selectedCategoryInLevel && !this.hasChildren(this.selectedCategoryInLevel);
-  }
-
   onCategoryChange(categoryId: number | null): void {
     if (!categoryId) {
       this.selectedCategoryInLevel = null;
-      this.editDraft.itemCategoryId = 0;
       return;
     }
     if (this.hasChildren(categoryId)) {
-      // Drill into this category's children.
       this.categoryNavStack = [...this.categoryNavStack, this.currentCategoryParentId];
       this.currentCategoryParentId = categoryId;
       this.selectedCategoryInLevel = null;
-      this.editDraft.itemCategoryId = 0;
     } else {
-      // Leaf — finalise the selection.
-      this.selectedCategoryInLevel = categoryId;
-      this.editDraft.itemCategoryId = categoryId;
+      if (!this.editDraft.categoryIds.includes(categoryId)) {
+        this.editDraft.categoryIds = [...this.editDraft.categoryIds, categoryId];
+      }
+      this.currentCategoryParentId = null;
+      this.selectedCategoryInLevel = null;
+      this.categoryNavStack = [];
     }
+  }
+
+  removeCategoryId(id: number): void {
+    this.editDraft.categoryIds = this.editDraft.categoryIds.filter(x => x !== id);
+  }
+
+  toggleProductType(id: number): void {
+    const ids = this.editDraft.productTypeIds;
+    this.editDraft.productTypeIds = ids.includes(id) ? ids.filter(x => x !== id) : [...ids, id];
+  }
+
+  isProductTypeSelected(id: number): boolean {
+    return this.editDraft.productTypeIds.includes(id);
   }
 
   goBackCategory(): void {
     if (!this.categoryNavStack.length) return;
-    const drilledIntoId = this.currentCategoryParentId; // the category we drilled into
+    const drilledIntoId = this.currentCategoryParentId;
     const newStack = [...this.categoryNavStack];
     const poppedParent = newStack.pop() ?? null;
     this.categoryNavStack = newStack;
     this.currentCategoryParentId = poppedParent;
-    // Select the category we drilled into so the select visibly reflects the state change.
-    // If we're back at root (poppedParent is null), drilledIntoId is still a valid ID — shown selected.
     this.selectedCategoryInLevel = drilledIntoId;
-    this.editDraft.itemCategoryId = 0;
   }
 
   @Output() closed       = new EventEmitter<void>();
   @Output() saved        = new EventEmitter<void>();
   @Output() savedAndNew  = new EventEmitter<void>();
-  @Output() priceAdded   = new EventEmitter<void>();
-  @Output() priceRemoved = new EventEmitter<number>();
   @Output() imageRemoved = new EventEmitter<number>();
 
   imgUrl(path: string): string {
     return this.imageSvc.resolveUrl(path);
+  }
+
+  getCategoryLabel(id: number): string {
+    const cat = this.categories.find(c => c.id === id);
+    return cat ? this.localize(cat.name) : String(id);
   }
 
   localize(ls: MultiLangString): string {

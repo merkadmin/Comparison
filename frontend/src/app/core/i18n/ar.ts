@@ -37,6 +37,12 @@ export const ar: Record<string, string> = {
   'common.saveAndNew': 'حفظ وجديد',
   'common.searchItems': 'بحث عن منتجات...',
   'common.searchAll': 'عرض كل نتائج',
+  "common.nameEn": "الاسم (الإنجليزية)",
+  "common.nameAr": "الاسم (العربية)",
+  "common.nameFr": "الاسم (الفرنسية)",
+  "common.descriptionEn": "الوصف (الإنجليزية)",
+  "common.descriptionAr": "الوصف (العربية)",
+  "common.descriptionFr": "الوصف (الفرنسية)",
 
   // Navigation
   'nav.dashboard': 'لوحة التحكم',
@@ -72,6 +78,8 @@ export const ar: Record<string, string> = {
   // Stores
   'store.title': 'المتاجر',
   'store.addNew': 'إضافة متجر',
+  'store.addTitle': 'إضافة متجر جديد',
+  'store.editTitle': 'تعديل المتجر',
   'store.type': 'النوع',
   'store.online': 'إلكتروني',
   'store.physical': 'فيزيائي',
@@ -91,6 +99,8 @@ export const ar: Record<string, string> = {
   // Store Variant Orders
   'storeVariantOrder.title': 'ترتيب عرض المتغيرات',
   'storeVariantOrder.addNew': 'إضافة ترتيب',
+  'storeVariantOrder.addTitle': 'إضافة ترتيب متغير متجر جديد',
+  'storeVariantOrder.editTitle': 'تعديل ترتيب المتغير',
   'storeVariantOrder.store': 'المتجر',
   'storeVariantOrder.allStores': 'كل المتاجر',
   'storeVariantOrder.variant': 'المتغير',
@@ -127,6 +137,8 @@ export const ar: Record<string, string> = {
   'category.searchPlaceholder': 'ابحث في التصنيفات...',
   'category.noParent': 'اختر التصنيف الأب',
   'category.addNew': 'إضافة تصنيف',
+  'category.addTitle': 'إضافة تصنيف منتج جديد',
+  'category.editTitle': 'تعديل تصنيف المنتج',
   'category.saveSuccess': 'تم حفظ التصنيف بنجاح.',
   'category.saveError': 'فشل حفظ التصنيف.',
 
@@ -142,12 +154,16 @@ export const ar: Record<string, string> = {
   'brand.deactivateBulkConfirm': 'تعطيل الماركات المحددة؟',
   'brand.deactivateBulkText': 'أنت على وشك تعطيل {count} ماركات.',
   'brand.addNew': 'إضافة ماركة',
+  'brand.addTitle': 'إضافة ماركة جديدة',
+  'brand.editTitle': 'تعديل الماركة',
   'brand.saveSuccess': 'تم حفظ الماركة بنجاح.',
   'brand.saveError': 'فشل حفظ الماركة.',
 
   // Items
   'item.title': 'المنتجات',
   'item.addNew': 'إضافة منتج',
+  'item.addTitle': 'إضافة منتج جديد',
+  'item.editTitle': 'تعديل المنتج',
   'item.single': 'منتج',
   'item.brand': 'الماركة',
   'item.category': 'التصنيف',
@@ -239,6 +255,8 @@ export const ar: Record<string, string> = {
   'variant.title': 'المتغيرات',
   'variant.single': 'متغير',
   'variant.addNew': 'إضافة متغير',
+  'variant.addTitle': 'إضافة متغير منتج جديد',
+  'variant.editTitle': 'تعديل متغير المنتج',
   'variant.item': 'المنتج',
   'variant.selectItem': 'اختر منتجاً',
   'variant.variantType': 'نوع المتغير',
@@ -284,6 +302,8 @@ export const ar: Record<string, string> = {
   // Item Variant Map
   'itemVariantMap.title': 'متغيرات المنتج',
   'itemVariantMap.addNew': 'إضافة ربط',
+  'itemVariantMap.addTitle': 'إضافة ربط متغير جديد',
+  'itemVariantMap.editTitle': 'تعديل ربط المتغير',
   'itemVariantMap.item': 'المنتج',
   'itemVariantMap.variant': 'المتغير',
   'itemVariantMap.variantType': 'نوع المتغير',

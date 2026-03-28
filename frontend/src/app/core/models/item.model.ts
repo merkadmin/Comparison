@@ -1,10 +1,6 @@
 import { ItemBrand } from './item-brand.model';
 import { IItemCategory } from './interfaces/IItemCategory';
-
-export interface StorePrice {
-  storeId: number;
-  price: number;
-}
+import { ProductType } from './product-type.model';
 
 export interface Item {
   id?: number;
@@ -19,11 +15,10 @@ export interface Item {
   isActive?: boolean;
   brandId: number;
   brand?: ItemBrand;
-  itemCategoryId: number;
-  category?: IItemCategory;
-  productItemTypeId?: number | null;
-  productInformationId?: number | null;
-  prices?: StorePrice[];
+  categoryIds: number[];
+  categories?: IItemCategory[];
+  productTypeIds: number[];
+  productTypes?: ProductType[];
   customerReviews?: number[];
   customerCommentIds?: number[];
   createdAt?: Date;

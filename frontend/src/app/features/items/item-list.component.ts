@@ -10,15 +10,13 @@ import { ItemService } from '../../core/services/item.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemImageService } from '../../core/services/item-image.service';
-import { ProductItemTypeService } from '../../core/services/product-item-type.service';
-import { ProductInformationService } from '../../core/services/product-information.service';
+import { ProductTypeService } from '../../core/services/product-type.service';
 import { UserActivityService } from '../../core/services/user-activity.service';
 import { Item } from '../../core/models/item.model';
 import { ItemBestPrice } from '../../core/models/store-item.model';
 import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
 import { ItemBrand } from '../../core/models/item-brand.model';
-import { ProductItemType } from '../../core/models/product-item-type.model';
-import { ProductInformation } from '../../core/models/product-information.model';
+import { ProductType } from '../../core/models/product-type.model';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../core/services/translate.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -53,8 +51,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   private categoryService = inject(ItemCategoryService);
   private brandService = inject(ItemBrandService);
   private imageService = inject(ItemImageService);
-  private typeService = inject(ProductItemTypeService);
-  private infoService = inject(ProductInformationService);
+  private typeService = inject(ProductTypeService);
   private translate = inject(TranslateService);
   private toast = inject(ToastService);
   private route = inject(ActivatedRoute);
@@ -77,15 +74,14 @@ export class ItemListComponent implements OnInit, OnDestroy {
   editingId = signal<number | null>(null);
   isCreating = signal(false);
   saving = signal(false);
-  editDraft: Item = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
+  editDraft: Item = { name: '', brandId: 0, categoryIds: [], productTypeIds: [], images: [], customerReviews: [], customerCommentIds: [] };
   uploadingImages = signal(false);
   @ViewChild('operationComp') operationComp?: ItemListOperationComponent;
-  productItemTypes = signal<ProductItemType[]>([]);
-  productInfos = signal<ProductInformation[]>([]);
+  productTypes = signal<ProductType[]>([]);
   compareIds = signal<Set<number>>(new Set());
 
   openCreate(): void {
-    this.editDraft = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
+    this.editDraft = { name: '', brandId: 0, categoryIds: [], productTypeIds: [], images: [], customerReviews: [], customerCommentIds: [] };
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -93,8 +89,9 @@ export class ItemListComponent implements OnInit, OnDestroy {
   openEdit(item: Item): void {
     this.editDraft = {
       ...item,
+      categoryIds: [...item.categoryIds],
+      productTypeIds: [...item.productTypeIds],
       images: [...(item.images ?? [])],
-      prices: (item.prices ?? []).map(p => ({ ...p })),
       customerReviews: [...(item.customerReviews ?? [])],
       customerCommentIds: [...(item.customerCommentIds ?? [])],
     };
@@ -120,7 +117,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
         this.closeEdit();
       };
       if (!pending.length) { done(); return; }
-      this.imageService.upload(itemId, baseItem.itemCategoryId, pending).subscribe({
+      this.imageService.upload(itemId, baseItem.categoryIds[0], pending).subscribe({
         next: paths => {
           const updated = { ...baseItem, images: [...(baseItem.images ?? []), ...paths] };
           this.itemService.update(itemId, updated).subscribe({ next: done, error: onError });
@@ -153,13 +150,13 @@ export class ItemListComponent implements OnInit, OnDestroy {
       this.saving.set(false);
       this.toast.success(this.translate.translate('item.saveSuccess'));
       this.loadItems();
-      this.editDraft = { name: '', brandId: 0, itemCategoryId: 0, images: [], prices: [], customerReviews: [], customerCommentIds: [] };
+      this.editDraft = { name: '', brandId: 0, categoryIds: [], productTypeIds: [], images: [], customerReviews: [], customerCommentIds: [] };
     };
 
     this.itemService.create(this.editDraft).subscribe({
       next: savedItem => {
         if (!pending.length) { reset(); return; }
-        this.imageService.upload(savedItem.id!, savedItem.itemCategoryId, pending).subscribe({
+        this.imageService.upload(savedItem.id!, savedItem.categoryIds[0], pending).subscribe({
           next: paths => {
             const updated = { ...savedItem, images: [...(savedItem.images ?? []), ...paths] };
             this.itemService.update(savedItem.id!, updated).subscribe({ next: reset, error: onError });
@@ -169,14 +166,6 @@ export class ItemListComponent implements OnInit, OnDestroy {
       },
       error: onError
     });
-  }
-
-  addPrice(): void {
-    this.editDraft.prices = [...(this.editDraft.prices ?? []), { storeId: 0, price: 0 }];
-  }
-
-  removePrice(index: number): void {
-    this.editDraft.prices = (this.editDraft.prices ?? []).filter((_, i) => i !== index);
   }
 
   /** Resolve a stored relative path to a full URL for display. */
@@ -222,9 +211,14 @@ export class ItemListComponent implements OnInit, OnDestroy {
     });
   }
 
-  getTypeName(typeId: number | null | undefined): string {
-    if (!typeId) return '—';
-    return this.productItemTypes().find(t => t.id === typeId)?.type ?? String(typeId);
+  getTypeNames(typeIds: number[] | undefined): string {
+    if (!typeIds?.length) return '—';
+    return typeIds.map(id => this.productTypes().find(t => t.id === id)?.type ?? String(id)).join(', ');
+  }
+
+  getCategoryNames(ids: number[] | undefined): string {
+    if (!ids?.length) return '—';
+    return ids.map(id => this.getCategoryName(id)).join(', ');
   }
 
   items = signal<Item[]>([]);
@@ -286,8 +280,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
     this.categoryService.getAll().subscribe({ next: c => this.categories.set(c), error: () => { } });
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => { } });
     this.itemService.getBestPrices().subscribe({ next: bp => this.bestPrices.set(bp), error: () => { } });
-    this.typeService.getAll().subscribe({ next: t => this.productItemTypes.set(t), error: () => { } });
-    this.infoService.getAll().subscribe({ next: i => this.productInfos.set(i), error: () => { } });
+    this.typeService.getAll().subscribe({ next: t => this.productTypes.set(t), error: () => { } });
     this.userActivity.loadAll();
 
     this.querySub = this.route.queryParamMap.subscribe(params => {

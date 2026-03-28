@@ -37,6 +37,12 @@ export const en: Record<string, string> = {
   'common.saveAndNew': 'Save & New',
   'common.searchItems': 'Search products...',
   'common.searchAll': 'See all results for',
+  "common.nameEn": "Name (English)",
+  "common.nameAr": "Name (Arabic)",
+  "common.nameFr": "Name (French)",
+  "common.descriptionEn": "Description (English)",
+  "common.descriptionAr": "Description (Arabic)",
+  "common.descriptionFr": "Description (French)",
 
   // Navigation
   'nav.dashboard': 'Home',
@@ -72,6 +78,8 @@ export const en: Record<string, string> = {
   // Stores
   'store.title': 'Stores',
   'store.addNew': 'Add Store',
+  'store.addTitle': 'Adding new Store',
+  'store.editTitle': 'Edit Store',
   'store.type': 'Type',
   'store.online': 'Online',
   'store.physical': 'Physical',
@@ -91,6 +99,8 @@ export const en: Record<string, string> = {
   // Store Variant Orders
   'storeVariantOrder.title': 'Variant Display Order',
   'storeVariantOrder.addNew': 'Add Order',
+  'storeVariantOrder.addTitle': 'Adding new Store Variant Order',
+  'storeVariantOrder.editTitle': 'Edit Store Variant Order',
   'storeVariantOrder.store': 'Store',
   'storeVariantOrder.allStores': 'All Stores',
   'storeVariantOrder.variant': 'Variant',
@@ -127,6 +137,8 @@ export const en: Record<string, string> = {
   'category.searchPlaceholder': 'Search categories...',
   'category.noParent': 'Select Parent Category',
   'category.addNew': 'Add Category',
+  'category.addTitle': 'Adding new Product Category',
+  'category.editTitle': 'Edit Product Category',
   'category.saveSuccess': 'Category saved successfully.',
   'category.saveError': 'Failed to save category.',
 
@@ -142,12 +154,16 @@ export const en: Record<string, string> = {
   'brand.deactivateBulkConfirm': 'Deactivate selected brands?',
   'brand.deactivateBulkText': 'You are about to deactivate {count} brands.',
   'brand.addNew': 'Add Brand',
+  'brand.addTitle': 'Adding new Brand',
+  'brand.editTitle': 'Edit Brand',
   'brand.saveSuccess': 'Brand saved successfully.',
   'brand.saveError': 'Failed to save brand.',
 
   // Items
   'item.title': 'Items',
   'item.addNew': 'Add Item',
+  'item.addTitle': 'Adding new Product',
+  'item.editTitle': 'Edit Product',
   'item.single': 'Item',
   'item.brand': 'Brand',
   'item.category': 'Category',
@@ -239,6 +255,8 @@ export const en: Record<string, string> = {
   'variant.title': 'Variants',
   'variant.single': 'Variant',
   'variant.addNew': 'Add Variant',
+  'variant.addTitle': 'Adding new Product Variant',
+  'variant.editTitle': 'Edit Product Variant',
   'variant.item': 'Item',
   'variant.selectItem': 'Select an item',
   'variant.variantType': 'Variant Type',
@@ -284,6 +302,8 @@ export const en: Record<string, string> = {
   // Item Variant Map
   'itemVariantMap.title': 'Product Variants',
   'itemVariantMap.addNew': 'Add Product Variants',
+  'itemVariantMap.addTitle': 'Adding new Product Variant Map',
+  'itemVariantMap.editTitle': 'Edit Product Variant Map',
   'itemVariantMap.item': 'Item',
   'itemVariantMap.variant': 'Variant',
   'itemVariantMap.variantType': 'Variant Type',

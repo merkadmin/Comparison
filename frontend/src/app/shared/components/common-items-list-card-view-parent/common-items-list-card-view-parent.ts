@@ -367,7 +367,7 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
   openDetail(item: Item): void {
-    const catId = this.selectedLeaf()?.id ?? item.itemCategoryId;
+    const catId = this.selectedLeaf()?.id ?? item.categoryIds[0];
     this.router.navigate(['/shop-by-category/by-category', catId, 'item', item.id]);
   }
 
