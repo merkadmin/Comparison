@@ -1,234 +1,194 @@
-<!--begin::Row - إحصائيات عامة-->
-<div class="row g-5 g-xl-8 mb-5">
-
-  <!--begin::إجمالي المنتجات-->
-  <div class="col-xl-3">
-    <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10 stat-card stat-card--pink">
-      <div class="card-header pt-5">
-        <div class="card-title d-flex flex-column">
-          <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">1,248</span>
-          <span class="text-white opacity-75 pt-1 fw-semibold fs-6">إجمالي المنتجات</span>
-        </div>
-      </div>
-      <div class="card-body d-flex align-items-end pt-0">
-        <div class="d-flex align-items-center flex-column mt-3 w-100">
-          <div class="d-flex justify-content-between fw-bold fs-6 text-white opacity-75 w-100 mt-auto mb-2">
-            <span>تمت المعالجة</span>
-            <span>82%</span>
-          </div>
-          <div class="h-8px mx-3 w-100 bg-white bg-opacity-50 rounded">
-            <div class="bg-white rounded h-8px stat-card__progress stat-card__progress--82"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::إجمالي المنتجات-->
-
-  <!--begin::المتاجر المتصلة-->
-  <div class="col-xl-3">
-    <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10 stat-card stat-card--purple">
-      <div class="card-header pt-5">
-        <div class="card-title d-flex flex-column">
-          <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">36</span>
-          <span class="text-white opacity-75 pt-1 fw-semibold fs-6">المتاجر المتصلة</span>
-        </div>
-      </div>
-      <div class="card-body d-flex align-items-end pt-0">
-        <div class="d-flex align-items-center flex-column mt-3 w-100">
-          <div class="d-flex justify-content-between fw-bold fs-6 text-white opacity-75 w-100 mt-auto mb-2">
-            <span>نشطة</span>
-            <span>91%</span>
-          </div>
-          <div class="h-8px mx-3 w-100 bg-white bg-opacity-50 rounded">
-            <div class="bg-white rounded h-8px stat-card__progress stat-card__progress--91"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::المتاجر المتصلة-->
-
-  <!--begin::مقارنات اليوم-->
-  <div class="col-xl-3">
-    <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10 stat-card stat-card--green">
-      <div class="card-header pt-5">
-        <div class="card-title d-flex flex-column">
-          <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">5,420</span>
-          <span class="text-white opacity-75 pt-1 fw-semibold fs-6">مقارنات اليوم</span>
-        </div>
-      </div>
-      <div class="card-body d-flex align-items-end pt-0">
-        <div class="d-flex align-items-center flex-column mt-3 w-100">
-          <div class="d-flex justify-content-between fw-bold fs-6 text-white opacity-75 w-100 mt-auto mb-2">
-            <span>منجزة</span>
-            <span>75%</span>
-          </div>
-          <div class="h-8px mx-3 w-100 bg-white bg-opacity-50 rounded">
-            <div class="bg-white rounded h-8px stat-card__progress stat-card__progress--75"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::مقارنات اليوم-->
-
-  <!--begin::توفير الأسعار-->
-  <div class="col-xl-3">
-    <div class="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-md-50 mb-5 mb-xl-10 stat-card stat-card--blue">
-      <div class="card-header pt-5">
-        <div class="card-title d-flex flex-column">
-          <span class="fs-2hx fw-bold text-white me-2 lh-1 ls-n2">24%</span>
-          <span class="text-white opacity-75 pt-1 fw-semibold fs-6">متوسط التوفير</span>
-        </div>
-      </div>
-      <div class="card-body d-flex align-items-end pt-0">
-        <div class="d-flex align-items-center flex-column mt-3 w-100">
-          <div class="d-flex justify-content-between fw-bold fs-6 text-white opacity-75 w-100 mt-auto mb-2">
-            <span>أفضل توفير</span>
-            <span>67%</span>
-          </div>
-          <div class="h-8px mx-3 w-100 bg-white bg-opacity-50 rounded">
-            <div class="bg-white rounded h-8px stat-card__progress stat-card__progress--67"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--end::توفير الأسعار-->
-
+@if (loading()) {
+<div class="d-flex justify-content-center py-20">
+  <span class="spinner-border text-primary"></span>
+  <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
 </div>
-<!--end::Row-->
+}
 
-<!--begin::Row - جدول المنتجات الأخيرة-->
-<div class="row g-5 g-xl-8">
-  <div class="col-xl-12">
-    <div class="card card-xl-stretch mb-xl-8">
-      <!--begin::Header-->
-      <div class="card-header border-0 pt-5">
-        <h3 class="card-title align-items-start flex-column">
-          <span class="card-label fw-bold fs-3 mb-1">أحدث مقارنات الأسعار</span>
-          <span class="text-muted mt-1 fw-semibold fs-7">آخر 10 مقارنات</span>
-        </h3>
-        <div class="card-toolbar">
-          <button class="btn btn-sm btn-light-primary">
-            <i class="ki-duotone ki-plus fs-3"></i>
-            إضافة مقارنة
-          </button>
+@if (!loading()) {
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION: Shop by Categories (leaf)
+═══════════════════════════════════════════════════════════════ -->
+<div class="home-section mb-10">
+  <div class="d-flex align-items-center justify-content-between mb-4 px-1">
+    <h2 class="fw-bold fs-2 mb-0">{{ 'nav.shopByCategory' | translate }}</h2>
+    <a routerLink="/shop-by-category" class="btn btn-sm btn-light-primary">
+      {{ 'nav.showAll' | translate }}
+      <i class="ki-duotone ki-arrow-right fs-5 ms-1"><span class="path1"></span><span class="path2"></span></i>
+    </a>
+  </div>
+
+  <div class="position-relative">
+    <button class="scroll-arrow scroll-arrow--left btn btn-icon btn-light shadow-sm"
+            (click)="scroll(catsScroll, -1)">
+      <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+
+    <div class="home-scroll-track" #catsScroll>
+      @for (cat of leafCategories(); track cat.id) {
+      <div class="home-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
+           (click)="goToCategory(cat)">
+        <div class="home-tile__img-wrap bg-white d-flex align-items-center justify-content-center">
+          @if (catImgUrl(cat)) {
+          <img [src]="catImgUrl(cat)!" [alt]="localize(cat)" class="home-tile__img" />
+          } @else {
+          <div class="home-tile__icon bg-light-primary rounded-circle d-flex align-items-center justify-content-center mx-auto">
+            <i class="ki-duotone ki-category fs-2x text-primary">
+              <span class="path1"></span><span class="path2"></span>
+              <span class="path3"></span><span class="path4"></span>
+            </i>
+          </div>
+          }
+        </div>
+        <div class="p-3">
+          <span class="fw-bold text-gray-800 fs-6 d-block text-truncate">{{ localize(cat) }}</span>
         </div>
       </div>
-      <!--end::Header-->
-      <!--begin::Body-->
-      <div class="card-body py-3">
-        <div class="table-responsive">
-          <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
-            <!--begin::Table head-->
-            <thead>
-              <tr class="fw-bold text-muted">
-                <th class="w-25px">
-                  <div class="form-check form-check-sm form-check-custom form-check-solid">
-                    <input class="form-check-input" type="checkbox" />
-                  </div>
-                </th>
-                <th class="min-w-200px">المنتج</th>
-                <th class="min-w-150px">أفضل سعر</th>
-                <th class="min-w-150px">أعلى سعر</th>
-                <th class="min-w-100px">عدد المتاجر</th>
-                <th class="min-w-100px">التاريخ</th>
-                <th class="min-w-100px text-end">الإجراءات</th>
-              </tr>
-            </thead>
-            <!--end::Table head-->
-            <!--begin::Table body-->
-            <tbody>
-              <tr>
-                <td>
-                  <div class="form-check form-check-sm form-check-custom form-check-solid"><input
-                      class="form-check-input" type="checkbox" /></div>
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="symbol symbol-45px me-5">
-                      <img src="assets/media/products/p1.png" alt="" />
-                    </div>
-                    <div class="d-flex justify-content-start flex-column">
-                      <span class="text-dark fw-bold text-hover-primary fs-6">سامسونج جالاكسي S25</span>
-                      <span class="text-muted fw-semibold text-muted d-block fs-7">إلكترونيات</span>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="text-dark fw-bold d-block fs-6">2,499 ر.س</span></td>
-                <td><span class="text-dark fw-bold d-block fs-6">2,899 ر.س</span></td>
-                <td><span class="badge badge-light-success fs-7 fw-semibold">8 متاجر</span></td>
-                <td><span class="text-muted fw-semibold text-muted d-block fs-7">اليوم</span></td>
-                <td class="text-end">
-                  <button class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                    <i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span
-                        class="path3"></span></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="form-check form-check-sm form-check-custom form-check-solid"><input
-                      class="form-check-input" type="checkbox" /></div>
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="symbol symbol-45px me-5">
-                      <img src="assets/media/products/p2.png" alt="" />
-                    </div>
-                    <div class="d-flex justify-content-start flex-column">
-                      <span class="text-dark fw-bold text-hover-primary fs-6">آيفون 16 برو</span>
-                      <span class="text-muted fw-semibold text-muted d-block fs-7">إلكترونيات</span>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="text-dark fw-bold d-block fs-6">3,999 ر.س</span></td>
-                <td><span class="text-dark fw-bold d-block fs-6">4,299 ر.س</span></td>
-                <td><span class="badge badge-light-success fs-7 fw-semibold">12 متجر</span></td>
-                <td><span class="text-muted fw-semibold text-muted d-block fs-7">أمس</span></td>
-                <td class="text-end">
-                  <button class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                    <i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span
-                        class="path3"></span></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="form-check form-check-sm form-check-custom form-check-solid"><input
-                      class="form-check-input" type="checkbox" /></div>
-                </td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="symbol symbol-45px me-5">
-                      <img src="assets/media/products/p3.png" alt="" />
-                    </div>
-                    <div class="d-flex justify-content-start flex-column">
-                      <span class="text-dark fw-bold text-hover-primary fs-6">لاب توب ديل XPS</span>
-                      <span class="text-muted fw-semibold text-muted d-block fs-7">إلكترونيات</span>
-                    </div>
-                  </div>
-                </td>
-                <td><span class="text-dark fw-bold d-block fs-6">5,200 ر.س</span></td>
-                <td><span class="text-dark fw-bold d-block fs-6">6,000 ر.س</span></td>
-                <td><span class="badge badge-light-warning fs-7 fw-semibold">5 متاجر</span></td>
-                <td><span class="text-muted fw-semibold text-muted d-block fs-7">منذ يومين</span></td>
-                <td class="text-end">
-                  <button class="btn btn-icon btn-bg-light btn-active-color-primary btn-sm me-1">
-                    <i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span class="path2"></span><span
-                        class="path3"></span></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-            <!--end::Table body-->
-          </table>
-        </div>
-      </div>
-      <!--end::Body-->
+      }
     </div>
+
+    <button class="scroll-arrow scroll-arrow--right btn btn-icon btn-light shadow-sm"
+            (click)="scroll(catsScroll, 1)">
+      <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
   </div>
 </div>
-<!--end::Row-->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION: Shop by Brands
+═══════════════════════════════════════════════════════════════ -->
+<div class="home-section mb-10">
+  <div class="d-flex align-items-center justify-content-between mb-4 px-1">
+    <h2 class="fw-bold fs-2 mb-0">{{ 'nav.shopByBrand' | translate }}</h2>
+    <a routerLink="/shop-by-brand" class="btn btn-sm btn-light-primary">
+      {{ 'nav.showAll' | translate }}
+      <i class="ki-duotone ki-arrow-right fs-5 ms-1"><span class="path1"></span><span class="path2"></span></i>
+    </a>
+  </div>
+
+  <div class="position-relative">
+    <button class="scroll-arrow scroll-arrow--left btn btn-icon btn-light shadow-sm"
+            (click)="scroll(brandsScroll, -1)">
+      <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+
+    <div class="home-scroll-track" #brandsScroll>
+      @for (brand of brands(); track brand.id) {
+      <div class="home-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
+           (click)="goToBrand(brand)">
+        <div class="home-tile__img-wrap bg-white d-flex align-items-center justify-content-center">
+          @if (brand.logoUrl) {
+          <img [src]="brand.logoUrl" [alt]="brand.name" class="home-tile__img" />
+          } @else {
+          <span class="home-tile__letter fw-bold text-primary">{{ brand.name.charAt(0).toUpperCase() }}</span>
+          }
+        </div>
+        <div class="p-3">
+          <span class="fw-bold text-gray-800 fs-6 d-block text-truncate">{{ brand.name }}</span>
+          @if (brand.country) {
+          <span class="text-muted fs-8">{{ brand.country }}</span>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <button class="scroll-arrow scroll-arrow--right btn btn-icon btn-light shadow-sm"
+            (click)="scroll(brandsScroll, 1)">
+      <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION: Shop by Types (variant types)
+═══════════════════════════════════════════════════════════════ -->
+@if (usedVariantTypes().length > 0) {
+<div class="home-section mb-10">
+  <div class="d-flex align-items-center justify-content-between mb-4 px-1">
+    <h2 class="fw-bold fs-2 mb-0">{{ 'nav.shopBySpecs' | translate }}</h2>
+    <a routerLink="/shop-by-specs" class="btn btn-sm btn-light-primary">
+      {{ 'nav.showAll' | translate }}
+      <i class="ki-duotone ki-arrow-right fs-5 ms-1"><span class="path1"></span><span class="path2"></span></i>
+    </a>
+  </div>
+
+  <div class="position-relative">
+    <button class="scroll-arrow scroll-arrow--left btn btn-icon btn-light shadow-sm"
+            (click)="scroll(typesScroll, -1)">
+      <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+
+    <div class="home-scroll-track" #typesScroll>
+      @for (type of usedVariantTypes(); track type) {
+      <div class="home-type-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
+           [class.home-type-tile--active]="selectedType() === type"
+           (click)="openTypePicker(type)">
+        <div class="home-tile__img-wrap d-flex align-items-center justify-content-center"
+             [style.background-color]="typeColor(type)">
+          <i class="ki-duotone ki-{{ typeIcon(type) }} fs-2x text-white">
+            <span class="path1"></span><span class="path2"></span>
+            <span class="path3"></span><span class="path4"></span>
+          </i>
+        </div>
+        <div class="p-3">
+          <span class="fw-bold text-gray-800 fs-6 d-block">{{ 'variant.type.' + type | translate }}</span>
+        </div>
+      </div>
+      }
+    </div>
+
+    <button class="scroll-arrow scroll-arrow--right btn btn-icon btn-light shadow-sm"
+            (click)="scroll(typesScroll, 1)">
+      <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+  </div>
+
+  <!--START: Variant picker panel-->
+  @if (selectedType()) {
+  <div class="type-picker mt-4 p-4 border rounded-3">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <span class="fw-bold fs-5">{{ 'variant.type.' + selectedType()! | translate }}</span>
+      <button class="btn btn-sm btn-icon btn-light" (click)="closePicker()">
+        <i class="ki-duotone ki-cross fs-4"><span class="path1"></span><span class="path2"></span></i>
+      </button>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      @for (v of variantsForType(); track v.id) {
+      @let sel = isPickerSelected(v.id!);
+      <span class="badge fs-5 px-4 py-3 cursor-pointer user-select-none spec-chip"
+            [class.badge-light-secondary]="!v.color && !sel"
+            [class.badge-secondary]="!v.color && sel"
+            [style.background-color]="v.color ?? null"
+            [style.color]="v.color ? '#fff' : null"
+            [style.box-shadow]="sel ? '0 0 0 2.5px #009ef7' : 'none'"
+            (click)="togglePickerVariant(v.id!)">
+        {{ v.abbreviation ?? v.variantValue }}
+      </span>
+      }
+    </div>
+
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary btn-sm" (click)="browseWithSelection()">
+        <i class="ki-duotone ki-filter-search fs-5 me-1"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+        {{ 'specs.browse' | translate }}
+        @if (pickerSelectedIds().size > 0) {
+        <span class="badge badge-light ms-2">{{ pickerSelectedIds().size }}</span>
+        }
+      </button>
+      @if (pickerSelectedIds().size > 0) {
+      <button class="btn btn-light-danger btn-sm" (click)="clearPickerSelection()">
+        {{ 'specs.clearAll' | translate }}
+      </button>
+      }
+    </div>
+  </div>
+  }
+  <!--END: Variant picker panel-->
+
+</div>
+}
+
+}

@@ -97,9 +97,9 @@
                   [class.spec-chip--selected]="sel"
                   [class.badge-light-secondary]="!v.color && !sel"
                   [class.badge-secondary]="!v.color && sel"
-                  [style.background]="v.color && !sel ? v.color + 'cc' : v.color && sel ? v.color : null"
+                  [style.background-color]="v.color ?? null"
                   [style.color]="v.color ? '#fff' : null"
-                  [style.box-shadow]="sel ? '0 0 0 2px #009ef7' : 'none'"
+                  [style.box-shadow]="sel ? '0 0 0 2.5px #009ef7' : 'none'"
                   (click)="toggleVariant(v.id!)">
               {{ v.abbreviation ?? v.variantValue }}
             </span>
@@ -128,7 +128,8 @@
           <div [class]="colClass()">
             <div class="item-card card h-100 shadow-sm border-0">
 
-              <div class="item-card__img-wrap bg-white d-flex align-items-center justify-content-center position-relative">
+              <div class="item-card__img-wrap d-flex align-items-center justify-content-center position-relative"
+                   [style.background-color]="getItemColor(item.id!) ?? '#ffffff'">
                 @if (item.images && item.images.length > 0) {
                 <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
                 @if (item.images.length > 1) {
@@ -191,8 +192,9 @@
           @for (item of filteredItems(); track item.id) {
           <div class="item-list-row card border shadow-sm d-flex flex-row align-items-stretch gap-0 overflow-hidden">
 
-            <div class="item-list-row__img-wrap bg-white d-flex align-items-center justify-content-center flex-shrink-0 position-relative"
-                 style="width:110px;min-height:90px;">
+            <div class="item-list-row__img-wrap d-flex align-items-center justify-content-center flex-shrink-0 position-relative"
+                 style="width:110px;min-height:90px;"
+                 [style.background-color]="getItemColor(item.id!) ?? '#ffffff'">
               @if (item.images && item.images.length > 0) {
               <img [src]="imgUrl(item.images[0])" [alt]="item.name" style="max-width:100px;max-height:80px;object-fit:contain;" />
               } @else if (item.imageUrl) {

@@ -55,12 +55,16 @@ export const fr: Record<string, string> = {
   'nav.shopByBrand': 'Acheter par marque',
   'nav.shopBySpecs': 'Acheter par spécifications',
 
+  // Home
+  'home.shopBySpecs': 'Acheter par spécifications',
+
   // Shop by Specs
   'specs.filterBySpec': 'Filtrer par spécification',
   'specs.selected': 'sélectionné(s)',
   'specs.clearAll': 'Tout effacer',
   'specs.active': 'actif',
   'specs.selectPrompt': 'Sélectionnez une ou plusieurs spécifications pour parcourir les produits.',
+  'specs.browse': 'Parcourir les produits',
   'nav.showAll': 'Tout afficher',
   'nav.favorites': 'Favoris',
   'nav.settings': 'Paramètres',

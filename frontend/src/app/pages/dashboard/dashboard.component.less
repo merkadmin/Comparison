@@ -1,13 +1,116 @@
-.stat-card {
-  &--pink    { background-color: #F1416C; background-image: url('/assets/media/patterns/vector-1.png'); }
-  &--purple  { background-color: #7239EA; background-image: url('/assets/media/patterns/vector-1.png'); }
-  &--green   { background-color: #17C653; background-image: url('/assets/media/patterns/vector-1.png'); }
-  &--blue    { background-color: #0095E8; background-image: url('/assets/media/patterns/vector-1.png'); }
+// ── Scroll section ───────────────────────────────────────────────────────────
+.home-section {
+  background: var(--bs-card-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 24px 16px 20px;
+
+  [data-bs-theme="dark"] & {
+    background: var(--bs-dark-bg-subtle, #1e1e2d);
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+  }
 }
 
-.stat-card__progress {
-  &--82 { width: 82%; }
-  &--91 { width: 91%; }
-  &--75 { width: 75%; }
-  &--67 { width: 67%; }
+.home-scroll-track {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scroll-behavior: smooth;
+  padding: 8px 52px;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  &--chips {
+    align-items: center;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+}
+
+// ── Scroll arrow buttons ─────────────────────────────────────────────────────
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+
+  &--left  { left: 4px; }
+  &--right { right: 4px; }
+}
+
+// ── Category / Brand tiles ───────────────────────────────────────────────────
+.home-tile {
+  width: 220px;
+  border-radius: 14px;
+  border: 1px solid var(--bs-border-color) !important;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14) !important;
+    transform: translateY(-3px);
+  }
+
+  &__img-wrap {
+    height: 170px;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    background-color: #ffffff;
+  }
+
+  &__img {
+    max-height: 150px;
+    max-width: 85%;
+    object-fit: contain;
+  }
+
+  &__icon {
+    width: 70px;
+    height: 70px;
+  }
+
+  &__letter {
+    font-size: 3rem;
+  }
+}
+
+// ── Variant type tiles ───────────────────────────────────────────────────────
+.home-type-tile {
+  width: 190px;
+  border-radius: 14px;
+  border: 1px solid var(--bs-border-color) !important;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 8px 28px rgba(0,0,0,0.14) !important;
+    transform: translateY(-3px);
+  }
+
+  .home-tile__img-wrap {
+    height: 140px;
+    border-radius: 14px 14px 0 0;
+  }
+}
+
+// ── Active type tile ─────────────────────────────────────────────────────────
+.home-type-tile--active {
+  border-color: var(--bs-primary) !important;
+  box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), 0.25) !important;
+}
+
+// ── Variant picker panel ──────────────────────────────────────────────────────
+.type-picker {
+  background: var(--bs-body-bg);
+  border-color: var(--bs-border-color) !important;
+}
+
+// ── Spec chips ───────────────────────────────────────────────────────────────
+.spec-chip {
+  transition: opacity 0.15s, transform 0.15s;
+  white-space: nowrap;
+  &:hover { opacity: 0.8; transform: scale(1.04); }
 }

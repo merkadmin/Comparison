@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { combineLatest, Subscription } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
 import { Item } from '../../core/models/item.model';
@@ -34,6 +34,7 @@ export interface VariantGroup {
 })
 export class ShopBySpecsComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+  private route  = inject(ActivatedRoute);
   private itemService = inject(ItemService);
   private storeService = inject(StoreService);
   private imageService = inject(ItemImageService);
@@ -148,6 +149,18 @@ export class ShopBySpecsComponent implements OnInit, OnDestroy {
     return this.stores().find(s => s.id === storeId)?.name ?? String(storeId);
   }
 
+  getItemColor(itemId: number): string | null {
+    const variantIds = new Set(
+      this.variantMaps()
+        .filter(m => m.productItemId === itemId && m.isActive !== false)
+        .flatMap(m => m.variants.map(e => e.variantId))
+    );
+    for (const v of this.allVariants()) {
+      if (variantIds.has(v.id!) && v.color) return v.color;
+    }
+    return null;
+  }
+
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
   toggleFavorite(id: number): void { this.userActivity.toggleFavorite(id); }
@@ -202,6 +215,13 @@ export class ShopBySpecsComponent implements OnInit, OnDestroy {
         this.variantGroups.set(
           [...typeMap.entries()].map(([type, vs]) => ({ type, variants: vs, expanded: true }))
         );
+
+        // Pre-select variant IDs passed via query param (e.g. from home page picker)
+        const idsParam = this.route.snapshot.queryParamMap.get('ids');
+        if (idsParam) {
+          const preSelected = new Set(idsParam.split(',').map(Number).filter(Boolean));
+          this.selectedIds.set(preSelected);
+        }
 
         this.loading.set(false);
       },
