@@ -130,6 +130,7 @@ export const fr: Record<string, string> = {
   'category.searchPlaceholder': 'Rechercher des catégories...',
   'category.noParent': 'Sélectionnez la catégorie parente',
   'category.addNew': 'Ajouter une catégorie',
+  'category.image': 'Image de la catégorie',
   'category.addTitle': 'Ajouter une nouvelle catégorie de produit',
   'category.editTitle': 'Modifier la catégorie de produit',
   'category.saveSuccess': 'Catégorie enregistrée avec succès.',

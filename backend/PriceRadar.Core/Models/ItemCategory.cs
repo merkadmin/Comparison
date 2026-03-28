@@ -8,5 +8,6 @@ public class ItemCategory
     public LocalizedString   Name             { get; set; } = new();
     public long?             ParentCategoryId { get; set; }
     public LocalizedString?  Description      { get; set; }
+    public string?           CategoryImage    { get; set; }
     public DateTime          CreatedAt        { get; set; } = DateTime.UtcNow;
 }

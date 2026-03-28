@@ -12,6 +12,7 @@ public class ItemCategoryDocument : IDocument<ItemCategory>
 	public LocalizedString Name { get; set; } = new();
 	public long? ParentCategoryId { get; set; }
 	public LocalizedString? Description { get; set; }
+	public string? CategoryImage { get; set; }
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 	public ItemCategory ToModel() => new()
@@ -22,6 +23,7 @@ public class ItemCategoryDocument : IDocument<ItemCategory>
 		Name = Name,
 		ParentCategoryId = ParentCategoryId,
 		Description = Description,
+		CategoryImage = CategoryImage,
 		CreatedAt = CreatedAt,
 	};
 
@@ -33,6 +35,7 @@ public class ItemCategoryDocument : IDocument<ItemCategory>
 		Name = c.Name,
 		ParentCategoryId = c.ParentCategoryId,
 		Description = c.Description,
+		CategoryImage = c.CategoryImage,
 		CreatedAt = c.CreatedAt == default ? DateTime.UtcNow : c.CreatedAt,
 	};
 }

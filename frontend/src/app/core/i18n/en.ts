@@ -137,6 +137,7 @@ export const en: Record<string, string> = {
   'category.searchPlaceholder': 'Search categories...',
   'category.noParent': 'Select Parent Category',
   'category.addNew': 'Add Category',
+  'category.image': 'Category Image',
   'category.addTitle': 'Adding new Product Category',
   'category.editTitle': 'Edit Product Category',
   'category.saveSuccess': 'Category saved successfully.',

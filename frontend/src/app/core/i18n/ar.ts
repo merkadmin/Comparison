@@ -137,6 +137,7 @@ export const ar: Record<string, string> = {
   'category.searchPlaceholder': 'ابحث في التصنيفات...',
   'category.noParent': 'اختر التصنيف الأب',
   'category.addNew': 'إضافة تصنيف',
+  'category.image': 'صورة التصنيف',
   'category.addTitle': 'إضافة تصنيف منتج جديد',
   'category.editTitle': 'تعديل تصنيف المنتج',
   'category.saveSuccess': 'تم حفظ التصنيف بنجاح.',

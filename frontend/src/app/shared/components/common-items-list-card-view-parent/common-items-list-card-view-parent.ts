@@ -341,6 +341,15 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   lightboxSelect(i: number): void { this.lightboxIdx.set(i); }
 
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
+  catImgUrl(cat: IItemCategory): string | null {
+    const all = this.allCategories();
+    let cur: IItemCategory | undefined = cat;
+    while (cur) {
+      if (cur.categoryImage) return this.categoryService.resolveImageUrl(cur.categoryImage);
+      cur = all.find(c => c.id === cur!.parentCategoryId);
+    }
+    return null;
+  }
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
   inCart(id: number): boolean { return this.userActivity.cartIds().has(id); }
   inCompare(id: number): boolean { return this.compareIds().has(id); }

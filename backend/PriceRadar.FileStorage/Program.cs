@@ -13,11 +13,11 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Ensure the ProductImages root exists so static file serving works from startup
-var imagesRoot = Path.Combine(
-    builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot"),
-    builder.Configuration["Storage:ProductImagesFolder"]!);
-Directory.CreateDirectory(imagesRoot);
+var webRoot = builder.Environment.WebRootPath ?? Path.Combine(builder.Environment.ContentRootPath, "wwwroot");
+
+// Ensure image root folders exist so static file serving works from startup
+Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:ProductImagesFolder"]!));
+Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:CategoryImagesFolder"]!));
 
 app.UseStaticFiles();   // serves wwwroot/** → GET /ProductImages/{itemId}/{filename}
 

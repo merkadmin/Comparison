@@ -7,5 +7,6 @@ export interface IItemCategory {
   name: MultiLangString;
   parentCategoryId?: number | null;
   description?: MultiLangString;
+  categoryImage?: string;
   createdAt?: Date;
 }

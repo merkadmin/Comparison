@@ -21,6 +21,7 @@ import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
   styleUrl: './item-category-list.component.less',
 })
 export class ItemCategoryListComponent implements OnInit {
+  @ViewChild('operationComp') operationComp?: ItemCategoryListOperationComponent;
   auth = inject(AuthService);
   private service = inject(ItemCategoryService);
   private translate = inject(TranslateService);
@@ -66,18 +67,48 @@ export class ItemCategoryListComponent implements OnInit {
   saveEdit(): void {
     this.saving.set(true);
     const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
-    const onSuccess = () => {
-      this.saving.set(false);
-      this.toast.success(this.translate.translate('category.saveSuccess'));
-      this.load();
-      this.closeEdit();
-    };
+    const pendingFile = this.operationComp?.pendingFile ?? null;
+
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('category.saveError')); };
+
+    const finalize = (savedId: number, savedCategory: IItemCategory) => {
+      if (!pendingFile) {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('category.saveSuccess'));
+        this.load();
+        this.closeEdit();
+        return;
+      }
+      this.service.uploadImage(savedId, pendingFile).subscribe({
+        next: relativePath => {
+          const updated = { ...savedCategory, categoryImage: relativePath };
+          this.service.update(savedId, updated).subscribe({
+            next: () => {
+              this.saving.set(false);
+              this.operationComp?.clearPending();
+              this.toast.success(this.translate.translate('category.saveSuccess'));
+              this.load();
+              this.closeEdit();
+            },
+            error: onError,
+          });
+        },
+        error: onError,
+      });
+    };
+
     if (this.isCreating()) {
-      this.service.create(payload).subscribe({ next: onSuccess, error: onError });
+      this.service.create(payload).subscribe({ next: saved => finalize(saved.id!, saved), error: onError });
     } else {
-      this.service.update(this.editingId()!, payload).subscribe({ next: onSuccess, error: onError });
+      const id = this.editingId()!;
+      this.service.update(id, payload).subscribe({ next: () => finalize(id, payload), error: onError });
     }
+  }
+
+  removeImage(): void {
+    const id = this.editingId();
+    if (id) this.service.deleteImage(id).subscribe({ error: () => {} });
+    this.editDraft = { ...this.editDraft, categoryImage: undefined };
   }
 
   saveEditAndNew(): void {

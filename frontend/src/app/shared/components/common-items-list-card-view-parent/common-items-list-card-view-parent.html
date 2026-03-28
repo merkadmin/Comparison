@@ -86,14 +86,20 @@
             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                 <div class="category-tile card border-0 shadow-sm h-100 text-center cursor-pointer"
                     (click)="selectCategory(cat)">
-                    <div class="card-body d-flex flex-column align-items-center justify-content-center gap-3 p-4">
-                        <div
-                            class="category-tile__icon bg-light-primary rounded-circle d-flex align-items-center justify-content-center">
+                    <!--Image on top-->
+                    <div class="category-tile__img-wrap bg-light d-flex align-items-center justify-content-center">
+                        @if (catImgUrl(cat)) {
+                        <img [src]="catImgUrl(cat)!" [alt]="localize(cat)" class="category-tile__img" />
+                        } @else {
+                        <div class="category-tile__icon bg-light-primary rounded-circle d-flex align-items-center justify-content-center">
                             <i class="ki-duotone ki-category fs-2x text-primary">
                                 <span class="path1"></span><span class="path2"></span>
                                 <span class="path3"></span><span class="path4"></span>
                             </i>
                         </div>
+                        }
+                    </div>
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center gap-2 p-3">
                         <span class="fw-bold text-gray-800 fs-6 lh-sm">{{ localize(cat) }}</span>
                         @if (hasChildren(cat)) {
                         <span class="badge badge-light-primary fs-5 px-3 py-2">
