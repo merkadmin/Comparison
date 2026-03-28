@@ -14,7 +14,6 @@
     </button>
     }
 
-    @if (selectedCount() > 0) {
     <div class="ms-auto d-flex align-items-center gap-2">
       <!--Search-->
       <div class="input-group input-group-sm w-250px">
@@ -44,7 +43,6 @@
       <app-common-grid-columns-button [columns]="colsPerRow()" (columnsChange)="colsPerRow.set($event)" />
       }
     </div>
-    }
   </div>
 
   <div class="card-body py-4">
@@ -92,10 +90,10 @@
 
           <!--Variant chips-->
           @if (group.expanded) {
-          <div class="d-flex flex-wrap gap-1 ps-1">
+          <div class="d-flex flex-wrap gap-2 ps-1">
             @for (v of group.variants; track v.id) {
             @let sel = isSelected(v.id!);
-            <span class="badge cursor-pointer user-select-none fs-8 spec-chip"
+            <span class="badge cursor-pointer user-select-none fs-5 px-4 py-3 spec-chip"
                   [class.spec-chip--selected]="sel"
                   [class.badge-light-secondary]="!v.color && !sel"
                   [class.badge-secondary]="!v.color && sel"
@@ -118,23 +116,13 @@
       <!--RIGHT: Items-->
       <div class="flex-grow-1 min-w-0">
 
-        <!--Prompt when nothing selected-->
-        @if (selectedCount() === 0) {
-        <div class="text-center text-muted py-10">
-          <i class="ki-duotone ki-filter-search fs-3x text-muted mb-4 d-block">
-            <span class="path1"></span><span class="path2"></span><span class="path3"></span>
-          </i>
-          <p class="fs-5 fw-semibold">{{ 'specs.selectPrompt' | translate }}</p>
-        </div>
-        }
-
         <!--No results-->
-        @if (selectedCount() > 0 && filteredItems().length === 0) {
+        @if (filteredItems().length === 0) {
         <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
         }
 
         <!--Grid-->
-        @if (selectedCount() > 0 && filteredItems().length > 0 && viewMode() === 'grid') {
+        @if (filteredItems().length > 0 && viewMode() === 'grid') {
         <div class="row g-4">
           @for (item of filteredItems(); track item.id) {
           <div [class]="colClass()">
@@ -198,7 +186,7 @@
         }
 
         <!--List-->
-        @if (selectedCount() > 0 && filteredItems().length > 0 && viewMode() === 'list') {
+        @if (filteredItems().length > 0 && viewMode() === 'list') {
         <div class="d-flex flex-column gap-3">
           @for (item of filteredItems(); track item.id) {
           <div class="item-list-row card border shadow-sm d-flex flex-row align-items-stretch gap-0 overflow-hidden">
