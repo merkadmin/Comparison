@@ -124,11 +124,13 @@
 <!--START::Create / Edit Modal-->
 @if (editingId() !== null) {
   <app-item-brand-list-operation
+    #operationComp
     [editDraft]="editDraft"
     [isCreating]="isCreating()"
     [saving]="saving()"
     (closed)="closeEdit()"
     (saved)="saveEdit()"
-    (savedAndNew)="saveEditAndNew()" />
+    (savedAndNew)="saveEditAndNew()"
+    (imageRemoved)="removeImage()" />
 }
 <!--END::Create / Edit Modal-->

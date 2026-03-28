@@ -85,6 +85,10 @@ export class ShopByBrandComponent implements OnInit, OnDestroy {
   }
 
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
+  brandImgUrl(brand: ItemBrand): string | null {
+    if (brand.brandImage) return this.brandService.resolveImageUrl(brand.brandImage);
+    return brand.logoUrl ?? null;
+  }
   isFavorite(id: number): boolean { return this.userActivity.favoriteIds().has(id); }
   toggleFavorite(id: number): void { this.userActivity.toggleFavorite(id); }
 

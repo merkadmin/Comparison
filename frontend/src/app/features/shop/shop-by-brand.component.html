@@ -9,8 +9,8 @@
       <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
     </button>
     <span class="fw-bold fs-4 text-gray-800">
-      @if (selectedBrand()!.logoUrl) {
-        <img [src]="selectedBrand()!.logoUrl" [alt]="selectedBrand()!.name"
+      @if (brandImgUrl(selectedBrand()!)) {
+        <img [src]="brandImgUrl(selectedBrand()!)!" [alt]="selectedBrand()!.name"
              class="me-2 rounded object-fit-contain" style="width:28px;height:28px;" />
       }
       {{ selectedBrand()!.name }}
@@ -79,8 +79,8 @@
         <div class="brand-tile card border-0 shadow-sm h-100 text-center cursor-pointer"
              (click)="selectBrand(brand)">
           <div class="brand-tile__img-wrap bg-white d-flex align-items-center justify-content-center">
-            @if (brand.logoUrl) {
-            <img [src]="brand.logoUrl" [alt]="brand.name" class="brand-tile__img" />
+            @if (brandImgUrl(brand)) {
+            <img [src]="brandImgUrl(brand)!" [alt]="brand.name" class="brand-tile__img" />
             } @else {
             <span class="brand-tile__placeholder fw-bold text-primary fs-1">
               {{ brand.name.charAt(0).toUpperCase() }}

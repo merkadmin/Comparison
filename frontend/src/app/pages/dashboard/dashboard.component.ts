@@ -75,6 +75,11 @@ export class DashboardComponent implements OnInit {
     return cat.name[lang] || cat.name['en'];
   }
 
+  brandImgUrl(brand: ItemBrand): string | null {
+    if (brand.brandImage) return this.brandSvc.resolveImageUrl(brand.brandImage);
+    return brand.logoUrl ?? null;
+  }
+
   catImgUrl(cat: IItemCategory): string | null {
     const all = this.allCategories();
     let cur: IItemCategory | undefined = cat;

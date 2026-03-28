@@ -18,6 +18,7 @@ var webRoot = builder.Environment.WebRootPath ?? Path.Combine(builder.Environmen
 // Ensure image root folders exist so static file serving works from startup
 Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:ProductImagesFolder"]!));
 Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:CategoryImagesFolder"]!));
+Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:BrandImagesFolder"]!));
 
 app.UseStaticFiles();   // serves wwwroot/** → GET /ProductImages/{itemId}/{filename}
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -21,6 +21,7 @@ import { ItemBrandListOperationComponent } from './item-brand-list-operation/ite
   styleUrl: './item-brand-list.component.less',
 })
 export class ItemBrandListComponent implements OnInit {
+  @ViewChild('operationComp') operationComp?: ItemBrandListOperationComponent;
   auth              = inject(AuthService);
   private service   = inject(ItemBrandService);
   private translate = inject(TranslateService);
@@ -50,18 +51,47 @@ export class ItemBrandListComponent implements OnInit {
 
   saveEdit(): void {
     this.saving.set(true);
-    const onSuccess = () => {
-      this.saving.set(false);
-      this.toast.success(this.translate.translate('brand.saveSuccess'));
-      this.load();
-      this.closeEdit();
-    };
+    const pendingFile = this.operationComp?.pendingFile ?? null;
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('brand.saveError')); };
+
+    const finalize = (savedId: number, savedBrand: ItemBrand) => {
+      if (!pendingFile) {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('brand.saveSuccess'));
+        this.load();
+        this.closeEdit();
+        return;
+      }
+      this.service.uploadImage(savedId, pendingFile).subscribe({
+        next: relativePath => {
+          const updated = { ...savedBrand, brandImage: relativePath };
+          this.service.update(savedId, updated).subscribe({
+            next: () => {
+              this.saving.set(false);
+              this.operationComp?.clearPending();
+              this.toast.success(this.translate.translate('brand.saveSuccess'));
+              this.load();
+              this.closeEdit();
+            },
+            error: onError,
+          });
+        },
+        error: onError,
+      });
+    };
+
     if (this.isCreating()) {
-      this.service.create(this.editDraft).subscribe({ next: onSuccess, error: onError });
+      this.service.create(this.editDraft).subscribe({ next: saved => finalize(saved.id!, saved), error: onError });
     } else {
-      this.service.update(this.editingId()!, this.editDraft).subscribe({ next: onSuccess, error: onError });
+      const id = this.editingId()!;
+      this.service.update(id, this.editDraft).subscribe({ next: () => finalize(id, this.editDraft), error: onError });
     }
+  }
+
+  removeImage(): void {
+    const id = this.editingId();
+    if (id) this.service.deleteImage(id).subscribe({ error: () => {} });
+    this.editDraft = { ...this.editDraft, brandImage: undefined };
   }
 
   saveEditAndNew(): void {

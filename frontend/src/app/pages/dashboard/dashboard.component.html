@@ -78,8 +78,8 @@
       <div class="home-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
            (click)="goToBrand(brand)">
         <div class="home-tile__img-wrap bg-white d-flex align-items-center justify-content-center">
-          @if (brand.logoUrl) {
-          <img [src]="brand.logoUrl" [alt]="brand.name" class="home-tile__img" />
+          @if (brandImgUrl(brand)) {
+          <img [src]="brandImgUrl(brand)!" [alt]="brand.name" class="home-tile__img" />
           } @else {
           <span class="home-tile__letter fw-bold text-primary">{{ brand.name.charAt(0).toUpperCase() }}</span>
           }

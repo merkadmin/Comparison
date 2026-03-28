@@ -165,6 +165,7 @@ export const fr: Record<string, string> = {
   'brand.editTitle': 'Modifier la marque',
   'brand.saveSuccess': 'Marque enregistrée avec succès.',
   'brand.saveError': 'Échec de l\'enregistrement de la marque.',
+  'brand.image': 'Image de la marque',
 
   // Items
   'item.title': 'Articles',
