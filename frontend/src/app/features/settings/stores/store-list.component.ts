@@ -14,6 +14,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
 import { CommonListHeaderActions } from '../../../shared/components/common-list-header-actions/common-list-header-actions';
 import { StoreListOperationComponent, StoreItemRow } from './store-list-operation/store-list-operation.component';
 import { GridColumns } from '../../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
@@ -200,9 +201,7 @@ export class StoreListComponent implements OnInit {
   }
 
   getRowMenuItems(id: number): ActionMenuItem[] {
-    return [
-      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) }
-    ];
+    return buildRowMenuItems(() => this.delete(id));
   }
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────

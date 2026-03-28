@@ -9,6 +9,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
 import { CommonListHeaderActions } from '../../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemCategoryListOperationComponent } from './item-category-list-operation/item-category-list-operation.component';
 import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
@@ -165,7 +166,7 @@ export class ItemCategoryListComponent implements OnInit {
     this.service.getAll().subscribe({
       next: data => { 
         this.categories.set(data); 
-        this.loading.set(false); 
+        this.loading.set(false);
       },
       error: () => { 
         this.error.set(this.translate.translate('category.loadError')); this.loading.set(false);
@@ -180,9 +181,7 @@ export class ItemCategoryListComponent implements OnInit {
    * @returns Array of `ActionMenuItem` objects rendered in the row's drop-down button.
    */
   getRowMenuItems(id: number): ActionMenuItem[] {
-    return [
-      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) }
-    ];
+    return buildRowMenuItems(() => this.delete(id));
   }
 
   // ── Modal open / close ───────────────────────────────────────────────────

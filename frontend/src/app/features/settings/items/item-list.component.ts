@@ -22,6 +22,7 @@ import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { CommonSelectComponent } from '../../../shared/components/common-select/common-select.component';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
 import { CommonImageUploadButton } from '../../../shared/components/commonActions/common-image-upload-button/common-image-upload-button';
 import { GridColumns } from '../../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { computedColClass } from '../../../shared/helpers/grid-columns.helper';
@@ -249,9 +250,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   ];
 
   getRowMenuItems(id: number): ActionMenuItem[] {
-    return [
-      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) }
-    ];
+    return buildRowMenuItems(() => this.delete(id));
   }
 
   categoryOptions = computed<SelectOption[]>(() =>

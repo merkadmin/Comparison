@@ -9,6 +9,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
 import { CommonListHeaderActions } from '../../../shared/components/common-list-header-actions/common-list-header-actions';
 import { GridColumns } from '../../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { computedColClass } from '../../../shared/helpers/grid-columns.helper';
@@ -86,9 +87,7 @@ private translate = inject(TranslateService);
   ];
 
   getRowMenuItems(id: number): ActionMenuItem[] {
-    return [
-      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) },
-    ];
+    return buildRowMenuItems(() => this.delete(id));
   }
 
   openCreate(): void {

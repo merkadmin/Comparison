@@ -10,6 +10,7 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
+import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
 import { CommonListHeaderActions } from '../../../shared/components/common-list-header-actions/common-list-header-actions';
 import { ItemBrandListOperationComponent } from './item-brand-list-operation/item-brand-list-operation.component';
 
@@ -271,9 +272,7 @@ export class ItemBrandListComponent implements OnInit {
    * @returns Array of `ActionMenuItem` objects rendered in the row's drop-down.
    */
   getRowMenuItems(id: number): ActionMenuItem[] {
-    return [
-      { labelKey: 'common.delete', iconClass: 'ki-trash', iconPaths: 5, color: 'danger', action: () => this.delete(id) }
-    ];
+    return buildRowMenuItems(() => this.delete(id));
   }
 
   // ── Row selection helpers ────────────────────────────────────────────────
