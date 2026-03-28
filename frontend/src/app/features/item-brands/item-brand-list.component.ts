@@ -54,12 +54,15 @@ export class ItemBrandListComponent implements OnInit {
     const pendingFile = this.operationComp?.pendingFile ?? null;
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('brand.saveError')); };
 
+    const creating = this.isCreating();
+
     const finalize = (savedId: number, savedBrand: ItemBrand) => {
       if (!pendingFile) {
         this.saving.set(false);
+        this.operationComp?.clearPending();
         this.toast.success(this.translate.translate('brand.saveSuccess'));
         this.load();
-        this.closeEdit();
+        if (creating) this.closeEdit();
         return;
       }
       this.service.uploadImage(savedId, pendingFile).subscribe({
@@ -69,9 +72,10 @@ export class ItemBrandListComponent implements OnInit {
             next: () => {
               this.saving.set(false);
               this.operationComp?.clearPending();
+              this.editDraft = { ...this.editDraft, brandImage: relativePath };
               this.toast.success(this.translate.translate('brand.saveSuccess'));
               this.load();
-              this.closeEdit();
+              if (creating) this.closeEdit();
             },
             error: onError,
           });
@@ -80,12 +84,20 @@ export class ItemBrandListComponent implements OnInit {
       });
     };
 
-    if (this.isCreating()) {
+    if (creating) {
       this.service.create(this.editDraft).subscribe({ next: saved => finalize(saved.id!, saved), error: onError });
     } else {
       const id = this.editingId()!;
       this.service.update(id, this.editDraft).subscribe({ next: () => finalize(id, this.editDraft), error: onError });
     }
+  }
+
+  navigateBrand(dir: 1 | -1): void {
+    const all = this.brands();
+    const idx = all.findIndex(b => b.id === this.editingId());
+    if (idx === -1) return;
+    const next = all[idx + dir];
+    if (next) this.openEdit(next);
   }
 
   removeImage(): void {
@@ -97,14 +109,32 @@ export class ItemBrandListComponent implements OnInit {
   saveEditAndNew(): void {
     if (!this.isCreating()) return;
     this.saving.set(true);
+    const pendingFile = this.operationComp?.pendingFile ?? null;
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('brand.saveError')); };
+
     this.service.create(this.editDraft).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.toast.success(this.translate.translate('brand.saveSuccess'));
-        this.load();
-        this.editDraft = { name: '' };
+      next: saved => {
+        const reset = () => {
+          this.saving.set(false);
+          this.operationComp?.clearPending();
+          this.toast.success(this.translate.translate('brand.saveSuccess'));
+          this.load();
+          this.editDraft = { name: '' };
+        };
+
+        if (!pendingFile) { reset(); return; }
+
+        this.service.uploadImage(saved.id!, pendingFile).subscribe({
+          next: relativePath => {
+            this.service.update(saved.id!, { ...saved, brandImage: relativePath }).subscribe({
+              next: reset,
+              error: onError,
+            });
+          },
+          error: onError,
+        });
       },
-      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('brand.saveError')); },
+      error: onError,
     });
   }
 
@@ -153,7 +183,7 @@ export class ItemBrandListComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.service.getAll().subscribe({
-      next: data => { this.brands.set(data); this.loading.set(false); },
+      next: data => { this.brands.set([...data].sort((a, b) => a.name.localeCompare(b.name))); this.loading.set(false); },
       error: () => { this.error.set('Failed to load brands.'); this.loading.set(false); }
     });
   }

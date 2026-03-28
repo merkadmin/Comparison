@@ -34,6 +34,8 @@ export class DashboardComponent implements OnInit {
   variantMaps    = signal<ProductItemVariantMap[]>([]);
 
   loading = signal(true);
+  catSearch   = signal('');
+  brandSearch = signal('');
 
   // ── Derived ───────────────────────────────────────────────────────────────
 
@@ -42,6 +44,16 @@ export class DashboardComponent implements OnInit {
     const all = this.allCategories();
     const parentIds = new Set(all.map(c => c.parentCategoryId).filter(Boolean));
     return all.filter(c => !parentIds.has(c.id));
+  });
+
+  filteredLeafCategories = computed<IItemCategory[]>(() => {
+    const q = this.catSearch().trim().toLowerCase();
+    return q ? this.leafCategories().filter(c => this.localize(c).toLowerCase().includes(q)) : this.leafCategories();
+  });
+
+  filteredBrands = computed<ItemBrand[]>(() => {
+    const q = this.brandSearch().trim().toLowerCase();
+    return q ? this.brands().filter(b => b.name.toLowerCase().includes(q)) : this.brands();
   });
 
   /** Variant types that are actually used in active maps. */
@@ -193,7 +205,7 @@ export class DashboardComponent implements OnInit {
       this.mapSvc.getAll(),
     ]).subscribe({
       next: ([brands, cats, variants, maps]) => {
-        this.brands.set(brands.filter(b => b.isActive !== false));
+        this.brands.set(brands.filter(b => b.isActive !== false).sort((a, b) => a.name.localeCompare(b.name)));
         this.allCategories.set(cats.filter(c => c.isActive !== false));
         this.allVariants.set(variants);
         this.variantMaps.set(maps);

@@ -108,7 +108,7 @@ export class ShopByBrandComponent implements OnInit, OnDestroy {
     this.loadingBrands.set(true);
     this.brandService.getAll().subscribe({
       next: b => {
-        this.allBrands.set(b.filter(x => x.isActive !== false));
+        this.allBrands.set(b.filter(x => x.isActive !== false).sort((a, b) => a.name.localeCompare(b.name)));
         this.loadingBrands.set(false);
         if (this._pendingBrandId !== null) {
           const brand = this.allBrands().find(x => x.id === this._pendingBrandId);

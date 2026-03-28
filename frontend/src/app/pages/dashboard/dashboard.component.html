@@ -11,8 +11,16 @@
      SECTION: Shop by Categories (leaf)
 ═══════════════════════════════════════════════════════════════ -->
 <div class="home-section mb-10">
-  <div class="d-flex align-items-center justify-content-between mb-4 px-1">
-    <h2 class="fw-bold fs-2 mb-0">{{ 'nav.shopByCategory' | translate }}</h2>
+  <div class="d-flex align-items-center gap-3 mb-4 px-1 flex-wrap">
+    <h2 class="fw-bold fs-2 mb-0 me-auto">{{ 'nav.shopByCategory' | translate }}</h2>
+    <div class="input-group input-group-sm w-200px">
+      <span class="input-group-text border-end-0 bg-transparent">
+        <i class="ki-duotone ki-magnifier fs-5 text-muted"><span class="path1"></span><span class="path2"></span></i>
+      </span>
+      <input type="text" class="form-control border-start-0 ps-0"
+             [placeholder]="'common.search' | translate"
+             [value]="catSearch()" (input)="catSearch.set($any($event.target).value)" />
+    </div>
     <a routerLink="/shop-by-category" class="btn btn-sm btn-light-primary">
       {{ 'nav.showAll' | translate }}
       <i class="ki-duotone ki-arrow-right fs-5 ms-1"><span class="path1"></span><span class="path2"></span></i>
@@ -26,7 +34,7 @@
     </button>
 
     <div class="home-scroll-track" #catsScroll>
-      @for (cat of leafCategories(); track cat.id) {
+      @for (cat of filteredLeafCategories(); track cat.id) {
       <div class="home-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
            (click)="goToCategory(cat)">
         <div class="home-tile__img-wrap bg-white d-flex align-items-center justify-content-center">
@@ -59,8 +67,16 @@
      SECTION: Shop by Brands
 ═══════════════════════════════════════════════════════════════ -->
 <div class="home-section mb-10">
-  <div class="d-flex align-items-center justify-content-between mb-4 px-1">
-    <h2 class="fw-bold fs-2 mb-0">{{ 'nav.shopByBrand' | translate }}</h2>
+  <div class="d-flex align-items-center gap-3 mb-4 px-1 flex-wrap">
+    <h2 class="fw-bold fs-2 mb-0 me-auto">{{ 'nav.shopByBrand' | translate }}</h2>
+    <div class="input-group input-group-sm w-200px">
+      <span class="input-group-text border-end-0 bg-transparent">
+        <i class="ki-duotone ki-magnifier fs-5 text-muted"><span class="path1"></span><span class="path2"></span></i>
+      </span>
+      <input type="text" class="form-control border-start-0 ps-0"
+             [placeholder]="'common.search' | translate"
+             [value]="brandSearch()" (input)="brandSearch.set($any($event.target).value)" />
+    </div>
     <a routerLink="/shop-by-brand" class="btn btn-sm btn-light-primary">
       {{ 'nav.showAll' | translate }}
       <i class="ki-duotone ki-arrow-right fs-5 ms-1"><span class="path1"></span><span class="path2"></span></i>
@@ -74,7 +90,7 @@
     </button>
 
     <div class="home-scroll-track" #brandsScroll>
-      @for (brand of brands(); track brand.id) {
+      @for (brand of filteredBrands(); track brand.id) {
       <div class="home-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
            (click)="goToBrand(brand)">
         <div class="home-tile__img-wrap bg-white d-flex align-items-center justify-content-center">

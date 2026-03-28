@@ -4,6 +4,11 @@
     <div class="modal-content">
 
       <div class="modal-header">
+        @if (!isCreating) {
+          <button type="button" class="btn btn-icon btn-sm btn-light me-2" [disabled]="saving" (click)="navigate.emit(-1)">
+            <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
+          </button>
+        }
         <h5 class="modal-title fw-bold me-auto">
           {{ (isCreating ? 'brand.addTitle' : 'brand.editTitle') | translate }}
         </h5>
@@ -17,9 +22,15 @@
           }
           <button type="button" class="btn btn-sm btn-primary" [disabled]="saving" (click)="saved.emit()">
             @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+            <i class="ki-duotone ki-check fs-4"><span class="path1"></span><span class="path2"></span></i>
             {{ 'common.save' | translate }}
           </button>
         </div>
+        @if (!isCreating) {
+          <button type="button" class="btn btn-icon btn-sm btn-light ms-1" [disabled]="saving" (click)="navigate.emit(1)">
+            <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
+          </button>
+        }
       </div>
 
       <div class="modal-body">
