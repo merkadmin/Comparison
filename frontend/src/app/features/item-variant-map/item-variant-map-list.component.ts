@@ -26,7 +26,7 @@ import { IconConfigService } from '../../core/services/icon-config.service';
   standalone: true,
   imports: [
     CommonModule, FormsModule, TranslatePipe, DecimalPipe,
-    CommonDropDownMenuActionButton, CommonListHeaderActions,
+    CommonListHeaderActions,
     ItemVariantMapOperationComponent,
   ],
   templateUrl: './item-variant-map-list.component.html',
