@@ -138,6 +138,31 @@ export class ItemBrandListComponent implements OnInit {
   }
 
   /**
+   * Navigates to the previous (`-1`) or next (`1`) brand in the sorted list
+   * while the edit modal is open, without closing and reopening it.
+   * If already at the first or last brand the call is a no-op.
+   * @param dir - Direction: `1` = next brand, `-1` = previous brand.
+   */
+  navigateBrand(dir: 1 | -1): void {
+    const all = this.brands();
+    const idx = all.findIndex(b => b.id === this.editingId());
+    if (idx === -1) return;
+    const next = all[idx + dir];
+    if (next) this.openEdit(next);
+  }
+
+  /**
+   * Removes the uploaded brand image both from the file-storage server and from
+   * the local `editDraft`, so the UI reverts to the letter-placeholder fallback.
+   * The DELETE call is fire-and-forget; a failure does not block the UI update.
+   */
+  removeImage(): void {
+    const id = this.editingId();
+    if (id) this.service.deleteImage(id).subscribe({ error: () => { } });
+    this.editDraft = { ...this.editDraft, brandImage: undefined };
+  }
+
+  /**
    * Saves the current draft (create or update) and optionally uploads a pending image.
    *
    * Flow:
@@ -197,31 +222,6 @@ export class ItemBrandListComponent implements OnInit {
       const id = this.editingId()!;
       this.service.update(id, this.editDraft).subscribe({ next: () => finalize(id, this.editDraft), error: onError });
     }
-  }
-
-  /**
-   * Navigates to the previous (`-1`) or next (`1`) brand in the sorted list
-   * while the edit modal is open, without closing and reopening it.
-   * If already at the first or last brand the call is a no-op.
-   * @param dir - Direction: `1` = next brand, `-1` = previous brand.
-   */
-  navigateBrand(dir: 1 | -1): void {
-    const all = this.brands();
-    const idx = all.findIndex(b => b.id === this.editingId());
-    if (idx === -1) return;
-    const next = all[idx + dir];
-    if (next) this.openEdit(next);
-  }
-
-  /**
-   * Removes the uploaded brand image both from the file-storage server and from
-   * the local `editDraft`, so the UI reverts to the letter-placeholder fallback.
-   * The DELETE call is fire-and-forget; a failure does not block the UI update.
-   */
-  removeImage(): void {
-    const id = this.editingId();
-    if (id) this.service.deleteImage(id).subscribe({ error: () => { } });
-    this.editDraft = { ...this.editDraft, brandImage: undefined };
   }
 
   /**
