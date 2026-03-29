@@ -8,5 +8,6 @@ export interface Store {
   storeTypeId: StoreType;
   websiteUrl?: string;
   logoUrl?: string;
+  storeImage?: string;
   country: string;
 }

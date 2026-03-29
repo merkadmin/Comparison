@@ -274,6 +274,7 @@
 <!--START::Create / Edit Modal-->
 @if (editingId() !== null) {
   <app-store-list-operation
+    #operationComp
     [editDraft]="editDraft"
     [isCreating]="isCreating()"
     [storeTypes]="storeTypes"
@@ -283,6 +284,7 @@
     (closed)="closeEdit()"
     (rowsReady)="draftStoreItems = $event"
     (saved)="saveEdit()"
-    (savedAndNew)="saveEditAndNew()" />
+    (savedAndNew)="saveEditAndNew()"
+    (imageRemoved)="removeImage()" />
 }
 <!--END::Create / Edit Modal-->

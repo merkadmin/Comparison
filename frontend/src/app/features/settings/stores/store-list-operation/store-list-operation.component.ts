@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { Store, StoreType } from '../../../../core/models/store.model';
 import { StoreItem } from '../../../../core/models/store-item.model';
 import { Item } from '../../../../core/models/item.model';
+import { StoreService } from '../../../../core/services/store.service';
 
 export interface StoreItemRow {
   id: string;
@@ -21,6 +22,8 @@ export interface StoreItemRow {
   templateUrl: './store-list-operation.component.html',
 })
 export class StoreListOperationComponent {
+  private storeService = inject(StoreService);
+
   @Input() editDraft!: Store;
   @Input() isCreating = false;
   @Input() storeTypes: StoreType[] = [];
@@ -44,9 +47,33 @@ export class StoreListOperationComponent {
   @Output() saved         = new EventEmitter<void>();
   @Output() savedAndNew   = new EventEmitter<void>();
   @Output() rowsReady     = new EventEmitter<StoreItemRow[]>();
+  @Output() imageRemoved  = new EventEmitter<void>();
+
+  /** Locally staged file — not yet uploaded to the server. */
+  pendingFile: File | null = null;
+  pendingPreviewUrl: string | null = null;
 
   rows = signal<StoreItemRow[]>([]);
   private rowCounter = 0;
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    if (this.pendingPreviewUrl) URL.revokeObjectURL(this.pendingPreviewUrl);
+    this.pendingFile = file;
+    this.pendingPreviewUrl = URL.createObjectURL(file);
+    (event.target as HTMLInputElement).value = '';
+  }
+
+  removePendingFile(): void {
+    if (this.pendingPreviewUrl) URL.revokeObjectURL(this.pendingPreviewUrl);
+    this.pendingFile = null;
+    this.pendingPreviewUrl = null;
+  }
+
+  clearPending(): void { this.removePendingFile(); }
+
+  imgUrl(path: string): string { return this.storeService.resolveImageUrl(path); }
 
   addRow(): void {
     this.rows.update(rows => [...rows, {

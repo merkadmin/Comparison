@@ -10,6 +10,7 @@ public class Store
 	public DBStore StoreId { get; set; }
 	public string? WebsiteUrl { get; set; }
 	public string? LogoUrl { get; set; }
+	public string? StoreImage { get; set; }
 	public string Country { get; set; } = string.Empty;
 	public bool IsActive { get; set; } = true;
 	public bool IsDeleted { get; set; } = false;

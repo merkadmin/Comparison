@@ -13,6 +13,7 @@ public class StoreDocument : IDocument<Store>
 	public DBStore StoreId { get; set; }
 	public string? WebsiteUrl { get; set; }
 	public string? LogoUrl { get; set; }
+	public string? StoreImage { get; set; }
 	public string Country { get; set; } = string.Empty;
 	public bool IsActive { get; set; } = true;
 	public bool IsDeleted { get; set; } = false;
@@ -28,6 +29,7 @@ public class StoreDocument : IDocument<Store>
 		StoreId = StoreId,
 		WebsiteUrl = WebsiteUrl,
 		LogoUrl = LogoUrl,
+		StoreImage = StoreImage,
 		Country = Country,
 		CreatedAt = CreatedAt,
 	};
@@ -42,6 +44,7 @@ public class StoreDocument : IDocument<Store>
 		StoreId = s.StoreId,
 		WebsiteUrl = s.WebsiteUrl,
 		LogoUrl = s.LogoUrl,
+		StoreImage = s.StoreImage,
 		Country = s.Country,
 		CreatedAt = s.CreatedAt,
 	};

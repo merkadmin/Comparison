@@ -19,6 +19,7 @@ var webRoot = builder.Environment.WebRootPath ?? Path.Combine(builder.Environmen
 Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:ProductImagesFolder"]!));
 Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:CategoryImagesFolder"]!));
 Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:BrandImagesFolder"]!));
+Directory.CreateDirectory(Path.Combine(webRoot, builder.Configuration["Storage:StoreImagesFolder"]!));
 
 app.UseStaticFiles();   // serves wwwroot/** → GET /ProductImages/{itemId}/{filename}
 

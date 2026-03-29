@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { switchMap, of } from 'rxjs';
@@ -29,6 +29,8 @@ import { computedColClass } from '../../../shared/helpers/grid-columns.helper';
   styleUrl: './store-list.component.less',
 })
 export class StoreListComponent implements OnInit {
+  @ViewChild('operationComp') operationComp?: StoreListOperationComponent;
+
   auth = inject(AuthService);
   private service = inject(StoreService);
   private storeItemService = inject(StoreItemService);
@@ -100,6 +102,38 @@ export class StoreListComponent implements OnInit {
 
   closeEdit(): void { this.editingId.set(null); }
 
+  removeImage(): void {
+    const id = this.editingId();
+    if (id) this.service.deleteImage(id).subscribe({ error: () => {} });
+    this.editDraft = { ...this.editDraft, storeImage: undefined };
+  }
+
+  private finalizeAfterSave(storeId: number, onDone: () => void): void {
+    const pendingFile = this.operationComp?.pendingFile ?? null;
+
+    const complete = () => {
+      this.saving.set(false);
+      this.toast.success(this.translate.translate('store.saveSuccess'));
+      this.load();
+      this.operationComp?.clearPending();
+      onDone();
+    };
+
+    if (pendingFile) {
+      this.service.uploadImage(storeId, pendingFile).subscribe({
+        next: path => {
+          this.service.update(storeId, { ...this.editDraft, storeImage: path }).subscribe({
+            next: () => complete(),
+            error: () => complete(),
+          });
+        },
+        error: () => complete(),
+      });
+    } else {
+      complete();
+    }
+  }
+
   private buildStoreItems(storeId: number): StoreItem[] {
     return this.draftStoreItems
       .filter(r => r.productItemId > 0)
@@ -125,20 +159,17 @@ export class StoreListComponent implements OnInit {
     const onError = (err: { status?: number }) => this.onSaveError(err);
 
     if (this.isCreating()) {
+      let createdId = 0;
       this.service.create(this.editDraft).pipe(
         switchMap(store => {
+          createdId = store.id!;
           const items = this.buildStoreItems(store.id!);
           return items.length > 0
             ? this.storeItemService.replaceByStore(store.id!, items)
             : of(null);
         })
       ).subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.toast.success(this.translate.translate('store.saveSuccess'));
-          this.load();
-          this.closeEdit();
-        },
+        next: () => this.finalizeAfterSave(createdId, () => this.closeEdit()),
         error: onError,
       });
     } else {
@@ -149,12 +180,7 @@ export class StoreListComponent implements OnInit {
           return this.storeItemService.replaceByStore(storeId, items);
         })
       ).subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.toast.success(this.translate.translate('store.saveSuccess'));
-          this.load();
-          this.closeEdit();
-        },
+        next: () => this.finalizeAfterSave(storeId, () => this.closeEdit()),
         error: onError,
       });
     }
@@ -163,22 +189,21 @@ export class StoreListComponent implements OnInit {
   saveEditAndNew(): void {
     if (!this.isCreating()) return;
     this.saving.set(true);
+    let createdId = 0;
     this.service.create(this.editDraft).pipe(
       switchMap(store => {
+        createdId = store.id!;
         const items = this.buildStoreItems(store.id!);
         return items.length > 0
           ? this.storeItemService.replaceByStore(store.id!, items)
           : of(null);
       })
     ).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.toast.success(this.translate.translate('store.saveSuccess'));
-        this.load();
+      next: () => this.finalizeAfterSave(createdId, () => {
         this.editDraft = { name: '', storeTypeId: StoreType.Online, country: '' };
         this.draftStoreItems = [];
         this.existingStoreItems.set([]);
-      },
+      }),
       error: (err: { status?: number }) => this.onSaveError(err),
     });
   }

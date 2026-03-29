@@ -115,6 +115,7 @@ export class ItemDetailPageComponent implements OnInit {
 
   categoryId         = signal<number | null>(null);
   brandId            = signal<number | null>(null);
+  storeId            = signal<number | null>(null);
   item               = signal<Item | null>(null);
   stores             = signal<Store[]>([]);
   itemVariantMaps    = signal<ProductItemVariantMap[]>([]);
@@ -130,9 +131,11 @@ export class ItemDetailPageComponent implements OnInit {
   ngOnInit(): void {
     const catId   = this.route.snapshot.paramMap.get('categoryId');
     const bId     = this.route.snapshot.paramMap.get('brandId');
+    const sId     = this.route.snapshot.paramMap.get('storeId');
     const itemId  = +this.route.snapshot.paramMap.get('itemId')!;
     if (catId) this.categoryId.set(+catId);
     if (bId)   this.brandId.set(+bId);
+    if (sId)   this.storeId.set(+sId);
 
     this.storeSvc.getAll().subscribe({ next: d => this.stores.set(d), error: () => {} });
     this.variantMapSvc.getAll().subscribe({ next: d => this.itemVariantMaps.set(d), error: () => {} });
@@ -147,7 +150,9 @@ export class ItemDetailPageComponent implements OnInit {
   }
 
   goBack(): void {
-    if (this.brandId()) {
+    if (this.storeId()) {
+      this.router.navigate(['/shop-by-store/by-store', this.storeId()]);
+    } else if (this.brandId()) {
       this.router.navigate(['/shop-by-brand/by-brand', this.brandId()]);
     } else if (this.route.snapshot.url.some(s => s.path === 'shop-by-specs')) {
       this.router.navigate(['/shop-by-specs']);

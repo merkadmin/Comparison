@@ -10,6 +10,7 @@ import { LoginComponent } from './features/auth/login/login.component';
 import { StoreListComponent } from './features/settings/stores/store-list.component';
 import { ShopByCategoryComponent } from './features/shop/shop-by-category/shop-by-category.component';
 import { ShopByBrandComponent } from './features/shop/shop-by-brand/shop-by-brand.component';
+import { ShopByStoreComponent } from './features/shop/shop-by-store/shop-by-store.component';
 import { ShopBySpecsComponent } from './features/shop/shop-by-specs/shop-by-specs.component';
 import { ItemDetailPageComponent } from './features/shop/item-detail/item-detail-page.component';
 import { SetIconsComponent } from './features/app-setup/set-icons/set-icons.component';
@@ -34,6 +35,9 @@ export const routes: Routes = [
       { path: 'item-packages', component: ItemPackageListComponent },
       { path: 'favorites', component: FavoritesListComponent },
       { path: 'stores', component: StoreListComponent },
+      { path: 'shop-by-store', component: ShopByStoreComponent },
+      { path: 'shop-by-store/by-store/:storeId', component: ShopByStoreComponent },
+      { path: 'shop-by-store/by-store/:storeId/item/:itemId', component: ItemDetailPageComponent },
       { path: 'shop-by-category', component: ShopByCategoryComponent },
       { path: 'shop-by-category/by-category/:categoryId', component: ShopByCategoryComponent },
       { path: 'shop-by-category/by-category/:categoryId/item/:itemId', component: ItemDetailPageComponent },

@@ -7,6 +7,8 @@ import { ProductItemVariant, VariantType } from '../../core/models/product-item-
 import { ProductItemVariantMap } from '../../core/models/product-item-variant-map.model';
 import { ItemBrandService } from '../../core/services/item-brand.service';
 import { ItemCategoryService } from '../../core/services/item-category.service';
+import { StoreService } from '../../core/services/store.service';
+import { Store } from '../../core/models/store.model';
 import { ProductItemVariantService } from '../../core/services/product-item-variant.service';
 import { ProductItemVariantMapService } from '../../core/services/product-item-variant-map.service';
 import { TranslateService } from '../../core/services/translate.service';
@@ -23,17 +25,20 @@ export class DashboardComponent implements OnInit {
   private router     = inject(Router);
   private brandSvc   = inject(ItemBrandService);
   private catSvc     = inject(ItemCategoryService);
+  private storeSvc   = inject(StoreService);
   private variantSvc = inject(ProductItemVariantService);
   private mapSvc     = inject(ProductItemVariantMapService);
   translate          = inject(TranslateService);
 
   // ── Data ──────────────────────────────────────────────────────────────────
+  stores         = signal<Store[]>([]);
   brands         = signal<ItemBrand[]>([]);
   allCategories  = signal<IItemCategory[]>([]);
   allVariants    = signal<ProductItemVariant[]>([]);
   variantMaps    = signal<ProductItemVariantMap[]>([]);
 
   loading = signal(true);
+  storeSearch = signal('');
   catSearch   = signal('');
   brandSearch = signal('');
 
@@ -49,6 +54,11 @@ export class DashboardComponent implements OnInit {
   filteredLeafCategories = computed<IItemCategory[]>(() => {
     const q = this.catSearch().trim().toLowerCase();
     return q ? this.leafCategories().filter(c => this.localize(c).toLowerCase().includes(q)) : this.leafCategories();
+  });
+
+  filteredStores = computed<Store[]>(() => {
+    const q = this.storeSearch().trim().toLowerCase();
+    return q ? this.stores().filter(s => s.name.toLowerCase().includes(q)) : this.stores();
   });
 
   filteredBrands = computed<ItemBrand[]>(() => {
@@ -181,6 +191,15 @@ export class DashboardComponent implements OnInit {
 
   // ── Navigation ────────────────────────────────────────────────────────────
 
+  storeImgUrl(store: Store): string | null {
+    if (store.storeImage) return this.storeSvc.resolveImageUrl(store.storeImage);
+    return store.logoUrl ?? null;
+  }
+
+  goToStore(store: Store): void {
+    this.router.navigate(['/shop-by-store/by-store', store.id]);
+  }
+
   goToBrand(brand: ItemBrand): void {
     this.router.navigate(['/shop-by-brand/by-brand', brand.id]);
   }
@@ -198,6 +217,11 @@ export class DashboardComponent implements OnInit {
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
+    this.storeSvc.getAll().subscribe({
+      next: s => this.stores.set(s.filter(x => x.isActive !== false).sort((a, b) => a.name.localeCompare(b.name))),
+      error: () => {}
+    });
+
     combineLatest([
       this.brandSvc.getAll(),
       this.catSvc.getAll(),

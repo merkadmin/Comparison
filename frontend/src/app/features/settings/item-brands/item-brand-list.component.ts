@@ -106,8 +106,13 @@ export class ItemBrandListComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
     this.service.getAll().subscribe({
-      next: data => { this.brands.set([...data].sort((a, b) => a.name.localeCompare(b.name))); this.loading.set(false); },
-      error: () => { this.error.set('Failed to load brands.'); this.loading.set(false); }
+      next: data => { 
+        this.brands.set([...data].sort((a, b) => a.name.localeCompare(b.name))); 
+        this.loading.set(false); 
+      },
+      error: () => { 
+        this.error.set('Failed to load brands.'); this.loading.set(false); 
+      }
     });
   }
 
