@@ -81,7 +81,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   compareIds = signal<Set<number>>(new Set());
 
   openCreate(): void {
-    this.editDraft = { name: '', brandId: 0, categoryIds: [], productTypeIds: [], images: [], customerReviews: [], customerCommentIds: [] };
+    this.editDraft = { name: '', brandId: 0, categoryIds: [], productTypeIds: [], images: [], customerReviews: [], customerCommentIds: [], specifications: {} };
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -150,7 +150,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
       this.saving.set(false);
       this.toast.success(this.translate.translate('item.saveSuccess'));
       this.loadItems();
-      this.editDraft = { name: '', brandId: 0, categoryIds: [], productTypeIds: [], images: [], customerReviews: [], customerCommentIds: [] };
+      this.editDraft = { name: '', brandId: 0, categoryIds: [], productTypeIds: [], images: [], customerReviews: [], customerCommentIds: [], specifications: {} };
     };
 
     this.itemService.create(this.editDraft).subscribe({

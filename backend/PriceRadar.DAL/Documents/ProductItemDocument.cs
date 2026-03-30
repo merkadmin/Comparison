@@ -18,6 +18,7 @@ public class ProductItemDocument : IDocument<ProductItem>
 	public string? Barcode { get; set; }
 	public DateTime? AnnouncedDate { get; set; }
 	public DateTime? ReleaseDate { get; set; }
+	public ProductItemSpecification? Specifications { get; set; }
 	public string? ImageUrl { get; set; }
 	public List<string> Images { get; set; } = new();
 	public List<StorePriceDocument> Prices { get; set; } = new();
@@ -38,6 +39,7 @@ public class ProductItemDocument : IDocument<ProductItem>
 		Barcode = Barcode,
 		AnnouncedDate = AnnouncedDate,
 		ReleaseDate = ReleaseDate,
+		Specifications = Specifications,
 		ImageUrl = ImageUrl,
 		Images = Images,
 		BrandId = BrandId,
@@ -59,6 +61,7 @@ public class ProductItemDocument : IDocument<ProductItem>
 		Barcode = item.Barcode,
 		AnnouncedDate = item.AnnouncedDate,
 		ReleaseDate = item.ReleaseDate,
+		Specifications = item.Specifications,
 		ImageUrl = item.ImageUrl,
 		Images = item.Images,
 		BrandId = item.BrandId,

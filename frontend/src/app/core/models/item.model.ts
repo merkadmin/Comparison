@@ -1,6 +1,7 @@
 import { ItemBrand } from './item-brand.model';
 import { IItemCategory } from './interfaces/IItemCategory';
 import { ProductType } from './product-type.model';
+import { ProductItemSpecification } from './product-item-specification.model';
 
 export interface Item {
   id?: number;
@@ -12,6 +13,7 @@ export interface Item {
   barcode?: string;
   announcedDate?: string;
   releaseDate?: string;
+  specifications?: ProductItemSpecification;
   imageUrl?: string;
   images?: string[];
   isActive?: boolean;

@@ -5,6 +5,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../../core/services/translate.service';
 import { ItemImageService } from '../../../../core/services/item-image.service';
 import { Item } from '../../../../core/models/item.model';
+import { ProductItemSpecification } from '../../../../core/models/product-item-specification.model';
 import { IItemCategory } from '../../../../core/models/interfaces/IItemCategory';
 import { MultiLangString } from '../../../../core/models/interfaces/LocalizedString';
 import { ItemBrand } from '../../../../core/models/item-brand.model';
@@ -40,10 +41,23 @@ export class ItemListOperationComponent implements OnChanges {
   /** Stack of parentCategoryId values navigated through — used by the back arrow. */
   categoryNavStack: (number | null)[] = [];
 
+  /** Tracks which spec sections are expanded in the form. */
+  specSections: Record<string, boolean> = {};
+
+  toggleSpecSection(key: string): void {
+    this.specSections[key] = !this.specSections[key];
+  }
+
+  get specs(): ProductItemSpecification {
+    if (!this.editDraft.specifications) this.editDraft.specifications = {};
+    return this.editDraft.specifications;
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['editDraft']) {
       this.clearPendingFiles();
       this.initCategoryPath();
+      if (!this.editDraft.specifications) this.editDraft.specifications = {};
     }
     if (changes['categories']) {
       this.initCategoryPath();
