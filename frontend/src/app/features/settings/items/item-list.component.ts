@@ -360,20 +360,46 @@ export class ItemListComponent implements OnInit, OnDestroy {
   }
 
   delete(id: number): void {
-    if (!confirm('Delete this item?')) return;
-    this.itemService.delete(id).subscribe({
-      next: () => {
-        this.imageService.deleteAll(id).subscribe({ error: () => { } });
-        const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
-        this.loadItems();
-      }
+    Swal.fire({
+      title: this.translate.translate('item.deleteConfirm'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f1416c',
+      confirmButtonText: this.translate.translate('common.delete'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.itemService.delete(id).subscribe({
+        next: () => {
+          this.imageService.deleteAll(id).subscribe({ error: () => { } });
+          const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
+          this.loadItems();
+        }
+      });
     });
   }
 
   setActive(id: number, isActive: boolean): void {
-    this.itemService.setActive(id, isActive).subscribe({
-      next: () => this.items.update(list => list.map(i => i.id === id ? { ...i, isActive } : i))
-    });
+    if (!isActive) {
+      Swal.fire({
+        title: this.translate.translate('item.deactivateConfirm'),
+        text: this.translate.translate('item.deactivateConfirmText'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: this.translate.translate('common.deactivate'),
+        cancelButtonText: this.translate.translate('common.cancel'),
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        this.itemService.setActive(id, isActive).subscribe({
+          next: () => this.items.update(list => list.map(i => i.id === id ? { ...i, isActive } : i))
+        });
+      });
+    } else {
+      this.itemService.setActive(id, isActive).subscribe({
+        next: () => this.items.update(list => list.map(i => i.id === id ? { ...i, isActive } : i))
+      });
+    }
   }
 
   deleteSelected(): void {

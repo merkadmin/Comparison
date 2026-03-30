@@ -342,20 +342,40 @@ export class ItemBrandListComponent implements OnInit {
    * @param id - ID of the brand to delete.
    */
   delete(id: number): void {
-    if (!confirm('Delete this brand?')) return;
-    this.service.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.load(); } });
+    Swal.fire({
+      title: this.translate.translate('brand.deleteConfirm'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f1416c',
+      confirmButtonText: this.translate.translate('common.delete'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.delete(id).subscribe({ next: () => { const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s); this.load(); } });
+    });
   }
 
-  /**
-   * Toggles the `isActive` flag for a single brand without a confirmation dialog.
-   * Updates the signal optimistically in-place instead of reloading the full list.
-   * @param id       - Brand ID to update.
-   * @param isActive - The new active state (`true` = active, `false` = inactive).
-   */
   setActive(id: number, isActive: boolean): void {
-    this.service.setActive(id, isActive).subscribe({
-      next: () => this.brands.update(list => list.map(b => b.id === id ? { ...b, isActive } : b))
-    });
+    if (!isActive) {
+      Swal.fire({
+        title: this.translate.translate('brand.deactivateConfirm'),
+        text: this.translate.translate('brand.deactivateConfirmText'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: this.translate.translate('common.deactivate'),
+        cancelButtonText: this.translate.translate('common.cancel'),
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        this.service.setActive(id, isActive).subscribe({
+          next: () => this.brands.update(list => list.map(b => b.id === id ? { ...b, isActive } : b))
+        });
+      });
+    } else {
+      this.service.setActive(id, isActive).subscribe({
+        next: () => this.brands.update(list => list.map(b => b.id === id ? { ...b, isActive } : b))
+      });
+    }
   }
 
   /**

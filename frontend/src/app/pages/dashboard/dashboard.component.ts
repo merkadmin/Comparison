@@ -132,6 +132,15 @@ export class DashboardComponent implements OnInit {
       Resolution:        '#ec4899',
       RefreshRate:       '#14b8a6',
       CellularTechnology:'#0ea5e9',
+      Display:           '#a855f7',
+      Platform:          '#6366f1',
+      CameraMain:        '#f43f5e',
+      CameraFront:       '#fb923c',
+      Battery:           '#22c55e',
+      Body:              '#64748b',
+      Connectivity:      '#06b6d4',
+      Network:           '#3b82f6',
+      Sensors:           '#eab308',
       Other:             '#6b7280',
     };
     return map[type] ?? '#009ef7';
@@ -145,7 +154,11 @@ export class DashboardComponent implements OnInit {
       RamSize: 'server', HardDiskType: 'drive', HardDiskSize: 'drive',
       OperatingSystem: 'laptop', ScreenType: 'tablet-text-up',
       ScreenSize: 'tablet-text-up', Resolution: 'picture',
-      RefreshRate: 'timer', CellularTechnology: 'phone', Other: 'filter-search',
+      RefreshRate: 'timer', CellularTechnology: 'phone',
+      Display: 'screen', Platform: 'setting-2', CameraMain: 'camera',
+      CameraFront: 'faceid', Battery: 'battery-full', Body: 'cube-2',
+      Connectivity: 'wifi', Network: 'globe', Sensors: 'fingerprint-scanning',
+      Other: 'filter-search',
     };
     return map[type] ?? 'filter-search';
   }

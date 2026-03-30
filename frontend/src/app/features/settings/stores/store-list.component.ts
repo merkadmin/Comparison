@@ -250,9 +250,26 @@ export class StoreListComponent implements OnInit {
 
   // ── Single row actions ────────────────────────────────────────────────────
   setActive(id: number, isActive: boolean): void {
-    this.service.setActive(id, isActive).subscribe({
-      next: () => this.stores.update(list => list.map(s => s.id === id ? { ...s, isActive } : s))
-    });
+    if (!isActive) {
+      Swal.fire({
+        title: this.translate.translate('store.deactivateConfirm'),
+        text: this.translate.translate('store.deactivateConfirmText'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: this.translate.translate('common.deactivate'),
+        cancelButtonText: this.translate.translate('common.cancel'),
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        this.service.setActive(id, isActive).subscribe({
+          next: () => this.stores.update(list => list.map(s => s.id === id ? { ...s, isActive } : s))
+        });
+      });
+    } else {
+      this.service.setActive(id, isActive).subscribe({
+        next: () => this.stores.update(list => list.map(s => s.id === id ? { ...s, isActive } : s))
+      });
+    }
   }
 
   delete(id: number): void {

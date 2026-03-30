@@ -193,9 +193,26 @@ export class StoreVariantOrderListComponent implements OnInit {
   }
 
   setActive(id: number, isActive: boolean): void {
-    this.service.setActive(id, isActive).subscribe({
-      next: () => this.orders.update(list => list.map(o => o.id === id ? { ...o, isActive } : o)),
-    });
+    if (!isActive) {
+      Swal.fire({
+        title: this.translate.translate('storeVariantOrder.deactivateConfirm'),
+        text: this.translate.translate('storeVariantOrder.deactivateConfirmText'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: this.translate.translate('common.deactivate'),
+        cancelButtonText: this.translate.translate('common.cancel'),
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        this.service.setActive(id, isActive).subscribe({
+          next: () => this.orders.update(list => list.map(o => o.id === id ? { ...o, isActive } : o)),
+        });
+      });
+    } else {
+      this.service.setActive(id, isActive).subscribe({
+        next: () => this.orders.update(list => list.map(o => o.id === id ? { ...o, isActive } : o)),
+      });
+    }
   }
 
   exportTemplate(): void {

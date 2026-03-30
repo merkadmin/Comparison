@@ -76,6 +76,15 @@
 		Resolution,
 		RefreshRate,
 		CellularTechnology,
+		Display,
+		Platform,
+		CameraMain,
+		CameraFront,
+		Battery,
+		Body,
+		Connectivity,
+		Network,
+		Sensors,
 		Other
 	}
 }

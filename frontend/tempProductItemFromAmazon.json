@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Samsung Galaxy A17 4G LTE",
+    "brand": "Samsung",
+    "modelName": "Galaxy A17 4G",
+    "modelNumber": "SM-A175F/DS",
+    "barcode": null,
+    "description": "Galaxy A17 offers essential features and practical extras designed to simplify your everyday life, all at an affordable price point. Featuring a 6.7-inch FHD+ Super AMOLED display with 90Hz refresh rate, Mediatek Helio G99 processor, 50MP triple camera with OIS, and a long-lasting 5000mAh battery with 25W fast charging. Built with Corning Gorilla Glass Victus+ and IP54 water/dust resistance for everyday durability.",
+    "aboutThisItem": [
+      "6.7-inch FHD+ Super AMOLED display with 90Hz refresh rate for ultra-clear, vibrant visuals and smooth scrolling",
+      "50MP main camera with OIS, 5MP ultrawide, and 2MP macro lens for versatile photography; 13MP front camera for sharp selfies",
+      "Mediatek Helio G99 octa-core processor (2x2.2 GHz Cortex-A76 & 6x2.0 GHz Cortex-A55) for smooth HD streaming, responsive gaming, and seamless multitasking",
+      "5000mAh battery with 25W fast charging keeps you going all day",
+      "IP54 dust and water splash resistance with Corning Gorilla Glass Victus+ for scratch protection",
+      "6 years of OS upgrades and security updates for long-term reliability",
+      "Circle to Search feature to identify items on screen; Gemini AI for smart assistance",
+      "Quick Share for seamless file transfers; Smart Switch for easy iOS migration"
+    ],
+    "specifications": {
+      "display": {
+        "size": "6.7 inches",
+        "type": "Super AMOLED",
+        "resolution": "1080 x 2340 pixels (FHD+)",
+        "refreshRate": "90Hz",
+        "protection": "Corning Gorilla Glass Victus+",
+        "screenToBodyRatio": "86.0%",
+        "ppi": "385"
+      },
+      "platform": {
+        "os": "Android 15, One UI 7",
+        "chipset": "Mediatek Helio G99 (6nm)",
+        "cpu": "Octa-core (2x2.2 GHz Cortex-A76 & 6x2.0 GHz Cortex-A55)",
+        "gpu": "Mali-G57 MC2"
+      },
+      "memory": {
+        "ramOptions": [
+          "4GB",
+          "6GB",
+          "8GB"
+        ],
+        "storageOptions": [
+          "128GB",
+          "256GB"
+        ],
+        "cardSlot": "microSDXC (shared SIM slot)"
+      },
+      "camera": {
+        "main": {
+          "primary": "50MP, f/1.8, OIS, autofocus",
+          "ultrawide": "5MP, f/2.2",
+          "macro": "2MP",
+          "video": "1080p@30fps",
+          "features": "LED flash, panorama, HDR"
+        },
+        "front": {
+          "sensor": "13MP, f/2.0",
+          "video": "1080p@30fps"
+        }
+      },
+      "battery": {
+        "capacity": "5000 mAh",
+        "charging": "25W wired fast charging"
+      },
+      "body": {
+        "dimensions": "164.4 x 77.9 x 7.5 mm",
+        "weight": "190 g",
+        "build": "Glass front (Gorilla Glass Victus+), plastic back, plastic frame",
+        "sim": "Nano-SIM / Dual Nano-SIM",
+        "durability": "IP54 (dust protected, water splash resistant)"
+      },
+      "connectivity": {
+        "wifi": "802.11 a/b/g/n/ac dual-band, Wi-Fi Direct",
+        "bluetooth": "5.3, A2DP, LE",
+        "gps": "GPS, GALILEO, GLONASS, BDS, QZSS",
+        "nfc": "Yes (market dependent)",
+        "usb": "USB Type-C 2.0",
+        "fmRadio": "Yes (market dependent)"
+      },
+      "network": {
+        "technology": "GSM / HSPA / LTE",
+        "2G": "GSM 850/900/1800/1900 MHz",
+        "3G": "HSDPA 850/900/2100 MHz",
+        "4G_LTE": "Bands 1, 3, 5, 7, 8, 20, 28, 38, 40, 41"
+      },
+      "sensors": [
+        "Fingerprint (side-mounted)",
+        "Accelerometer",
+        "Compass",
+        "Virtual proximity sensing"
+      ]
+    },
+    "colors": [
+      "Black",
+      "Gray",
+      "Light Blue"
+    ],
+    "prices": {
+      "128GB_4GB": {
+        "usd": 147.00,
+        "eur": 133.00,
+        "gbp": 114.00
+      },
+      "256GB_8GB": {
+        "usd": 215.54,
+        "eur": 179.85,
+        "gbp": 299.49
+      }
+    },
+    "releaseDate": "2025-09-18",
+    "source": "Amazon / GSMArena / Samsung.com"
+  }
+]

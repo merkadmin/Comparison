@@ -171,19 +171,45 @@ private translate = inject(TranslateService);
   }
 
   delete(id: number): void {
-    if (!confirm('Delete this variant?')) return;
-    this.service.delete(id).subscribe({
-      next: () => {
-        const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
-        this.load();
-      },
+    Swal.fire({
+      title: this.translate.translate('variant.deleteConfirm'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f1416c',
+      confirmButtonText: this.translate.translate('common.delete'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.delete(id).subscribe({
+        next: () => {
+          const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
+          this.load();
+        },
+      });
     });
   }
 
   setActive(id: number, isActive: boolean): void {
-    this.service.setActive(id, isActive).subscribe({
-      next: () => this.variants.update(list => list.map(v => v.id === id ? { ...v, isActive } : v)),
-    });
+    if (!isActive) {
+      Swal.fire({
+        title: this.translate.translate('variant.deactivateConfirm'),
+        text: this.translate.translate('variant.deactivateConfirmText'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: this.translate.translate('common.deactivate'),
+        cancelButtonText: this.translate.translate('common.cancel'),
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        this.service.setActive(id, isActive).subscribe({
+          next: () => this.variants.update(list => list.map(v => v.id === id ? { ...v, isActive } : v)),
+        });
+      });
+    } else {
+      this.service.setActive(id, isActive).subscribe({
+        next: () => this.variants.update(list => list.map(v => v.id === id ? { ...v, isActive } : v)),
+      });
+    }
   }
 
   deleteSelected(): void {

@@ -4,7 +4,8 @@
       "Read(//d/99-Files/html-20260313T025615Z-1-003/metronic_html_v8.2.0_demo1/demo1/dist/assets/**)",
       "Read(//d/99-Files/html-20260313T025615Z-1-003/metronic_html_v8.2.0_demo1/demo1/dist/**)",
       "Bash(find d:/97-Comparison/frontend/price-radar/src/app -type f -name *.ts -o -name *.html -o -name *.scss)",
-      "Read(//d/97-Comparison/backend/PriceRadar.API/**)"
+      "Read(//d/97-Comparison/backend/PriceRadar.API/**)",
+      "Read(//d/97-Comparison/backend/PriceRadar.Core/Models/**)"
     ],
     "additionalDirectories": [
       "d:\\97-Comparison\\backend\\PriceRadar.API\\Seeder"

@@ -232,19 +232,45 @@ export class ItemVariantMapListComponent implements OnInit {
   }
 
   delete(id: number): void {
-    if (!confirm('Delete this mapping?')) return;
-    this.service.delete(id).subscribe({
-      next: () => {
-        const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
-        this.load();
-      },
+    Swal.fire({
+      title: this.translate.translate('itemVariantMap.deleteConfirm'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#f1416c',
+      confirmButtonText: this.translate.translate('common.delete'),
+      cancelButtonText: this.translate.translate('common.cancel'),
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.service.delete(id).subscribe({
+        next: () => {
+          const s = new Set(this.selectedIds()); s.delete(id); this.selectedIds.set(s);
+          this.load();
+        },
+      });
     });
   }
 
   setActive(id: number, isActive: boolean): void {
-    this.service.setActive(id, isActive).subscribe({
-      next: () => this.maps.update(list => list.map(m => m.id === id ? { ...m, isActive } : m)),
-    });
+    if (!isActive) {
+      Swal.fire({
+        title: this.translate.translate('itemVariantMap.deactivateConfirm'),
+        text: this.translate.translate('itemVariantMap.deactivateConfirmText'),
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f39c12',
+        confirmButtonText: this.translate.translate('common.deactivate'),
+        cancelButtonText: this.translate.translate('common.cancel'),
+      }).then(result => {
+        if (!result.isConfirmed) return;
+        this.service.setActive(id, isActive).subscribe({
+          next: () => this.maps.update(list => list.map(m => m.id === id ? { ...m, isActive } : m)),
+        });
+      });
+    } else {
+      this.service.setActive(id, isActive).subscribe({
+        next: () => this.maps.update(list => list.map(m => m.id === id ? { ...m, isActive } : m)),
+      });
+    }
   }
 
   deleteSelected(): void {
