@@ -36,6 +36,19 @@
         </div>
         <!--END::Barcode-->
 
+        <!--START::Dates-->
+        <div class="row mb-3">
+          <div class="col-6">
+            <label class="form-label fw-semibold">{{ 'item.announcedDate' | translate }}</label>
+            <input type="date" class="form-control" [(ngModel)]="editDraft.announcedDate" />
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-semibold">{{ 'item.releaseDate' | translate }}</label>
+            <input type="date" class="form-control" [(ngModel)]="editDraft.releaseDate" />
+          </div>
+        </div>
+        <!--END::Dates-->
+
         <!--START::Images-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'common.images' | translate }}</label>

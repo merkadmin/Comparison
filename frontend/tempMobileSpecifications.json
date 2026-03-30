@@ -1,0 +1,381 @@
+{
+  "$schema": "Mobile & Tablet Device Specifications Schema",
+  "$description": "Comprehensive specification structure covering all possible fields for smartphones, tablets, and foldable devices. Sourced from GSMArena specification categories.",
+
+  "specificationCategories": [
+    {
+      "category": "Network",
+      "fields": [
+        { "key": "technology", "label": "Technology", "type": "string", "example": "GSM / HSPA / LTE / 5G" },
+        { "key": "bands2G", "label": "2G Bands", "type": "string", "example": "GSM 850 / 900 / 1800 / 1900" },
+        { "key": "bands3G", "label": "3G Bands", "type": "string", "example": "HSDPA 850 / 900 / 1700(AWS) / 1900 / 2100" },
+        { "key": "bands4G", "label": "4G LTE Bands", "type": "string", "example": "1, 2, 3, 4, 5, 7, 8, 12, 13, 17, 18, 19, 20, 25, 26, 28, 34, 38, 39, 40, 41, 66, 71" },
+        { "key": "bands5G", "label": "5G Bands", "type": "string", "example": "1, 3, 5, 7, 8, 20, 25, 28, 38, 40, 41, 66, 71, 77, 78, 79 SA/NSA/Sub6" },
+        { "key": "speed", "label": "Speed", "type": "string", "example": "HSPA 42.2/5.76 Mbps, LTE-A (7CA) Cat20 2000/200 Mbps, 5G 10/3.67 Gbps" },
+        { "key": "gprs", "label": "GPRS", "type": "string", "example": "Yes" },
+        { "key": "edge", "label": "EDGE", "type": "string", "example": "Yes" }
+      ]
+    },
+    {
+      "category": "Launch",
+      "fields": [
+        { "key": "announcedDate", "label": "Announced", "type": "string", "example": "2025, January 22" },
+        { "key": "status", "label": "Status", "type": "string", "example": "Available. Released 2025, February 07" },
+        { "key": "releaseDate", "label": "Release Date", "type": "date", "example": "2025-02-07" }
+      ]
+    },
+    {
+      "category": "Body",
+      "fields": [
+        { "key": "dimensions", "label": "Dimensions", "type": "string", "example": "162.8 x 77.6 x 8.2 mm (6.41 x 3.06 x 0.32 in)" },
+        { "key": "weight", "label": "Weight", "type": "string", "example": "218 g (7.69 oz)" },
+        { "key": "build", "label": "Build", "type": "string", "example": "Glass front (Gorilla Glass Armor 2), titanium frame, glass back (Gorilla Glass Armor 2)" },
+        { "key": "sim", "label": "SIM", "type": "string", "example": "Nano-SIM and eSIM or Dual Nano-SIM" },
+        { "key": "esim", "label": "eSIM", "type": "boolean", "example": true },
+        { "key": "dualSim", "label": "Dual SIM", "type": "boolean", "example": true },
+        { "key": "durability", "label": "Durability / IP Rating", "type": "string", "example": "IP68 dust/water resistant (up to 1.5m for 30 min)" },
+        { "key": "milStd", "label": "MIL-STD Rating", "type": "string", "example": "MIL-STD-810H" },
+        { "key": "stylusSupport", "label": "Stylus / S Pen", "type": "string", "example": "S Pen (built-in, Bluetooth, 4096 pressure levels)" },
+        { "key": "keyboardSupport", "label": "Keyboard Support", "type": "string", "example": "Magnetic keyboard connector" },
+        { "key": "foldable", "label": "Foldable", "type": "boolean", "example": false },
+        { "key": "hingeType", "label": "Hinge Type", "type": "string", "example": "Flex Mode hinge, Armor Aluminum" },
+        { "key": "coverDisplay", "label": "Cover Display", "type": "string", "example": "6.3 inches, Dynamic AMOLED 2X, 120Hz, 2376 x 968" }
+      ]
+    },
+    {
+      "category": "Display",
+      "fields": [
+        { "key": "type", "label": "Type", "type": "string", "example": "Dynamic AMOLED 2X, 120Hz, HDR10+, 1750 nits (HBM), 2600 nits (peak)" },
+        { "key": "size", "label": "Size", "type": "string", "example": "6.9 inches, 114.7 cm²" },
+        { "key": "resolution", "label": "Resolution", "type": "string", "example": "1440 x 3120 pixels, 19.5:9 ratio (~505 ppi density)" },
+        { "key": "screenToBodyRatio", "label": "Screen-to-Body Ratio", "type": "string", "example": "91.3%" },
+        { "key": "protection", "label": "Protection", "type": "string", "example": "Corning Gorilla Glass Armor 2" },
+        { "key": "refreshRate", "label": "Refresh Rate", "type": "string", "example": "120Hz" },
+        { "key": "ltpo", "label": "LTPO", "type": "boolean", "example": true },
+        { "key": "adaptiveRefreshRate", "label": "Adaptive Refresh Rate", "type": "string", "example": "1-120Hz" },
+        { "key": "brightnessTypical", "label": "Brightness (typical)", "type": "string", "example": "1750 nits" },
+        { "key": "brightnessPeak", "label": "Brightness (peak)", "type": "string", "example": "2600 nits" },
+        { "key": "hdr", "label": "HDR Support", "type": "string", "example": "HDR10+" },
+        { "key": "alwaysOnDisplay", "label": "Always-On Display", "type": "boolean", "example": true },
+        { "key": "touchSamplingRate", "label": "Touch Sampling Rate", "type": "string", "example": "240Hz" },
+        { "key": "colorDepth", "label": "Color Depth", "type": "string", "example": "10-bit, 1B colors" },
+        { "key": "ppi", "label": "PPI Density", "type": "string", "example": "505 ppi" }
+      ]
+    },
+    {
+      "category": "Platform",
+      "fields": [
+        { "key": "os", "label": "Operating System", "type": "string", "example": "Android 15, One UI 7" },
+        { "key": "chipset", "label": "Chipset", "type": "string", "example": "Qualcomm SM8750-AB Snapdragon 8 Elite (3 nm)" },
+        { "key": "cpu", "label": "CPU", "type": "string", "example": "Octa-core (2x4.47 GHz Oryon V2 & 6x3.53 GHz Oryon V2)" },
+        { "key": "gpu", "label": "GPU", "type": "string", "example": "Adreno 830" },
+        { "key": "processNode", "label": "Process Node", "type": "string", "example": "3 nm" }
+      ]
+    },
+    {
+      "category": "Memory",
+      "fields": [
+        { "key": "ram", "label": "RAM", "type": "string", "example": "12 GB" },
+        { "key": "ramOptions", "label": "RAM Options", "type": "string[]", "example": ["8GB", "12GB", "16GB"] },
+        { "key": "internalStorage", "label": "Internal Storage", "type": "string", "example": "256 GB" },
+        { "key": "storageOptions", "label": "Storage Options", "type": "string[]", "example": ["128GB", "256GB", "512GB", "1TB"] },
+        { "key": "storageType", "label": "Storage Type", "type": "string", "example": "UFS 4.0" },
+        { "key": "cardSlot", "label": "Card Slot", "type": "string", "example": "microSDXC (dedicated slot)" },
+        { "key": "cardSlotType", "label": "Card Slot Type", "type": "string", "example": "dedicated / shared SIM slot / no" }
+      ]
+    },
+    {
+      "category": "MainCamera",
+      "fields": [
+        { "key": "setup", "label": "Camera Setup", "type": "string", "example": "Quad / Triple / Dual / Single" },
+        { "key": "primary", "label": "Primary", "type": "string", "example": "200 MP, f/1.7, 23mm (wide), 1/1.3\", 0.6µm, multi-directional PDAF, Laser AF, OIS" },
+        { "key": "ultrawide", "label": "Ultrawide", "type": "string", "example": "50 MP, f/1.9, 13mm, 120˚, 1/2.52\", 0.64µm, Dual Pixel PDAF" },
+        { "key": "telephoto", "label": "Telephoto", "type": "string", "example": "50 MP, f/2.6, 111mm (periscope telephoto), 1/2.52\", 0.64µm, PDAF, OIS, 5x optical zoom" },
+        { "key": "telephoto2", "label": "Telephoto 2", "type": "string", "example": "10 MP, f/2.4, 67mm, 1/3.94\", 1.0µm, PDAF, OIS, 3x optical zoom" },
+        { "key": "macro", "label": "Macro", "type": "string", "example": "5 MP, f/2.4" },
+        { "key": "depthSensor", "label": "Depth Sensor", "type": "string", "example": "2 MP, f/2.4" },
+        { "key": "tofSensor", "label": "ToF / LiDAR", "type": "string", "example": "LiDAR scanner (Apple) / ToF 3D" },
+        { "key": "nightVision", "label": "Night Vision / IR", "type": "string", "example": "64 MP, f/1.8, infrared night vision" },
+        { "key": "thermalCamera", "label": "Thermal Camera", "type": "string", "example": "160x120px, 25Hz, 12µm" },
+        { "key": "features", "label": "Features", "type": "string", "example": "LED flash, auto-HDR, panorama, AI scene detection" },
+        { "key": "video", "label": "Video Recording", "type": "string", "example": "8K@30fps, 4K@30/60/120fps, 1080p@30/60/240fps, 720p@960fps, HDR10+, gyro-EIS" },
+        { "key": "opticalZoom", "label": "Optical Zoom", "type": "string", "example": "5x" },
+        { "key": "digitalZoom", "label": "Digital Zoom", "type": "string", "example": "100x Space Zoom" }
+      ]
+    },
+    {
+      "category": "SelfieCamera",
+      "fields": [
+        { "key": "setup", "label": "Camera Setup", "type": "string", "example": "Single / Dual" },
+        { "key": "primary", "label": "Primary", "type": "string", "example": "12 MP, f/2.2, 26mm (wide), Dual Pixel PDAF" },
+        { "key": "secondary", "label": "Secondary", "type": "string", "example": "12 MP, f/2.2, ultrawide" },
+        { "key": "features", "label": "Features", "type": "string", "example": "Dual video call, Auto-HDR" },
+        { "key": "video", "label": "Video Recording", "type": "string", "example": "4K@30/60fps, 1080p@30fps" }
+      ]
+    },
+    {
+      "category": "Sound",
+      "fields": [
+        { "key": "loudspeaker", "label": "Loudspeaker", "type": "string", "example": "Yes, with stereo speakers (by AKG)" },
+        { "key": "headphoneJack", "label": "3.5mm Jack", "type": "boolean", "example": false },
+        { "key": "audioCodecs", "label": "Audio Codecs", "type": "string", "example": "24-bit/192kHz Hi-Res audio, Dolby Atmos" },
+        { "key": "tuning", "label": "Tuning / Brand", "type": "string", "example": "Tuned by AKG / Harman Kardon" }
+      ]
+    },
+    {
+      "category": "Comms",
+      "fields": [
+        { "key": "wlan", "label": "Wi-Fi", "type": "string", "example": "Wi-Fi 802.11 a/b/g/n/ac/6e/7, tri-band, Wi-Fi Direct" },
+        { "key": "bluetooth", "label": "Bluetooth", "type": "string", "example": "5.4, A2DP, LE, aptX HD" },
+        { "key": "positioning", "label": "Positioning / GPS", "type": "string", "example": "GPS (L1+L5), GLONASS (G1), BDS (B1I+B1C+B2a), GALILEO (E1+E5a), QZSS (L1+L5), NavIC (L5)" },
+        { "key": "nfc", "label": "NFC", "type": "boolean", "example": true },
+        { "key": "infraredPort", "label": "Infrared Port", "type": "boolean", "example": false },
+        { "key": "fmRadio", "label": "FM Radio", "type": "string", "example": "Yes, with RDS and recording" },
+        { "key": "usb", "label": "USB", "type": "string", "example": "USB Type-C 3.2, OTG, DisplayPort 1.4" },
+        { "key": "thunderbolt", "label": "Thunderbolt", "type": "string", "example": "Thunderbolt 4 / USB4" },
+        { "key": "uwb", "label": "Ultra-Wideband (UWB)", "type": "boolean", "example": true },
+        { "key": "satelliteConnectivity", "label": "Satellite Connectivity", "type": "string", "example": "Snapdragon Satellite (Emergency SOS)" }
+      ]
+    },
+    {
+      "category": "Features",
+      "fields": [
+        { "key": "sensors", "label": "Sensors", "type": "string[]", "example": ["Fingerprint (ultrasonic, under display)", "Accelerometer", "Gyro", "Proximity", "Compass", "Barometer", "SpO2", "Heart Rate", "Temperature"] },
+        { "key": "fingerprintType", "label": "Fingerprint Type", "type": "string", "example": "Ultrasonic, under display / Side-mounted / Rear-mounted / Under display optical / Face ID" },
+        { "key": "faceRecognition", "label": "Face Recognition", "type": "string", "example": "2D / 3D (Face ID / structured light)" },
+        { "key": "aiFeatures", "label": "AI Features", "type": "string[]", "example": ["Circle to Search", "Gemini AI", "AI Live Translation", "AI Photo Editing", "Apple Intelligence"] },
+        { "key": "samsungDex", "label": "Samsung DeX", "type": "boolean", "example": true },
+        { "key": "desktopMode", "label": "Desktop Mode", "type": "string", "example": "Samsung DeX / Stage Manager" },
+        { "key": "multitasking", "label": "Multitasking", "type": "string", "example": "Multi-window, Pop-up view, Flex Mode" }
+      ]
+    },
+    {
+      "category": "Battery",
+      "fields": [
+        { "key": "type", "label": "Type", "type": "string", "example": "Li-Ion / Li-Po" },
+        { "key": "capacity", "label": "Capacity", "type": "string", "example": "5000 mAh" },
+        { "key": "wiredCharging", "label": "Wired Charging", "type": "string", "example": "45W wired, 65% in 30 min" },
+        { "key": "wirelessCharging", "label": "Wireless Charging", "type": "string", "example": "25W wireless (Qi/PMA), 15W MagSafe" },
+        { "key": "reverseWireless", "label": "Reverse Wireless Charging", "type": "boolean", "example": true },
+        { "key": "reverseWired", "label": "Reverse Wired Charging", "type": "boolean", "example": false },
+        { "key": "removable", "label": "Removable", "type": "boolean", "example": false },
+        { "key": "enduranceRating", "label": "Endurance Rating", "type": "string", "example": "131h" },
+        { "key": "chargingCycles", "label": "Charging Cycles", "type": "string", "example": "1000 cycles, 80% capacity retention" }
+      ]
+    },
+    {
+      "category": "Misc",
+      "fields": [
+        { "key": "colors", "label": "Colors", "type": "string[]", "example": ["Titanium Black", "Titanium Gray", "Titanium Silver Blue", "Titanium White Silver"] },
+        { "key": "models", "label": "Model Numbers", "type": "string[]", "example": ["SM-S938B", "SM-S938B/DS", "SM-S938U", "SM-S938U1"] },
+        { "key": "price", "label": "Price", "type": "string", "example": "$ 1,299.99 / € 1,459.00 / £ 1,299.00" },
+        { "key": "sarHead", "label": "SAR (Head)", "type": "string", "example": "1.05 W/kg (EU)" },
+        { "key": "sarBody", "label": "SAR (Body)", "type": "string", "example": "1.35 W/kg (EU)" },
+        { "key": "energyRating", "label": "EU Energy Rating", "type": "string", "example": "Class A" },
+        { "key": "repairabilityRating", "label": "Repairability Rating", "type": "string", "example": "Class C (7.2/10)" },
+        { "key": "freeFallRating", "label": "Free Fall Rating", "type": "string", "example": "Class B (180 falls)" }
+      ]
+    }
+  ],
+
+  "sampleDevice": {
+    "name": "Samsung Galaxy S25 Ultra",
+    "brand": "Samsung",
+    "modelName": "Galaxy S25 Ultra",
+    "deviceType": "Smartphone",
+    "network": {
+      "technology": "GSM / CDMA / HSPA / EVDO / LTE / 5G",
+      "bands2G": "GSM 850 / 900 / 1800 / 1900",
+      "bands3G": "HSDPA 850 / 900 / 1700(AWS) / 1900 / 2100",
+      "bands4G": "1, 2, 3, 4, 5, 7, 8, 12, 13, 17, 18, 19, 20, 25, 26, 28, 38, 39, 40, 41, 66",
+      "bands5G": "1, 2, 3, 5, 7, 8, 12, 20, 25, 26, 28, 38, 40, 41, 66, 71, 77, 78 SA/NSA/Sub6",
+      "speed": "HSPA, LTE-A (7CA) Cat20 2000/200 Mbps, 5G",
+      "gprs": "Yes",
+      "edge": "Yes"
+    },
+    "launch": {
+      "announcedDate": "2025, January 22",
+      "status": "Available. Released 2025, February 07",
+      "releaseDate": "2025-02-07"
+    },
+    "body": {
+      "dimensions": "162.8 x 77.6 x 8.2 mm",
+      "weight": "218 g",
+      "build": "Glass front (Gorilla Glass Armor 2), titanium frame, glass back (Gorilla Glass Armor 2)",
+      "sim": "Nano-SIM and eSIM",
+      "esim": true,
+      "dualSim": true,
+      "durability": "IP68 dust/water resistant (up to 1.5m for 30 min)",
+      "milStd": null,
+      "stylusSupport": "S Pen (built-in, Bluetooth, 4096 pressure levels)",
+      "keyboardSupport": null,
+      "foldable": false,
+      "hingeType": null,
+      "coverDisplay": null
+    },
+    "display": {
+      "type": "Dynamic AMOLED 2X",
+      "size": "6.9 inches",
+      "resolution": "1440 x 3120 pixels",
+      "screenToBodyRatio": "91.3%",
+      "protection": "Corning Gorilla Glass Armor 2",
+      "refreshRate": "120Hz",
+      "ltpo": true,
+      "adaptiveRefreshRate": "1-120Hz",
+      "brightnessTypical": "1750 nits",
+      "brightnessPeak": "2600 nits",
+      "hdr": "HDR10+",
+      "alwaysOnDisplay": true,
+      "touchSamplingRate": "240Hz",
+      "colorDepth": "10-bit, 1B colors",
+      "ppi": "505"
+    },
+    "platform": {
+      "os": "Android 15, One UI 7",
+      "chipset": "Qualcomm SM8750-AB Snapdragon 8 Elite (3 nm)",
+      "cpu": "Octa-core (2x4.47 GHz Oryon V2 & 6x3.53 GHz Oryon V2)",
+      "gpu": "Adreno 830",
+      "processNode": "3 nm"
+    },
+    "memory": {
+      "ram": "12 GB",
+      "ramOptions": ["12GB"],
+      "internalStorage": "256 GB",
+      "storageOptions": ["256GB", "512GB", "1TB"],
+      "storageType": "UFS 4.0",
+      "cardSlot": "No",
+      "cardSlotType": "no"
+    },
+    "mainCamera": {
+      "setup": "Quad",
+      "primary": "200 MP, f/1.7, 23mm (wide), 1/1.3\", 0.6µm, multi-directional PDAF, Laser AF, OIS",
+      "ultrawide": "50 MP, f/1.9, 13mm, 120˚, 1/2.52\", 0.64µm, Dual Pixel PDAF",
+      "telephoto": "50 MP, f/2.6, 111mm (periscope telephoto), PDAF, OIS, 5x optical zoom",
+      "telephoto2": "10 MP, f/2.4, 67mm, PDAF, OIS, 3x optical zoom",
+      "macro": null,
+      "depthSensor": null,
+      "tofSensor": null,
+      "nightVision": null,
+      "thermalCamera": null,
+      "features": "LED flash, auto-HDR, panorama",
+      "video": "8K@30fps, 4K@30/60/120fps, 1080p@30/60/240fps, 720p@960fps, HDR10+, gyro-EIS",
+      "opticalZoom": "5x",
+      "digitalZoom": "100x Space Zoom"
+    },
+    "selfieCamera": {
+      "setup": "Single",
+      "primary": "12 MP, f/2.2, 26mm (wide), Dual Pixel PDAF",
+      "secondary": null,
+      "features": "Dual video call, Auto-HDR",
+      "video": "4K@30/60fps, 1080p@30fps"
+    },
+    "sound": {
+      "loudspeaker": "Yes, with stereo speakers (by AKG)",
+      "headphoneJack": false,
+      "audioCodecs": "32-bit/384kHz audio",
+      "tuning": "AKG"
+    },
+    "comms": {
+      "wlan": "Wi-Fi 802.11 a/b/g/n/ac/6e/7, tri-band, Wi-Fi Direct",
+      "bluetooth": "5.4, A2DP, LE, aptX HD",
+      "positioning": "GPS (L1+L5), GLONASS, BDS, GALILEO, QZSS, NavIC",
+      "nfc": true,
+      "infraredPort": false,
+      "fmRadio": null,
+      "usb": "USB Type-C 3.2, OTG, DisplayPort",
+      "thunderbolt": null,
+      "uwb": true,
+      "satelliteConnectivity": null
+    },
+    "features": {
+      "sensors": ["Fingerprint (ultrasonic, under display)", "Accelerometer", "Gyro", "Proximity", "Compass", "Barometer"],
+      "fingerprintType": "Ultrasonic, under display",
+      "faceRecognition": "2D",
+      "aiFeatures": ["Galaxy AI", "Circle to Search", "Live Translation", "Note Assist", "Photo Assist"],
+      "samsungDex": true,
+      "desktopMode": "Samsung DeX",
+      "multitasking": "Multi-window, Pop-up view"
+    },
+    "battery": {
+      "type": "Li-Ion",
+      "capacity": "5000 mAh",
+      "wiredCharging": "45W wired",
+      "wirelessCharging": "25W wireless (Qi2)",
+      "reverseWireless": true,
+      "reverseWired": false,
+      "removable": false,
+      "enduranceRating": "131h",
+      "chargingCycles": null
+    },
+    "misc": {
+      "colors": ["Titanium Black", "Titanium Gray", "Titanium Silver Blue", "Titanium White Silver"],
+      "models": ["SM-S938B", "SM-S938B/DS", "SM-S938U", "SM-S938U1"],
+      "price": "$ 1,299.99 / € 1,459.00",
+      "sarHead": "1.05 W/kg",
+      "sarBody": "1.35 W/kg",
+      "energyRating": null,
+      "repairabilityRating": null,
+      "freeFallRating": null
+    }
+  },
+
+  "variantDimensions": {
+    "$description": "These are the axes along which devices vary from one another. Each can become a filterable variant or comparison point.",
+    "primaryVariants": [
+      "Color",
+      "Storage (e.g., 128GB, 256GB, 512GB, 1TB)",
+      "RAM (e.g., 4GB, 6GB, 8GB, 12GB, 16GB)",
+      "Connectivity (e.g., Wi-Fi only, 4G LTE, 5G)"
+    ],
+    "deviceTypeVariants": [
+      "Smartphone",
+      "Tablet",
+      "Foldable",
+      "Feature Phone"
+    ],
+    "specFieldsThatVaryBetweenDevices": {
+      "network": ["technology", "bands2G", "bands3G", "bands4G", "bands5G", "speed"],
+      "body": ["dimensions", "weight", "build", "sim", "esim", "durability", "milStd", "stylusSupport", "keyboardSupport", "foldable", "hingeType", "coverDisplay"],
+      "display": ["type", "size", "resolution", "refreshRate", "ltpo", "brightnessTypical", "brightnessPeak", "hdr", "alwaysOnDisplay", "protection", "touchSamplingRate", "colorDepth"],
+      "platform": ["os", "chipset", "cpu", "gpu", "processNode"],
+      "memory": ["ram", "ramOptions", "internalStorage", "storageOptions", "storageType", "cardSlot"],
+      "mainCamera": ["setup", "primary", "ultrawide", "telephoto", "telephoto2", "macro", "depthSensor", "tofSensor", "nightVision", "thermalCamera", "video", "opticalZoom", "digitalZoom"],
+      "selfieCamera": ["setup", "primary", "secondary", "video"],
+      "sound": ["loudspeaker", "headphoneJack", "audioCodecs", "tuning"],
+      "comms": ["wlan", "bluetooth", "nfc", "infraredPort", "fmRadio", "usb", "thunderbolt", "uwb", "satelliteConnectivity"],
+      "features": ["sensors", "fingerprintType", "faceRecognition", "aiFeatures", "samsungDex", "desktopMode"],
+      "battery": ["capacity", "wiredCharging", "wirelessCharging", "reverseWireless", "reverseWired", "removable"]
+    }
+  },
+
+  "allPossibleVariantTypes": [
+    "Color",
+    "Size",
+    "Material",
+    "Style",
+    "Pattern",
+    "Brand",
+    "Model",
+    "Version",
+    "RamType",
+    "RamSize",
+    "HardDiskType",
+    "HardDiskSize",
+    "OperatingSystem",
+    "ScreenType",
+    "ScreenSize",
+    "Resolution",
+    "RefreshRate",
+    "CellularTechnology",
+    "Display",
+    "Platform",
+    "CameraMain",
+    "CameraFront",
+    "Battery",
+    "Body",
+    "Connectivity",
+    "Network",
+    "Sensors",
+    "Other"
+  ]
+}

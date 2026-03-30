@@ -10,6 +10,8 @@ export interface Item {
   aboutThisItem?: string;
   modelName?: string;
   barcode?: string;
+  announcedDate?: string;
+  releaseDate?: string;
   imageUrl?: string;
   images?: string[];
   isActive?: boolean;

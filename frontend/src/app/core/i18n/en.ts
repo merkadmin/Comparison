@@ -215,6 +215,8 @@ export const en: Record<string, string> = {
   'item.deactivateBulkConfirm': 'Deactivate selected items?',
   'item.deactivateBulkText': 'You are about to deactivate {count} items.',
   'item.modelName': 'Model Name',
+  'item.announcedDate': 'Announced Date',
+  'item.releaseDate': 'Release Date',
   'item.type': 'Type',
   'item.briefDescription': 'Brief Description',
   'item.aboutThisItem': 'About This Item',

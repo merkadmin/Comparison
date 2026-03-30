@@ -215,6 +215,8 @@ export const ar: Record<string, string> = {
   'item.deactivateBulkConfirm': 'تعطيل المنتجات المحددة؟',
   'item.deactivateBulkText': 'أنت على وشك تعطيل {count} منتجات.',
   'item.modelName': 'اسم الموديل',
+  'item.announcedDate': 'تاريخ الإعلان',
+  'item.releaseDate': 'تاريخ الإصدار',
   'item.type': 'النوع',
   'item.briefDescription': 'وصف مختصر',
   'item.aboutThisItem': 'عن هذا المنتج',

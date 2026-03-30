@@ -16,6 +16,8 @@ public class ProductItemDocument : IDocument<ProductItem>
 	public string? AboutThisItem { get; set; }
 	public string? ModelName { get; set; }
 	public string? Barcode { get; set; }
+	public DateTime? AnnouncedDate { get; set; }
+	public DateTime? ReleaseDate { get; set; }
 	public string? ImageUrl { get; set; }
 	public List<string> Images { get; set; } = new();
 	public List<StorePriceDocument> Prices { get; set; } = new();
@@ -34,6 +36,8 @@ public class ProductItemDocument : IDocument<ProductItem>
 		AboutThisItem = AboutThisItem,
 		ModelName = ModelName,
 		Barcode = Barcode,
+		AnnouncedDate = AnnouncedDate,
+		ReleaseDate = ReleaseDate,
 		ImageUrl = ImageUrl,
 		Images = Images,
 		BrandId = BrandId,
@@ -53,6 +57,8 @@ public class ProductItemDocument : IDocument<ProductItem>
 		AboutThisItem = item.AboutThisItem,
 		ModelName = item.ModelName,
 		Barcode = item.Barcode,
+		AnnouncedDate = item.AnnouncedDate,
+		ReleaseDate = item.ReleaseDate,
 		ImageUrl = item.ImageUrl,
 		Images = item.Images,
 		BrandId = item.BrandId,

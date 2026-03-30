@@ -208,6 +208,8 @@ export const fr: Record<string, string> = {
   'item.deactivateBulkConfirm': 'Désactiver les articles sélectionnés ?',
   'item.deactivateBulkText': 'Vous êtes sur le point de désactiver {count} articles.',
   'item.modelName': 'Nom du modèle',
+  'item.announcedDate': 'Date d\'annonce',
+  'item.releaseDate': 'Date de sortie',
   'item.type': 'Type',
   'item.briefDescription': 'Description courte',
   'item.aboutThisItem': 'À propos de cet article',
