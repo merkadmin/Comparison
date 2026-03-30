@@ -180,6 +180,7 @@ export const fr: Record<string, string> = {
   // Items
   'item.title': 'Articles',
   'item.addNew': 'Ajouter un article',
+  'item.searchPlaceholder': 'Rechercher des articles...',
   'item.addTitle': 'Ajouter un nouveau produit',
   'item.editTitle': 'Modifier le produit',
   'item.single': 'Article',

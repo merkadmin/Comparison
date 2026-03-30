@@ -23,7 +23,6 @@ import { ToastService } from '../../../core/services/toast.service';
 import { CommonSelectComponent } from '../../../shared/components/common-select/common-select.component';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
-import { CommonImageUploadButton } from '../../../shared/components/commonActions/common-image-upload-button/common-image-upload-button';
 import { GridColumns } from '../../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { computedColClass } from '../../../shared/helpers/grid-columns.helper';
 import { CommonListHeaderActions } from '../../../shared/components/common-list-header-actions/common-list-header-actions';
@@ -34,7 +33,7 @@ import { IconConfigService } from '../../../core/services/icon-config.service';
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonImageUploadButton, CommonListHeaderActions, ItemListOperationComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonListHeaderActions, ItemListOperationComponent],
   templateUrl: './item-list.component.html',
   styleUrl: './item-list.component.less',
 })

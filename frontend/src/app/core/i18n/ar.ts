@@ -187,6 +187,7 @@ export const ar: Record<string, string> = {
   // Items
   'item.title': 'المنتجات',
   'item.addNew': 'إضافة منتج',
+  'item.searchPlaceholder': 'ابحث عن المنتجات...',
   'item.addTitle': 'إضافة منتج جديد',
   'item.editTitle': 'تعديل المنتج',
   'item.single': 'منتج',

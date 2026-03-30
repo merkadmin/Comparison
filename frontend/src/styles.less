@@ -151,6 +151,11 @@
 /* Shared inline modal backdrop (replaces style="background:rgba(0,0,0,0.5)") */
 .modal-inline-backdrop {
   background: rgba(0, 0, 0, 0.5);
+
+  .modal-content {
+    background-color: var(--bs-modal-bg, var(--bs-body-bg));
+    color: var(--bs-modal-color, var(--bs-body-color));
+  }
 }
 
 /* 5-column grid (Bootstrap has no col-2.4 built-in) */
