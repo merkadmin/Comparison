@@ -174,18 +174,6 @@ export class ItemCategoryListComponent implements OnInit {
     });
   }
 
-  /**
-   * Builds the per-row action menu for a given category.
-   * Returned as a fresh array each call so each row captures its own `id` in the closure.
-   * @param id - The category ID for which the menu is being built.
-   * @returns Array of `ActionMenuItem` objects rendered in the row's drop-down button.
-   */
-  getRowMenuItems(id: number): ActionMenuItem[] {
-    return buildRowMenuItems(() => this.delete(id));
-  }
-
-  // ── Modal open / close ───────────────────────────────────────────────────
-
   /** Opens the modal in "create" mode with a blank multilingual draft
    *  (all language fields empty, no parent, no image). */
   openCreate(): void {
@@ -210,10 +198,35 @@ export class ItemCategoryListComponent implements OnInit {
     this.editingId.set(cat.id!);
   }
 
+  /**
+   * Builds the per-row action menu for a given category.
+   * Returned as a fresh array each call so each row captures its own `id` in the closure.
+   * @param id - The category ID for which the menu is being built.
+   * @returns Array of `ActionMenuItem` objects rendered in the row's drop-down button.
+   */
+  getRowMenuItems(id: number): ActionMenuItem[] {
+    return buildRowMenuItems(() => this.delete(id));
+  }
+
+  // ── Modal open / close ───────────────────────────────────────────────────
+
   /** Closes the modal and resets both `editingId` and `isCreating` to their idle state. */
   closeEdit(): void {
     this.editingId.set(null);
     this.isCreating.set(false);
+  }
+
+  /**
+   * Navigates to the previous (`-1`) or next (`1`) category in the sorted list
+   * while the edit modal is open, without closing and reopening it.
+   * @param dir - Direction: `1` = next, `-1` = previous.
+   */
+  navigateCategory(dir: 1 | -1): void {
+    const all = this.sortedCategories();
+    const idx = all.findIndex(c => c.id === this.editingId());
+    if (idx === -1) return;
+    const next = all[idx + dir];
+    if (next) this.openEdit(next);
   }
 
   /**
@@ -231,22 +244,17 @@ export class ItemCategoryListComponent implements OnInit {
     this.saving.set(true);
     const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
     const pendingFile = this.operationComp?.pendingFile ?? null;
+    const creating = this.isCreating();
 
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('category.saveError')); };
 
-    /**
-     * Called after the initial create/update succeeds.
-     * Uploads a pending image if present, then patches the record with its path;
-     * otherwise finalises immediately.
-     * @param savedId       - ID of the just-saved category (needed for the upload endpoint).
-     * @param savedCategory - Full category object used as the base for the image-patch update.
-     */
     const finalize = (savedId: number, savedCategory: IItemCategory) => {
       if (!pendingFile) {
         this.saving.set(false);
+        this.operationComp?.clearPending();
         this.toast.success(this.translate.translate('category.saveSuccess'));
         this.load();
-        this.closeEdit();
+        if (creating) this.closeEdit();
         return;
       }
       this.service.uploadImage(savedId, pendingFile).subscribe({
@@ -256,9 +264,10 @@ export class ItemCategoryListComponent implements OnInit {
             next: () => {
               this.saving.set(false);
               this.operationComp?.clearPending();
+              this.editDraft = { ...this.editDraft, categoryImage: relativePath };
               this.toast.success(this.translate.translate('category.saveSuccess'));
               this.load();
-              this.closeEdit();
+              if (creating) this.closeEdit();
             },
             error: onError,
           });
@@ -267,7 +276,7 @@ export class ItemCategoryListComponent implements OnInit {
       });
     };
 
-    if (this.isCreating()) {
+    if (creating) {
       this.service.create(payload).subscribe({ next: saved => finalize(saved.id!, saved), error: onError });
     } else {
       const id = this.editingId()!;
@@ -299,14 +308,32 @@ export class ItemCategoryListComponent implements OnInit {
     if (!this.isCreating()) return;
     this.saving.set(true);
     const payload: IItemCategory = { ...this.editDraft, parentCategoryId: this.editDraft.parentCategoryId || null };
+    const pendingFile = this.operationComp?.pendingFile ?? null;
+    const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('category.saveError')); };
+
     this.service.create(payload).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.toast.success(this.translate.translate('category.saveSuccess'));
-        this.load();
-        this.editDraft = { name: { en: '', ar: '', fr: '' }, description: { en: '', ar: '', fr: '' } };
+      next: saved => {
+        const reset = () => {
+          this.saving.set(false);
+          this.operationComp?.clearPending();
+          this.toast.success(this.translate.translate('category.saveSuccess'));
+          this.load();
+          this.editDraft = { name: { en: '', ar: '', fr: '' }, description: { en: '', ar: '', fr: '' } };
+        };
+
+        if (!pendingFile) { reset(); return; }
+
+        this.service.uploadImage(saved.id!, pendingFile).subscribe({
+          next: relativePath => {
+            this.service.update(saved.id!, { ...saved, categoryImage: relativePath }).subscribe({
+              next: reset,
+              error: onError,
+            });
+          },
+          error: onError,
+        });
       },
-      error: () => { this.saving.set(false); this.toast.error(this.translate.translate('category.saveError')); },
+      error: onError,
     });
   }
 

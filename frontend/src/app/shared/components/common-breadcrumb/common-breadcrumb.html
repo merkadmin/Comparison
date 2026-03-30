@@ -2,17 +2,18 @@
 <div class="d-flex align-items-center gap-2 me-auto">
 
   <!--START::Back Arrow-->
-  @if (navStack.length > 0 || selectedLeaf) {
-    <button class="btn btn-icon btn-light btn-sm flex-shrink-0" (click)="goBack()">
-      <i class="ki-duotone ki-arrow-left fs-2">
-        <span class="path1"></span><span class="path2"></span>
-      </i>
-    </button>
-  }
+  <button class="btn btn-icon btn-light btn-sm flex-shrink-0" routerLink="/">
+    <i class="ki-duotone ki-arrow-left fs-2">
+      <span class="path1"></span><span class="path2"></span>
+    </i>
+  </button>
   <!--END::Back Arrow-->
 
   <div class="d-flex flex-column">
   <div class="d-flex align-items-center gap-2 flex-nowrap overflow-hidden">
+
+    <a routerLink="/" class="fw-semibold text-muted fs-7 text-hover-primary text-nowrap text-decoration-none">{{ 'nav.home' | translate }}</a>
+    <i class="ki-duotone ki-right fs-8 text-muted flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
 
     @if (navStack.length > 0 || selectedLeaf) {
       <span class="fw-semibold text-muted fs-7 cursor-pointer text-hover-primary text-nowrap"

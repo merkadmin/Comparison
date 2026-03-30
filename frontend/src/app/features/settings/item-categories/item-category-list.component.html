@@ -184,6 +184,7 @@
   (closed)="closeEdit()"
   (saved)="saveEdit()"
   (savedAndNew)="saveEditAndNew()"
-  (imageRemoved)="removeImage()" #operationComp />
+  (imageRemoved)="removeImage()"
+  (navigate)="navigateCategory($event)" #operationComp />
 }
 <!--END::Create / Edit Modal-->

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -36,6 +36,9 @@ export class ItemBrandListComponent implements OnInit {
   /** Provides `translate(key)` for resolving i18n strings at runtime (used in toasts and Swal dialogs). */
   private translate = inject(TranslateService);
 
+  /** Resolves a stored relative image path to a full URL for display. */
+  imgUrl(path: string): string { return this.service.resolveImageUrl(path); }
+
   /** Shows brief success/error notifications at the top of the screen. */
   private toast = inject(ToastService);
 
@@ -57,10 +60,24 @@ export class ItemBrandListComponent implements OnInit {
    *  Bound directly to the modal form via `[(ngModel)]`. */
   editDraft: ItemBrand = { name: '' };
 
+  /** Controls whether the list is rendered as a flat table (`'list'`) or as
+   *  a card grid (`'cards'`). */
+  viewMode = signal<'list' | 'cards'>('cards');
+
+  /** Current value of the search input; filters `visibleBrands` in real time. */
+  searchTerm = signal('');
+
   // ── List state ───────────────────────────────────────────────────────────
 
   /** The full sorted brand list displayed in the table. */
   brands = signal<ItemBrand[]>([]);
+
+  /** Subset of `brands` that match the current `searchTerm`. */
+  visibleBrands = computed<ItemBrand[]>(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.brands();
+    return this.brands().filter(b => b.name.toLowerCase().includes(term));
+  });
 
   /** `true` while the initial (or reload) fetch is in progress. */
   loading = signal(false);
@@ -293,8 +310,8 @@ export class ItemBrandListComponent implements OnInit {
    * Used to drive the "select all" checkbox state in the table header.
    */
   isAllSelected(): boolean {
-    const all = this.brands();
-    return all.length > 0 && all.every(b => this.selectedIds().has(b.id!));
+    const visible = this.visibleBrands();
+    return visible.length > 0 && visible.every(b => this.selectedIds().has(b.id!));
   }
 
   /**
@@ -314,7 +331,7 @@ export class ItemBrandListComponent implements OnInit {
    */
   toggleAll(): void {
     this.selectedIds.set(
-      this.isAllSelected() ? new Set() : new Set(this.brands().map(b => b.id!))
+      this.isAllSelected() ? new Set() : new Set(this.visibleBrands().map(b => b.id!))
     );
   }
 

@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { combineLatest, Subscription } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
 import { Item } from '../../../core/models/item.model';
@@ -28,7 +28,7 @@ export interface VariantGroup {
 @Component({
   selector: 'app-shop-by-specs',
   standalone: true,
-  imports: [TranslatePipe, DecimalPipe, CommonGridColumnsButton],
+  imports: [TranslatePipe, DecimalPipe, CommonGridColumnsButton, RouterLink],
   templateUrl: './shop-by-specs.component.html',
   styleUrl: './shop-by-specs.component.less',
 })

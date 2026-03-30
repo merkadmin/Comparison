@@ -38,6 +38,9 @@ export class StoreListComponent implements OnInit {
   private translate = inject(TranslateService);
   private toast = inject(ToastService);
 
+  /** Resolves a stored relative image path to a full URL for display. */
+  imgUrl(path: string): string { return this.service.resolveImageUrl(path); }
+
   readonly storeTypes: StoreType[] = [StoreType.Online, StoreType.Physical];
 
   productItems = signal<Item[]>([]);
@@ -67,7 +70,8 @@ export class StoreListComponent implements OnInit {
 
   filteredStores = computed<Store[]>(() => {
     const q = this.searchQuery().trim().toLowerCase();
-    return q ? this.stores().filter(s => s.name.toLowerCase().includes(q)) : this.stores();
+    const list = q ? this.stores().filter(s => s.name.toLowerCase().includes(q)) : this.stores();
+    return [...list].sort((a, b) => a.name.localeCompare(b.name));
   });
 
   // ── Bulk actions ──────────────────────────────────────────────────────────

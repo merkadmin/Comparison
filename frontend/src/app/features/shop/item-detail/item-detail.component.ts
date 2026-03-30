@@ -241,16 +241,11 @@ export class ItemDetailComponent implements OnInit {
 
   onStoreRowClick(si: ProductItemVariantMap): void {
     if (this.inCart()) return;
-    const newStoreId = this.selectedStoreId() === si.storeId ? null : si.storeId;
-    this.selectedStoreId.set(newStoreId);
-
-    if (newStoreId === null) {
-      this.selectedVariants.set(new Map());
-      return;
-    }
+    if (this.selectedStoreId() === si.storeId) return;
+    this.selectedStoreId.set(si.storeId);
 
     const storeMaps = this.itemVariantMaps
-      .filter(m => m.storeId === newStoreId && m.isActive !== false);
+      .filter(m => m.storeId === si.storeId && m.isActive !== false);
     const bestMap = storeMaps.length
       ? storeMaps.reduce((b, m) => m.sellingPrice < b.sellingPrice ? m : b)
       : null;

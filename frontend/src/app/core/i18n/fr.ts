@@ -169,6 +169,7 @@ export const fr: Record<string, string> = {
   'brand.saveSuccess': 'Marque enregistrée avec succès.',
   'brand.saveError': 'Échec de l\'enregistrement de la marque.',
   'brand.image': 'Image de la marque',
+  'brand.searchPlaceholder': 'Rechercher des marques...',
 
   // Items
   'item.title': 'Articles',

@@ -26,6 +26,7 @@ export class ItemCategoryListOperationComponent {
   @Output() saved        = new EventEmitter<void>();
   @Output() savedAndNew  = new EventEmitter<void>();
   @Output() imageRemoved = new EventEmitter<void>();
+  @Output() navigate     = new EventEmitter<1 | -1>();
 
   /** Locally staged file — not yet uploaded to the server. */
   pendingFile: File | null = null;

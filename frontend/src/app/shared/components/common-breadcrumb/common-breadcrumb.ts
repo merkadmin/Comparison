@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
 import { TranslateService } from '../../../core/services/translate.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -7,7 +7,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 @Component({
   selector: 'app-common-breadcrumb',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, RouterLink],
   templateUrl: './common-breadcrumb.html',
   styleUrl: './common-breadcrumb.less',
 })

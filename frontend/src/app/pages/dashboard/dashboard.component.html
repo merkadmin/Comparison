@@ -52,6 +52,9 @@
         </div>
         <div class="p-3">
           <span class="fw-bold text-gray-800 fs-6 d-block text-truncate">{{ store.name }}</span>
+          <span class="badge fs-9 mt-1" [class.badge-light-primary]="store.storeTypeId === 'Online'" [class.badge-light-success]="store.storeTypeId !== 'Online'">
+            {{ (store.storeTypeId === 'Online' ? 'store.online' : 'store.physical') | translate }}
+          </span>
           @if (store.country) {
           <span class="text-muted fs-8">{{ store.country }}</span>
           }
@@ -67,6 +70,60 @@
   </div>
 </div>
 }
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECTION: Shop by Brands
+═══════════════════════════════════════════════════════════════ -->
+<div class="home-section mb-10">
+  <div class="d-flex align-items-center gap-3 mb-4 px-1 flex-wrap">
+    <h2 class="fw-bold fs-2 mb-0 me-auto">{{ 'nav.shopByBrand' | translate }}</h2>
+    <div class="input-group input-group-sm w-200px">
+      <span class="input-group-text border-end-0 bg-transparent">
+        <i class="ki-duotone ki-magnifier fs-5 text-muted"><span class="path1"></span><span class="path2"></span></i>
+      </span>
+      <input type="text" class="form-control border-start-0 ps-0"
+             [placeholder]="'common.search' | translate"
+             [value]="brandSearch()" (input)="brandSearch.set($any($event.target).value)" />
+    </div>
+    <a routerLink="/shop-by-brand" class="btn btn-sm btn-light-primary">
+      {{ 'nav.showAll' | translate }}
+      <i class="ki-duotone ki-arrow-right fs-5 ms-1"><span class="path1"></span><span class="path2"></span></i>
+    </a>
+  </div>
+
+  <div class="position-relative">
+    <button class="scroll-arrow scroll-arrow--left btn btn-icon btn-light shadow-sm"
+            (click)="scroll(brandsScroll, -1)">
+      <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+
+    <div class="home-scroll-track" #brandsScroll>
+      @for (brand of filteredBrands(); track brand.id) {
+      <div class="home-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
+           (click)="goToBrand(brand)">
+        <div class="home-tile__img-wrap bg-white d-flex align-items-center justify-content-center">
+          @if (brandImgUrl(brand)) {
+          <img [src]="brandImgUrl(brand)!" [alt]="brand.name" class="home-tile__img" />
+          } @else {
+          <span class="home-tile__letter fw-bold text-primary">{{ brand.name.charAt(0).toUpperCase() }}</span>
+          }
+        </div>
+        <div class="p-3">
+          <span class="fw-bold text-gray-800 fs-6 d-block text-truncate">{{ brand.name }}</span>
+          @if (brand.country) {
+          <span class="text-muted fs-8">{{ brand.country }}</span>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <button class="scroll-arrow scroll-arrow--right btn btn-icon btn-light shadow-sm"
+            (click)="scroll(brandsScroll, 1)">
+      <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
+    </button>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      SECTION: Shop by Categories (leaf)
@@ -119,60 +176,6 @@
 
     <button class="scroll-arrow scroll-arrow--right btn btn-icon btn-light shadow-sm"
             (click)="scroll(catsScroll, 1)">
-      <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
-    </button>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════
-     SECTION: Shop by Brands
-═══════════════════════════════════════════════════════════════ -->
-<div class="home-section mb-10">
-  <div class="d-flex align-items-center gap-3 mb-4 px-1 flex-wrap">
-    <h2 class="fw-bold fs-2 mb-0 me-auto">{{ 'nav.shopByBrand' | translate }}</h2>
-    <div class="input-group input-group-sm w-200px">
-      <span class="input-group-text border-end-0 bg-transparent">
-        <i class="ki-duotone ki-magnifier fs-5 text-muted"><span class="path1"></span><span class="path2"></span></i>
-      </span>
-      <input type="text" class="form-control border-start-0 ps-0"
-             [placeholder]="'common.search' | translate"
-             [value]="brandSearch()" (input)="brandSearch.set($any($event.target).value)" />
-    </div>
-    <a routerLink="/shop-by-brand" class="btn btn-sm btn-light-primary">
-      {{ 'nav.showAll' | translate }}
-      <i class="ki-duotone ki-arrow-right fs-5 ms-1"><span class="path1"></span><span class="path2"></span></i>
-    </a>
-  </div>
-
-  <div class="position-relative">
-    <button class="scroll-arrow scroll-arrow--left btn btn-icon btn-light shadow-sm"
-            (click)="scroll(brandsScroll, -1)">
-      <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
-    </button>
-
-    <div class="home-scroll-track" #brandsScroll>
-      @for (brand of filteredBrands(); track brand.id) {
-      <div class="home-tile card border-0 shadow-sm flex-shrink-0 cursor-pointer text-center overflow-hidden"
-           (click)="goToBrand(brand)">
-        <div class="home-tile__img-wrap bg-white d-flex align-items-center justify-content-center">
-          @if (brandImgUrl(brand)) {
-          <img [src]="brandImgUrl(brand)!" [alt]="brand.name" class="home-tile__img" />
-          } @else {
-          <span class="home-tile__letter fw-bold text-primary">{{ brand.name.charAt(0).toUpperCase() }}</span>
-          }
-        </div>
-        <div class="p-3">
-          <span class="fw-bold text-gray-800 fs-6 d-block text-truncate">{{ brand.name }}</span>
-          @if (brand.country) {
-          <span class="text-muted fs-8">{{ brand.country }}</span>
-          }
-        </div>
-      </div>
-      }
-    </div>
-
-    <button class="scroll-arrow scroll-arrow--right btn btn-icon btn-light shadow-sm"
-            (click)="scroll(brandsScroll, 1)">
       <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
     </button>
   </div>

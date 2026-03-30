@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DecimalPipe } from '@angular/common';
 import { Item } from '../../../core/models/item.model';
@@ -19,7 +19,7 @@ import { GridColumns, CommonGridColumnsButton } from '../../../shared/components
 @Component({
   selector: 'app-shop-by-store',
   standalone: true,
-  imports: [TranslatePipe, DecimalPipe, CommonGridColumnsButton],
+  imports: [TranslatePipe, DecimalPipe, CommonGridColumnsButton, RouterLink],
   templateUrl: './shop-by-store.component.html',
   styleUrl: './shop-by-store.component.less',
 })

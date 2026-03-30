@@ -176,6 +176,7 @@ export const ar: Record<string, string> = {
   'brand.saveSuccess': 'تم حفظ الماركة بنجاح.',
   'brand.saveError': 'فشل حفظ الماركة.',
   'brand.image': 'صورة الماركة',
+  'brand.searchPlaceholder': 'ابحث عن الماركات...',
 
   // Items
   'item.title': 'المنتجات',

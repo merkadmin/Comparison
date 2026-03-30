@@ -1,9 +1,11 @@
 <div class="card">
-  <app-common-list-header-actions titleKey="brand.title" [selectedCount]="selectedIds().size"
+  <!--START:: Header Actions for admin users-->
+  <app-common-list-header-actions titleKey="brand.title" [viewMode]="auth.isAdmin() ? viewMode() : undefined" [selectedCount]="selectedIds().size"
     bulkMainLabelKey="common.deactivate" bulkMainIconClass="ki-minus-circle" bulkMainColor="light-danger"
-    [bulkMenuItems]="bulkMenuItems" [importing]="importing()" [importMenuItems]="importMenuItems"
-    importSuccessKey="brand.importSuccess" [importSuccess]="importSuccess()" [importErrorMessage]="importError()"
-    (bulkMainClick)="deactivateSelected()" (fileSelected)="onFileSelected($event)"
+    [bulkMenuItems]="bulkMenuItems" searchPlaceholderKey="brand.searchPlaceholder" [importing]="importing()"
+    [importMenuItems]="importMenuItems" importSuccessKey="brand.importSuccess" [importSuccess]="importSuccess()"
+    [importErrorMessage]="importError()" (viewModeChange)="viewMode.set($event)" (bulkMainClick)="deactivateSelected()"
+    (searchChange)="searchTerm.set($event)" (fileSelected)="onFileSelected($event)"
     (importSuccessClose)="importSuccess.set(false)" (importErrorClose)="importError.set(null)">
 
     <!--START::Add Button (Admin)-->
@@ -18,6 +20,7 @@
     <!--END::Add Button (Admin)-->
 
   </app-common-list-header-actions>
+  <!--END:: Header Actions for admin users-->
 
   <div class="card-body py-4">
     @if (loading()) {
@@ -29,7 +32,59 @@
     @if (!loading() && error()) {
     <div class="alert alert-danger">{{ error() }}</div>
     }
-    @if (!loading() && !error()) {
+
+    <!-- Cards view -->
+    @if (!loading() && !error() && viewMode() === 'cards') {
+    @if (visibleBrands().length === 0) {
+    <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
+    }
+    <div class="row g-4">
+      @for (brand of visibleBrands(); track brand.id) {
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+        <div class="item-card card h-100 shadow-sm border-0">
+          <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center">
+            @if (brand.brandImage) {
+            <img [src]="imgUrl(brand.brandImage)" [alt]="brand.name" class="item-card__logo" />
+            } @else if (brand.logoUrl) {
+            <img [src]="brand.logoUrl" [alt]="brand.name" class="item-card__logo" />
+            } @else {
+            <span class="item-card__placeholder fw-bold text-primary fs-1">{{ brand.name.charAt(0).toUpperCase() }}</span>
+            }
+          </div>
+          <div class="card-body d-flex flex-column gap-2 p-4">
+            <div class="d-flex gap-2 flex-wrap">
+              @if (brand.country) {
+              <span class="badge badge-light-info">{{ brand.country }}</span>
+              }
+              @if (brand.isActive !== false) {
+              <span class="badge badge-light-success">{{ 'common.active' | translate }}</span>
+              } @else {
+              <span class="badge badge-light-warning">{{ 'common.inactive' | translate }}</span>
+              }
+            </div>
+            <h6 class="fw-bold text-gray-800 mb-0 lh-sm">{{ brand.name }}</h6>
+          </div>
+          @if (auth.isAdmin()) {
+          <div class="card-footer bg-transparent border-top-0 d-flex gap-2 p-3">
+            <button class="btn btn-sm btn-icon btn-light-primary" [title]="'common.edit' | translate" (click)="openEdit(brand)">
+              <i class="ki-duotone ki-pencil fs-6"><span class="path1"></span><span class="path2"></span></i>
+            </button>
+            <button class="btn btn-sm btn-icon btn-warning text-dark" [title]="(brand.isActive !== false ? 'common.deactivate' : 'common.activate') | translate" (click)="setActive(brand.id!, brand.isActive === false)">
+              <i [class]="'ki-duotone fs-6 ' + (brand.isActive !== false ? 'ki-minus-circle' : 'ki-check-circle')"><span class="path1"></span><span class="path2"></span></i>
+            </button>
+            <button class="btn btn-sm btn-icon btn-light-danger" [title]="'common.delete' | translate" (click)="delete(brand.id!)">
+              <i class="ki-duotone ki-trash fs-6"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- List view -->
+    @if (!loading() && !error() && viewMode() === 'list') {
     <table class="table align-middle table-row-dashed fs-6 gy-5">
       <thead>
         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
@@ -51,13 +106,13 @@
         </tr>
       </thead>
       <tbody class="text-gray-600 fw-semibold">
-        @if (brands().length === 0) {
+        @if (visibleBrands().length === 0) {
         <tr>
           <td [attr.colspan]="auth.isAdmin() ? 7 : 5" class="text-center text-muted py-10">{{ 'common.noData' |
             translate }}</td>
         </tr>
         }
-        @for (brand of brands(); track brand.id; let i = $index) {
+        @for (brand of visibleBrands(); track brand.id; let i = $index) {
         <tr [class.table-active]="isSelected(brand.id!)">
           @if (auth.isAdmin()) {
           <td>

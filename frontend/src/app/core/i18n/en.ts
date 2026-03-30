@@ -176,6 +176,7 @@ export const en: Record<string, string> = {
   'brand.saveSuccess': 'Brand saved successfully.',
   'brand.saveError': 'Failed to save brand.',
   'brand.image': 'Brand Image',
+  'brand.searchPlaceholder': 'Search brands...',
 
   // Items
   'item.title': 'Items',
