@@ -92,8 +92,8 @@ export class ItemListComponent implements OnInit, OnDestroy {
   openEdit(item: Item): void {
     this.editDraft = {
       ...item,
-      categoryIds: [...item.categoryIds],
-      productTypeIds: [...item.productTypeIds],
+      categoryIds: [...(item.categoryIds ?? [])],
+      productTypeIds: [...(item.productTypeIds ?? [])],
       images: [...(item.images ?? [])],
       customerReviews: [...(item.customerReviews ?? [])],
       customerCommentIds: [...(item.customerCommentIds ?? [])],

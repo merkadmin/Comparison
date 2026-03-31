@@ -63,7 +63,7 @@ public static class ExcelService
 				Barcode          = NullIfEmpty(ws.Cell(r, 6).GetString()),
 				ImageUrl         = NullIfEmpty(ws.Cell(r, 7).GetString()),
 				BrandId        = ws.Cell(r, 8).TryGetValue<long>(out var bid) ? bid : 0,
-				ItemCategoryId = ws.Cell(r, 10).TryGetValue<long>(out var cid) ? cid : 0,
+				CategoryIds = ws.Cell(r, 10).TryGetValue<long>(out var cid) && cid != 0 ? new List<long> { cid } : new List<long>(),
 			},
 			NullIfEmpty(ws.Cell(r, 9).GetString().Trim()),
 			NullIfEmpty(ws.Cell(r, 11).GetString().Trim())));
@@ -172,8 +172,8 @@ public static class ExcelService
 			ws.Cell(row, 8).Value  = i.ImageUrl ?? string.Empty;
 			ws.Cell(row, 9).Value  = i.BrandId;
 			ws.Cell(row, 10).Value = brandMap.TryGetValue(i.BrandId, out var bn) ? bn : string.Empty;
-			ws.Cell(row, 11).Value = i.ItemCategoryId;
-			ws.Cell(row, 12).Value = categoryMap.TryGetValue(i.ItemCategoryId, out var cn) ? cn : string.Empty;
+			ws.Cell(row, 11).Value = i.CategoryIds.Count > 0 ? i.CategoryIds[0] : (XLCellValue)string.Empty;
+			ws.Cell(row, 12).Value = i.CategoryIds.Count > 0 && categoryMap.TryGetValue(i.CategoryIds[0], out var cn) ? cn : string.Empty;
 			ws.Cell(row, 13).Value = i.IsActive;
 			ws.Cell(row, 14).Value = i.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss");
 			row++;

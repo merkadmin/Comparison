@@ -198,7 +198,7 @@ public class DataSeeder
 				Name           = "iPhone 15 Pro",
 				Description    = "A17 Pro chip, 256GB, Titanium",
 				BrandId        = BrandId("Apple"),
-				ItemCategoryId = CategoryId("All Mobile Phones"),
+				CategoryIds = new List<long> { CategoryId("All Mobile Phones") },
 				Barcode        = "APL-IP15PRO",
 			},
 			new()
@@ -206,7 +206,7 @@ public class DataSeeder
 				Name           = "Samsung Galaxy S24 Ultra",
 				Description    = "Snapdragon 8 Gen 3, 12GB RAM, 256GB",
 				BrandId        = BrandId("Samsung"),
-				ItemCategoryId = CategoryId("All Mobile Phones"),
+				CategoryIds = new List<long> { CategoryId("All Mobile Phones") },
 				Barcode        = "SAM-S24U-256",
 			},
 			new()
@@ -214,7 +214,7 @@ public class DataSeeder
 				Name           = "Galaxy Tab S9",
 				Description    = "11\" AMOLED, Snapdragon 8 Gen 2, 128GB",
 				BrandId        = BrandId("Samsung"),
-				ItemCategoryId = CategoryId("Tablets"),
+				CategoryIds = new List<long> { CategoryId("Tablets") },
 				Barcode        = "SAM-TABS9-128",
 			},
 			new()
@@ -222,7 +222,7 @@ public class DataSeeder
 				Name           = "Apple iPad Pro 12.9\"",
 				Description    = "M2 chip, 256GB, Liquid Retina XDR display",
 				BrandId        = BrandId("Apple"),
-				ItemCategoryId = CategoryId("Tablets"),
+				CategoryIds = new List<long> { CategoryId("Tablets") },
 				Barcode        = "APL-IPADPRO-M2",
 			},
 			new()
@@ -230,7 +230,7 @@ public class DataSeeder
 				Name           = "Apple Watch Series 9",
 				Description    = "GPS + Cellular, 45mm, Always-On Retina display",
 				BrandId        = BrandId("Apple"),
-				ItemCategoryId = CategoryId("Wearable Technology"),
+				CategoryIds = new List<long> { CategoryId("Wearable Technology") },
 				Barcode        = "APL-WATCH9-45",
 			},
 			new()
@@ -238,7 +238,7 @@ public class DataSeeder
 				Name           = "Samsung Galaxy Watch 6",
 				Description    = "40mm, Health monitoring, BioActive Sensor",
 				BrandId        = BrandId("Samsung"),
-				ItemCategoryId = CategoryId("Wearable Technology"),
+				CategoryIds = new List<long> { CategoryId("Wearable Technology") },
 				Barcode        = "SAM-GW6-40",
 			},
 			new()
@@ -246,7 +246,7 @@ public class DataSeeder
 				Name           = "Sony WH-1000XM5 Case",
 				Description    = "Protective carrying case for Sony headphones",
 				BrandId        = BrandId("Sony"),
-				ItemCategoryId = CategoryId("Cases & Covers"),
+				CategoryIds = new List<long> { CategoryId("Cases & Covers") },
 				Barcode        = "SNY-WH5-CASE",
 			},
 			new()
@@ -254,7 +254,7 @@ public class DataSeeder
 				Name           = "Samsung 25W Super Fast Charger",
 				Description    = "USB-C 25W fast charging adapter",
 				BrandId        = BrandId("Samsung"),
-				ItemCategoryId = CategoryId("Power Banks & Chargers"),
+				CategoryIds = new List<long> { CategoryId("Power Banks & Chargers") },
 				Barcode        = "SAM-CHG-25W",
 			},
 		};

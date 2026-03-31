@@ -22,7 +22,7 @@ public class ProductItemRepository : BaseRepository<ProductItem, ProductItemDocu
         var categoryIds = new List<long> { categoryId };
         CollectDescendants(categoryId, allCategories, categoryIds);
 
-        var filter = Builders<ProductItemDocument>.Filter.In(i => i.ItemCategoryId, categoryIds);
+        var filter = Builders<ProductItemDocument>.Filter.AnyIn(i => i.CategoryIds, categoryIds);
         var docs = await _collection.Find(filter).ToListAsync();
         return docs.Select(d => d.ToModel());
     }

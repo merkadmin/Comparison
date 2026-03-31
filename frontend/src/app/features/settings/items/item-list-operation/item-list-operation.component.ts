@@ -35,12 +35,14 @@ export class ItemListOperationComponent implements OnChanges {
   /** Object URLs for previewing pending files. */
   pendingPreviewUrls: string[] = [];
 
-  /** The parentCategoryId whose children are currently visible in the select. null = root. */
-  currentCategoryParentId: number | null = null;
-  /** The value currently chosen in the select (null = placeholder). */
-  selectedCategoryInLevel: number | null = null;
-  /** Stack of parentCategoryId values navigated through — used by the back arrow. */
-  categoryNavStack: (number | null)[] = [];
+  /** Rows in the categories table — each row has its own drill-down navigator state. */
+  categoryRows: {
+    id: string;
+    categoryId: number | null;
+    currentParentId: number | null;
+    navStack: (number | null)[];
+  }[] = [];
+  private rowCounter = 0;
 
   /** Tracks which spec sections are expanded in the form. */
   specSections: Record<string, boolean> = {};
@@ -113,11 +115,23 @@ export class ItemListOperationComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['editDraft']) {
       this.clearPendingFiles();
-      this.initCategoryPath();
-      if (!this.editDraft.specifications) this.editDraft.specifications = {};
+      this.initCategoryRows();
+      if (!this.editDraft.specifications) {
+        this.editDraft.specifications = {};
+        this.specSections = {};
+      } else {
+        // Auto-expand sections that have saved data
+        this.specSections = {};
+        Object.keys(this.editDraft.specifications).forEach(key => {
+          const catData = this.editDraft.specifications![key];
+          if (catData && Object.keys(catData).length > 0) {
+            this.specSections[key] = true;
+          }
+        });
+      }
     }
     if (changes['categories']) {
-      this.initCategoryPath();
+      this.initCategoryRows();
     }
   }
 
@@ -143,21 +157,36 @@ export class ItemListOperationComponent implements OnChanges {
     this.pendingPreviewUrls = this.pendingPreviewUrls.filter((_, i) => i !== index);
   }
 
-  private initCategoryPath(): void {
-    this.currentCategoryParentId = null;
-    this.selectedCategoryInLevel = null;
-    this.categoryNavStack = [];
+  private emptyRow(): (typeof this.categoryRows)[number] {
+    return { id: String(++this.rowCounter), categoryId: null, currentParentId: null, navStack: [] };
   }
 
-  get currentLevelCategories(): IItemCategory[] {
-    return this.categories.filter(c =>
-      (c.parentCategoryId ?? null) === this.currentCategoryParentId
-    );
+  private initCategoryRows(): void {
+    this.rowCounter = 0;
+    this.categoryRows = (this.editDraft.categoryIds ?? []).map(id => ({
+      ...this.emptyRow(),
+      categoryId: id,
+    }));
   }
 
-  get currentLevelName(): string {
-    if (this.currentCategoryParentId === null) return '';
-    const cat = this.categories.find(c => c.id === this.currentCategoryParentId);
+  addCategoryRow(): void {
+    this.categoryRows = [...this.categoryRows, this.emptyRow()];
+  }
+
+  removeCategoryRow(rowId: string): void {
+    this.categoryRows = this.categoryRows.filter(r => r.id !== rowId);
+    this.syncCategoryIds();
+  }
+
+  getRowCurrentCategories(rowId: string): IItemCategory[] {
+    const row = this.categoryRows.find(r => r.id === rowId);
+    return this.categories.filter(c => (c.parentCategoryId ?? null) === (row?.currentParentId ?? null));
+  }
+
+  getRowLevelName(rowId: string): string {
+    const row = this.categoryRows.find(r => r.id === rowId);
+    if (!row?.currentParentId) return '';
+    const cat = this.categories.find(c => c.id === row.currentParentId);
     return cat ? this.localize(cat.name) : '';
   }
 
@@ -165,27 +194,50 @@ export class ItemListOperationComponent implements OnChanges {
     return this.categories.some(c => c.parentCategoryId === categoryId);
   }
 
-  onCategoryChange(categoryId: number | null): void {
-    if (!categoryId) {
-      this.selectedCategoryInLevel = null;
-      return;
-    }
-    if (this.hasChildren(categoryId)) {
-      this.categoryNavStack = [...this.categoryNavStack, this.currentCategoryParentId];
-      this.currentCategoryParentId = categoryId;
-      this.selectedCategoryInLevel = null;
-    } else {
-      if (!this.editDraft.categoryIds.includes(categoryId)) {
-        this.editDraft.categoryIds = [...this.editDraft.categoryIds, categoryId];
+  onRowCategorySelect(rowId: string, categoryId: number | null): void {
+    if (!categoryId) return;
+    this.categoryRows = this.categoryRows.map(r => {
+      if (r.id !== rowId) return r;
+      if (this.hasChildren(categoryId)) {
+        return { ...r, navStack: [...r.navStack, r.currentParentId], currentParentId: categoryId };
       }
-      this.currentCategoryParentId = null;
-      this.selectedCategoryInLevel = null;
-      this.categoryNavStack = [];
-    }
+      return { ...r, categoryId };
+    });
+    this.syncCategoryIds();
   }
 
-  removeCategoryId(id: number): void {
-    this.editDraft.categoryIds = this.editDraft.categoryIds.filter(x => x !== id);
+  rowGoBack(rowId: string): void {
+    this.categoryRows = this.categoryRows.map(r => {
+      if (r.id !== rowId || !r.navStack.length) return r;
+      const newStack = [...r.navStack];
+      const parent = newStack.pop() ?? null;
+      return { ...r, navStack: newStack, currentParentId: parent };
+    });
+  }
+
+  clearRowCategory(rowId: string): void {
+    this.categoryRows = this.categoryRows.map(r =>
+      r.id === rowId ? { ...r, categoryId: null, currentParentId: null, navStack: [] } : r
+    );
+    this.syncCategoryIds();
+  }
+
+  private syncCategoryIds(): void {
+    this.editDraft.categoryIds = this.categoryRows
+      .filter(r => r.categoryId !== null)
+      .map(r => r.categoryId as number);
+  }
+
+  getCategoryPath(id: number): string {
+    const parts: string[] = [];
+    let current = this.categories.find(c => c.id === id);
+    while (current) {
+      parts.unshift(this.localize(current.name));
+      current = current.parentCategoryId
+        ? this.categories.find(c => c.id === current!.parentCategoryId)
+        : undefined;
+    }
+    return parts.join(' › ');
   }
 
   toggleProductType(id: number): void {
@@ -197,28 +249,13 @@ export class ItemListOperationComponent implements OnChanges {
     return this.editDraft.productTypeIds.includes(id);
   }
 
-  goBackCategory(): void {
-    if (!this.categoryNavStack.length) return;
-    const drilledIntoId = this.currentCategoryParentId;
-    const newStack = [...this.categoryNavStack];
-    const poppedParent = newStack.pop() ?? null;
-    this.categoryNavStack = newStack;
-    this.currentCategoryParentId = poppedParent;
-    this.selectedCategoryInLevel = drilledIntoId;
-  }
-
-  @Output() closed       = new EventEmitter<void>();
+@Output() closed       = new EventEmitter<void>();
   @Output() saved        = new EventEmitter<void>();
   @Output() savedAndNew  = new EventEmitter<void>();
   @Output() imageRemoved = new EventEmitter<number>();
 
   imgUrl(path: string): string {
     return this.imageSvc.resolveUrl(path);
-  }
-
-  getCategoryLabel(id: number): string {
-    const cat = this.categories.find(c => c.id === id);
-    return cat ? this.localize(cat.name) : String(id);
   }
 
   localize(ls: MultiLangString): string {

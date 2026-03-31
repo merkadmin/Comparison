@@ -82,6 +82,10 @@ public IMongoCollection<ItemPackageDocument> ItemPackages =>
 	public IMongoCollection<SpecificationLookupDocument> SpecificationCategories =>
 		_database.GetCollection<SpecificationLookupDocument>("SpecificationCategory_s");
 
+	// ── Product item specifications ──────────────────────────────────────────
+	public IMongoCollection<ProductItemSpecificationDocument> ProductItemSpecifications =>
+		_database.GetCollection<ProductItemSpecificationDocument>("ProductItem_Specification");
+
 	public async Task<long> GetNextSequenceAsync(string name)
 	{
 		var filter = Builders<SequenceDocument>.Filter.Eq(s => s.Name, name);

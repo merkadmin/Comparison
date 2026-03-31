@@ -16,8 +16,8 @@ public class ProductItem
 	public List<string> Images { get; set; } = new();
 	public long BrandId { get; set; }
 	public ItemBrand? Brand { get; set; }
-	public long ItemCategoryId { get; set; }
-	public ItemCategory? Category { get; set; }
+	public List<long> CategoryIds { get; set; } = new();
+	public List<ItemCategory> Categories { get; set; } = new();
 	public long? ProductItemTypeId { get; set; }
 	public long? ProductInformationId { get; set; }
 	public List<StorePrice> Prices { get; set; } = new();

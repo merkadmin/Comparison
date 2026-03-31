@@ -70,56 +70,6 @@
             </div>
             <!--END::Brand-->
 
-            <!--START::Category-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">
-                {{ 'item.category' | translate }} <span class="text-danger">*</span>
-              </label>
-
-              <!--START::Selected Category Chips-->
-              @if (editDraft.categoryIds.length > 0) {
-                <div class="d-flex flex-wrap gap-2 mb-2">
-                  @for (id of editDraft.categoryIds; track id) {
-                    <span class="badge badge-light-primary d-flex align-items-center gap-1 fs-7 py-2 px-3">
-                      {{ getCategoryLabel(id) }}
-                      <button type="button" class="btn btn-icon btn-xs p-0 ms-1" (click)="removeCategoryId(id)">
-                        <i class="ki-duotone ki-cross fs-9 text-primary"><span class="path1"></span><span class="path2"></span></i>
-                      </button>
-                    </span>
-                  }
-                </div>
-              }
-              <!--END::Selected Category Chips-->
-
-              <!--START::Category Navigator-->
-              @if (currentLevelName) {
-                <div class="text-muted fs-8 mb-1">{{ currentLevelName }}</div>
-              }
-              <div class="input-group">
-                @if (categoryNavStack.length > 0) {
-                  <button type="button" class="btn btn-light px-3"
-                          title="{{ 'common.back' | translate }}"
-                          (click)="goBackCategory()">
-                    <i class="ki-duotone ki-arrow-left fs-4">
-                      <span class="path1"></span><span class="path2"></span>
-                    </i>
-                  </button>
-                }
-                <select class="form-select"
-                        [ngModel]="selectedCategoryInLevel"
-                        (ngModelChange)="onCategoryChange($event)">
-                  <option [ngValue]="null">— {{ 'item.selectCategory' | translate }} —</option>
-                  @for (c of currentLevelCategories; track c.id) {
-                    <option [ngValue]="c.id">
-                      {{ localize(c.name) }}{{ hasChildren(c.id!) ? ' ›' : '' }}
-                    </option>
-                  }
-                </select>
-              </div>
-              <!--END::Category Navigator-->
-            </div>
-            <!--END::Category-->
-
             <!--START::Product Types-->
             <div class="mb-4">
               <label class="form-label fw-semibold">{{ 'item.type' | translate }}</label>
@@ -214,23 +164,110 @@
           </div>
           <!--END::Right Column-->
 
+          <!--START::Category-->
+          <div class="col-12">
+            <label class="form-label fw-semibold">
+              {{ 'item.category' | translate }} <span class="text-danger">*</span>
+            </label>
+            <table class="table table-bordered align-middle mb-2">
+              <thead class="table-light">
+                <tr class="fw-semibold text-muted fs-7 text-uppercase">
+                  <th class="w-40px text-center">#</th>
+                  <th>{{ 'item.category' | translate }}</th>
+                  <th class="w-50px"></th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (categoryRows.length === 0) {
+                  <tr>
+                    <td colspan="3" class="text-center text-muted py-3">{{ 'common.noData' | translate }}</td>
+                  </tr>
+                }
+                @for (row of categoryRows; track row.id; let i = $index) {
+                  <tr>
+                    <td class="text-center text-muted fw-semibold">{{ i + 1 }}</td>
+                    <td>
+                      @if (row.categoryId !== null) {
+                        <!--START::Selected badge + clear-->
+                        <div class="d-flex align-items-center gap-2">
+                          <span class="badge badge-light-primary fs-7 py-2 px-3">
+                            {{ getCategoryPath(row.categoryId) }}
+                          </span>
+                          <button type="button" class="btn btn-icon btn-xs btn-light-danger"
+                            (click)="clearRowCategory(row.id)">
+                            <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+                          </button>
+                        </div>
+                        <!--END::Selected badge-->
+                      } @else {
+                        <!--START::Drill-down navigator-->
+                        @if (getRowLevelName(row.id)) {
+                          <div class="text-muted fs-8 mb-1">{{ getRowLevelName(row.id) }}</div>
+                        }
+                        <div class="input-group">
+                          @if (row.navStack.length > 0) {
+                            <button type="button" class="btn btn-light px-3"
+                                    title="{{ 'common.back' | translate }}"
+                                    (click)="rowGoBack(row.id)">
+                              <i class="ki-duotone ki-arrow-left fs-4">
+                                <span class="path1"></span><span class="path2"></span>
+                              </i>
+                            </button>
+                          }
+                          <select class="form-select form-select-sm"
+                            [ngModel]="null"
+                            (ngModelChange)="onRowCategorySelect(row.id, $event)">
+                            <option [ngValue]="null">— {{ 'item.selectCategory' | translate }} —</option>
+                            @for (c of getRowCurrentCategories(row.id); track c.id) {
+                              <option [ngValue]="c.id">
+                                {{ localize(c.name) }}{{ hasChildren(c.id!) ? ' ›' : '' }}
+                              </option>
+                            }
+                          </select>
+                        </div>
+                        <!--END::Drill-down navigator-->
+                      }
+                    </td>
+                    <td class="text-center">
+                      <button class="btn btn-icon btn-sm btn-light-danger" (click)="removeCategoryRow(row.id)">
+                        <i class="ki-duotone ki-trash fs-5">
+                          <span class="path1"></span><span class="path2"></span>
+                          <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                        </i>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            <button type="button" class="btn btn-sm btn-light-primary" (click)="addCategoryRow()">
+              <i class="ki-duotone ki-plus fs-4"><span class="path1"></span><span class="path2"></span></i>
+              {{ 'common.add' | translate }}
+            </button>
+          </div>
+          <!--END::Category-->
+
           <!--START::Specifications-->
           @if (specCategories.length > 0) {
             <div class="col-12">
               <h6 class="fw-bold text-gray-700 border-bottom pb-2 mb-3">{{ 'spec.title' | translate }}</h6>
-              <div class="accordion accordion-flush" id="specAccordion">
+              <div class="d-flex flex-column gap-2">
 
                 @for (cat of specCategories; track cat.id) {
-                  <div class="accordion-item">
-                    <h2 class="accordion-header">
-                      <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button"
-                        (click)="toggleSpecSection(catKey(cat.name))">
-                        {{ cat.name }}
-                      </button>
-                    </h2>
+                  <div class="border rounded">
+                    <div class="d-flex align-items-center justify-content-between px-4 py-3 cursor-pointer"
+                         style="cursor:pointer"
+                         (click)="toggleSpecSection(catKey(cat.name))">
+                      <span class="fw-semibold fs-6">{{ cat.name }}</span>
+                      <i class="ki-duotone fs-4"
+                         [class.ki-arrow-down]="!specSections[catKey(cat.name)]"
+                         [class.ki-arrow-up]="specSections[catKey(cat.name)]">
+                        <span class="path1"></span><span class="path2"></span>
+                      </i>
+                    </div>
 
                     @if (specSections[catKey(cat.name)]) {
-                      <div class="accordion-body py-3">
+                      <div class="px-4 pb-4 pt-2 border-top">
                         <div class="row g-3">
 
                           @for (entry of getFieldEntries(cat); track entry.key) {
@@ -343,6 +380,7 @@
             </div>
           }
           <!--END::Specifications-->
+
 
         </div>
       </div>

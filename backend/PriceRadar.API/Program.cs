@@ -68,7 +68,11 @@ builder.Services.AddSingleton<JwtService>();
 builder.Services.AddSingleton<DataSeeder>();
 builder.Services.AddControllers()
 	.AddJsonOptions(opts =>
-		opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
+	{
+		// Convert object? fields to plain CLR types so JsonElement never reaches MongoDB.
+		opts.JsonSerializerOptions.Converters.Add(new PriceRadar.API.Services.ObjectToClrConverter());
+		opts.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+	});
 builder.Services.AddOpenApi();
 
 var app = builder.Build();

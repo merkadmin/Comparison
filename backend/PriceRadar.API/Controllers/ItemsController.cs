@@ -122,7 +122,7 @@ public class ItemsController : BaseController<ProductItem, IProductItemRepositor
 			if (categoryName is not null)
 			{
 				var cat = categories.FirstOrDefault(c => string.Equals(c.Name.En, categoryName, StringComparison.OrdinalIgnoreCase));
-				if (cat is not null) item.ItemCategoryId = cat.Id;
+				if (cat is not null) item.CategoryIds = new List<long> { cat.Id };
 			}
 			await Repo.CreateAsync(item);
 		}
