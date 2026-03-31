@@ -480,7 +480,8 @@ public class DataSeeder
 				DBSpecificationCategory.Launch => new BsonDocument
 				{
 					{ "announcedDate", new BsonDocument { { "label", "Announced" }, { "type", "string" } } },
-					{ "status", new BsonDocument { { "label", "Status" }, { "type", "string" } } },
+					{ "status", new BsonDocument { { "label", "Status" }, { "type", "select" },
+						{ "values", new BsonArray { "Available", "Coming soon", "Discontinued", "Rumoured" } } } },
 					{ "releaseDate", new BsonDocument { { "label", "Release Date" }, { "type", "date" } } },
 				},
 				DBSpecificationCategory.Body => new BsonDocument
@@ -488,56 +489,231 @@ public class DataSeeder
 					{ "dimensions", new BsonDocument { { "label", "Dimensions" }, { "type", "string" } } },
 					{ "weight", new BsonDocument { { "label", "Weight" }, { "type", "string" } } },
 					{ "build", new BsonDocument { { "label", "Build" }, { "type", "string" } } },
-					{ "sim", new BsonDocument { { "label", "SIM" }, { "type", "string" } } },
+					{ "sim", new BsonDocument { { "label", "SIM" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"Nano-SIM", "Micro-SIM", "Mini-SIM",
+							"eSIM only",
+							"Nano-SIM + eSIM",
+							"Dual Nano-SIM", "Dual Nano-SIM (or eSIM)", "Dual Nano-SIM + eSIM",
+						} } } },
 					{ "esim", new BsonDocument { { "label", "eSIM" }, { "type", "boolean" } } },
 					{ "dualSim", new BsonDocument { { "label", "Dual SIM" }, { "type", "boolean" } } },
-					{ "durability", new BsonDocument { { "label", "Durability / IP Rating" }, { "type", "string" } } },
-					{ "milStd", new BsonDocument { { "label", "MIL-STD Rating" }, { "type", "string" } } },
+					{ "durability", new BsonDocument { { "label", "Durability / IP Rating" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"IP52", "IP53", "IP54", "IP55", "IP58",
+							"IP65", "IP67", "IP68", "IP69K",
+							"MIL-STD-810H",
+						} } } },
+					{ "milStd", new BsonDocument { { "label", "MIL-STD Rating" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"MIL-STD-810G", "MIL-STD-810H",
+						} } } },
 					{ "stylusSupport", new BsonDocument { { "label", "Stylus / S Pen" }, { "type", "string" } } },
 					{ "keyboardSupport", new BsonDocument { { "label", "Keyboard Support" }, { "type", "string" } } },
 					{ "foldable", new BsonDocument { { "label", "Foldable" }, { "type", "boolean" } } },
-					{ "hingeType", new BsonDocument { { "label", "Hinge Type" }, { "type", "string" } } },
+					{ "hingeType", new BsonDocument { { "label", "Hinge Type" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"Inward fold", "Outward fold", "Dual fold (Z-fold)", "Book fold (tent fold)",
+						} } } },
 					{ "coverDisplay", new BsonDocument { { "label", "Cover Display" }, { "type", "string" } } },
 				},
 				DBSpecificationCategory.Display => new BsonDocument
 				{
-					{ "type", new BsonDocument { { "label", "Type" }, { "type", "string" } } },
-					{ "size", new BsonDocument { { "label", "Size" }, { "type", "string" } } },
-					{ "resolution", new BsonDocument { { "label", "Resolution" }, { "type", "string" } } },
+					// ── Panel type ───────────────────────────────────────────────────
+					{ "type", new BsonDocument { { "label", "Type" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"IPS LCD", "TFT LCD", "PLS LCD", "LTPS IPS LCD",
+							"AMOLED", "Super AMOLED", "Super AMOLED Plus",
+							"Dynamic AMOLED", "Dynamic AMOLED 2X",
+							"Foldable Dynamic AMOLED 2X",
+							"Fluid AMOLED", "Quantum dot AMOLED",
+							"OLED", "LTPO OLED", "LTPO2 OLED", "LTPO3 OLED",
+							"P-OLED", "pOLED", "QD-OLED",
+							"ProMotion OLED",
+							"Super Retina XDR OLED", "Liquid Retina XDR OLED",
+							"Retina IPS LCD", "Liquid Retina IPS LCD",
+							"E Ink Carta", "E Ink Carta 1200",
+						} } } },
+
+					// ── Screen size ──────────────────────────────────────────────────
+					{ "size", new BsonDocument { { "label", "Size" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"4.0 inches", "4.3 inches", "4.7 inches",
+							"5.0 inches", "5.1 inches", "5.2 inches", "5.4 inches",
+							"5.5 inches", "5.6 inches", "5.7 inches", "5.8 inches", "5.9 inches",
+							"6.0 inches", "6.1 inches", "6.2 inches", "6.3 inches", "6.4 inches",
+							"6.5 inches", "6.6 inches", "6.67 inches", "6.7 inches",
+							"6.73 inches", "6.78 inches", "6.8 inches", "6.9 inches",
+							"7.0 inches", "7.1 inches", "7.2 inches", "7.3 inches",
+							"7.6 inches", "7.9 inches",
+							"8.0 inches", "8.3 inches", "8.7 inches",
+							"9.0 inches",
+							"10.1 inches", "10.4 inches", "10.5 inches",
+							"10.9 inches", "11.0 inches",
+							"12.4 inches", "12.9 inches", "13.0 inches",
+						} } } },
+
+					// ── Resolution ───────────────────────────────────────────────────
+					{ "resolution", new BsonDocument { { "label", "Resolution" }, { "type", "select" },
+						{ "values", new BsonArray {
+							// Low / HD
+							"480 x 854 pixels", "480 x 960 pixels", "540 x 960 pixels",
+							// HD+
+							"720 x 1280 pixels", "720 x 1520 pixels", "720 x 1560 pixels",
+							"720 x 1600 pixels", "720 x 1640 pixels",
+							// FHD / FHD+
+							"1080 x 1920 pixels", "1080 x 2160 pixels", "1080 x 2220 pixels",
+							"1080 x 2240 pixels", "1080 x 2280 pixels", "1080 x 2340 pixels",
+							"1080 x 2400 pixels", "1080 x 2408 pixels", "1080 x 2412 pixels",
+							"1080 x 2460 pixels", "1080 x 2520 pixels", "1080 x 2532 pixels",
+							"1080 x 2556 pixels", "1080 x 2778 pixels", "1080 x 2796 pixels",
+							// Apple (Super Retina XDR / Dynamic Island)
+							"1170 x 2532 pixels", "1179 x 2556 pixels",
+							"1206 x 2622 pixels", "1320 x 2868 pixels",
+							"1284 x 2778 pixels", "1290 x 2796 pixels",
+							// Google Pixel
+							"1344 x 2992 pixels",
+							// QHD / QHD+
+							"1260 x 2800 pixels",
+							"1440 x 2560 pixels", "1440 x 2960 pixels",
+							"1440 x 3040 pixels", "1440 x 3088 pixels",
+							"1440 x 3120 pixels", "1440 x 3200 pixels",
+							"1440 x 3216 pixels",
+							// Tablets
+							"1600 x 2560 pixels", "2048 x 2732 pixels",
+						} } } },
+
+					// ── Screen-to-body ratio (free text — too device-specific for a fixed list) ──
 					{ "screenToBodyRatio", new BsonDocument { { "label", "Screen-to-Body Ratio" }, { "type", "string" } } },
-					{ "protection", new BsonDocument { { "label", "Protection" }, { "type", "string" } } },
-					{ "refreshRate", new BsonDocument { { "label", "Refresh Rate" }, { "type", "string" } } },
+
+					// ── Glass protection ─────────────────────────────────────────────
+					{ "protection", new BsonDocument { { "label", "Protection" }, { "type", "select" },
+						{ "values", new BsonArray {
+							// Corning Gorilla Glass
+							"Corning Gorilla Glass 3",
+							"Corning Gorilla Glass 4",
+							"Corning Gorilla Glass 5",
+							"Corning Gorilla Glass 6",
+							"Corning Gorilla Glass 7",
+							"Corning Gorilla Glass Victus",
+							"Corning Gorilla Glass Victus 2",
+							"Corning Gorilla Glass Victus+",
+							"Corning Gorilla Glass Armor",
+							"Corning Gorilla Glass Armor 2",
+							// Asahi Dragontrail
+							"Dragontrail Pro",
+							"Dragontrail X",
+							"Asahi Dragontrail",
+							// Schott Xensation
+							"Schott Xensation Cover",
+							"Schott Xensation Alpha",
+							// AGC
+							"AGC DT-Star2",
+							"AGC DT-Star3",
+							// Other
+							"Sapphire crystal",
+							"Unknown glass protection",
+							"No protection",
+						} } } },
+
+					// ── Refresh rate ─────────────────────────────────────────────────
+					{ "refreshRate", new BsonDocument { { "label", "Refresh Rate" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"60Hz", "90Hz", "120Hz", "144Hz", "165Hz", "240Hz", "480Hz",
+						} } } },
+
 					{ "ltpo", new BsonDocument { { "label", "LTPO" }, { "type", "boolean" } } },
-					{ "adaptiveRefreshRate", new BsonDocument { { "label", "Adaptive Refresh Rate" }, { "type", "string" } } },
+
+					// ── Adaptive refresh rate ────────────────────────────────────────
+					{ "adaptiveRefreshRate", new BsonDocument { { "label", "Adaptive Refresh Rate" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"1-60Hz", "1-90Hz", "1-120Hz", "1-144Hz", "1-165Hz",
+							"10-120Hz", "10-144Hz",
+							"24-120Hz", "24-240Hz",
+							"48-120Hz", "60-120Hz", "60-144Hz",
+						} } } },
+
 					{ "brightnessTypical", new BsonDocument { { "label", "Brightness (typical)" }, { "type", "string" } } },
-					{ "brightnessPeak", new BsonDocument { { "label", "Brightness (peak)" }, { "type", "string" } } },
-					{ "hdr", new BsonDocument { { "label", "HDR Support" }, { "type", "string" } } },
+					{ "brightnessPeak",    new BsonDocument { { "label", "Brightness (peak)" },    { "type", "string" } } },
+
+					// ── HDR standard ─────────────────────────────────────────────────
+					{ "hdr", new BsonDocument { { "label", "HDR Support" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"HDR10", "HDR10+", "Dolby Vision", "HLG",
+							"HDR500", "HDR1000", "HDR Vivid", "DisplayP3",
+						} } } },
+
 					{ "alwaysOnDisplay", new BsonDocument { { "label", "Always-On Display" }, { "type", "boolean" } } },
-					{ "touchSamplingRate", new BsonDocument { { "label", "Touch Sampling Rate" }, { "type", "string" } } },
-					{ "colorDepth", new BsonDocument { { "label", "Color Depth" }, { "type", "string" } } },
+
+					// ── Touch sampling rate ──────────────────────────────────────────
+					{ "touchSamplingRate", new BsonDocument { { "label", "Touch Sampling Rate" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"120Hz", "180Hz", "240Hz", "300Hz",
+							"360Hz", "480Hz", "720Hz",
+							"1000Hz", "1200Hz", "2000Hz",
+						} } } },
+
+					// ── Color depth ──────────────────────────────────────────────────
+					{ "colorDepth", new BsonDocument { { "label", "Color Depth" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"8-bit", "10-bit", "10-bit (1B colors)", "12-bit",
+						} } } },
+
 					{ "ppi", new BsonDocument { { "label", "PPI Density" }, { "type", "string" } } },
 				},
 				DBSpecificationCategory.Platform => new BsonDocument
 				{
-					{ "os", new BsonDocument { { "label", "Operating System" }, { "type", "string" } } },
+					{ "os", new BsonDocument { { "label", "Operating System" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"Android 10", "Android 11", "Android 12", "Android 13", "Android 14", "Android 15",
+							"iOS 15", "iOS 16", "iOS 17", "iOS 18",
+							"iPadOS 16", "iPadOS 17", "iPadOS 18",
+							"HarmonyOS 3", "HarmonyOS 4", "HarmonyOS 5",
+							"Windows 11",
+							"KaiOS",
+						} } } },
 					{ "chipset", new BsonDocument { { "label", "Chipset" }, { "type", "string" } } },
 					{ "cpu", new BsonDocument { { "label", "CPU" }, { "type", "string" } } },
 					{ "gpu", new BsonDocument { { "label", "GPU" }, { "type", "string" } } },
-					{ "processNode", new BsonDocument { { "label", "Process Node" }, { "type", "string" } } },
+					{ "processNode", new BsonDocument { { "label", "Process Node" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"3 nm", "4 nm", "5 nm", "6 nm", "7 nm", "8 nm", "10 nm", "12 nm", "14 nm",
+						} } } },
 				},
 				DBSpecificationCategory.Memory => new BsonDocument
 				{
-					{ "ram", new BsonDocument { { "label", "RAM" }, { "type", "string" } } },
-					{ "ramOptions", new BsonDocument { { "label", "RAM Options" }, { "type", "string[]" } } },
-					{ "internalStorage", new BsonDocument { { "label", "Internal Storage" }, { "type", "string" } } },
-					{ "storageOptions", new BsonDocument { { "label", "Storage Options" }, { "type", "string[]" } } },
-					{ "storageType", new BsonDocument { { "label", "Storage Type" }, { "type", "string" } } },
-					{ "cardSlot", new BsonDocument { { "label", "Card Slot" }, { "type", "string" } } },
-					{ "cardSlotType", new BsonDocument { { "label", "Card Slot Type" }, { "type", "string" } } },
+					{ "ram", new BsonDocument { { "label", "RAM" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"1 GB", "2 GB", "3 GB", "4 GB", "6 GB",
+							"8 GB", "10 GB", "12 GB", "16 GB", "18 GB", "24 GB",
+						} } } },
+					{ "ramOptions", new BsonDocument { { "label", "RAM Options" }, { "type", "string[]" },
+						{ "values", new BsonArray {
+							"1 GB", "2 GB", "3 GB", "4 GB", "6 GB",
+							"8 GB", "10 GB", "12 GB", "16 GB", "18 GB", "24 GB",
+						} } } },
+					{ "internalStorage", new BsonDocument { { "label", "Internal Storage" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"16 GB", "32 GB", "64 GB", "128 GB", "256 GB", "512 GB", "1 TB", "2 TB",
+						} } } },
+					{ "storageOptions", new BsonDocument { { "label", "Storage Options" }, { "type", "string[]" },
+						{ "values", new BsonArray {
+							"16 GB", "32 GB", "64 GB", "128 GB", "256 GB", "512 GB", "1 TB", "2 TB",
+						} } } },
+					{ "storageType", new BsonDocument { { "label", "Storage Type" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"eMMC 5.1", "UFS 2.0", "UFS 2.1", "UFS 2.2", "UFS 3.0", "UFS 3.1", "UFS 4.0", "NVMe",
+						} } } },
+					{ "cardSlot", new BsonDocument { { "label", "Card Slot" }, { "type", "boolean" } } },
+					{ "cardSlotType", new BsonDocument { { "label", "Card Slot Type" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"microSD", "microSDHC", "microSDXC", "NanoMemory",
+						} } } },
 				},
 				DBSpecificationCategory.MainCamera => new BsonDocument
 				{
-					{ "setup", new BsonDocument { { "label", "Camera Setup" }, { "type", "string" } } },
+					{ "setup", new BsonDocument { { "label", "Camera Setup" }, { "type", "select" },
+						{ "values", new BsonArray { "Single", "Dual", "Triple", "Quad", "Penta" } } } },
 					{ "primary", new BsonDocument { { "label", "Primary" }, { "type", "string" } } },
 					{ "ultrawide", new BsonDocument { { "label", "Ultrawide" }, { "type", "string" } } },
 					{ "telephoto", new BsonDocument { { "label", "Telephoto" }, { "type", "string" } } },
@@ -549,12 +725,16 @@ public class DataSeeder
 					{ "thermalCamera", new BsonDocument { { "label", "Thermal Camera" }, { "type", "string" } } },
 					{ "features", new BsonDocument { { "label", "Features" }, { "type", "string" } } },
 					{ "video", new BsonDocument { { "label", "Video Recording" }, { "type", "string" } } },
-					{ "opticalZoom", new BsonDocument { { "label", "Optical Zoom" }, { "type", "string" } } },
+					{ "opticalZoom", new BsonDocument { { "label", "Optical Zoom" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"2x", "3x", "3.5x", "4x", "5x", "6x", "10x", "12x", "15x",
+						} } } },
 					{ "digitalZoom", new BsonDocument { { "label", "Digital Zoom" }, { "type", "string" } } },
 				},
 				DBSpecificationCategory.SelfieCamera => new BsonDocument
 				{
-					{ "setup", new BsonDocument { { "label", "Camera Setup" }, { "type", "string" } } },
+					{ "setup", new BsonDocument { { "label", "Camera Setup" }, { "type", "select" },
+						{ "values", new BsonArray { "Single", "Dual" } } } },
 					{ "primary", new BsonDocument { { "label", "Primary" }, { "type", "string" } } },
 					{ "secondary", new BsonDocument { { "label", "Secondary" }, { "type", "string" } } },
 					{ "features", new BsonDocument { { "label", "Features" }, { "type", "string" } } },
@@ -562,29 +742,55 @@ public class DataSeeder
 				},
 				DBSpecificationCategory.Sound => new BsonDocument
 				{
-					{ "loudspeaker", new BsonDocument { { "label", "Loudspeaker" }, { "type", "string" } } },
+					{ "loudspeaker", new BsonDocument { { "label", "Loudspeaker" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"Mono", "Stereo", "Stereo (2 speakers)",
+							"Stereo (3 speakers)", "Stereo (4 speakers)", "Quad speaker",
+						} } } },
 					{ "headphoneJack", new BsonDocument { { "label", "3.5mm Jack" }, { "type", "boolean" } } },
 					{ "audioCodecs", new BsonDocument { { "label", "Audio Codecs" }, { "type", "string" } } },
-					{ "tuning", new BsonDocument { { "label", "Tuning / Brand" }, { "type", "string" } } },
+					{ "tuning", new BsonDocument { { "label", "Tuning / Brand" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"Dolby Atmos", "Harman Kardon", "AKG", "Bang & Olufsen",
+							"Bose", "JBL", "Yamaha", "Sony 360 Reality Audio",
+							"Hi-Res Audio", "Dirac",
+						} } } },
 				},
 				DBSpecificationCategory.Comms => new BsonDocument
 				{
 					{ "wlan", new BsonDocument { { "label", "Wi-Fi" }, { "type", "string" } } },
-					{ "bluetooth", new BsonDocument { { "label", "Bluetooth" }, { "type", "string" } } },
+					{ "bluetooth", new BsonDocument { { "label", "Bluetooth" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"4.0", "4.1", "4.2", "5.0", "5.1", "5.2", "5.3", "5.4",
+						} } } },
 					{ "positioning", new BsonDocument { { "label", "Positioning / GPS" }, { "type", "string" } } },
 					{ "nfc", new BsonDocument { { "label", "NFC" }, { "type", "boolean" } } },
 					{ "infraredPort", new BsonDocument { { "label", "Infrared Port" }, { "type", "boolean" } } },
-					{ "fmRadio", new BsonDocument { { "label", "FM Radio" }, { "type", "string" } } },
-					{ "usb", new BsonDocument { { "label", "USB" }, { "type", "string" } } },
-					{ "thunderbolt", new BsonDocument { { "label", "Thunderbolt" }, { "type", "string" } } },
+					{ "fmRadio", new BsonDocument { { "label", "FM Radio" }, { "type", "boolean" } } },
+					{ "usb", new BsonDocument { { "label", "USB" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"microUSB 2.0",
+							"USB 2.0 Type-C", "USB 3.1 Type-C", "USB 3.2 Type-C", "USB 4.0 Type-C",
+							"Lightning",
+							"Thunderbolt 3 (USB-C)", "Thunderbolt 4 (USB-C)",
+						} } } },
+					{ "thunderbolt", new BsonDocument { { "label", "Thunderbolt" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"Thunderbolt 3", "Thunderbolt 4", "Thunderbolt 5",
+						} } } },
 					{ "uwb", new BsonDocument { { "label", "Ultra-Wideband (UWB)" }, { "type", "boolean" } } },
 					{ "satelliteConnectivity", new BsonDocument { { "label", "Satellite Connectivity" }, { "type", "string" } } },
 				},
 				DBSpecificationCategory.Features => new BsonDocument
 				{
 					{ "sensors", new BsonDocument { { "label", "Sensors" }, { "type", "string[]" } } },
-					{ "fingerprintType", new BsonDocument { { "label", "Fingerprint Type" }, { "type", "string" } } },
-					{ "faceRecognition", new BsonDocument { { "label", "Face Recognition" }, { "type", "string" } } },
+					{ "fingerprintType", new BsonDocument { { "label", "Fingerprint Type" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"In-display (optical)", "In-display (ultrasonic)",
+							"Side-mounted", "Rear-mounted", "None",
+						} } } },
+					{ "faceRecognition", new BsonDocument { { "label", "Face Recognition" }, { "type", "select" },
+						{ "values", new BsonArray { "2D", "3D (Face ID)", "No" } } } },
 					{ "aiFeatures", new BsonDocument { { "label", "AI Features" }, { "type", "string[]" } } },
 					{ "samsungDex", new BsonDocument { { "label", "Samsung DeX" }, { "type", "boolean" } } },
 					{ "desktopMode", new BsonDocument { { "label", "Desktop Mode" }, { "type", "string" } } },
@@ -592,10 +798,21 @@ public class DataSeeder
 				},
 				DBSpecificationCategory.Battery => new BsonDocument
 				{
-					{ "type", new BsonDocument { { "label", "Type" }, { "type", "string" } } },
+					{ "type", new BsonDocument { { "label", "Type" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"Li-Ion", "Li-Po", "Si-C (Silicon-Carbon)",
+							"Dual-cell Li-Ion", "Dual-cell Li-Po",
+						} } } },
 					{ "capacity", new BsonDocument { { "label", "Capacity" }, { "type", "string" } } },
-					{ "wiredCharging", new BsonDocument { { "label", "Wired Charging" }, { "type", "string" } } },
-					{ "wirelessCharging", new BsonDocument { { "label", "Wireless Charging" }, { "type", "string" } } },
+					{ "wiredCharging", new BsonDocument { { "label", "Wired Charging" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"5W", "10W", "15W", "18W", "25W", "33W", "45W",
+							"65W", "80W", "100W", "120W", "150W", "200W", "240W",
+						} } } },
+					{ "wirelessCharging", new BsonDocument { { "label", "Wireless Charging" }, { "type", "select" },
+						{ "values", new BsonArray {
+							"5W", "7.5W", "10W", "15W", "30W", "50W", "67W", "80W",
+						} } } },
 					{ "reverseWireless", new BsonDocument { { "label", "Reverse Wireless Charging" }, { "type", "boolean" } } },
 					{ "reverseWired", new BsonDocument { { "label", "Reverse Wired Charging" }, { "type", "boolean" } } },
 					{ "removable", new BsonDocument { { "label", "Removable" }, { "type", "boolean" } } },

@@ -288,6 +288,39 @@
                             }
                             <!--END::Date-->
 
+                            <!--START::Single select (strict predefined list)-->
+                            @else if (entry.def.type === 'select') {
+                              <div class="col-md-4">
+                                <label class="form-label fw-semibold">{{ entry.def.label }}</label>
+                                <select class="form-select"
+                                  [ngModel]="getSpecValue(catKey(cat.name), entry.key)"
+                                  (ngModelChange)="setSpecValue(catKey(cat.name), entry.key, $event)">
+                                  <option value="">—</option>
+                                  @for (val of entry.def.values; track val) {
+                                    <option [value]="val">{{ val }}</option>
+                                  }
+                                </select>
+                              </div>
+                            }
+                            <!--END::Single select-->
+
+                            <!--START::String with suggestions (datalist)-->
+                            @else if (entry.def.type === 'string' && entry.def.values?.length) {
+                              <div class="col-md-4">
+                                <label class="form-label fw-semibold">{{ entry.def.label }}</label>
+                                <input type="text" class="form-control"
+                                  [attr.list]="cat.id + '_' + entry.key"
+                                  [ngModel]="getSpecValue(catKey(cat.name), entry.key)"
+                                  (ngModelChange)="setSpecValue(catKey(cat.name), entry.key, $event)" />
+                                <datalist [id]="cat.id + '_' + entry.key">
+                                  @for (val of entry.def.values; track val) {
+                                    <option [value]="val">{{ val }}</option>
+                                  }
+                                </datalist>
+                              </div>
+                            }
+                            <!--END::String with suggestions-->
+
                             <!--START::Plain text string-->
                             @else {
                               <div class="col-md-4">
