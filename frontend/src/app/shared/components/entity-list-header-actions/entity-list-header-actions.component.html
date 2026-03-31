@@ -1,0 +1,30 @@
+<app-common-list-header-actions
+  [titleKey]="resolvedTitleKey"
+  [viewMode]="viewMode"
+  [selectedCount]="selectedCount"
+  [bulkMainLabelKey]="bulkMainLabelKey"
+  [bulkMainIconClass]="bulkMainIconClass"
+  [bulkMainColor]="bulkMainColor"
+  [bulkMenuItems]="bulkMenuItems"
+  [searchPlaceholderKey]="resolvedSearchPlaceholderKey"
+  [importing]="importing"
+  [importMenuItems]="importMenuItems"
+  [importSuccess]="importSuccess"
+  [importSuccessKey]="resolvedImportSuccessKey"
+  [importErrorMessage]="importErrorMessage"
+  (viewModeChange)="viewModeChange.emit($event)"
+  (bulkMainClick)="bulkMainClick.emit()"
+  (searchChange)="searchChange.emit($event)"
+  (fileSelected)="fileSelected.emit($event)"
+  (importSuccessClose)="importSuccessClose.emit()"
+  (importErrorClose)="importErrorClose.emit()">
+
+  <div slot="add">
+    @if (auth.isAdmin()) {
+      <button class="btn btn-sm btn-primary" (click)="create.emit()">
+        <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
+        {{ resolvedAddNewLabelKey | translate }}
+      </button>
+    }
+  </div>
+</app-common-list-header-actions>

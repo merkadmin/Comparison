@@ -215,462 +215,100 @@
           <!--END::Right Column-->
 
           <!--START::Specifications-->
-          <div class="col-12">
-            <h6 class="fw-bold text-gray-700 border-bottom pb-2 mb-3">{{ 'spec.title' | translate }}</h6>
-            <div class="accordion accordion-flush" id="specAccordion">
+          @if (specCategories.length > 0) {
+            <div class="col-12">
+              <h6 class="fw-bold text-gray-700 border-bottom pb-2 mb-3">{{ 'spec.title' | translate }}</h6>
+              <div class="accordion accordion-flush" id="specAccordion">
 
-              <!--START::Network-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('network')">
-                    {{ 'spec.network' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['network']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.technology' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.technology" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.speed' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.speed" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.bands2G' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.bands2G" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.bands3G' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.bands3G" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.bands4G' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.bands4G" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.bands5G' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.bands5G" />
-                    </div>
+                @for (cat of specCategories; track cat.id) {
+                  <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button"
+                        (click)="toggleSpecSection(catKey(cat.name))">
+                        {{ cat.name }}
+                      </button>
+                    </h2>
+
+                    @if (specSections[catKey(cat.name)]) {
+                      <div class="accordion-body py-3">
+                        <div class="row g-3">
+
+                          @for (entry of getFieldEntries(cat); track entry.key) {
+
+                            <!--START::Multi-select with predefined values (button group)-->
+                            @if (entry.def.type === 'string[]' && entry.def.values?.length) {
+                              <div class="col-12">
+                                <label class="form-label fw-semibold mb-2">{{ entry.def.label }}</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                  @for (val of entry.def.values; track val) {
+                                    <button type="button" class="btn btn-sm"
+                                      [class.btn-primary]="isSpecSelected(catKey(cat.name), entry.key, val)"
+                                      [class.btn-light]="!isSpecSelected(catKey(cat.name), entry.key, val)"
+                                      (click)="toggleSpecArray(catKey(cat.name), entry.key, val)">
+                                      {{ val }}
+                                    </button>
+                                  }
+                                </div>
+                              </div>
+                            }
+                            <!--END::Multi-select with predefined values-->
+
+                            <!--START::Free-text array (comma-separated input)-->
+                            @else if (entry.def.type === 'string[]') {
+                              <div class="col-md-6">
+                                <label class="form-label fw-semibold">{{ entry.def.label }}</label>
+                                <input type="text" class="form-control" placeholder="Comma-separated"
+                                  [ngModel]="getSpecArrayAsString(catKey(cat.name), entry.key)"
+                                  (ngModelChange)="setSpecArrayFromString(catKey(cat.name), entry.key, $event)" />
+                              </div>
+                            }
+                            <!--END::Free-text array-->
+
+                            <!--START::Boolean (checkbox)-->
+                            @else if (entry.def.type === 'boolean') {
+                              <div class="col-md-4 d-flex align-items-end pb-2">
+                                <div class="form-check">
+                                  <input class="form-check-input" type="checkbox"
+                                    [ngModel]="getSpecBool(catKey(cat.name), entry.key)"
+                                    (ngModelChange)="setSpecBool(catKey(cat.name), entry.key, $event)" />
+                                  <label class="form-check-label fw-semibold">{{ entry.def.label }}</label>
+                                </div>
+                              </div>
+                            }
+                            <!--END::Boolean-->
+
+                            <!--START::Date-->
+                            @else if (entry.def.type === 'date') {
+                              <div class="col-md-4">
+                                <label class="form-label fw-semibold">{{ entry.def.label }}</label>
+                                <input type="date" class="form-control"
+                                  [ngModel]="getSpecValue(catKey(cat.name), entry.key)"
+                                  (ngModelChange)="setSpecValue(catKey(cat.name), entry.key, $event)" />
+                              </div>
+                            }
+                            <!--END::Date-->
+
+                            <!--START::Plain text string-->
+                            @else {
+                              <div class="col-md-4">
+                                <label class="form-label fw-semibold">{{ entry.def.label }}</label>
+                                <input type="text" class="form-control"
+                                  [ngModel]="getSpecValue(catKey(cat.name), entry.key)"
+                                  (ngModelChange)="setSpecValue(catKey(cat.name), entry.key, $event)" />
+                              </div>
+                            }
+                            <!--END::Plain text string-->
+
+                          }
+                        </div>
+                      </div>
+                    }
                   </div>
-                </div>
                 }
-              </div>
-              <!--END::Network-->
 
-              <!--START::Body-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('body')">
-                    {{ 'spec.body' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['body']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.dimensions' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.dimensions" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.weight' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.weight" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.sim' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.sim" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.build' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.build" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.durability' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.durability" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.stylusSupport' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.stylusSupport" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.coverDisplay' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.coverDisplay" />
-                    </div>
-                    <div class="col-md-4 d-flex gap-4 align-items-end pb-2">
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.esim" /><label class="form-check-label">{{ 'spec.esim' | translate }}</label></div>
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.dualSim" /><label class="form-check-label">{{ 'spec.dualSim' | translate }}</label></div>
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.foldable" /><label class="form-check-label">{{ 'spec.foldable' | translate }}</label></div>
-                    </div>
-                  </div>
-                </div>
-                }
               </div>
-              <!--END::Body-->
-
-              <!--START::Display-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('display')">
-                    {{ 'spec.display' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['display']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.displayType' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.displayType" />
-                    </div>
-                    <div class="col-md-3">
-                      <label class="form-label fw-semibold">{{ 'spec.displaySize' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.displaySize" />
-                    </div>
-                    <div class="col-md-3">
-                      <label class="form-label fw-semibold">{{ 'spec.refreshRate' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.refreshRate" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.displayResolution' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.displayResolution" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.displayProtection' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.displayProtection" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.ppi' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.ppi" />
-                    </div>
-                    <div class="col-md-3">
-                      <label class="form-label fw-semibold">{{ 'spec.brightnessTypical' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.brightnessTypical" />
-                    </div>
-                    <div class="col-md-3">
-                      <label class="form-label fw-semibold">{{ 'spec.brightnessPeak' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.brightnessPeak" />
-                    </div>
-                    <div class="col-md-3">
-                      <label class="form-label fw-semibold">{{ 'spec.hdr' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.hdr" />
-                    </div>
-                    <div class="col-md-3">
-                      <label class="form-label fw-semibold">{{ 'spec.screenToBodyRatio' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.screenToBodyRatio" />
-                    </div>
-                    <div class="col-md-3 d-flex align-items-end pb-2">
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.alwaysOnDisplay" /><label class="form-check-label">{{ 'spec.alwaysOnDisplay' | translate }}</label></div>
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Display-->
-
-              <!--START::Platform-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('platform')">
-                    {{ 'spec.platform' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['platform']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.os' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.os" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.chipset' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.chipset" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.cpu' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cpu" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.gpu' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.gpu" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.processNode' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.processNode" />
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Platform-->
-
-              <!--START::Memory-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('memory')">
-                    {{ 'spec.memory' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['memory']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.ram' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.ram" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.internalStorage' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.internalStorage" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.storageType' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.storageType" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.cardSlot' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cardSlot" />
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Memory-->
-
-              <!--START::Main Camera-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('mainCamera')">
-                    {{ 'spec.mainCamera' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['mainCamera']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.cameraSetup' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cameraSetup" />
-                    </div>
-                    <div class="col-md-8">
-                      <label class="form-label fw-semibold">{{ 'spec.cameraPrimary' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cameraPrimary" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.cameraUltrawide' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cameraUltrawide" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.cameraTelephoto' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cameraTelephoto" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.cameraMacro' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cameraMacro" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.opticalZoom' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.opticalZoom" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.digitalZoom' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.digitalZoom" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.cameraFeatures' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cameraFeatures" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.cameraVideo' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.cameraVideo" />
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Main Camera-->
-
-              <!--START::Selfie Camera-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('selfie')">
-                    {{ 'spec.selfieCamera' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['selfie']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.selfiePrimary' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.selfiePrimary" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.selfieVideo' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.selfieVideo" />
-                    </div>
-                    <div class="col-md-12">
-                      <label class="form-label fw-semibold">{{ 'spec.selfieFeatures' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.selfieFeatures" />
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Selfie Camera-->
-
-              <!--START::Sound-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('sound')">
-                    {{ 'spec.sound' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['sound']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.loudspeaker' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.loudspeaker" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.audioCodecs' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.audioCodecs" />
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end pb-2">
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.headphoneJack" /><label class="form-check-label">{{ 'spec.headphoneJack' | translate }}</label></div>
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Sound-->
-
-              <!--START::Comms-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('comms')">
-                    {{ 'spec.comms' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['comms']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.wlan' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.wlan" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.bluetooth' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.bluetooth" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.positioning' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.positioning" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.usb' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.usb" />
-                    </div>
-                    <div class="col-md-6 d-flex gap-4 align-items-end pb-2">
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.nfc" /><label class="form-check-label">{{ 'spec.nfc' | translate }}</label></div>
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.uwb" /><label class="form-check-label">{{ 'spec.uwb' | translate }}</label></div>
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Comms-->
-
-              <!--START::Features-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('features')">
-                    {{ 'spec.features' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['features']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.fingerprintType' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.fingerprintType" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.faceRecognition' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.faceRecognition" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.sensors' | translate }}</label>
-                      <input type="text" class="form-control" placeholder="Comma-separated" [ngModel]="specs.sensors?.join(', ')" (ngModelChange)="specs.sensors = $event ? $event.split(',').map(s => s.trim()) : []" />
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Features-->
-
-              <!--START::Battery-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('battery')">
-                    {{ 'spec.battery' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['battery']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.batteryType' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.batteryType" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.batteryCapacity' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.batteryCapacity" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.wiredCharging' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.wiredCharging" />
-                    </div>
-                    <div class="col-md-6">
-                      <label class="form-label fw-semibold">{{ 'spec.wirelessCharging' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.wirelessCharging" />
-                    </div>
-                    <div class="col-md-6 d-flex align-items-end pb-2">
-                      <div class="form-check"><input class="form-check-input" type="checkbox" [(ngModel)]="specs.reverseWireless" /><label class="form-check-label">{{ 'spec.reverseWireless' | translate }}</label></div>
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Battery-->
-
-              <!--START::Misc-->
-              <div class="accordion-item">
-                <h2 class="accordion-header">
-                  <button class="accordion-button collapsed py-3 fs-6 fw-semibold" type="button" (click)="toggleSpecSection('misc')">
-                    {{ 'spec.misc' | translate }}
-                  </button>
-                </h2>
-                @if (specSections['misc']) {
-                <div class="accordion-body py-3">
-                  <div class="row g-3">
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.colors' | translate }}</label>
-                      <input type="text" class="form-control" placeholder="Comma-separated" [ngModel]="specs.colors?.join(', ')" (ngModelChange)="specs.colors = $event ? $event.split(',').map(s => s.trim()) : []" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.modelNumbers' | translate }}</label>
-                      <input type="text" class="form-control" placeholder="Comma-separated" [ngModel]="specs.modelNumbers?.join(', ')" (ngModelChange)="specs.modelNumbers = $event ? $event.split(',').map(s => s.trim()) : []" />
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label fw-semibold">{{ 'spec.price' | translate }}</label>
-                      <input type="text" class="form-control" [(ngModel)]="specs.price" />
-                    </div>
-                  </div>
-                </div>
-                }
-              </div>
-              <!--END::Misc-->
-
             </div>
-          </div>
+          }
           <!--END::Specifications-->
 
         </div>

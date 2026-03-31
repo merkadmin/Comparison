@@ -5,7 +5,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../../core/services/translate.service';
 import { ItemImageService } from '../../../../core/services/item-image.service';
 import { Item } from '../../../../core/models/item.model';
-import { ProductItemSpecification } from '../../../../core/models/product-item-specification.model';
+import { SpecificationCategory, SpecificationFieldDef } from '../../../../core/services/static-lookup.service';
 import { IItemCategory } from '../../../../core/models/interfaces/IItemCategory';
 import { MultiLangString } from '../../../../core/models/interfaces/LocalizedString';
 import { ItemBrand } from '../../../../core/models/item-brand.model';
@@ -27,6 +27,7 @@ export class ItemListOperationComponent implements OnChanges {
   @Input() brands: ItemBrand[] = [];
   @Input() categories: IItemCategory[] = [];
   @Input() productTypes: ProductType[] = [];
+  @Input() specCategories: SpecificationCategory[] = [];
   @Input() saving = false;
 
   /** Locally staged files selected by the user — not yet uploaded to the server. */
@@ -48,9 +49,65 @@ export class ItemListOperationComponent implements OnChanges {
     this.specSections[key] = !this.specSections[key];
   }
 
-  get specs(): ProductItemSpecification {
+  /** Get or initialize the spec data for a category. */
+  getCategorySpecs(categoryName: string): Record<string, any> {
     if (!this.editDraft.specifications) this.editDraft.specifications = {};
-    return this.editDraft.specifications;
+    const key = categoryName.charAt(0).toLowerCase() + categoryName.slice(1);
+    if (!this.editDraft.specifications[key]) this.editDraft.specifications[key] = {};
+    return this.editDraft.specifications[key];
+  }
+
+  /** Category key used for data storage (camelCase). */
+  catKey(name: string): string {
+    return name.charAt(0).toLowerCase() + name.slice(1);
+  }
+
+  /** Get the list of field entries for a spec category. */
+  getFieldEntries(cat: SpecificationCategory): { key: string; def: SpecificationFieldDef }[] {
+    return Object.entries(cat.fields).map(([key, def]) => ({ key, def }));
+  }
+
+  /** Toggle a value in a string-array spec field within a category. */
+  toggleSpecArray(categoryName: string, field: string, value: string): void {
+    const specs = this.getCategorySpecs(categoryName);
+    const arr: string[] = specs[field] ?? [];
+    const idx = arr.indexOf(value);
+    if (idx >= 0) { arr.splice(idx, 1); } else { arr.push(value); }
+    specs[field] = [...arr];
+  }
+
+  isSpecSelected(categoryName: string, field: string, value: string): boolean {
+    const specs = this.getCategorySpecs(categoryName);
+    return (specs[field] as string[] | undefined)?.includes(value) ?? false;
+  }
+
+  /** Get/set a string field value within a category. */
+  getSpecValue(categoryName: string, field: string): any {
+    return this.getCategorySpecs(categoryName)[field] ?? '';
+  }
+
+  setSpecValue(categoryName: string, field: string, value: any): void {
+    this.getCategorySpecs(categoryName)[field] = value;
+  }
+
+  /** Get/set a boolean field value within a category. */
+  getSpecBool(categoryName: string, field: string): boolean {
+    return this.getCategorySpecs(categoryName)[field] ?? false;
+  }
+
+  setSpecBool(categoryName: string, field: string, value: boolean): void {
+    this.getCategorySpecs(categoryName)[field] = value;
+  }
+
+  /** Get a comma-separated string[] field as a display string. */
+  getSpecArrayAsString(categoryName: string, field: string): string {
+    const arr = this.getCategorySpecs(categoryName)[field];
+    return Array.isArray(arr) ? arr.join(', ') : '';
+  }
+
+  /** Set a string[] field from a comma-separated input. */
+  setSpecArrayFromString(categoryName: string, field: string, value: string): void {
+    this.getCategorySpecs(categoryName)[field] = value ? value.split(',').map(s => s.trim()) : [];
   }
 
   ngOnChanges(changes: SimpleChanges): void {

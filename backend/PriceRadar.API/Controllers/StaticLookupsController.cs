@@ -24,6 +24,14 @@ public class StaticLookupsController(MongoDbContext context) : ControllerBase
 	[HttpGet("user-privileges")]
 	public Task<IActionResult> GetUserPrivileges() => GetAll(context.UserPrivileges);
 
+	[HttpGet("specification-categories")]
+	public async Task<IActionResult> GetSpecificationCategories()
+	{
+		var notDeleted = Builders<SpecificationLookupDocument>.Filter.Eq(d => d.IsDeleted, false);
+		var docs = await context.SpecificationCategories.Find(notDeleted).SortBy(d => d.Id).ToListAsync();
+		return Ok(docs.Select(d => d.ToDto()));
+	}
+
 	private async Task<IActionResult> GetAll(IMongoCollection<StaticLookupDocument> col)
 	{
 		var notDeleted = Builders<StaticLookupDocument>.Filter.Eq(d => d.IsDeleted, false);

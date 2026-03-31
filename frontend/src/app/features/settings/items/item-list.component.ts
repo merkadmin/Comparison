@@ -11,6 +11,7 @@ import { ItemCategoryService } from '../../../core/services/item-category.servic
 import { ItemBrandService } from '../../../core/services/item-brand.service';
 import { ItemImageService } from '../../../core/services/item-image.service';
 import { ProductTypeService } from '../../../core/services/product-type.service';
+import { StaticLookupService, SpecificationCategory } from '../../../core/services/static-lookup.service';
 import { UserActivityService } from '../../../core/services/user-activity.service';
 import { Item } from '../../../core/models/item.model';
 import { ItemBestPrice } from '../../../core/models/store-item.model';
@@ -52,6 +53,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   private brandService = inject(ItemBrandService);
   private imageService = inject(ItemImageService);
   private typeService = inject(ProductTypeService);
+  private lookupService = inject(StaticLookupService);
   private translate = inject(TranslateService);
   private toast = inject(ToastService);
   private route = inject(ActivatedRoute);
@@ -78,6 +80,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
   uploadingImages = signal(false);
   @ViewChild('operationComp') operationComp?: ItemListOperationComponent;
   productTypes = signal<ProductType[]>([]);
+  specCategories = signal<SpecificationCategory[]>([]);
   compareIds = signal<Set<number>>(new Set());
 
   openCreate(): void {
@@ -279,6 +282,7 @@ export class ItemListComponent implements OnInit, OnDestroy {
     this.brandService.getAll().subscribe({ next: b => this.brands.set(b), error: () => { } });
     this.itemService.getBestPrices().subscribe({ next: bp => this.bestPrices.set(bp), error: () => { } });
     this.typeService.getAll().subscribe({ next: t => this.productTypes.set(t), error: () => { } });
+    this.lookupService.getSpecificationCategories().subscribe({ next: sc => this.specCategories.set(sc), error: () => { } });
     this.userActivity.loadAll();
 
     this.querySub = this.route.queryParamMap.subscribe(params => {

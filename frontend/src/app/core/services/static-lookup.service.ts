@@ -8,6 +8,19 @@ export interface StaticLookupItem {
   isActive: boolean;
 }
 
+export interface SpecificationFieldDef {
+  label: string;
+  type: string;
+  values?: string[];
+}
+
+export interface SpecificationCategory {
+  id: number;
+  name: string;
+  fields: Record<string, SpecificationFieldDef>;
+  isActive: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class StaticLookupService {
   private api = inject(ApiService);
@@ -17,4 +30,5 @@ export class StaticLookupService {
   getPriceHistoryTypes(): Observable<StaticLookupItem[]> { return this.api.get('/static/price-history-types'); }
   getSellingPriceTypes(): Observable<StaticLookupItem[]> { return this.api.get('/static/selling-price-types'); }
   getUserPrivileges(): Observable<StaticLookupItem[]>    { return this.api.get('/static/user-privileges'); }
+  getSpecificationCategories(): Observable<SpecificationCategory[]> { return this.api.get('/static/specification-categories'); }
 }

@@ -10,14 +10,14 @@ import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
-import { CommonListHeaderActions } from '../../../shared/components/common-list-header-actions/common-list-header-actions';
+import { EntityListHeaderActionsComponent } from '../../../shared/components/entity-list-header-actions/entity-list-header-actions.component';
 import { ItemCategoryListOperationComponent } from './item-category-list-operation/item-category-list-operation.component';
 import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
 
 @Component({
   selector: 'app-item-category-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonListHeaderActions, ItemCategoryListOperationComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, EntityListHeaderActionsComponent, ItemCategoryListOperationComponent],
   templateUrl: './item-category-list.component.html',
   styleUrl: './item-category-list.component.less',
 })

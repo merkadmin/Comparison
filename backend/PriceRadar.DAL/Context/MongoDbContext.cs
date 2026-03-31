@@ -78,6 +78,10 @@ public IMongoCollection<ItemPackageDocument> ItemPackages =>
 	public IMongoCollection<StaticLookupDocument> UserPrivileges =>
 		_database.GetCollection<StaticLookupDocument>("UserPrivilege_s");
 
+	// ── Specification category lookups (JSON-based) ─────────────────────────
+	public IMongoCollection<SpecificationLookupDocument> SpecificationCategories =>
+		_database.GetCollection<SpecificationLookupDocument>("SpecificationCategory_s");
+
 	public async Task<long> GetNextSequenceAsync(string name)
 	{
 		var filter = Builders<SequenceDocument>.Filter.Eq(s => s.Name, name);

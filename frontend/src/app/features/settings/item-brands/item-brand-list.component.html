@@ -1,25 +1,14 @@
 <div class="card">
   <!--START:: Header Actions for admin users-->
-  <app-common-list-header-actions titleKey="brand.title" [viewMode]="auth.isAdmin() ? viewMode() : undefined" [selectedCount]="selectedIds().size"
+  <app-entity-list-header-actions entityPrefix="brand" [viewMode]="auth.isAdmin() ? viewMode() : undefined" [selectedCount]="selectedIds().size"
     bulkMainLabelKey="common.deactivate" bulkMainIconClass="ki-minus-circle" bulkMainColor="light-danger"
     [bulkMenuItems]="bulkMenuItems" searchPlaceholderKey="brand.searchPlaceholder" [importing]="importing()"
     [importMenuItems]="importMenuItems" importSuccessKey="brand.importSuccess" [importSuccess]="importSuccess()"
     [importErrorMessage]="importError()" (viewModeChange)="viewMode.set($event)" (bulkMainClick)="deactivateSelected()"
     (searchChange)="searchTerm.set($event)" (fileSelected)="onFileSelected($event)"
-    (importSuccessClose)="importSuccess.set(false)" (importErrorClose)="importError.set(null)">
-
-    <!--START::Add Button (Admin)-->
-    <div slot="add">
-      @if (auth.isAdmin()) {
-      <button class="btn btn-sm btn-primary" (click)="openCreate()">
-        <i class="ki-duotone ki-plus fs-2"><span class="path1"></span><span class="path2"></span></i>
-        {{ 'brand.addNew' | translate }}
-      </button>
-      }
-    </div>
-    <!--END::Add Button (Admin)-->
-
-  </app-common-list-header-actions>
+    (importSuccessClose)="importSuccess.set(false)" (importErrorClose)="importError.set(null)"
+    (create)="openCreate()">
+  </app-entity-list-header-actions>
   <!--END:: Header Actions for admin users-->
 
   <div class="card-body py-4">

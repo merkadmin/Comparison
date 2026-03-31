@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using PriceRadar.Core.enums;
 using PriceRadar.Core.Interfaces;
@@ -381,11 +382,11 @@ public class DataSeeder
 		await SeedLookup(_context.PriceHistoryTypes, Enum.GetValues<DBPriceHistoryType>()
 			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
 
-		//await SeedLookup(_context.SellingPriceTypes, Enum.GetValues<SellingPriceType>()
-		//	.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
-
 		await SeedLookup(_context.UserPrivileges, Enum.GetValues<DBUserPrivilege>()
 			.Select(v => StaticLookupDocument.From((long)v, v.ToString())));
+
+		// ── Specification category lookups (JSON-based) ───────────────────────
+		await SeedSpecificationLookups();
 
 		Console.WriteLine("[Seeder] Static lookups seeded.");
 	}
@@ -394,9 +395,218 @@ public class DataSeeder
 		IMongoCollection<StaticLookupDocument> col,
 		IEnumerable<StaticLookupDocument> items)
 	{
-		if (await col.CountDocumentsAsync(_ => true) > 0) return;
-		await col.InsertManyAsync(items);
+		var enumItems = items.ToList();
+		var existing = await col.Find(_ => true).ToListAsync();
+		var existingById = existing.ToDictionary(e => e.Id);
+		var enumIds = new HashSet<long>(enumItems.Select(e => e.Id));
+
+		// Insert new entries
+		var toInsert = enumItems.Where(e => !existingById.ContainsKey(e.Id)).ToList();
+		if (toInsert.Count > 0)
+			await col.InsertManyAsync(toInsert);
+
+		// Update existing entries whose name changed
+		foreach (var item in enumItems)
+		{
+			if (existingById.TryGetValue(item.Id, out var ex) && ex.Name != item.Name)
+			{
+				await col.UpdateOneAsync(
+					d => d.Id == item.Id,
+					Builders<StaticLookupDocument>.Update.Set(d => d.Name, item.Name));
+			}
+		}
+
+		// Delete entries that no longer exist in the enum
+		var toDelete = existing.Where(e => !enumIds.Contains(e.Id)).Select(e => e.Id).ToList();
+		if (toDelete.Count > 0)
+			await col.DeleteManyAsync(d => toDelete.Contains(d.Id));
 	}
+
+	private async Task SeedSpecificationLookups()
+	{
+		var col = _context.SpecificationCategories;
+		var specItems = SpecificationCategoryFields().ToList();
+		var existing = await col.Find(_ => true).ToListAsync();
+		var existingById = existing.ToDictionary(e => e.Id);
+		var enumIds = new HashSet<long>(specItems.Select(e => e.Id));
+
+		// Insert new entries
+		var toInsert = specItems.Where(e => !existingById.ContainsKey(e.Id)).ToList();
+		if (toInsert.Count > 0)
+			await col.InsertManyAsync(toInsert);
+
+		// Update existing entries whose name or json changed
+		foreach (var item in specItems)
+		{
+			if (existingById.TryGetValue(item.Id, out var ex)
+				&& (ex.Name != item.Name || ex.Json != item.Json))
+			{
+				await col.UpdateOneAsync(
+					d => d.Id == item.Id,
+					Builders<SpecificationLookupDocument>.Update
+						.Set(d => d.Name, item.Name)
+						.Set(d => d.Json, item.Json));
+			}
+		}
+
+		// Delete entries that no longer exist in the enum
+		var toDelete = existing.Where(e => !enumIds.Contains(e.Id)).Select(e => e.Id).ToList();
+		if (toDelete.Count > 0)
+			await col.DeleteManyAsync(d => toDelete.Contains(d.Id));
+	}
+
+	private static IEnumerable<SpecificationLookupDocument> SpecificationCategoryFields() =>
+		Enum.GetValues<DBSpecificationCategory>().Select(v =>
+		{
+			var json = v switch
+			{
+				DBSpecificationCategory.Network => new BsonDocument
+				{
+					{ "technology", new BsonDocument { { "label", "Technology" }, { "type", "string[]" },
+						{ "values", new BsonArray(Enum.GetValues<DBNetworkTechnology>().Select(e => e.ToString())) } } },
+					{ "bands2G", new BsonDocument { { "label", "2G Bands" }, { "type", "string[]" },
+						{ "values", new BsonArray(Enum.GetValues<DBNetworkBand2G>().Select(e => e.ToString())) } } },
+					{ "bands3G", new BsonDocument { { "label", "3G Bands" }, { "type", "string[]" },
+						{ "values", new BsonArray(Enum.GetValues<DBNetworkBand3G>().Select(e => e.ToString())) } } },
+					{ "bands4G", new BsonDocument { { "label", "4G LTE Bands" }, { "type", "string[]" },
+						{ "values", new BsonArray(Enum.GetValues<DBNetworkBand4G>().Select(e => e.ToString())) } } },
+					{ "bands5G", new BsonDocument { { "label", "5G Bands" }, { "type", "string[]" },
+						{ "values", new BsonArray(Enum.GetValues<DBNetworkBand5G>().Select(e => e.ToString())) } } },
+					{ "speed", new BsonDocument { { "label", "Speed" }, { "type", "string[]" },
+						{ "values", new BsonArray(Enum.GetValues<DBNetworkSpeed>().Select(e => e.ToString())) } } },
+					{ "gprs", new BsonDocument { { "label", "GPRS" }, { "type", "string" } } },
+					{ "edge", new BsonDocument { { "label", "EDGE" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Launch => new BsonDocument
+				{
+					{ "announcedDate", new BsonDocument { { "label", "Announced" }, { "type", "string" } } },
+					{ "status", new BsonDocument { { "label", "Status" }, { "type", "string" } } },
+					{ "releaseDate", new BsonDocument { { "label", "Release Date" }, { "type", "date" } } },
+				},
+				DBSpecificationCategory.Body => new BsonDocument
+				{
+					{ "dimensions", new BsonDocument { { "label", "Dimensions" }, { "type", "string" } } },
+					{ "weight", new BsonDocument { { "label", "Weight" }, { "type", "string" } } },
+					{ "build", new BsonDocument { { "label", "Build" }, { "type", "string" } } },
+					{ "sim", new BsonDocument { { "label", "SIM" }, { "type", "string" } } },
+					{ "esim", new BsonDocument { { "label", "eSIM" }, { "type", "boolean" } } },
+					{ "dualSim", new BsonDocument { { "label", "Dual SIM" }, { "type", "boolean" } } },
+					{ "durability", new BsonDocument { { "label", "Durability / IP Rating" }, { "type", "string" } } },
+					{ "milStd", new BsonDocument { { "label", "MIL-STD Rating" }, { "type", "string" } } },
+					{ "stylusSupport", new BsonDocument { { "label", "Stylus / S Pen" }, { "type", "string" } } },
+					{ "keyboardSupport", new BsonDocument { { "label", "Keyboard Support" }, { "type", "string" } } },
+					{ "foldable", new BsonDocument { { "label", "Foldable" }, { "type", "boolean" } } },
+					{ "hingeType", new BsonDocument { { "label", "Hinge Type" }, { "type", "string" } } },
+					{ "coverDisplay", new BsonDocument { { "label", "Cover Display" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Display => new BsonDocument
+				{
+					{ "type", new BsonDocument { { "label", "Type" }, { "type", "string" } } },
+					{ "size", new BsonDocument { { "label", "Size" }, { "type", "string" } } },
+					{ "resolution", new BsonDocument { { "label", "Resolution" }, { "type", "string" } } },
+					{ "screenToBodyRatio", new BsonDocument { { "label", "Screen-to-Body Ratio" }, { "type", "string" } } },
+					{ "protection", new BsonDocument { { "label", "Protection" }, { "type", "string" } } },
+					{ "refreshRate", new BsonDocument { { "label", "Refresh Rate" }, { "type", "string" } } },
+					{ "ltpo", new BsonDocument { { "label", "LTPO" }, { "type", "boolean" } } },
+					{ "adaptiveRefreshRate", new BsonDocument { { "label", "Adaptive Refresh Rate" }, { "type", "string" } } },
+					{ "brightnessTypical", new BsonDocument { { "label", "Brightness (typical)" }, { "type", "string" } } },
+					{ "brightnessPeak", new BsonDocument { { "label", "Brightness (peak)" }, { "type", "string" } } },
+					{ "hdr", new BsonDocument { { "label", "HDR Support" }, { "type", "string" } } },
+					{ "alwaysOnDisplay", new BsonDocument { { "label", "Always-On Display" }, { "type", "boolean" } } },
+					{ "touchSamplingRate", new BsonDocument { { "label", "Touch Sampling Rate" }, { "type", "string" } } },
+					{ "colorDepth", new BsonDocument { { "label", "Color Depth" }, { "type", "string" } } },
+					{ "ppi", new BsonDocument { { "label", "PPI Density" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Platform => new BsonDocument
+				{
+					{ "os", new BsonDocument { { "label", "Operating System" }, { "type", "string" } } },
+					{ "chipset", new BsonDocument { { "label", "Chipset" }, { "type", "string" } } },
+					{ "cpu", new BsonDocument { { "label", "CPU" }, { "type", "string" } } },
+					{ "gpu", new BsonDocument { { "label", "GPU" }, { "type", "string" } } },
+					{ "processNode", new BsonDocument { { "label", "Process Node" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Memory => new BsonDocument
+				{
+					{ "ram", new BsonDocument { { "label", "RAM" }, { "type", "string" } } },
+					{ "ramOptions", new BsonDocument { { "label", "RAM Options" }, { "type", "string[]" } } },
+					{ "internalStorage", new BsonDocument { { "label", "Internal Storage" }, { "type", "string" } } },
+					{ "storageOptions", new BsonDocument { { "label", "Storage Options" }, { "type", "string[]" } } },
+					{ "storageType", new BsonDocument { { "label", "Storage Type" }, { "type", "string" } } },
+					{ "cardSlot", new BsonDocument { { "label", "Card Slot" }, { "type", "string" } } },
+					{ "cardSlotType", new BsonDocument { { "label", "Card Slot Type" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.MainCamera => new BsonDocument
+				{
+					{ "setup", new BsonDocument { { "label", "Camera Setup" }, { "type", "string" } } },
+					{ "primary", new BsonDocument { { "label", "Primary" }, { "type", "string" } } },
+					{ "ultrawide", new BsonDocument { { "label", "Ultrawide" }, { "type", "string" } } },
+					{ "telephoto", new BsonDocument { { "label", "Telephoto" }, { "type", "string" } } },
+					{ "telephoto2", new BsonDocument { { "label", "Telephoto 2" }, { "type", "string" } } },
+					{ "macro", new BsonDocument { { "label", "Macro" }, { "type", "string" } } },
+					{ "depthSensor", new BsonDocument { { "label", "Depth Sensor" }, { "type", "string" } } },
+					{ "tofSensor", new BsonDocument { { "label", "ToF / LiDAR" }, { "type", "string" } } },
+					{ "nightVision", new BsonDocument { { "label", "Night Vision / IR" }, { "type", "string" } } },
+					{ "thermalCamera", new BsonDocument { { "label", "Thermal Camera" }, { "type", "string" } } },
+					{ "features", new BsonDocument { { "label", "Features" }, { "type", "string" } } },
+					{ "video", new BsonDocument { { "label", "Video Recording" }, { "type", "string" } } },
+					{ "opticalZoom", new BsonDocument { { "label", "Optical Zoom" }, { "type", "string" } } },
+					{ "digitalZoom", new BsonDocument { { "label", "Digital Zoom" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.SelfieCamera => new BsonDocument
+				{
+					{ "setup", new BsonDocument { { "label", "Camera Setup" }, { "type", "string" } } },
+					{ "primary", new BsonDocument { { "label", "Primary" }, { "type", "string" } } },
+					{ "secondary", new BsonDocument { { "label", "Secondary" }, { "type", "string" } } },
+					{ "features", new BsonDocument { { "label", "Features" }, { "type", "string" } } },
+					{ "video", new BsonDocument { { "label", "Video Recording" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Sound => new BsonDocument
+				{
+					{ "loudspeaker", new BsonDocument { { "label", "Loudspeaker" }, { "type", "string" } } },
+					{ "headphoneJack", new BsonDocument { { "label", "3.5mm Jack" }, { "type", "boolean" } } },
+					{ "audioCodecs", new BsonDocument { { "label", "Audio Codecs" }, { "type", "string" } } },
+					{ "tuning", new BsonDocument { { "label", "Tuning / Brand" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Comms => new BsonDocument
+				{
+					{ "wlan", new BsonDocument { { "label", "Wi-Fi" }, { "type", "string" } } },
+					{ "bluetooth", new BsonDocument { { "label", "Bluetooth" }, { "type", "string" } } },
+					{ "positioning", new BsonDocument { { "label", "Positioning / GPS" }, { "type", "string" } } },
+					{ "nfc", new BsonDocument { { "label", "NFC" }, { "type", "boolean" } } },
+					{ "infraredPort", new BsonDocument { { "label", "Infrared Port" }, { "type", "boolean" } } },
+					{ "fmRadio", new BsonDocument { { "label", "FM Radio" }, { "type", "string" } } },
+					{ "usb", new BsonDocument { { "label", "USB" }, { "type", "string" } } },
+					{ "thunderbolt", new BsonDocument { { "label", "Thunderbolt" }, { "type", "string" } } },
+					{ "uwb", new BsonDocument { { "label", "Ultra-Wideband (UWB)" }, { "type", "boolean" } } },
+					{ "satelliteConnectivity", new BsonDocument { { "label", "Satellite Connectivity" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Features => new BsonDocument
+				{
+					{ "sensors", new BsonDocument { { "label", "Sensors" }, { "type", "string[]" } } },
+					{ "fingerprintType", new BsonDocument { { "label", "Fingerprint Type" }, { "type", "string" } } },
+					{ "faceRecognition", new BsonDocument { { "label", "Face Recognition" }, { "type", "string" } } },
+					{ "aiFeatures", new BsonDocument { { "label", "AI Features" }, { "type", "string[]" } } },
+					{ "samsungDex", new BsonDocument { { "label", "Samsung DeX" }, { "type", "boolean" } } },
+					{ "desktopMode", new BsonDocument { { "label", "Desktop Mode" }, { "type", "string" } } },
+					{ "multitasking", new BsonDocument { { "label", "Multitasking" }, { "type", "string" } } },
+				},
+				DBSpecificationCategory.Battery => new BsonDocument
+				{
+					{ "type", new BsonDocument { { "label", "Type" }, { "type", "string" } } },
+					{ "capacity", new BsonDocument { { "label", "Capacity" }, { "type", "string" } } },
+					{ "wiredCharging", new BsonDocument { { "label", "Wired Charging" }, { "type", "string" } } },
+					{ "wirelessCharging", new BsonDocument { { "label", "Wireless Charging" }, { "type", "string" } } },
+					{ "reverseWireless", new BsonDocument { { "label", "Reverse Wireless Charging" }, { "type", "boolean" } } },
+					{ "reverseWired", new BsonDocument { { "label", "Reverse Wired Charging" }, { "type", "boolean" } } },
+					{ "removable", new BsonDocument { { "label", "Removable" }, { "type", "boolean" } } },
+					{ "enduranceRating", new BsonDocument { { "label", "Endurance Rating" }, { "type", "string" } } },
+					{ "chargingCycles", new BsonDocument { { "label", "Charging Cycles" }, { "type", "string" } } },
+				},
+				_ => new BsonDocument()
+			};
+
+			return SpecificationLookupDocument.From((long)v, v.ToString(), json);
+		});
 
 	private static List<(string Name, string Endpoint, List<ColumnMeta> Columns)> TableMetadata() =>
 	[
