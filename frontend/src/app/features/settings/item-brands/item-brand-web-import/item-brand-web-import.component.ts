@@ -13,11 +13,11 @@ export interface WebBrandRow {
 }
 
 export const WEB_SOURCES = [
-  { id: 'gsmarena',   label: 'GSMArena',   icon: '🌐' },
+  { id: 'gsmarena', label: 'GSMArena', icon: '🌐' },
   { id: 'phonearena', label: 'PhoneArena', icon: '📱' },
   { id: 'nanoreview', label: 'NanoReview', icon: '🔍' },
-  { id: 'kimovil',    label: 'Kimovil',    icon: '📡' },
-  { id: 'gizchina',   label: 'GizChina',   icon: '🔧' },
+  { id: 'kimovil', label: 'Kimovil', icon: '📡' },
+  { id: 'gizchina', label: 'GizChina', icon: '🔧' },
 ];
 
 @Component({
@@ -29,16 +29,16 @@ export const WEB_SOURCES = [
 export class ItemBrandWebImportComponent implements OnInit {
   private service = inject(ItemBrandService);
 
-  @Output() closed   = new EventEmitter<void>();
+  @Output() closed = new EventEmitter<void>();
   @Output() imported = new EventEmitter<void>();
 
-  sources      = WEB_SOURCES;
+  sources = WEB_SOURCES;
   activeSource = signal(WEB_SOURCES[0].id);
-  rows         = signal<WebBrandRow[]>([]);
-  loading      = signal(false);
-  importing    = signal(false);
-  error        = signal<string | null>(null);
-  searchTerm   = signal('');
+  rows = signal<WebBrandRow[]>([]);
+  loading = signal(false);
+  importing = signal(false);
+  error = signal<string | null>(null);
+  searchTerm = signal('');
 
   visibleRows = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
@@ -84,7 +84,7 @@ export class ItemBrandWebImportComponent implements OnInit {
   }
 
   toggleAll(): void {
-    const visible   = this.visibleRows().map(r => r.name);
+    const visible = this.visibleRows().map(r => r.name);
     const allSelect = !this.allVisibleSelected();
     this.rows.update(rows =>
       rows.map(r => visible.includes(r.name) ? { ...r, selected: allSelect } : r)
