@@ -1,13 +1,17 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 export interface ActionMenuItem {
   labelKey: string;
+  /** Optional raw label — displayed as-is, overrides labelKey translation. */
+  label?: string;
   iconClass: string;
   iconPaths?: number;
   color?: string;
   action: () => void;
+  /** Child items rendered as a hover/click submenu. */
+  children?: ActionMenuItem[];
 }
 
 @Component({
@@ -31,6 +35,19 @@ export class CommonDropDownMenuActionButton {
   @Input() loading: boolean = false;
   @Output() mainClick = new EventEmitter<void>();
   @Input() menuItems: ActionMenuItem[] = [];
+
+  /** Key of the currently open submenu (the item's labelKey). */
+  openSubmenuKey = signal<string | null>(null);
+
+  toggleSubmenu(key: string, event: MouseEvent): void {
+    event.stopPropagation();
+    this.openSubmenuKey.update(v => v === key ? null : key);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick(): void {
+    this.openSubmenuKey.set(null);
+  }
 
   getPathRange(n: number = 2): number[] {
     return Array.from({ length: n }, (_, i) => i + 1);

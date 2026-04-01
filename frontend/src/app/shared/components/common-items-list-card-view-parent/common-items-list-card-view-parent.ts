@@ -452,15 +452,9 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
       cur = parent;
     }
 
-    if (this.hasChildren(target)) {
-      this.navStack.set([...ancestors, target]);
-      this.selectedLeaf.set(null);
-      this.items.set([]);
-    } else {
-      this.navStack.set(ancestors);
-      this.selectedLeaf.set(target);
-      this.loadItemsForLeaf(target.id!);
-    }
+    this.navStack.set(ancestors);
+    this.selectedLeaf.set(target);
+    this.loadItemsForLeaf(target.id!);
     this.searchQuery.set('');
   }
 

@@ -19,17 +19,57 @@
     data-bs-toggle="dropdown" aria-expanded="false"></button>
   <ul [class]="'dropdown-menu' + (menuEnd ? ' dropdown-menu-end' : '')">
     @for (item of menuItems; track item.labelKey) {
-      <li>
-        <a [class]="'dropdown-item cursor-pointer' + (item.color ? ' text-' + item.color : '')"
-          (click)="item.action()">
-          <i [class]="'ki-duotone ' + item.iconClass + ' fs-4 me-2'">
-            @for (p of getPathRange(item.iconPaths); track p) {
-              <span [class]="'path' + p"></span>
-            }
-          </i>
-          {{ item.labelKey | translate }}
-        </a>
-      </li>
+      @if (item.children?.length) {
+        <!--START::Item with submenu-->
+        <li style="position: relative">
+          <a class="dropdown-item cursor-pointer d-flex align-items-center justify-content-between gap-3"
+            (click)="toggleSubmenu(item.labelKey, $event)">
+            <span class="d-flex align-items-center gap-2">
+              <i [class]="'ki-duotone ' + item.iconClass + ' fs-4'">
+                @for (p of getPathRange(item.iconPaths); track p) {
+                  <span [class]="'path' + p"></span>
+                }
+              </i>
+              {{ item.label ?? (item.labelKey | translate) }}
+            </span>
+            <i class="ki-duotone ki-arrow-right fs-6">
+              <span class="path1"></span><span class="path2"></span>
+            </i>
+          </a>
+
+          @if (openSubmenuKey() === item.labelKey) {
+            <ul class="dropdown-menu show"
+                style="position: absolute; top: 0; inset-inline-end: 100%; min-width: 180px;">
+              @for (child of item.children; track child.labelKey) {
+                <li>
+                  <a [class]="'dropdown-item cursor-pointer' + (child.color ? ' text-' + child.color : '')"
+                    (click)="child.action()">
+                    <i [class]="'ki-duotone ' + child.iconClass + ' fs-4 me-2'">
+                      @for (p of getPathRange(child.iconPaths); track p) {
+                        <span [class]="'path' + p"></span>
+                      }
+                    </i>
+                    {{ child.label ?? (child.labelKey | translate) }}
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+        <!--END::Item with submenu-->
+      } @else {
+        <li>
+          <a [class]="'dropdown-item cursor-pointer' + (item.color ? ' text-' + item.color : '')"
+            (click)="item.action()">
+            <i [class]="'ki-duotone ' + item.iconClass + ' fs-4 me-2'">
+              @for (p of getPathRange(item.iconPaths); track p) {
+                <span [class]="'path' + p"></span>
+              }
+            </i>
+            {{ item.label ?? (item.labelKey | translate) }}
+          </a>
+        </li>
+      }
     }
   </ul>
 </div>

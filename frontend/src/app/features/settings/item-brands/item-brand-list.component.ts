@@ -13,11 +13,12 @@ import { ActionMenuItem } from '../../../shared/components/commonActions/common-
 import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
 import { EntityListHeaderActionsComponent } from '../../../shared/components/entity-list-header-actions/entity-list-header-actions.component';
 import { ItemBrandListOperationComponent } from './item-brand-list-operation/item-brand-list-operation.component';
+import { ItemBrandWebImportComponent } from './item-brand-web-import/item-brand-web-import.component';
 
 @Component({
   selector: 'app-item-brand-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, EntityListHeaderActionsComponent, ItemBrandListOperationComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, EntityListHeaderActionsComponent, ItemBrandListOperationComponent, ItemBrandWebImportComponent],
   templateUrl: './item-brand-list.component.html',
   styleUrl: './item-brand-list.component.less',
 })
@@ -88,6 +89,12 @@ export class ItemBrandListComponent implements OnInit {
   /** `true` while an Excel import upload is in progress. */
   importing = signal(false);
 
+  /** `true` while a web import (scraping) is in progress. */
+  importingFromWeb = signal(false);
+
+  /** `true` when the web-import modal is open. */
+  showWebImport = signal(false);
+
   /** Non-null when the import fails; shown in the header import feedback area. */
   importError = signal<string | null>(null);
 
@@ -102,7 +109,8 @@ export class ItemBrandListComponent implements OnInit {
   /** Drop-down items for the import/export button group in the list header. */
   importMenuItems: ActionMenuItem[] = [
     { labelKey: 'common.exportTemplate', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportTemplate() },
-    { labelKey: 'common.exportList', iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportList() },
+    { labelKey: 'common.exportList',     iconClass: 'ki-file-down', iconPaths: 2, action: () => this.exportList() },
+    { labelKey: 'brand.importFromWeb', label: 'Import From Web', iconClass: 'ki-globe', iconPaths: 2, action: () => this.showWebImport.set(true) },
   ];
 
   /** Drop-down items shown when one or more rows are selected (bulk actions). */
@@ -487,6 +495,24 @@ export class ItemBrandListComponent implements OnInit {
         this.importing.set(false);
         this.importError.set(this.translate.translate('brand.importError'));
         (event.target as HTMLInputElement).value = '';
+      }
+    });
+  }
+
+  importFromWeb(source: string): void {
+    this.importingFromWeb.set(true);
+    this.importError.set(null);
+    this.importSuccess.set(false);
+    this.service.importFromWeb(source).subscribe({
+      next: (result) => {
+        this.importingFromWeb.set(false);
+        this.importSuccess.set(true);
+        this.load();
+        this.toast.success(`${result.imported} brands imported from ${source} (${result.skipped} already existed)`);
+      },
+      error: () => {
+        this.importingFromWeb.set(false);
+        this.importError.set(this.translate.translate('brand.importError'));
       }
     });
   }

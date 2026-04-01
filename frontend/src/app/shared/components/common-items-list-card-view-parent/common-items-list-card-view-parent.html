@@ -76,7 +76,7 @@
         }
         <!--END::Loading Categories-->
 
-        <!--START::Category Tiles-->
+        <!--START::Category Tiles (root level — no category selected)-->
         @if (!loadingCats() && !selectedLeaf() && !isSearchMode()) {
         @if (visibleCategories().length === 0) {
         <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
@@ -86,7 +86,6 @@
             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                 <div class="category-tile card border-0 shadow-sm h-100 text-center cursor-pointer"
                     (click)="selectCategory(cat)">
-                    <!--Image on top-->
                     <div class="category-tile__img-wrap bg-light d-flex align-items-center justify-content-center">
                         @if (catImgUrl(cat)) {
                         <img [src]="catImgUrl(cat)!" [alt]="localize(cat)" class="category-tile__img" />
@@ -103,8 +102,7 @@
                         <span class="fw-bold text-gray-800 fs-6 lh-sm">{{ localize(cat) }}</span>
                         @if (hasChildren(cat)) {
                         <span class="badge badge-light-primary fs-5 px-3 py-2">
-                            <i class="ki-duotone ki-right fs-5"><span class="path1"></span><span
-                                    class="path2"></span></i>
+                            <i class="ki-duotone ki-right fs-5"><span class="path1"></span><span class="path2"></span></i>
                             {{ 'nav.showAll' | translate }}
                         </span>
                         }
@@ -284,6 +282,27 @@
 
           <!--START::Items Content-->
           <div class="flex-grow-1 min-w-0">
+
+        <!--START::Subcategory tiles (shown when selected category has children)-->
+        @if (!loadingCats() && selectedLeaf() && visibleCategories().length > 0) {
+        <div class="d-flex flex-wrap gap-3 mb-5">
+          @for (cat of visibleCategories(); track cat.id) {
+          <div class="category-chip d-flex align-items-center gap-2 px-4 py-2 border rounded-pill cursor-pointer"
+               (click)="selectCategory(cat)">
+            @if (catImgUrl(cat)) {
+            <img [src]="catImgUrl(cat)!" [alt]="localize(cat)" style="width:22px;height:22px;object-fit:contain;" />
+            } @else {
+            <i class="ki-duotone ki-category fs-5 text-primary"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i>
+            }
+            <span class="fw-semibold fs-7">{{ localize(cat) }}</span>
+            @if (hasChildren(cat)) {
+            <i class="ki-duotone ki-right fs-6 text-muted"><span class="path1"></span><span class="path2"></span></i>
+            }
+          </div>
+          }
+        </div>
+        }
+        <!--END::Subcategory tiles-->
 
         <!--START::Loading Items-->
         @if (loadingItems()) {

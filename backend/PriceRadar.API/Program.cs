@@ -64,6 +64,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		};
 	});
 
+builder.Services.AddHttpClient("BrandScraper")
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        AutomaticDecompression = System.Net.DecompressionMethods.All,
+        AllowAutoRedirect      = true,
+        MaxAutomaticRedirections = 5,
+        UseCookies             = true,
+    });
+builder.Services.AddScoped<BrandWebImportService>();
 builder.Services.AddSingleton<JwtService>();
 builder.Services.AddSingleton<DataSeeder>();
 builder.Services.AddControllers()

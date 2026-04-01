@@ -166,3 +166,11 @@
   (navigate)="navigateBrand($event)" />
 }
 <!--END::Create / Edit Modal-->
+
+<!--START::Web Import Modal-->
+@if (showWebImport()) {
+  <app-item-brand-web-import
+    (closed)="showWebImport.set(false)"
+    (imported)="load()" />
+}
+<!--END::Web Import Modal-->

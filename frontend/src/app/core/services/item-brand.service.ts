@@ -28,4 +28,25 @@ export class ItemBrandService extends ApiGlobalService<ItemBrand> {
   resolveImageUrl(relativePath: string): string {
     return `${this.fileBase}/${relativePath}`;
   }
+
+  /**
+   * Fetches brands from a website without importing — each entry includes
+   * an `exists` flag showing whether it is already in the database.
+   */
+  fetchFromWeb(source: string): Observable<{ name: string; exists: boolean }[]> {
+    return this.api.get(`/itembrands/from-web/${source}`);
+  }
+
+  /** Imports a specific list of brand names into the database. */
+  importNames(names: string[]): Observable<{ imported: number }> {
+    return this.api.post(`/itembrands/import-names`, names);
+  }
+
+  /**
+   * Scrapes a website and bulk-imports every brand not already in the database.
+   * @param source One of: gsmarena | phonearena | nanoreview | kimovil | gizchina
+   */
+  importFromWeb(source: string): Observable<{ scraped: number; imported: number; skipped: number }> {
+    return this.api.post(`/itembrands/import-from-web/${source}`, null);
+  }
 }
