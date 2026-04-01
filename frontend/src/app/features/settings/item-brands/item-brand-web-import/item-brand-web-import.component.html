@@ -107,6 +107,7 @@
                     </div>
                   </th>
                   <th class="w-40px">#</th>
+                  <th class="w-80px">Logo</th>
                   <th class="min-w-200px">Brand Name</th>
                   <th class="w-120px text-center">Status</th>
                 </tr>
@@ -123,6 +124,12 @@
                       </div>
                     </td>
                     <td class="text-muted">{{ i + 1 }}</td>
+                    <td>
+                      @if (row.logoUrl) {
+                        <img [src]="row.logoUrl" [alt]="row.name"
+                             style="height:36px; max-width:72px; object-fit:contain;" />
+                      }
+                    </td>
                     <td>
                       <span class="text-gray-800 fw-bold">{{ row.name }}</span>
                     </td>

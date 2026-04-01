@@ -96,8 +96,9 @@ public class ItemBrandsController : BaseController<ItemBrand, IItemBrandReposito
 
 		var result = scraped!.Select(b => new
 		{
-			name   = b.Name,
-			exists = existing.Contains(b.Name.ToLowerInvariant()),
+			name    = b.Name,
+			logoUrl = b.LogoUrl,
+			exists  = existing.Contains(b.Name.ToLowerInvariant()),
 		});
 
 		return Ok(result);
@@ -105,23 +106,33 @@ public class ItemBrandsController : BaseController<ItemBrand, IItemBrandReposito
 
 	// ── Import specific names ─────────────────────────────────────────────────
 
+	public record BrandImportItem(string Name, string? LogoUrl = null);
+
 	/// <summary>
-	/// Imports a caller-supplied list of brand names, skipping any that already exist.
+	/// Imports a caller-supplied list of brands (name + optional logo URL),
+	/// skipping any that already exist.
 	/// </summary>
 	[HttpPost("import-names")]
-	public async Task<IActionResult> ImportNames([FromBody] string[] names)
+	public async Task<IActionResult> ImportNames([FromBody] BrandImportItem[] items)
 	{
-		if (names is null || names.Length == 0)
-			return BadRequest("No names provided.");
+		if (items is null || items.Length == 0)
+			return BadRequest("No items provided.");
 
 		var existing = (await Repo.GetAllAsync())
 			.Select(b => b.Name.ToLowerInvariant())
 			.ToHashSet();
 
 		int imported = 0;
-		foreach (var name in names.Where(n => !string.IsNullOrWhiteSpace(n) && !existing.Contains(n.ToLowerInvariant())))
+		foreach (var item in items.Where(i =>
+			!string.IsNullOrWhiteSpace(i.Name) &&
+			!existing.Contains(i.Name.ToLowerInvariant())))
 		{
-			await Repo.CreateAsync(new ItemBrand { Name = name.Trim(), IsActive = true });
+			await Repo.CreateAsync(new ItemBrand
+			{
+				Name     = item.Name.Trim(),
+				LogoUrl  = item.LogoUrl,
+				IsActive = true,
+			});
 			imported++;
 		}
 

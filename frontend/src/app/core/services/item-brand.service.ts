@@ -33,13 +33,13 @@ export class ItemBrandService extends ApiGlobalService<ItemBrand> {
    * Fetches brands from a website without importing — each entry includes
    * an `exists` flag showing whether it is already in the database.
    */
-  fetchFromWeb(source: string): Observable<{ name: string; exists: boolean }[]> {
+  fetchFromWeb(source: string): Observable<{ name: string; logoUrl?: string; exists: boolean }[]> {
     return this.api.get(`/itembrands/from-web/${source}`);
   }
 
-  /** Imports a specific list of brand names into the database. */
-  importNames(names: string[]): Observable<{ imported: number }> {
-    return this.api.post(`/itembrands/import-names`, names);
+  /** Imports a specific list of brands (name + optional logo URL) into the database. */
+  importNames(items: { name: string; logoUrl?: string }[]): Observable<{ imported: number }> {
+    return this.api.post(`/itembrands/import-names`, items);
   }
 
   /**

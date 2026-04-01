@@ -48,21 +48,31 @@ public class BrandWebImportService(IHttpClientFactory httpClientFactory)
     /// <summary>
     /// Fetches all brands listed on GSMArena's makers page
     /// (https://www.gsmarena.com/makers.php3).
+    /// The brand slug from the href (e.g. "apple" from "apple-phones-48.php")
+    /// is used to build a Clearbit logo URL — no extra requests needed.
     /// </summary>
     public async Task<List<ItemBrand>> ImportFromGsmArenaAsync()
     {
         var client = CreateClient();
         var html = await client.GetStringAsync("https://www.gsmarena.com/makers.php3");
 
-        // Each brand appears as:
-        //   <a href="apple-phones-48.php">Apple</a>
-        var names = Regex
+        // Each brand appears as: <a href="apple-phones-48.php">Apple</a>
+        // Group 1 = slug before "-phones-", Group 2 = display name.
+        return Regex
             .Matches(html,
-                @"<a\s+href=""[a-z0-9_-]+-phones-\d+\.php""[^>]*>([^<]+)</a>",
+                @"<a\s+href=""([a-z0-9_-]+)-phones-\d+\.php""[^>]*>([^<]+)</a>",
                 RegexOptions.IgnoreCase)
-            .Select(m => m.Groups[1].Value);
-
-        return Deduplicate(names);
+            .Select(m => (slug: m.Groups[1].Value, name: m.Groups[2].Value.Trim()))
+            .Where(t => !string.IsNullOrWhiteSpace(t.name))
+            .DistinctBy(t => t.name.ToLowerInvariant())
+            .OrderBy(t => t.name)
+            .Select(t => new ItemBrand
+            {
+                Name     = t.name,
+                IsActive = true,
+                LogoUrl  = $"https://logo.clearbit.com/{t.slug}.com",
+            })
+            .ToList();
     }
 
     // ── PhoneArena ────────────────────────────────────────────────────────────

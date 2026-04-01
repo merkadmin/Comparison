@@ -7,6 +7,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 export interface WebBrandRow {
   name: string;
+  logoUrl?: string;
   exists: boolean;
   selected: boolean;
 }
@@ -69,7 +70,7 @@ export class ItemBrandWebImportComponent implements OnInit {
     this.rows.set([]);
     this.service.fetchFromWeb(this.activeSource()).subscribe({
       next: data => {
-        this.rows.set(data.map(b => ({ name: b.name, exists: b.exists, selected: !b.exists })));
+        this.rows.set(data.map(b => ({ name: b.name, logoUrl: b.logoUrl, exists: b.exists, selected: !b.exists })));
         this.loading.set(false);
       },
       error: (err: HttpErrorResponse) => {
@@ -99,10 +100,13 @@ export class ItemBrandWebImportComponent implements OnInit {
   }
 
   importSelected(): void {
-    const names = this.rows().filter(r => r.selected && !r.exists).map(r => r.name);
-    if (!names.length) return;
+    const items = this.rows()
+      .filter(r => r.selected && !r.exists)
+      .map(r => ({ name: r.name, logoUrl: r.logoUrl }));
+    if (!items.length) return;
+    const names = items.map(i => i.name);
     this.importing.set(true);
-    this.service.importNames(names).subscribe({
+    this.service.importNames(items).subscribe({
       next: () => {
         this.importing.set(false);
         // Mark imported rows as existing
