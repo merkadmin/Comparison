@@ -29,6 +29,7 @@ public class DataSeeder
 		await MigrateDefaultFieldsAsync();
 		await SeedStaticLookupsAsync();
 		await SeedTableNames();
+		await SeedOnlineWebSitesAsync();
 		//await SeedCategoriesAsync();
 		//await SeedBrandsAsync();
 		//await SeedItemsAsync();
@@ -870,5 +871,48 @@ public class DataSeeder
 			new() { Field = "entityId",  LabelKey = "diagnostics.entityId",  Type = "number",Order = 3 },
 			new() { Field = "timestamp", LabelKey = "diagnostics.timestamp", Type = "date",  Order = 4 },
 		]),
+		("OnlineWebSite", "/onlinewebsites",
+		[
+			new() { Field = "name",    LabelKey = "website.name",    Type = "text",    Order = 1 },
+			new() { Field = "url",     LabelKey = "website.url",     Type = "text",    Order = 2 },
+			new() { Field = "type",    LabelKey = "website.type",    Type = "badge",   Order = 3 },
+			new() { Field = "country", LabelKey = "website.country", Type = "text",    Order = 4 },
+			new() { Field = "isActive",LabelKey = "common.status",   Type = "boolean", Order = 5 },
+		]),
 	];
+
+	// ─── Online Websites ──────────────────────────────────────────────────────
+	private async Task SeedOnlineWebSitesAsync()
+	{
+		if (await _context.OnlineWebSites.CountDocumentsAsync(_ => true) > 0) return;
+
+		var sites = new List<OnlineWebSiteDocument>
+		{
+			// ── Stores ────────────────────────────────────────────────────────
+			new() { Name = "Amazon",         Url = "https://www.amazon.com",          LogoUrl = "https://logo.clearbit.com/amazon.com",          Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
+			new() { Name = "eBay",           Url = "https://www.ebay.com",            LogoUrl = "https://logo.clearbit.com/ebay.com",            Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
+			new() { Name = "AliExpress",     Url = "https://www.aliexpress.com",      LogoUrl = "https://logo.clearbit.com/aliexpress.com",      Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "China"         },
+			new() { Name = "Best Buy",       Url = "https://www.bestbuy.com",         LogoUrl = "https://logo.clearbit.com/bestbuy.com",         Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
+			new() { Name = "Newegg",         Url = "https://www.newegg.com",          LogoUrl = "https://logo.clearbit.com/newegg.com",          Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
+			new() { Name = "Walmart",        Url = "https://www.walmart.com",         LogoUrl = "https://logo.clearbit.com/walmart.com",         Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
+			new() { Name = "B&H Photo Video",Url = "https://www.bhphotovideo.com",    LogoUrl = "https://logo.clearbit.com/bhphotovideo.com",    Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
+			new() { Name = "Noon",           Url = "https://www.noon.com",            LogoUrl = "https://logo.clearbit.com/noon.com",            Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "UAE"           },
+			new() { Name = "Jumia",          Url = "https://www.jumia.com",           LogoUrl = "https://logo.clearbit.com/jumia.com",           Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "Nigeria"       },
+
+			// ── Viewers / Spec Sites ──────────────────────────────────────────
+			new() { Name = "GSMArena",       Url = "https://www.gsmarena.com",        LogoUrl = "https://logo.clearbit.com/gsmarena.com",        Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
+			new() { Name = "PhoneArena",     Url = "https://www.phonearena.com",      LogoUrl = "https://logo.clearbit.com/phonearena.com",      Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
+			new() { Name = "NanoReview",     Url = "https://nanoreview.net",          LogoUrl = "https://logo.clearbit.com/nanoreview.net",      Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
+			new() { Name = "Kimovil",        Url = "https://www.kimovil.com",         LogoUrl = "https://logo.clearbit.com/kimovil.com",         Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
+			new() { Name = "GizChina",       Url = "https://www.gizchina.com",        LogoUrl = "https://logo.clearbit.com/gizchina.com",        Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "China"         },
+			new() { Name = "RTINGS",         Url = "https://www.rtings.com",          LogoUrl = "https://logo.clearbit.com/rtings.com",          Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "Canada"        },
+			new() { Name = "NotebookCheck",  Url = "https://www.notebookcheck.net",   LogoUrl = "https://logo.clearbit.com/notebookcheck.net",   Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "Germany"       },
+		};
+
+		foreach (var site in sites)
+			site.Id = await _context.GetNextSequenceAsync("onlinewebsites");
+
+		await _context.OnlineWebSites.InsertManyAsync(sites);
+		Console.WriteLine($"[Seeder] Inserted {sites.Count} online websites.");
+	}
 }

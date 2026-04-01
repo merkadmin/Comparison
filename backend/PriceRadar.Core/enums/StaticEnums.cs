@@ -35,6 +35,12 @@
 		Physical = 2
 	}
 
+	public enum WebSiteType
+	{
+		Store  = 1,   // e-commerce — user can buy products (e.g. Amazon, eBay)
+		Viewer = 2    // spec / review site — user views or compares products (e.g. GSMArena)
+	}
+
 	public enum DBPriceHistoryType
 	{
 		Regular = 1,
