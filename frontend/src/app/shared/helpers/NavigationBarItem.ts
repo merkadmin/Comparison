@@ -3,4 +3,5 @@ export class NavigationBarItem{
     title: string = '';
     menuIcon: string | undefined;
     orderIndex: number | undefined;
+    ChildrenList?: NavigationBarItem[];
 }

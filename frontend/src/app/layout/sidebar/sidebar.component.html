@@ -41,28 +41,43 @@
 
         <!--START::Settings (Admin only)-->
         @if (auth.isAdmin()) {
-          <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-            <span class="menu-link">
-              <span class="menu-icon">
-                <i class="ki-duotone ki-setting-2 fs-2">
-                  <span class="path1"></span><span class="path2"></span>
-                </i>
-              </span>
-              <span class="menu-title">{{ 'nav.settings' | translate }}</span>
-              <span class="menu-arrow"></span>
-            </span>
-            <div class="menu-sub menu-sub-accordion">
-              @for (item of this.globalStaticService.navigationBarItem; track $index) {
-                <div class="menu-item">
-                  <a class="menu-link" routerLink="{{ item.routerLink }}" routerLinkActive="active">
-                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+          @if(this.globalStaticService.navigationBarItem.length > 0) {
+            @if(this.globalStaticService.navigationBarItem.some(x => x.ChildrenList && x.ChildrenList.length > 0)) {
+              @for (item of this.globalStaticService.navigationBarItem.filter(x => x.ChildrenList && x.ChildrenList.length > 0).sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
+                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                  <span class="menu-link">
+                    <span class="menu-icon">
+                      <i class="ki-duotone {{ item.menuIcon ?? 'ki-setting-2' }} fs-2">
+                        <span class="path1"></span><span class="path2"></span>
+                        <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                      </i>
+                    </span>
                     <span class="menu-title">{{ item.title | translate }}</span>
-                  </a>
+                    <span class="menu-arrow"></span>
+                  </span>
+                  <div class="menu-sub menu-sub-accordion">
+                    @for (child of item.ChildrenList!.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
+                      <div class="menu-item">
+                        <a class="menu-link" routerLink="{{ child.routerLink }}" routerLinkActive="active">
+                          @if (child.menuIcon) {
+                            <span class="menu-icon">
+                              <i class="ki-duotone {{ child.menuIcon }} fs-2">
+                                <span class="path1"></span><span class="path2"></span>
+                                <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                              </i>
+                            </span>
+                          } @else {
+                            <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                          }
+                          <span class="menu-title">{{ child.title | translate }}</span>
+                        </a>
+                      </div>
+                    }
+                  </div>
                 </div>
- 
               }
-            </div>
-          </div>
+            }
+          }
         }
         <!--END::Settings (Admin only)-->
 
@@ -114,32 +129,32 @@
 
         <!--START::Application Setup (Admin only)-->
         @if (auth.isAdmin()) {
-          <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-            <span class="menu-link">
-              <span class="menu-icon">
-                <i class="ki-duotone ki-setting-3 fs-2">
-                  <span class="path1"></span><span class="path2"></span>
-                  <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-                </i>
-              </span>
-              <span class="menu-title">{{ 'nav.appSetup' | translate }}</span>
-              <span class="menu-arrow"></span>
+        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+          <span class="menu-link">
+            <span class="menu-icon">
+              <i class="ki-duotone ki-setting-3 fs-2">
+                <span class="path1"></span><span class="path2"></span>
+                <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+              </i>
             </span>
-            <div class="menu-sub menu-sub-accordion">
-              <div class="menu-item">
-                <a class="menu-link" routerLink="/app-setup/pages" routerLinkActive="active">
-                  <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                  <span class="menu-title">{{ 'nav.pages' | translate }}</span>
-                </a>
-              </div>
-              <div class="menu-item">
-                <a class="menu-link" routerLink="/app-setup/set-icons" routerLinkActive="active">
-                  <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                  <span class="menu-title">{{ 'nav.setIcons' | translate }}</span>
-                </a>
-              </div>
+            <span class="menu-title">{{ 'nav.appSetup' | translate }}</span>
+            <span class="menu-arrow"></span>
+          </span>
+          <div class="menu-sub menu-sub-accordion">
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/app-setup/pages" routerLinkActive="active">
+                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                <span class="menu-title">{{ 'nav.pages' | translate }}</span>
+              </a>
+            </div>
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/app-setup/set-icons" routerLinkActive="active">
+                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                <span class="menu-title">{{ 'nav.setIcons' | translate }}</span>
+              </a>
             </div>
           </div>
+        </div>
         }
         <!--END::Application Setup (Admin only)-->
 
