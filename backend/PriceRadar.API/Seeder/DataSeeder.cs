@@ -29,6 +29,7 @@ public class DataSeeder
 		await MigrateDefaultFieldsAsync();
 		await SeedStaticLookupsAsync();
 		await SeedTableNames();
+		await SeedCountriesAsync();
 		await SeedOnlineWebSitesAsync();
 		//await SeedCategoriesAsync();
 		//await SeedBrandsAsync();
@@ -882,37 +883,209 @@ public class DataSeeder
 	];
 
 	// ─── Online Websites ──────────────────────────────────────────────────────
-	private async Task SeedOnlineWebSitesAsync()
+	// ─── Countries ────────────────────────────────────────────────────────────
+	private async Task SeedCountriesAsync()
 	{
-		if (await _context.OnlineWebSites.CountDocumentsAsync(_ => true) > 0) return;
+		var existing = (await _context.Countries.Find(_ => true).ToListAsync())
+			.Select(c => c.Name.ToLowerInvariant())
+			.ToHashSet();
 
-		var sites = new List<OnlineWebSiteDocument>
+		var all = new (string Name, string Code)[]
 		{
-			// ── Stores ────────────────────────────────────────────────────────
-			new() { Name = "Amazon",         Url = "https://www.amazon.com",          LogoUrl = "https://logo.clearbit.com/amazon.com",          Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
-			new() { Name = "eBay",           Url = "https://www.ebay.com",            LogoUrl = "https://logo.clearbit.com/ebay.com",            Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
-			new() { Name = "AliExpress",     Url = "https://www.aliexpress.com",      LogoUrl = "https://logo.clearbit.com/aliexpress.com",      Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "China"         },
-			new() { Name = "Best Buy",       Url = "https://www.bestbuy.com",         LogoUrl = "https://logo.clearbit.com/bestbuy.com",         Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
-			new() { Name = "Newegg",         Url = "https://www.newegg.com",          LogoUrl = "https://logo.clearbit.com/newegg.com",          Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
-			new() { Name = "Walmart",        Url = "https://www.walmart.com",         LogoUrl = "https://logo.clearbit.com/walmart.com",         Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
-			new() { Name = "B&H Photo Video",Url = "https://www.bhphotovideo.com",    LogoUrl = "https://logo.clearbit.com/bhphotovideo.com",    Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "USA"           },
-			new() { Name = "Noon",           Url = "https://www.noon.com",            LogoUrl = "https://logo.clearbit.com/noon.com",            Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "UAE"           },
-			new() { Name = "Jumia",          Url = "https://www.jumia.com",           LogoUrl = "https://logo.clearbit.com/jumia.com",           Type = PriceRadar.Core.enums.WebSiteType.Store,  Country = "Nigeria"       },
-
-			// ── Viewers / Spec Sites ──────────────────────────────────────────
-			new() { Name = "GSMArena",       Url = "https://www.gsmarena.com",        LogoUrl = "https://logo.clearbit.com/gsmarena.com",        Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
-			new() { Name = "PhoneArena",     Url = "https://www.phonearena.com",      LogoUrl = "https://logo.clearbit.com/phonearena.com",      Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
-			new() { Name = "NanoReview",     Url = "https://nanoreview.net",          LogoUrl = "https://logo.clearbit.com/nanoreview.net",      Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
-			new() { Name = "Kimovil",        Url = "https://www.kimovil.com",         LogoUrl = "https://logo.clearbit.com/kimovil.com",         Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "International" },
-			new() { Name = "GizChina",       Url = "https://www.gizchina.com",        LogoUrl = "https://logo.clearbit.com/gizchina.com",        Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "China"         },
-			new() { Name = "RTINGS",         Url = "https://www.rtings.com",          LogoUrl = "https://logo.clearbit.com/rtings.com",          Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "Canada"        },
-			new() { Name = "NotebookCheck",  Url = "https://www.notebookcheck.net",   LogoUrl = "https://logo.clearbit.com/notebookcheck.net",   Type = PriceRadar.Core.enums.WebSiteType.Viewer, Country = "Germany"       },
+			("Australia",              "AU"), ("Canada",               "CA"),
+			("China",                  "CN"), ("France",               "FR"),
+			("Germany",                "DE"), ("India",                "IN"),
+			("Indonesia",              "ID"), ("Japan",                "JP"),
+			("Kuwait",                 "KW"), ("Nigeria",              "NG"),
+			("Saudi Arabia",           "SA"), ("South Korea",          "KR"),
+			("United Arab Emirates",   "AE"), ("United Kingdom",       "GB"),
+			("United States",          "US"), ("Egypt",                "EG"),
 		};
 
-		foreach (var site in sites)
-			site.Id = await _context.GetNextSequenceAsync("onlinewebsites");
+		var toInsert = all.Where(c => !existing.Contains(c.Name.ToLowerInvariant())).ToList();
+		if (toInsert.Count == 0) { Console.WriteLine("[Seeder] Countries already up to date."); return; }
 
-		await _context.OnlineWebSites.InsertManyAsync(sites);
-		Console.WriteLine($"[Seeder] Inserted {sites.Count} online websites.");
+		var docs = new List<CountryDocument>();
+		foreach (var (name, code) in toInsert)
+			docs.Add(new CountryDocument { Id = await _context.GetNextSequenceAsync("countries"), Name = name, Code = code });
+
+		await _context.Countries.InsertManyAsync(docs);
+		Console.WriteLine($"[Seeder] Inserted {docs.Count} countries.");
+	}
+
+	// Upsert-by-name: inserts only entries not yet in the collection,
+	// so re-running the app safely adds new rows without duplicating existing ones.
+	private async Task SeedOnlineWebSitesAsync()
+	{
+		var existing = (await _context.OnlineWebSites.Find(_ => true).ToListAsync())
+			.Select(s => s.Name.ToLowerInvariant())
+			.ToHashSet();
+
+		// Build country lookup: short alias → CountryDocument
+		var countryLookup = (await _context.Countries.Find(_ => true).ToListAsync())
+			.ToDictionary(c => c.Name.ToLowerInvariant());
+
+		long? Resolve(string? name) => name is null ? null
+			: countryLookup.TryGetValue(name.ToLowerInvariant(), out var c) ? c.Id : null;
+
+		// (Name, Url, Type, CountryName)  — null = no specific country
+		var all = new (string Name, string Url, WebSiteType Type, string? Country)[]
+		{
+			// ── Online Stores ─────────────────────────────────────────────────
+
+			// United States
+			("Amazon",             "https://www.amazon.com",             WebSiteType.Store,  "United States"        ),
+			("eBay",               "https://www.ebay.com",               WebSiteType.Store,  "United States"        ),
+			("Best Buy",           "https://www.bestbuy.com",            WebSiteType.Store,  "United States"        ),
+			("Newegg",             "https://www.newegg.com",             WebSiteType.Store,  "United States"        ),
+			("Walmart",            "https://www.walmart.com",            WebSiteType.Store,  "United States"        ),
+			("Target",             "https://www.target.com",             WebSiteType.Store,  "United States"        ),
+			("Costco",             "https://www.costco.com",             WebSiteType.Store,  "United States"        ),
+			("B&H Photo Video",    "https://www.bhphotovideo.com",       WebSiteType.Store,  "United States"        ),
+			("Adorama",            "https://www.adorama.com",            WebSiteType.Store,  "United States"        ),
+			("MicroCenter",        "https://www.microcenter.com",        WebSiteType.Store,  "United States"        ),
+			("GameStop",           "https://www.gamestop.com",           WebSiteType.Store,  "United States"        ),
+
+			// Brand Stores
+			("Apple Store",        "https://www.apple.com",              WebSiteType.Store,  "United States"        ),
+			("Samsung Shop",       "https://www.samsung.com",            WebSiteType.Store,  "South Korea"          ),
+			("Microsoft Store",    "https://www.microsoft.com",          WebSiteType.Store,  "United States"        ),
+			("OnePlus Store",      "https://www.oneplus.com",            WebSiteType.Store,  "China"                ),
+
+			// China
+			("AliExpress",         "https://www.aliexpress.com",         WebSiteType.Store,  "China"                ),
+			("Banggood",           "https://www.banggood.com",           WebSiteType.Store,  "China"                ),
+			("JD.com",             "https://www.jd.com",                 WebSiteType.Store,  "China"                ),
+			("Tmall",              "https://www.tmall.com",              WebSiteType.Store,  "China"                ),
+			("Taobao",             "https://www.taobao.com",             WebSiteType.Store,  "China"                ),
+
+			// India
+			("Flipkart",           "https://www.flipkart.com",           WebSiteType.Store,  "India"                ),
+			("Snapdeal",           "https://www.snapdeal.com",           WebSiteType.Store,  "India"                ),
+			("Croma",              "https://www.croma.com",              WebSiteType.Store,  "India"                ),
+			("Reliance Digital",   "https://www.reliancedigital.in",     WebSiteType.Store,  "India"                ),
+
+			// Middle East
+			("Noon",               "https://www.noon.com",               WebSiteType.Store,  "United Arab Emirates" ),
+			("eXtra",              "https://www.extra.com",              WebSiteType.Store,  "Saudi Arabia"         ),
+			("Xcite",              "https://www.xcite.com",              WebSiteType.Store,  "Kuwait"               ),
+
+			// Africa
+			("Jumia",              "https://www.jumia.com",              WebSiteType.Store,  "Nigeria"              ),
+			("Konga",              "https://www.konga.com",              WebSiteType.Store,  "Nigeria"              ),
+
+			// Egypt
+			("B.TECH",             "https://www.btech.com.eg",          WebSiteType.Store,  "Egypt"                ),
+			("2B",                 "https://www.2b.com.eg",              WebSiteType.Store,  "Egypt"                ),
+			("Cairo Sales",        "https://www.cairosales.com.eg",     WebSiteType.Store,  "Egypt"                ),
+			("Jumia Egypt",        "https://www.jumia.com.eg",          WebSiteType.Store,  "Egypt"                ),
+			("Carrefour Egypt",    "https://www.carrefouregypt.com",    WebSiteType.Store,  "Egypt"                ),
+			("Osta",               "https://www.osta.com",               WebSiteType.Store,  "Egypt"                ),
+			("iStore Egypt",       "https://www.istoreegypt.com",        WebSiteType.Store,  "Egypt"                ),
+			("Noon Egypt",         "https://www.noon.com/egypt-en",      WebSiteType.Store,  "Egypt"                ),
+			("Souq Egypt",         "https://www.amazon.eg",              WebSiteType.Store,  "Egypt"                ),
+
+			// Europe
+			("MediaMarkt",         "https://www.mediamarkt.com",         WebSiteType.Store,  "Germany"              ),
+			("Saturn",             "https://www.saturn.de",              WebSiteType.Store,  "Germany"              ),
+			("Conrad",             "https://www.conrad.com",             WebSiteType.Store,  "Germany"              ),
+			("Cyberport",          "https://www.cyberport.de",           WebSiteType.Store,  "Germany"              ),
+			("Fnac",               "https://www.fnac.com",               WebSiteType.Store,  "France"               ),
+			("Darty",              "https://www.darty.com",              WebSiteType.Store,  "France"               ),
+			("Currys",             "https://www.currys.co.uk",           WebSiteType.Store,  "United Kingdom"       ),
+			("Argos",              "https://www.argos.co.uk",            WebSiteType.Store,  "United Kingdom"       ),
+			("Expansys",           "https://www.expansys.com",           WebSiteType.Store,  null                   ),
+			("eGlobal Central",    "https://www.eglobalcentral.com",     WebSiteType.Store,  null                   ),
+
+			// Japan
+			("Rakuten",            "https://www.rakuten.com",            WebSiteType.Store,  "Japan"                ),
+			("Yodobashi Camera",   "https://www.yodobashi.com",          WebSiteType.Store,  "Japan"                ),
+
+			// Australia
+			("JB Hi-Fi",           "https://www.jbhifi.com.au",          WebSiteType.Store,  "Australia"            ),
+			("Harvey Norman",      "https://www.harveynorman.com.au",    WebSiteType.Store,  "Australia"            ),
+
+			// Southeast Asia
+			("Lazada",             "https://www.lazada.com",             WebSiteType.Store,  null                   ),
+			("Shopee",             "https://www.shopee.com",             WebSiteType.Store,  null                   ),
+			("Tokopedia",          "https://www.tokopedia.com",          WebSiteType.Store,  "Indonesia"            ),
+
+			// ── Spec / Review Websites ────────────────────────────────────────
+
+			("GSMArena",           "https://www.gsmarena.com",           WebSiteType.Viewer, null                   ),
+			("PhoneArena",         "https://www.phonearena.com",         WebSiteType.Viewer, null                   ),
+			("NanoReview",         "https://nanoreview.net",             WebSiteType.Viewer, null                   ),
+			("Kimovil",            "https://www.kimovil.com",            WebSiteType.Viewer, null                   ),
+			("WhatMobile",         "https://www.whatmobile.com.pk",      WebSiteType.Viewer, null                   ),
+			("GSMChoice",          "https://www.gsmchoice.com",          WebSiteType.Viewer, null                   ),
+			("DeviceSpecifications","https://www.devicespecifications.com",WebSiteType.Viewer,null                  ),
+			("PhoneDB",            "https://phonedb.net",                WebSiteType.Viewer, null                   ),
+			("Versus",             "https://versus.com",                 WebSiteType.Viewer, null                   ),
+			("91mobiles",          "https://www.91mobiles.com",          WebSiteType.Viewer, "India"                ),
+			("CNET",               "https://www.cnet.com",               WebSiteType.Viewer, "United States"        ),
+			("TechRadar",          "https://www.techradar.com",          WebSiteType.Viewer, "United Kingdom"       ),
+			("Tom's Guide",        "https://www.tomsguide.com",          WebSiteType.Viewer, "United States"        ),
+			("PCMag",              "https://www.pcmag.com",              WebSiteType.Viewer, "United States"        ),
+			("The Verge",          "https://www.theverge.com",           WebSiteType.Viewer, "United States"        ),
+			("Engadget",           "https://www.engadget.com",           WebSiteType.Viewer, "United States"        ),
+			("Trusted Reviews",    "https://www.trustedreviews.com",     WebSiteType.Viewer, "United Kingdom"       ),
+			("Digital Trends",     "https://www.digitaltrends.com",      WebSiteType.Viewer, "United States"        ),
+			("Android Authority",  "https://www.androidauthority.com",   WebSiteType.Viewer, "United States"        ),
+			("XDA Developers",     "https://www.xda-developers.com",     WebSiteType.Viewer, null                   ),
+			("ZDNet",              "https://www.zdnet.com",              WebSiteType.Viewer, "United States"        ),
+			("Wired",              "https://www.wired.com",              WebSiteType.Viewer, "United States"        ),
+			("Gizmodo",            "https://www.gizmodo.com",            WebSiteType.Viewer, "United States"        ),
+			("9to5Google",         "https://9to5google.com",             WebSiteType.Viewer, "United States"        ),
+			("9to5Mac",            "https://9to5mac.com",                WebSiteType.Viewer, "United States"        ),
+			("MacRumors",          "https://www.macrumors.com",          WebSiteType.Viewer, "United States"        ),
+			("RTINGS",             "https://www.rtings.com",             WebSiteType.Viewer, "Canada"               ),
+			("NotebookCheck",      "https://www.notebookcheck.net",      WebSiteType.Viewer, "Germany"              ),
+			("GizChina",           "https://www.gizchina.com",           WebSiteType.Viewer, "China"                ),
+		};
+
+		var toInsert = all.Where(s => !existing.Contains(s.Name.ToLowerInvariant())).ToList();
+
+		// Insert new entries
+		if (toInsert.Count > 0)
+		{
+			var docs = new List<OnlineWebSiteDocument>();
+			foreach (var (name, url, type, country) in toInsert)
+			{
+				var domain = new Uri(url).Host.Replace("www.", "");
+				docs.Add(new OnlineWebSiteDocument
+				{
+					Id        = await _context.GetNextSequenceAsync("onlinewebsites"),
+					Name      = name,
+					Url       = url,
+					LogoUrl   = $"https://logo.clearbit.com/{domain}",
+					Type      = type,
+					Country   = country,
+					CountryId = Resolve(country),
+				});
+			}
+			await _context.OnlineWebSites.InsertManyAsync(docs);
+			Console.WriteLine($"[Seeder] Inserted {docs.Count} online websites ({toInsert.Count(s => s.Type == WebSiteType.Store)} stores, {toInsert.Count(s => s.Type == WebSiteType.Viewer)} viewers).");
+		}
+		else
+		{
+			Console.WriteLine("[Seeder] Online websites already up to date.");
+		}
+
+		// Patch existing documents that are missing CountryId
+		var existingDocs = await _context.OnlineWebSites
+			.Find(d => d.CountryId == null)
+			.ToListAsync();
+
+		foreach (var doc in existingDocs)
+		{
+			var countryId = Resolve(doc.Country);
+			if (countryId is null) continue;
+			await _context.OnlineWebSites.UpdateOneAsync(
+				d => d.Id == doc.Id,
+				Builders<OnlineWebSiteDocument>.Update.Set(d => d.CountryId, countryId));
+		}
+
+		if (existingDocs.Count > 0)
+			Console.WriteLine($"[Seeder] Patched CountryId on {existingDocs.Count} existing website(s).");
 	}
 }

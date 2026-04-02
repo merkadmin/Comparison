@@ -12,5 +12,6 @@ public class OnlineWebSite
     public string?     LogoUrl   { get; set; }
     public WebSiteType Type      { get; set; }
     public string?     Country   { get; set; }
+    public long?       CountryId { get; set; }
     public DateTime    CreatedAt { get; set; } = DateTime.UtcNow;
 }

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ItemBrandService } from '../../../../core/services/item-brand.service';
-import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 export interface WebBrandRow {
   name: string;
@@ -23,7 +22,7 @@ export const WEB_SOURCES = [
 @Component({
   selector: 'app-item-brand-web-import',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './item-brand-web-import.component.html',
 })
 export class ItemBrandWebImportComponent implements OnInit {

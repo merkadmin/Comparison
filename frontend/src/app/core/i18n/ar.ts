@@ -79,6 +79,7 @@ export const ar: Record<string, string> = {
   'nav.pages': 'الصفحات',
   'nav.setIcons': 'الأيقونات',
   'nav.storeVariantOrders': 'ترتيب عرض المتغيرات',
+  'nav.onlineWebsites': 'المواقع الإلكترونية',
 
 
   // Store Items

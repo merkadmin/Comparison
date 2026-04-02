@@ -19,6 +19,8 @@ import { ProductItemVariantListComponent } from './features/settings/product-ite
 import { ItemVariantMapListComponent } from './features/settings/item-variant-map/item-variant-map-list.component';
 import { StoreVariantOrderListComponent } from './features/settings/store-variant-orders/store-variant-order-list.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
+import { OnlineWebsiteListComponent } from './features/settings/online-websites/online-website-list.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -51,6 +53,7 @@ export const routes: Routes = [
       { path: 'variants', component: ProductItemVariantListComponent },
       { path: 'productItem-variants', component: ItemVariantMapListComponent },
       { path: 'store-variant-orders', component: StoreVariantOrderListComponent },
+      { path: 'online-websites', component: OnlineWebsiteListComponent, canActivate: [adminGuard] },
     ],
   },
   { path: '**', redirectTo: '' },

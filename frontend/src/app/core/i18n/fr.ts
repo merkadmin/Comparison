@@ -73,6 +73,7 @@ export const fr: Record<string, string> = {
   'nav.pages': 'Pages',
   'nav.setIcons': 'Icônes',
   'nav.storeVariantOrders': 'Ordre d\'affichage des variantes',
+  'nav.onlineWebsites': 'Sites Web en ligne',
 
   // Store Items
   'storeItem.title': 'Articles du magasin',

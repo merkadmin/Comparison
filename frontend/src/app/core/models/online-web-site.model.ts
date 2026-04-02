@@ -7,6 +7,7 @@ export interface OnlineWebSite {
   logoUrl?: string;
   type: WebSiteType;
   country?: string;
+  countryId?: number;
   isActive?: boolean;
   createdAt?: Date;
 }
