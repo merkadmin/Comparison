@@ -7,6 +7,7 @@ import { ItemCategoryService } from '../../core/services/item-category.service';
 import { IItemCategory } from '../../core/models/interfaces/IItemCategory';
 import { MultiLangString } from '../../core/models/interfaces/LocalizedString';
 import { AuthService } from '../../core/services/auth.service';
+import { GlobalStaticService } from '../../shared/helpers/Services/global-static.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,6 +19,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   translate = inject(TranslateService);
   auth = inject(AuthService);
   private catSvc = inject(ItemCategoryService);
+  public globalStaticService = inject(GlobalStaticService);
 
   categories = signal<IItemCategory[]>([]);
 
@@ -26,6 +28,8 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       next: data => this.categories.set(data.slice(0, 10)),
       error: () => { }
     });
+
+    this.globalStaticService.setNavigationBarItem();
   }
 
   ngAfterViewInit(): void {
