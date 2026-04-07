@@ -4,6 +4,8 @@ export interface ItemBrand {
   logoUrl?: string;
   brandImage?: string;
   country?: string;
+  countryId?: number;
+  productTypeId?: number;
   isActive?: boolean;
   createdAt?: Date;
 }

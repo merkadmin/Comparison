@@ -5,6 +5,10 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { ItemBrandService } from '../../../core/services/item-brand.service';
 import { ItemBrand } from '../../../core/models/item-brand.model';
+import { ProductTypeService } from '../../../core/services/product-type.service';
+import { ProductType } from '../../../core/models/product-type.model';
+import { CountryService } from '../../../core/services/country.service';
+import { Country } from '../../../core/models/country.model';
 
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
@@ -33,6 +37,12 @@ export class ItemBrandListComponent implements OnInit {
 
   /** Handles all HTTP calls for brands: CRUD, image upload/delete, Excel import/export. */
   private service = inject(ItemBrandService);
+
+  /** Provides product types for the filter dropdown and the operation modal. */
+  private productTypeService = inject(ProductTypeService);
+
+  /** Provides countries for the filter dropdown and the operation modal. */
+  private countryService = inject(CountryService);
 
   /** Provides `translate(key)` for resolving i18n strings at runtime (used in toasts and Swal dialogs). */
   private translate = inject(TranslateService);
@@ -68,16 +78,34 @@ export class ItemBrandListComponent implements OnInit {
   /** Current value of the search input; filters `visibleBrands` in real time. */
   searchTerm = signal('');
 
+  /** Selected product type ID for filtering; `null` means "all types". */
+  selectedProductTypeId = signal<number | null>(null);
+
+  /** Selected country ID for filtering; `null` means "all countries". */
+  selectedCountryId = signal<number | null>(null);
+
   // ── List state ───────────────────────────────────────────────────────────
 
   /** The full sorted brand list displayed in the table. */
   brands = signal<ItemBrand[]>([]);
 
-  /** Subset of `brands` that match the current `searchTerm`. */
+  /** All available product types for the filter dropdown and operation modal. */
+  productTypes = signal<ProductType[]>([]);
+
+  /** All available countries for the filter dropdown and operation modal. */
+  countries = signal<Country[]>([]);
+
+  /** Subset of `brands` matching the current search term, product type, and country filters. */
   visibleBrands = computed<ItemBrand[]>(() => {
     const term = this.searchTerm().toLowerCase().trim();
-    if (!term) return this.brands();
-    return this.brands().filter(b => b.name.toLowerCase().includes(term));
+    const typeId = this.selectedProductTypeId();
+    const countryId = this.selectedCountryId();
+    return this.brands().filter(b => {
+      if (term && !b.name.toLowerCase().includes(term)) return false;
+      if (typeId !== null && b.productTypeId !== typeId) return false;
+      if (countryId !== null && b.countryId !== countryId) return false;
+      return true;
+    });
   });
 
   /** `true` while the initial (or reload) fetch is in progress. */
@@ -121,7 +149,15 @@ export class ItemBrandListComponent implements OnInit {
   // ── Lifecycle ────────────────────────────────────────────────────────────
 
   /** Angular lifecycle hook — triggers the initial data load when the component mounts. */
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.load();
+    this.productTypeService.getAll().subscribe({
+      next: types => this.productTypes.set([...types].sort((a, b) => a.type.localeCompare(b.type)))
+    });
+    this.countryService.getAll().subscribe({
+      next: list => this.countries.set([...list].sort((a, b) => a.name.localeCompare(b.name)))
+    });
+  }
 
   /**
    * Fetches all brands from the API, sorts them alphabetically by name,

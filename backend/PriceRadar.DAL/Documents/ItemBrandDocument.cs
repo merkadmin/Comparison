@@ -13,30 +13,36 @@ public class ItemBrandDocument : IDocument<ItemBrand>
     public string   Name      { get; set; } = string.Empty;
     public string?  LogoUrl    { get; set; }
     public string?  BrandImage { get; set; }
-    public string?  Country    { get; set; }
-    public DateTime CreatedAt  { get; set; } = DateTime.UtcNow;
+    public string?  Country       { get; set; }
+    public long?    CountryId     { get; set; }
+    public long?    ProductTypeId { get; set; }
+    public DateTime CreatedAt     { get; set; } = DateTime.UtcNow;
 
     public ItemBrand ToModel() => new()
     {
-        Id         = Id,
-        IsActive   = IsActive,
-        IsDeleted  = IsDeleted,
-        Name       = Name,
-        LogoUrl    = LogoUrl,
-        BrandImage = BrandImage,
-        Country    = Country,
-        CreatedAt  = CreatedAt,
+        Id            = Id,
+        IsActive      = IsActive,
+        IsDeleted     = IsDeleted,
+        Name          = Name,
+        LogoUrl       = LogoUrl,
+        BrandImage    = BrandImage,
+        Country       = Country,
+        CountryId     = CountryId,
+        ProductTypeId = ProductTypeId,
+        CreatedAt     = CreatedAt,
     };
 
     public static ItemBrandDocument FromModel(ItemBrand b) => new()
     {
-        Id         = b.Id,
-        IsActive   = b.IsActive,
-        IsDeleted  = b.IsDeleted,
-        Name       = b.Name,
-        LogoUrl    = b.LogoUrl,
-        BrandImage = b.BrandImage,
-        Country    = b.Country,
-        CreatedAt  = b.CreatedAt,
+        Id            = b.Id,
+        IsActive      = b.IsActive,
+        IsDeleted     = b.IsDeleted,
+        Name          = b.Name,
+        LogoUrl       = b.LogoUrl,
+        BrandImage    = b.BrandImage,
+        Country       = b.Country,
+        CountryId     = b.CountryId,
+        ProductTypeId = b.ProductTypeId,
+        CreatedAt     = b.CreatedAt,
     };
 }

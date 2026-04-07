@@ -219,6 +219,10 @@ export const ar: TranslationDict = {
     saveError: 'فشل حفظ الماركة.',
     image: 'صورة الماركة',
     searchPlaceholder: 'ابحث عن الماركات...',
+    filterByProductType: 'تصفية حسب نوع المنتج',
+    allProductTypes: 'كل الأنواع',
+    filterByCountry: 'تصفية حسب الدولة',
+    allCountries: 'كل الدول',
   },
 
   item: {

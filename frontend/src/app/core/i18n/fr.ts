@@ -219,6 +219,10 @@ export const fr: TranslationDict = {
     saveError: "Échec de l'enregistrement de la marque.",
     image: 'Image de la marque',
     searchPlaceholder: 'Rechercher des marques...',
+    filterByProductType: 'Filtrer par type de produit',
+    allProductTypes: 'Tous les types',
+    filterByCountry: 'Filtrer par pays',
+    allCountries: 'Tous les pays',
   },
 
   item: {

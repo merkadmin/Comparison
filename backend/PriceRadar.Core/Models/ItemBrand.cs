@@ -8,6 +8,8 @@ public class ItemBrand
     public string   Name      { get; set; } = string.Empty;
     public string?  LogoUrl    { get; set; }
     public string?  BrandImage { get; set; }
-    public string?  Country    { get; set; }
+    public string?  Country       { get; set; }
+    public long?    CountryId     { get; set; }
+    public long?    ProductTypeId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

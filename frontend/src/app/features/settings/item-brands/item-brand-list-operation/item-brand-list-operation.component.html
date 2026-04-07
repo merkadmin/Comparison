@@ -59,9 +59,32 @@
         <!--START::Country-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'common.country' | translate }}</label>
+          @if (countries.length > 0) {
+          <select class="form-select" [(ngModel)]="editDraft.countryId">
+            <option [ngValue]="undefined">{{ 'brand.allCountries' | translate }}</option>
+            @for (c of countries; track c.id) {
+            <option [ngValue]="c.id">{{ c.name }}</option>
+            }
+          </select>
+          } @else {
           <input type="text" class="form-control" [(ngModel)]="editDraft.country" />
+          }
         </div>
         <!--END::Country-->
+
+        <!--START::Product Type-->
+        @if (productTypes.length > 0) {
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'nav.productTypes' | translate }}</label>
+          <select class="form-select" [(ngModel)]="editDraft.productTypeId">
+            <option [ngValue]="undefined">{{ 'brand.allProductTypes' | translate }}</option>
+            @for (pt of productTypes; track pt.id) {
+            <option [ngValue]="pt.id">{{ pt.type }}</option>
+            }
+          </select>
+        </div>
+        }
+        <!--END::Product Type-->
 
         <!--START::Logo URL-->
         <div class="mb-3">

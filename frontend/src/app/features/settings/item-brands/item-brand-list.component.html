@@ -11,6 +11,50 @@
   </app-entity-list-header-actions>
   <!--END:: Header Actions for admin users-->
 
+  <!--START:: Product Type Filter-->
+  @if (productTypes().length > 0) {
+  <div class="card-header border-0 pt-0 pb-3">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <label class="fw-semibold text-gray-600 fs-7">{{ 'brand.filterByProductType' | translate }}</label>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-sm" [class]="selectedProductTypeId() === null ? 'btn-primary' : 'btn-light'"
+          (click)="selectedProductTypeId.set(null)">
+          {{ 'brand.allProductTypes' | translate }}
+        </button>
+        @for (pt of productTypes(); track pt.id) {
+        <button class="btn btn-sm" [class]="selectedProductTypeId() === pt.id ? 'btn-primary' : 'btn-light'"
+          (click)="selectedProductTypeId.set(pt.id!)">
+          {{ pt.type }}
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+  }
+  <!--END:: Product Type Filter-->
+
+  <!--START:: Country Filter-->
+  @if (countries().length > 0) {
+  <div class="card-header border-0 pt-0 pb-3">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <label class="fw-semibold text-gray-600 fs-7">{{ 'brand.filterByCountry' | translate }}</label>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-sm" [class]="selectedCountryId() === null ? 'btn-primary' : 'btn-light'"
+          (click)="selectedCountryId.set(null)">
+          {{ 'brand.allCountries' | translate }}
+        </button>
+        @for (c of countries(); track c.id) {
+        <button class="btn btn-sm" [class]="selectedCountryId() === c.id ? 'btn-primary' : 'btn-light'"
+          (click)="selectedCountryId.set(c.id!)">
+          {{ c.name }}
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+  }
+  <!--END:: Country Filter-->
+
   <div class="card-body py-4">
     @if (loading()) {
     <div class="d-flex justify-content-center py-10">
@@ -162,6 +206,7 @@
 <!--START::Create / Edit Modal-->
 @if (editingId() !== null) {
 <app-item-brand-list-operation #operationComp [editDraft]="editDraft" [isCreating]="isCreating()" [saving]="saving()"
+  [productTypes]="productTypes()" [countries]="countries()"
   (closed)="closeEdit()" (saved)="saveEdit()" (savedAndNew)="saveEditAndNew()" (imageRemoved)="removeImage()"
   (navigate)="navigateBrand($event)" />
 }

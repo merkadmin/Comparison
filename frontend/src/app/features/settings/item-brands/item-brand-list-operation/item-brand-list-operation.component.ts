@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { ItemBrand } from '../../../../core/models/item-brand.model';
 import { ItemBrandService } from '../../../../core/services/item-brand.service';
+import { ProductType } from '../../../../core/models/product-type.model';
+import { Country } from '../../../../core/models/country.model';
 
 @Component({
   selector: 'app-item-brand-list-operation',
@@ -17,6 +19,8 @@ export class ItemBrandListOperationComponent {
   @Input() editDraft!: ItemBrand;
   @Input() isCreating = false;
   @Input() saving = false;
+  @Input() productTypes: ProductType[] = [];
+  @Input() countries: Country[] = [];
 
   @Output() closed       = new EventEmitter<void>();
   @Output() saved        = new EventEmitter<void>();

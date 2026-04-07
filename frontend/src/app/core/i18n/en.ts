@@ -219,6 +219,10 @@ export const en: TranslationDict = {
     saveError: 'Failed to save brand.',
     image: 'Brand Image',
     searchPlaceholder: 'Search brands...',
+    filterByProductType: 'Filter by Product Type',
+    allProductTypes: 'All Types',
+    filterByCountry: 'Filter by Country',
+    allCountries: 'All Countries',
   },
 
   item: {
