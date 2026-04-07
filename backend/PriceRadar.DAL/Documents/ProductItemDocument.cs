@@ -28,6 +28,7 @@ public class ProductItemDocument : IDocument<ProductItem>
 
 	public string? ImageUrl { get; set; }
 	public List<string> Images { get; set; } = new();
+	public List<long> ProductTypeIds { get; set; } = new();
 	public List<StorePriceDocument> Prices { get; set; } = new();
 	public bool IsActive { get; set; } = true;
 	public bool IsDeleted { get; set; } = false;
@@ -51,6 +52,7 @@ public class ProductItemDocument : IDocument<ProductItem>
 		Images = Images,
 		BrandId = BrandId,
 		CategoryIds = CategoryIds,
+		ProductTypeIds = ProductTypeIds,
 		Prices = Prices.Select(p => p.ToModel()).ToList(),
 		CreatedAt = CreatedAt,
 	};
@@ -73,6 +75,7 @@ public class ProductItemDocument : IDocument<ProductItem>
 		Images = item.Images,
 		BrandId = item.BrandId,
 		CategoryIds = item.CategoryIds,
+		ProductTypeIds = item.ProductTypeIds,
 		Prices = item.Prices.Select(StorePriceDocument.FromModel).ToList(),
 		CreatedAt = item.CreatedAt,
 	};

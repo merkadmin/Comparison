@@ -19,13 +19,13 @@ export interface BreadcrumbItem {
 }
 
 const breadcrumbMap: Record<string, BreadcrumbItem[]> = {
-  'dashboard':       [{ labelKey: 'nav.dashboard' }],
-  'items':           [{ labelKey: 'nav.products', link: '/items' }, { labelKey: 'nav.itemList' }],
-  'item-categories': [{ labelKey: 'nav.shopByCategory', link: '/item-categories' }, { labelKey: 'nav.itemCategories' }],
-  'item-brands':     [{ labelKey: 'nav.products', link: '/items' }, { labelKey: 'nav.itemBrands' }],
-  'item-packages':   [{ labelKey: 'nav.products', link: '/items' }, { labelKey: 'nav.itemPackages' }],
-  'stores':          [{ labelKey: 'nav.stores' }],
-  'prices':          [{ labelKey: 'nav.prices' }],
+  'dashboard': [{ labelKey: 'nav.dashboard' }],
+  // 'items':           [{ labelKey: 'nav.products', link: '/items' }, { labelKey: 'nav.itemList' }],
+  // 'item-categories': [{ labelKey: 'nav.shopByCategory', link: '/item-categories' }, { labelKey: 'nav.itemCategories' }],
+  'item-brands': [{ labelKey: 'nav.products', link: '/items' }, { labelKey: 'nav.itemBrands' }],
+  'item-packages': [{ labelKey: 'nav.products', link: '/items' }, { labelKey: 'nav.itemPackages' }],
+  'stores': [{ labelKey: 'nav.stores' }],
+  'prices': [{ labelKey: 'nav.prices' }],
 };
 
 @Component({
@@ -35,12 +35,12 @@ const breadcrumbMap: Record<string, BreadcrumbItem[]> = {
   templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  translate        = inject(TranslateService);
-  auth             = inject(AuthService);
-  userActivity     = inject(UserActivityService);
-  private router   = inject(Router);
-  private catSvc   = inject(ItemCategoryService);
-  private itemSvc  = inject(ItemService);
+  translate = inject(TranslateService);
+  auth = inject(AuthService);
+  userActivity = inject(UserActivityService);
+  private router = inject(Router);
+  private catSvc = inject(ItemCategoryService);
+  private itemSvc = inject(ItemService);
 
   isDark = signal(document.documentElement.getAttribute('data-bs-theme') === 'dark');
 
@@ -56,11 +56,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   /** Global product search input value */
   globalSearch = '';
-  suggestions  = signal<Item[]>([]);
+  suggestions = signal<Item[]>([]);
   showSuggestions = signal(false);
 
   private searchInput$ = new Subject<string>();
-  private destroy$     = new Subject<void>();
+  private destroy$ = new Subject<void>();
 
   constructor() {
     // Sync search input with URL ?q= param so back/forward navigation updates it

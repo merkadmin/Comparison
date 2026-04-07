@@ -80,6 +80,7 @@ export const ar: Record<string, string> = {
   'nav.setIcons': 'الأيقونات',
   'nav.storeVariantOrders': 'ترتيب عرض المتغيرات',
   'nav.onlineWebsites': 'المواقع الإلكترونية',
+  'nav.productTypes': 'أنواع المنتجات',
 
 
   // Store Items
@@ -163,6 +164,27 @@ export const ar: Record<string, string> = {
   'category.saveSuccess': 'تم حفظ التصنيف بنجاح.',
   'category.saveError': 'فشل حفظ التصنيف.',
   'category.loadError': 'فشل تحميل التصنيفات.',
+
+  // Product Types
+  'productType.title': 'أنواع المنتجات',
+  'productType.addTitle': 'إضافة نوع منتج جديد',
+  'productType.editTitle': 'تعديل نوع المنتج',
+  'productType.type': 'النوع',
+  'productType.typePlaceholder': 'مثال: هواتف، أجهزة كهربائية، إلكترونيات...',
+  'productType.searchPlaceholder': 'ابحث في أنواع المنتجات...',
+  'productType.addNew': 'إضافة نوع',
+  'productType.deleteConfirm': 'هل تريد حذف هذا النوع؟',
+  'productType.deactivateConfirm': 'تعطيل هذا النوع؟',
+  'productType.deactivateConfirmText': 'سيتم تعطيل هذا النوع.',
+  'productType.deleteBulkConfirm': 'حذف الأنواع المحددة؟',
+  'productType.deleteBulkText': 'أنت على وشك حذف {count} نوع/أنواع. لا يمكن التراجع عن ذلك.',
+  'productType.deleteSelected': 'حذف المحدد',
+  'productType.deactivateBulkConfirm': 'تعطيل الأنواع المحددة؟',
+  'productType.deactivateBulkText': 'أنت على وشك تعطيل {count} نوع/أنواع.',
+  'productType.importSuccess': 'تم استيراد أنواع المنتجات بنجاح.',
+  'productType.importError': 'فشل استيراد أنواع المنتجات. يرجى التحقق من صيغة الملف.',
+  'productType.saveSuccess': 'تم حفظ نوع المنتج بنجاح.',
+  'productType.saveError': 'فشل حفظ نوع المنتج.',
 
   // Item Brands
   'brand.title': 'ماركات المنتجات',

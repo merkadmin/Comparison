@@ -20,6 +20,7 @@ public class ProductItem
 	public List<ItemCategory> Categories { get; set; } = new();
 	public long? ProductItemTypeId { get; set; }
 	public long? ProductInformationId { get; set; }
+	public List<long> ProductTypeIds { get; set; } = new();
 	public List<StorePrice> Prices { get; set; } = new();
 	public List<double> CustomerReviews { get; set; } = new();
 	public List<long> CustomerCommentIds { get; set; } = new();

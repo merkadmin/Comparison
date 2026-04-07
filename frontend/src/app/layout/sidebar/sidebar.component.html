@@ -17,46 +17,25 @@
       <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" id="kt_app_sidebar_menu"
         data-kt-menu="true" data-kt-menu-expand="false">
 
-        <!-- Dashboard -->
-        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-          <span class="menu-link">
-            <span class="menu-icon">
-              <i class="ki-duotone ki-element-11 fs-2">
-                <span class="path1"></span><span class="path2"></span>
-                <span class="path3"></span><span class="path4"></span>
-              </i>
-            </span>
-            <span class="menu-title">{{ 'nav.dashboard' | translate }}</span>
-            <span class="menu-arrow"></span>
-          </span>
-          <div class="menu-sub menu-sub-accordion">
-            <div class="menu-item">
-              <a class="menu-link" routerLink="/home  " routerLinkActive="active">
-                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
-                <span class="menu-title">{{ 'nav.home' | translate }}</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!--START::Settings (Admin only)-->
-        @if (auth.isAdmin()) {
-          @if(this.globalStaticService.navigationBarItem.length > 0) {
-            @if(this.globalStaticService.navigationBarItem.some(x => x.ChildrenList && x.ChildrenList.length > 0)) {
-              @for (item of this.globalStaticService.navigationBarItem.filter(x => x.ChildrenList && x.ChildrenList.length > 0).sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
-                <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                  <span class="menu-link">
-                    <span class="menu-icon">
-                      <i class="ki-duotone {{ item.menuIcon ?? 'ki-setting-2' }} fs-2">
-                        <span class="path1"></span><span class="path2"></span>
-                        <span class="path3"></span><span class="path4"></span><span class="path5"></span>
-                      </i>
-                    </span>
-                    <span class="menu-title">{{ item.title | translate }}</span>
-                    <span class="menu-arrow"></span>
+        <!--START::Dynamic nav items-->
+        @for (item of globalStaticService.navigationBarItem.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
+          @if (!item.isForAdminUser || auth.isAdmin()) {
+            @if (item.ChildrenList && item.ChildrenList.length > 0) {
+              <!-- Parent with children -->
+              <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
+                <span class="menu-link">
+                  <span class="menu-icon">
+                    <i class="ki-duotone {{ item.menuIcon ?? 'ki-setting-2' }} fs-2">
+                      <span class="path1"></span><span class="path2"></span>
+                      <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                    </i>
                   </span>
-                  <div class="menu-sub menu-sub-accordion">
-                    @for (child of item.ChildrenList!.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
+                  <span class="menu-title">{{ item.title | translate }}</span>
+                  <span class="menu-arrow"></span>
+                </span>
+                <div class="menu-sub menu-sub-accordion">
+                  @for (child of item.ChildrenList.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
+                    @if (!child.isForAdminUser || auth.isAdmin()) {
                       <div class="menu-item">
                         <a class="menu-link" routerLink="{{ child.routerLink }}" routerLinkActive="active">
                           @if (child.menuIcon) {
@@ -73,13 +52,30 @@
                         </a>
                       </div>
                     }
-                  </div>
+                  }
                 </div>
-              }
+              </div>
+            } @else {
+              <!-- Leaf item (no children) -->
+              <div class="menu-item">
+                <a class="menu-link" routerLink="{{ item.routerLink }}" routerLinkActive="active">
+                  @if (item.menuIcon) {
+                    <span class="menu-icon">
+                      <i class="ki-duotone {{ item.menuIcon }} fs-2">
+                        <span class="path1"></span><span class="path2"></span>
+                        <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+                      </i>
+                    </span>
+                  } @else {
+                    <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                  }
+                  <span class="menu-title">{{ item.title | translate }}</span>
+                </a>
+              </div>
             }
           }
         }
-        <!--END::Settings (Admin only)-->
+        <!--END::Dynamic nav items-->
 
         <!-- Shop by Store / Category / Brand -->
         @if (!auth.isAdmin()) {

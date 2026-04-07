@@ -74,6 +74,7 @@ export const fr: Record<string, string> = {
   'nav.setIcons': 'Icônes',
   'nav.storeVariantOrders': 'Ordre d\'affichage des variantes',
   'nav.onlineWebsites': 'Sites Web en ligne',
+  'nav.productTypes': 'Types de produits',
 
   // Store Items
   'storeItem.title': 'Articles du magasin',
@@ -156,6 +157,27 @@ export const fr: Record<string, string> = {
   'category.saveSuccess': 'Catégorie enregistrée avec succès.',
   'category.saveError': 'Échec de l\'enregistrement de la catégorie.',
   'category.loadError': 'Échec du chargement des catégories.',
+
+  // Product Types
+  'productType.title': 'Types de produits',
+  'productType.addTitle': 'Ajouter un nouveau type de produit',
+  'productType.editTitle': 'Modifier le type de produit',
+  'productType.type': 'Type',
+  'productType.typePlaceholder': 'Ex. : Mobiles, Électroménager, Électronique...',
+  'productType.searchPlaceholder': 'Rechercher des types de produits...',
+  'productType.addNew': 'Ajouter un type',
+  'productType.deleteConfirm': 'Supprimer ce type de produit ?',
+  'productType.deactivateConfirm': 'Désactiver ce type de produit ?',
+  'productType.deactivateConfirmText': 'Ce type de produit sera désactivé.',
+  'productType.deleteBulkConfirm': 'Supprimer les types sélectionnés ?',
+  'productType.deleteBulkText': 'Vous êtes sur le point de supprimer {count} type(s). Cette action est irréversible.',
+  'productType.deleteSelected': 'Supprimer la sélection',
+  'productType.deactivateBulkConfirm': 'Désactiver les types sélectionnés ?',
+  'productType.deactivateBulkText': 'Vous êtes sur le point de désactiver {count} type(s).',
+  'productType.importSuccess': 'Types de produits importés avec succès.',
+  'productType.importError': 'Échec de l\'importation. Veuillez vérifier le format du fichier.',
+  'productType.saveSuccess': 'Type de produit enregistré avec succès.',
+  'productType.saveError': 'Échec de l\'enregistrement du type de produit.',
 
   // Item Brands
   'brand.title': 'Marques d\'articles',

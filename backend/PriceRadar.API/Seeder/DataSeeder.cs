@@ -31,6 +31,7 @@ public class DataSeeder
 		await SeedTableNames();
 		await SeedCountriesAsync();
 		await SeedOnlineWebSitesAsync();
+		await SeedProductTypesAsync();
 		//await SeedCategoriesAsync();
 		//await SeedBrandsAsync();
 		//await SeedItemsAsync();
@@ -1087,5 +1088,36 @@ public class DataSeeder
 
 		if (existingDocs.Count > 0)
 			Console.WriteLine($"[Seeder] Patched CountryId on {existingDocs.Count} existing website(s).");
+	}
+
+	// ─── Product Types ────────────────────────────────────────────────────────
+	private async Task SeedProductTypesAsync()
+	{
+		if (await _context.ProductTypes.CountDocumentsAsync(_ => true) > 0) return;
+
+		var types = new List<ProductTypeDocument>
+		{
+			new() { Type = "Mobiles" },
+			new() { Type = "Tablets" },
+			new() { Type = "Laptops" },
+			new() { Type = "Desktops" },
+			new() { Type = "Televisions" },
+			new() { Type = "Cameras" },
+			new() { Type = "Audio & Headphones" },
+			new() { Type = "Wearables & Smartwatches" },
+			new() { Type = "Gaming Consoles" },
+			new() { Type = "Home Appliances" },
+			new() { Type = "Kitchen Appliances" },
+			new() { Type = "Networking & Wi-Fi" },
+			new() { Type = "Printers & Scanners" },
+			new() { Type = "Storage & Memory" },
+			new() { Type = "Accessories" },
+		};
+
+		foreach (var pt in types)
+			pt.Id = await _context.GetNextSequenceAsync("producttypes");
+
+		await _context.ProductTypes.InsertManyAsync(types);
+		Console.WriteLine($"[Seeder] Inserted {types.Count} product types.");
 	}
 }

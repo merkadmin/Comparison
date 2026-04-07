@@ -1,12 +1,18 @@
 export enum StoreType {
-  Online  = 'Online',
+  Online = 'Online',
   Physical = 'Physical',
 }
 
 export enum SellingPriceType {
   Regular = 'Regular',
   Premium = 'Premium',
-  Offer   = 'Offer',
+  Offer = 'Offer',
+}
+
+export enum UserRole {
+  Regular = 0,
+  Premium = 1,
+  Admin = 2,
 }
 
 // ── Network Lookups ──────────────────────────────────────────────

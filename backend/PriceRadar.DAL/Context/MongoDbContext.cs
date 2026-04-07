@@ -65,6 +65,9 @@ public IMongoCollection<ItemPackageDocument> ItemPackages =>
 	public IMongoCollection<OnlineWebSiteDocument> OnlineWebSites =>
 		_database.GetCollection<OnlineWebSiteDocument>("OnlineWebSite_s");
 
+	public IMongoCollection<ProductTypeDocument> ProductTypes =>
+		_database.GetCollection<ProductTypeDocument>("ProductType_s");
+
 	public IMongoCollection<CountryDocument> Countries =>
 		_database.GetCollection<CountryDocument>("Country_s");
 
