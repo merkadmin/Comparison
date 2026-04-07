@@ -4,8 +4,9 @@ import { ar } from '../i18n/ar';
 import { fr } from '../i18n/fr';
 
 export type AppLang = 'en' | 'ar' | 'fr';
+export type TranslationDict = { [key: string]: string | TranslationDict };
 
-const TRANSLATIONS: Record<AppLang, Record<string, string>> = { en, ar, fr };
+const TRANSLATIONS: Record<AppLang, TranslationDict> = { en, ar, fr };
 
 const LANG_META: Record<AppLang, { dir: 'ltr' | 'rtl'; htmlLang: string; label: string }> = {
   en: { dir: 'ltr', htmlLang: 'en', label: 'EN' },
@@ -29,8 +30,16 @@ export class TranslateService {
   /** True when current language is RTL */
   readonly isRtl = computed(() => this.dir() === 'rtl');
 
+  /** Resolves a dot-notation key (e.g. 'common.name') against the nested translation object. */
   translate(key: string): string {
-    return TRANSLATIONS[this._lang()][key] ?? key;
+    const parts = key.split('.');
+    let node: string | TranslationDict = TRANSLATIONS[this._lang()];
+    for (const part of parts) {
+      if (typeof node !== 'object' || node === null) return key;
+      node = node[part];
+      if (node === undefined) return key;
+    }
+    return typeof node === 'string' ? node : key;
   }
 
   setLanguage(lang: AppLang): void {
