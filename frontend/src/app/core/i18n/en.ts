@@ -15,6 +15,7 @@ export const en: TranslationDict = {
     exportList: 'Export List',
     loading: 'Loading...',
     noData: 'No records found.',
+    filterBy: 'Filter by',
     created: 'Created',
     all: 'All',
     active: 'Active',

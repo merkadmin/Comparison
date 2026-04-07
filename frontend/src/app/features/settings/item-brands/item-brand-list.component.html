@@ -11,49 +11,41 @@
   </app-entity-list-header-actions>
   <!--END:: Header Actions for admin users-->
 
-  <!--START:: Product Type Filter-->
-  @if (productTypes().length > 0) {
-  <div class="card-header border-0 pt-0 pb-3">
-    <div class="d-flex align-items-center gap-3 flex-wrap">
-      <label class="fw-semibold text-gray-600 fs-7">{{ 'brand.filterByProductType' | translate }}</label>
-      <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-sm" [class]="selectedProductTypeId() === null ? 'btn-primary' : 'btn-light'"
-          (click)="selectedProductTypeId.set(null)">
-          {{ 'brand.allProductTypes' | translate }}
-        </button>
-        @for (pt of productTypes(); track pt.id) {
-        <button class="btn btn-sm" [class]="selectedProductTypeId() === pt.id ? 'btn-primary' : 'btn-light'"
-          (click)="selectedProductTypeId.set(pt.id!)">
-          {{ pt.type }}
-        </button>
-        }
+  <!--START:: Filters-->
+  @if (productTypes().length > 0 || countries().length > 0) {
+  <div class="mx-6 mb-4 p-4 border rounded">
+    <div class="fw-bold text-gray-700 fs-6 mb-3">{{ 'common.filterBy' | translate }}</div>
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      @if (productTypes().length > 0) {
+      <div class="d-flex align-items-center gap-2">
+        <label class="fw-semibold text-gray-600 fs-7 mb-0">{{ 'brand.filterByProductType' | translate }}</label>
+        <select class="form-select form-select-sm w-auto"
+          [ngModel]="selectedProductTypeId()"
+          (ngModelChange)="selectedProductTypeId.set($event === '' ? null : +$event)">
+          <option value="">{{ 'brand.allProductTypes' | translate }}</option>
+          @for (pt of productTypes(); track pt.id) {
+          <option [value]="pt.id">{{ pt.type }}</option>
+          }
+        </select>
       </div>
+      }
+      @if (countries().length > 0) {
+      <div class="d-flex align-items-center gap-2">
+        <label class="fw-semibold text-gray-600 fs-7 mb-0">{{ 'brand.filterByCountry' | translate }}</label>
+        <select class="form-select form-select-sm w-auto"
+          [ngModel]="selectedCountryId()"
+          (ngModelChange)="selectedCountryId.set($event === '' ? null : +$event)">
+          <option value="">{{ 'brand.allCountries' | translate }}</option>
+          @for (c of countries(); track c.id) {
+          <option [value]="c.id">{{ c.name }}</option>
+          }
+        </select>
+      </div>
+      }
     </div>
   </div>
   }
-  <!--END:: Product Type Filter-->
-
-  <!--START:: Country Filter-->
-  @if (countries().length > 0) {
-  <div class="card-header border-0 pt-0 pb-3">
-    <div class="d-flex align-items-center gap-3 flex-wrap">
-      <label class="fw-semibold text-gray-600 fs-7">{{ 'brand.filterByCountry' | translate }}</label>
-      <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-sm" [class]="selectedCountryId() === null ? 'btn-primary' : 'btn-light'"
-          (click)="selectedCountryId.set(null)">
-          {{ 'brand.allCountries' | translate }}
-        </button>
-        @for (c of countries(); track c.id) {
-        <button class="btn btn-sm" [class]="selectedCountryId() === c.id ? 'btn-primary' : 'btn-light'"
-          (click)="selectedCountryId.set(c.id!)">
-          {{ c.name }}
-        </button>
-        }
-      </div>
-    </div>
-  </div>
-  }
-  <!--END:: Country Filter-->
+  <!--END:: Filters-->
 
   <div class="card-body py-4">
     @if (loading()) {

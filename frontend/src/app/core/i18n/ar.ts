@@ -15,6 +15,7 @@ export const ar: TranslationDict = {
     exportList: 'تصدير القائمة',
     loading: 'جارٍ التحميل...',
     noData: 'لا توجد سجلات.',
+    filterBy: 'تصفية حسب',
     created: 'تاريخ الإنشاء',
     all: 'الكل',
     active: 'نشط',
