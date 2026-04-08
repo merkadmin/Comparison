@@ -16,6 +16,7 @@ export const fr: TranslationDict = {
     loading: 'Chargement...',
     noData: 'Aucun enregistrement trouvé.',
     filterBy: 'Filtrer par',
+    selectProductType: 'Veuillez sélectionner au moins un type de produit.',
     created: 'Créé le',
     all: 'Tous',
     active: 'Actif',
@@ -46,6 +47,7 @@ export const fr: TranslationDict = {
     descriptionEn: 'Description (Anglais)',
     descriptionAr: 'Description (Arabe)',
     descriptionFr: 'Description (Français)',
+    productType: 'Type',
   },
 
   nav: {
@@ -214,7 +216,6 @@ export const fr: TranslationDict = {
     deactivateBulkConfirm: 'Désactiver les marques sélectionnées ?',
     deactivateBulkText: 'Vous êtes sur le point de désactiver {count} marques.',
     addNew: 'Ajouter une marque',
-    addTitle: 'Ajouter une nouvelle marque',
     editTitle: 'Modifier la marque',
     saveSuccess: 'Marque enregistrée avec succès.',
     saveError: "Échec de l'enregistrement de la marque.",
@@ -224,6 +225,12 @@ export const fr: TranslationDict = {
     allProductTypes: 'Tous les types',
     filterByCountry: 'Filtrer par pays',
     allCountries: 'Tous les pays',
+  },
+
+  brandOperation: {
+    brandType: "Type de marque",
+    brandImage: "Image de la marque",
+    addTitle: 'Ajouter une nouvelle marque',
   },
 
   item: {

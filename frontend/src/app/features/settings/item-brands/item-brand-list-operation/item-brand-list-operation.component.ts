@@ -50,4 +50,15 @@ export class ItemBrandListOperationComponent {
   clearPending(): void { this.removePendingFile(); }
 
   imgUrl(path: string): string { return this.brandService.resolveImageUrl(path); }
+
+  hasProductType(id: number): boolean {
+    return (this.editDraft.productTypeIds ?? []).includes(id);
+  }
+
+  toggleProductType(id: number): void {
+    const current = this.editDraft.productTypeIds ?? [];
+    this.editDraft.productTypeIds = current.includes(id)
+      ? current.filter(x => x !== id)
+      : [...current, id];
+  }
 }

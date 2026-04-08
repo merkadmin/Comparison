@@ -11,13 +11,13 @@
         </button>
         }
         <h5 class="modal-title fw-bold me-auto">
-          {{ (isCreating ? 'brand.addTitle' : 'brand.editTitle') | translate }}
+          {{ (isCreating ? 'brandOperation.addTitle' : 'brand.editTitle') | translate }}
         </h5>
         <div class="d-flex align-items-center gap-2 me-2">
           <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">{{
             'common.cancel' | translate }}</button>
           @if (isCreating) {
-          <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving" (click)="savedAndNew.emit()">
+          <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving || (productTypes.length > 0 && !(editDraft.productTypeIds ?? []).length)" (click)="savedAndNew.emit()">
             @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
             <!-- <i class="ki-duotone ki-check fs-4"><span class="path1"></span><span class="path2"></span></i> -->
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save"
@@ -28,7 +28,7 @@
             {{ 'common.saveAndNew' | translate }}
           </button>
           }
-          <button type="button" class="btn btn-sm btn-primary" [disabled]="saving" (click)="saved.emit()">
+          <button type="button" class="btn btn-sm btn-primary" [disabled]="saving || (productTypes.length > 0 && !(editDraft.productTypeIds ?? []).length)" (click)="saved.emit()">
             @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
             <!-- <i class="ki-duotone ki-check fs-4"><span class="path1"></span><span class="path2"></span></i> -->
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save"
@@ -50,15 +50,19 @@
 
         <!--START::Name-->
         <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span
-              class="text-danger">*</span></label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
+          <label class="form-label fw-semibold">
+            {{ 'common.name' | translate }} 
+            <span class="text-danger">*</span>
+          </label>
+          <input type="text" class="form-control" [(ngModel)]="editDraft.name" [class.is-invalid]="!editDraft.name"/>
         </div>
         <!--END::Name-->
 
         <!--START::Country-->
         <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'common.country' | translate }}</label>
+          <label class="form-label fw-semibold">
+            {{ 'common.country' | translate }}
+          </label>
           @if (countries.length > 0) {
           <select class="form-select" [(ngModel)]="editDraft.countryId">
             <option [ngValue]="undefined">{{ 'brand.allCountries' | translate }}</option>
@@ -75,13 +79,29 @@
         <!--START::Product Type-->
         @if (productTypes.length > 0) {
         <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'nav.productTypes' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.productTypeId">
-            <option [ngValue]="undefined">{{ 'brand.allProductTypes' | translate }}</option>
-            @for (pt of productTypes; track pt.id) {
-            <option [ngValue]="pt.id">{{ pt.type }}</option>
-            }
-          </select>
+          <label class="form-label fw-semibold">
+            {{ 'brandOperation.brandType' | translate }}
+            <span class="text-danger">*</span>
+          </label>
+          <div class="border rounded p-3" [class.border-danger]="!(editDraft.productTypeIds ?? []).length">
+            <div class="row g-2">
+              @for (pt of productTypes; track pt.id) {
+              <div class="col-6 col-md-4">
+                <div class="form-check form-check-custom form-check-solid">
+                  <input class="form-check-input" type="checkbox" [id]="'pt-' + pt.id"
+                    [checked]="hasProductType(pt.id!)"
+                    (change)="toggleProductType(pt.id!)" />
+                  <label class="form-check-label fw-semibold text-gray-700" [for]="'pt-' + pt.id">
+                    {{ pt.type }}
+                  </label>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          @if (!(editDraft.productTypeIds ?? []).length) {
+          <div class="text-danger fs-7 mt-1">{{ 'common.selectProductType' | translate }}</div>
+          }
         </div>
         }
         <!--END::Product Type-->
@@ -95,17 +115,18 @@
 
         <!--START::Brand Image-->
         <div class="mb-3">
-          <label class="form-label fw-semibold">{{ 'brand.image' | translate }}</label>
+          <label class="form-label fw-semibold">
+            {{ 'brandOperation.brandImage' | translate }}
+          </label>
 
           <!--START::Current / Preview Image-->
           @if (pendingPreviewUrl || editDraft.brandImage) {
           <div class="d-flex align-items-start gap-3 mb-3">
             <div class="position-relative">
-              <img [src]="pendingPreviewUrl ?? imgUrl(editDraft.brandImage!)" class="rounded border object-fit-cover"
-                style="width: 120px; height: 120px;" />
+              <img [src]="pendingPreviewUrl ?? imgUrl(editDraft.brandImage!)" class="rounded border object-fit-cover" style="width: 120px; height: 120px;" />
               @if (pendingPreviewUrl) {
-              <span class="badge badge-light-warning position-absolute bottom-0 start-0 fs-9">{{ 'common.new' |
-                translate }}</span>
+              <span class="badge badge-light-warning position-absolute bottom-0 start-0 fs-9">
+                {{ 'common.new' | translate }}</span>
               }
               <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0"
                 (click)="pendingPreviewUrl ? removePendingFile() : imageRemoved.emit()">

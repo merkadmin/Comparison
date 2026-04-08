@@ -5,7 +5,7 @@ export interface ItemBrand {
   brandImage?: string;
   country?: string;
   countryId?: number;
-  productTypeId?: number;
+  productTypeIds?: number[];
   isActive?: boolean;
   createdAt?: Date;
 }

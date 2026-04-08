@@ -16,6 +16,7 @@ export const en: TranslationDict = {
     loading: 'Loading...',
     noData: 'No records found.',
     filterBy: 'Filter by',
+    selectProductType: 'Please select at least one product type.',
     created: 'Created',
     all: 'All',
     active: 'Active',
@@ -46,6 +47,7 @@ export const en: TranslationDict = {
     descriptionEn: 'Description (English)',
     descriptionAr: 'Description (Arabic)',
     descriptionFr: 'Description (French)',
+    productType: 'Type',
   },
 
   nav: {
@@ -73,7 +75,7 @@ export const en: TranslationDict = {
     setIcons: 'Set Icons',
     storeVariantOrders: 'Variant Display Order',
     onlineWebsites: 'Online Websites',
-    productTypes: 'Product Types',
+    productTypes: 'Type',
     productItemVariants: 'Variants',
     itemVariantMap: 'Product Variants',
   },
@@ -214,16 +216,21 @@ export const en: TranslationDict = {
     deactivateBulkConfirm: 'Deactivate selected brands?',
     deactivateBulkText: 'You are about to deactivate {count} brands.',
     addNew: 'Add Brand',
-    addTitle: 'Adding new Brand',
     editTitle: 'Edit Brand',
     saveSuccess: 'Brand saved successfully.',
     saveError: 'Failed to save brand.',
     image: 'Brand Image',
     searchPlaceholder: 'Search brands...',
-    filterByProductType: 'Filter by Product Type',
+    filterByProductType: 'Type',
     allProductTypes: 'All Types',
-    filterByCountry: 'Filter by Country',
+    filterByCountry: 'Country',
     allCountries: 'All Countries',
+  },
+
+  brandOperation: {
+    brandType: "Brand Type",
+    brandImage: "Brand Image",
+    addTitle: 'Adding new Brand',
   },
 
   item: {

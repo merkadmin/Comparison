@@ -16,6 +16,7 @@ export const ar: TranslationDict = {
     loading: 'جارٍ التحميل...',
     noData: 'لا توجد سجلات.',
     filterBy: 'تصفية حسب',
+    selectProductType: 'يرجى اختيار نوع منتج واحد على الأقل.',
     created: 'تاريخ الإنشاء',
     all: 'الكل',
     active: 'نشط',
@@ -46,6 +47,7 @@ export const ar: TranslationDict = {
     descriptionEn: 'الوصف (الإنجليزية)',
     descriptionAr: 'الوصف (العربية)',
     descriptionFr: 'الوصف (الفرنسية)',
+    productType: 'النوع',
   },
 
   nav: {
@@ -214,16 +216,21 @@ export const ar: TranslationDict = {
     deactivateBulkConfirm: 'تعطيل الماركات المحددة؟',
     deactivateBulkText: 'أنت على وشك تعطيل {count} ماركات.',
     addNew: 'إضافة ماركة',
-    addTitle: 'إضافة ماركة جديدة',
     editTitle: 'تعديل الماركة',
     saveSuccess: 'تم حفظ الماركة بنجاح.',
     saveError: 'فشل حفظ الماركة.',
     image: 'صورة الماركة',
     searchPlaceholder: 'ابحث عن الماركات...',
-    filterByProductType: 'تصفية حسب نوع المنتج',
+    filterByProductType: 'النوع',
     allProductTypes: 'كل الأنواع',
-    filterByCountry: 'تصفية حسب الدولة',
+    filterByCountry: 'الدولة',
     allCountries: 'كل الدول',
+  },
+
+  brandOperation: {
+    brandType: "نوع الماركة",
+    brandImage: "صورة الماركة",
+    addTitle: 'إضافة ماركة جديدة',
   },
 
   item: {

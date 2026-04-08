@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CommonListHeaderActions } from '../common-list-header-actions/common-list-header-actions';
 import { ActionMenuItem } from '../commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { ViewMode } from '../commonActions/common-view-mode/common-view-mode';
+import { GridColumns } from '../commonActions/common-grid-columns-button/common-grid-columns-button';
 
 @Component({
   selector: 'app-entity-list-header-actions',
@@ -21,6 +22,9 @@ export class EntityListHeaderActionsComponent {
 
   @Input() viewMode?: ViewMode;
   @Output() viewModeChange = new EventEmitter<ViewMode>();
+
+  @Input() columns?: GridColumns;
+  @Output() columnsChange = new EventEmitter<GridColumns>();
 
   @Input() selectedCount = 0;
   @Input() bulkMainLabelKey = 'common.deactivate';

@@ -1,6 +1,8 @@
 <app-common-list-header-actions
   [titleKey]="resolvedTitleKey"
   [viewMode]="viewMode"
+  [columns]="columns"
+  (columnsChange)="columnsChange.emit($event)"
   [selectedCount]="selectedCount"
   [bulkMainLabelKey]="bulkMainLabelKey"
   [bulkMainIconClass]="bulkMainIconClass"

@@ -15,34 +15,34 @@ public class ItemBrandDocument : IDocument<ItemBrand>
     public string?  BrandImage { get; set; }
     public string?  Country       { get; set; }
     public long?    CountryId     { get; set; }
-    public long?    ProductTypeId { get; set; }
-    public DateTime CreatedAt     { get; set; } = DateTime.UtcNow;
+    public List<long> ProductTypeIds { get; set; } = new();
+    public DateTime   CreatedAt      { get; set; } = DateTime.UtcNow;
 
     public ItemBrand ToModel() => new()
     {
-        Id            = Id,
-        IsActive      = IsActive,
-        IsDeleted     = IsDeleted,
-        Name          = Name,
-        LogoUrl       = LogoUrl,
-        BrandImage    = BrandImage,
-        Country       = Country,
-        CountryId     = CountryId,
-        ProductTypeId = ProductTypeId,
-        CreatedAt     = CreatedAt,
+        Id             = Id,
+        IsActive       = IsActive,
+        IsDeleted      = IsDeleted,
+        Name           = Name,
+        LogoUrl        = LogoUrl,
+        BrandImage     = BrandImage,
+        Country        = Country,
+        CountryId      = CountryId,
+        ProductTypeIds = ProductTypeIds,
+        CreatedAt      = CreatedAt,
     };
 
     public static ItemBrandDocument FromModel(ItemBrand b) => new()
     {
-        Id            = b.Id,
-        IsActive      = b.IsActive,
-        IsDeleted     = b.IsDeleted,
-        Name          = b.Name,
-        LogoUrl       = b.LogoUrl,
-        BrandImage    = b.BrandImage,
-        Country       = b.Country,
-        CountryId     = b.CountryId,
-        ProductTypeId = b.ProductTypeId,
-        CreatedAt     = b.CreatedAt,
+        Id             = b.Id,
+        IsActive       = b.IsActive,
+        IsDeleted      = b.IsDeleted,
+        Name           = b.Name,
+        LogoUrl        = b.LogoUrl,
+        BrandImage     = b.BrandImage,
+        Country        = b.Country,
+        CountryId      = b.CountryId,
+        ProductTypeIds = b.ProductTypeIds ?? new(),
+        CreatedAt      = b.CreatedAt,
     };
 }

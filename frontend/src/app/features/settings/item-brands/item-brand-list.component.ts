@@ -9,6 +9,8 @@ import { ProductTypeService } from '../../../core/services/product-type.service'
 import { ProductType } from '../../../core/models/product-type.model';
 import { CountryService } from '../../../core/services/country.service';
 import { Country } from '../../../core/models/country.model';
+import { GridColumns } from '../../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
+import { computedColClass } from '../../../shared/helpers/grid-columns.helper';
 
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
@@ -75,6 +77,9 @@ export class ItemBrandListComponent implements OnInit {
    *  a card grid (`'cards'`). */
   viewMode = signal<'list' | 'cards'>('cards');
 
+  colsPerRow = signal<GridColumns>(5);
+  colClass = computedColClass(this.colsPerRow);
+
   /** Current value of the search input; filters `visibleBrands` in real time. */
   searchTerm = signal('');
 
@@ -102,7 +107,7 @@ export class ItemBrandListComponent implements OnInit {
     const countryId = this.selectedCountryId();
     return this.brands().filter(b => {
       if (term && !b.name.toLowerCase().includes(term)) return false;
-      if (typeId !== null && b.productTypeId !== typeId) return false;
+      if (typeId !== null && !(b.productTypeIds ?? []).includes(typeId)) return false;
       if (countryId !== null && b.countryId !== countryId) return false;
       return true;
     });
@@ -181,7 +186,7 @@ export class ItemBrandListComponent implements OnInit {
 
   /** Opens the modal in "create" mode with a blank draft. */
   openCreate(): void {
-    this.editDraft = { name: '' };
+    this.editDraft = { name: '', productTypeIds: [] };
     this.isCreating.set(true);
     this.editingId.set(0);
   }
@@ -312,7 +317,7 @@ export class ItemBrandListComponent implements OnInit {
           this.operationComp?.clearPending();
           this.toast.success(this.translate.translate('brand.saveSuccess'));
           this.load();
-          this.editDraft = { name: '' };
+          this.editDraft = { name: '', productTypeIds: [] };
         };
 
         if (!pendingFile) { reset(); return; }

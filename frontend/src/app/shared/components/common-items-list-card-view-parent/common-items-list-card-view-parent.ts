@@ -68,7 +68,7 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
   searchQuery = signal('');
   compareIds = signal<Set<number>>(new Set());
   viewMode = signal<'grid' | 'list'>('grid');
-  colsPerRow = signal<GridColumns>(4);
+  colsPerRow = signal<GridColumns>(5);
   colClass = computedColClass(this.colsPerRow);
   allBrands = signal<ItemBrand[]>([]);
   selectedBrandId = signal<number | null>(null);

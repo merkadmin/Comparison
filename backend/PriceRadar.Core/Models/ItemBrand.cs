@@ -10,6 +10,6 @@ public class ItemBrand
     public string?  BrandImage { get; set; }
     public string?  Country       { get; set; }
     public long?    CountryId     { get; set; }
-    public long?    ProductTypeId { get; set; }
+    public List<long> ProductTypeIds { get; set; } = new();
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

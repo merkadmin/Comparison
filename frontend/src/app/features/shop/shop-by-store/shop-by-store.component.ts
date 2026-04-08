@@ -49,7 +49,7 @@ export class ShopByStoreComponent implements OnInit, OnDestroy {
   loadingItems  = signal(false);
 
   viewMode   = signal<'grid' | 'list'>('grid');
-  colsPerRow = signal<GridColumns>(4);
+  colsPerRow = signal<GridColumns>(5);
   colClass   = computedColClass(this.colsPerRow);
   searchQuery = signal('');
 
