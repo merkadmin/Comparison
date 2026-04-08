@@ -22,18 +22,17 @@ export class GlobalStaticService {
         routerLink: '/item-brands',
         title: 'nav.settings',
         menuIcon: 'ki-setting-2',
-        orderIndex: 0,
         isForAdminUser: true,
         ChildrenList: [
-          { routerLink: '/item-brands',          title: 'nav.itemBrands',          menuIcon: 'ki-badge',      orderIndex: 0, isForAdminUser: true },
-          { routerLink: '/stores',               title: 'nav.stores',              menuIcon: 'ki-shop',       orderIndex: 1, isForAdminUser: true },
-          { routerLink: '/item-categories',      title: 'nav.itemCategories',      menuIcon: 'ki-category',   orderIndex: 2, isForAdminUser: true },
-          { routerLink: '/items',                title: 'nav.items',               menuIcon: 'ki-package',    orderIndex: 3, isForAdminUser: true },
-          { routerLink: '/variants',             title: 'nav.productItemVariants', menuIcon: 'ki-setting-3',  orderIndex: 4, isForAdminUser: true },
-          { routerLink: '/productItem-variants', title: 'nav.itemVariantMap',      menuIcon: 'ki-data',       orderIndex: 5, isForAdminUser: true },
-          { routerLink: '/store-variant-orders', title: 'nav.storeVariantOrders',  menuIcon: 'ki-some-files', orderIndex: 6, isForAdminUser: true },
-          { routerLink: '/online-websites',      title: 'nav.onlineWebsites',      menuIcon: 'ki-globe',      orderIndex: 7, isForAdminUser: true },
-          { routerLink: '/product-types',        title: 'nav.productTypes',         menuIcon: 'ki-category',   orderIndex: 8, isForAdminUser: true },
+          { routerLink: '/product-types',      title: 'nav.productTypes',        menuIcon: 'ki-category',    isForAdminUser: true },
+          { routerLink: '/item-brands',         title: 'nav.itemBrands',          menuIcon: 'ki-badge',       isForAdminUser: true },
+          { routerLink: '/stores',              title: 'nav.stores',              menuIcon: 'ki-shop',        isForAdminUser: true },
+          { routerLink: '/item-categories',     title: 'nav.itemCategories',      menuIcon: 'ki-category',    isForAdminUser: true },
+          { routerLink: '/items',               title: 'nav.items',               menuIcon: 'ki-package',     isForAdminUser: true },
+          { routerLink: '/variants',            title: 'nav.productItemVariants', menuIcon: 'ki-setting-3',   isForAdminUser: true },
+          { routerLink: '/productItem-variants',title: 'nav.itemVariantMap',      menuIcon: 'ki-data',        isForAdminUser: true },
+          { routerLink: '/store-variant-orders',title: 'nav.storeVariantOrders',  menuIcon: 'ki-some-files',  isForAdminUser: true },
+          { routerLink: '/online-websites',     title: 'nav.onlineWebsites',      menuIcon: 'ki-globe',       isForAdminUser: true },
         ]
       }
     ];

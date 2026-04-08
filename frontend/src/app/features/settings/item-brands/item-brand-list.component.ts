@@ -342,6 +342,16 @@ export class ItemBrandListComponent implements OnInit {
    * @param id - The brand ID for which the menu is being built.
    * @returns Array of `ActionMenuItem` objects rendered in the row's drop-down.
    */
+  countryName(id: number | undefined): string {
+    if (!id) return '—';
+    return this.countries().find(c => c.id === id)?.name ?? '—';
+  }
+
+  brandTypeNames(ids: number[] | undefined): string {
+    if (!ids?.length) return '—';
+    return ids.map(id => this.productTypes().find(p => p.id === id)?.type ?? '').filter(Boolean).join(', ');
+  }
+
   getRowMenuItems(id: number): ActionMenuItem[] {
     return buildRowMenuItems(() => this.delete(id));
   }

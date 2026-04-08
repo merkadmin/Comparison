@@ -7,27 +7,39 @@ namespace PriceRadar.API.Controllers;
 
 public class ItemBrandsController : BaseController<ItemBrand, IItemBrandRepository>
 {
-	private readonly BrandWebImportService _webImporter;
+	private readonly BrandWebImportService  _webImporter;
+	private readonly ICountryRepository     _countries;
+	private readonly IProductTypeRepository _productTypes;
 
-	public ItemBrandsController(IItemBrandRepository repo, BrandWebImportService webImporter)
+	public ItemBrandsController(
+		IItemBrandRepository    repo,
+		BrandWebImportService   webImporter,
+		ICountryRepository      countries,
+		IProductTypeRepository  productTypes)
 		: base(repo)
 	{
-		_webImporter = webImporter;
+		_webImporter  = webImporter;
+		_countries    = countries;
+		_productTypes = productTypes;
 	}
 
 	[HttpGet("export-template")]
-
-	public IActionResult ExportTemplate()
+	public async Task<IActionResult> ExportTemplate()
 	{
-		var bytes = ExcelService.GetItemBrandTemplate();
+		var countries    = await _countries.GetAllAsync();
+		var productTypes = await _productTypes.GetAllAsync();
+		var bytes        = ExcelService.GetItemBrandTemplate(countries, productTypes);
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-brands-template.xlsx");
 	}
 
 	[HttpGet("export-list")]
 	public async Task<IActionResult> ExportList()
 	{
-		var brands = await Repo.GetAllAsync();
-		var bytes = ExcelService.ExportItemBrandList(brands);
+		var brands       = await Repo.GetAllAsync();
+		var countryNames = (await _countries.GetAllAsync()).ToDictionary(c => c.Id, c => c.Name);
+		var typeNames    = (await _productTypes.GetAllAsync()).ToDictionary(t => t.Id, t => t.Type);
+
+		var bytes = ExcelService.ExportItemBrandList(brands, countryNames, typeNames);
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "item-brands.xlsx");
 	}
 

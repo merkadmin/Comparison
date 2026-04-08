@@ -18,7 +18,7 @@
         data-kt-menu="true" data-kt-menu-expand="false">
 
         <!--START::Dynamic nav items-->
-        @for (item of globalStaticService.navigationBarItem.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
+        @for (item of globalStaticService.navigationBarItem; track $index) {
           @if (!item.isForAdminUser || auth.isAdmin()) {
             @if (item.ChildrenList && item.ChildrenList.length > 0) {
               <!-- Parent with children -->
@@ -34,7 +34,7 @@
                   <span class="menu-arrow"></span>
                 </span>
                 <div class="menu-sub menu-sub-accordion">
-                  @for (child of item.ChildrenList.sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)); track $index) {
+                  @for (child of item.ChildrenList; track $index) {
                     @if (!child.isForAdminUser || auth.isAdmin()) {
                       <div class="menu-item">
                         <a class="menu-link" routerLink="{{ child.routerLink }}" routerLinkActive="active">

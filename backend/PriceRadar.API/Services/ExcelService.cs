@@ -187,32 +187,92 @@ public static class ExcelService
 
 	// ── Item Brands ──────────────────────────────────────────────────────────
 
-	public static byte[] GetItemBrandTemplate()
+	public static byte[] GetItemBrandTemplate(
+		IEnumerable<Country>     countries,
+		IEnumerable<ProductType> productTypes)
 	{
 		using var wb = new XLWorkbook();
+
+		// ── Sheet 1: Import data ─────────────────────────────────────────────
 		var ws = wb.AddWorksheet("ItemBrands");
-		string[] headers = ["Name*", "LogoUrl", "Country"];
+		// Col 1:Name*  2:LogoUrl  3:CountryId  4:ProductTypeIds(comma-separated IDs)
+		string[] headers = ["Name*", "LogoUrl", "CountryId", "ProductTypeIds"];
 		WriteHeaders(ws, headers);
+
+		// Example row (muted/italic)
+		ws.Cell(2, 1).Value = "Samsung";
+		ws.Cell(2, 2).Value = "https://example.com/samsung-logo.png";
+		ws.Cell(2, 3).Value = "1";
+		ws.Cell(2, 4).Value = "1, 3, 5";
+		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
+		ws.Row(2).Style.Font.Italic          = true;
+		ws.Row(2).Style.Font.FontColor       = XLColor.FromHtml("#888888");
+
+		// Note row
+		ws.Cell(3, 1).Value = "↑ Example row — delete before importing. " +
+		                      "CountryId: use the Id from the 'Countries' sheet. " +
+		                      "ProductTypeIds: comma-separated Ids from the 'ProductTypes' sheet (e.g. \"1, 3, 5\").";
+		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
+		ws.Cell(3, 1).Style.Font.Italic    = true;
+		ws.Range(3, 1, 3, headers.Length).Merge();
+
+		ws.Columns().AdjustToContents();
+
+		// ── Sheet 2: Countries reference ─────────────────────────────────────
+		var wsC = wb.AddWorksheet("Countries");
+		wsC.Cell(1, 1).Value = "Id";
+		wsC.Cell(1, 2).Value = "Name";
+		wsC.Row(1).Style.Font.Bold = true;
+		int r = 2;
+		foreach (var c in countries.OrderBy(x => x.Id))
+		{
+			wsC.Cell(r, 1).Value = c.Id;
+			wsC.Cell(r, 2).Value = c.Name;
+			r++;
+		}
+		wsC.Columns().AdjustToContents();
+
+		// ── Sheet 3: ProductTypes reference ──────────────────────────────────
+		var wsP = wb.AddWorksheet("ProductTypes");
+		wsP.Cell(1, 1).Value = "Id";
+		wsP.Cell(1, 2).Value = "Type";
+		wsP.Row(1).Style.Font.Bold = true;
+		r = 2;
+		foreach (var pt in productTypes.OrderBy(x => x.Id))
+		{
+			wsP.Cell(r, 1).Value = pt.Id;
+			wsP.Cell(r, 2).Value = pt.Type;
+			r++;
+		}
+		wsP.Columns().AdjustToContents();
+
 		using var ms = new MemoryStream();
 		wb.SaveAs(ms);
 		return ms.ToArray();
 	}
 
-	public static byte[] ExportItemBrandList(IEnumerable<ItemBrand> brands)
+	public static byte[] ExportItemBrandList(
+		IEnumerable<ItemBrand>   brands,
+		Dictionary<long, string> countryNames,
+		Dictionary<long, string> productTypeNames)
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("ItemBrands");
-		string[] headers = { "Id", "Name", "LogoUrl", "Country", "IsActive" };
+		// Columns match the import template so the exported file can be re-imported
+		string[] headers = { "Id", "Name", "LogoUrl", "CountryId", "ProductTypeIds", "IsActive" };
 		WriteHeaders(ws, headers);
 
 		int row = 2;
 		foreach (var b in brands)
 		{
+			var typeIds = string.Join(", ", b.ProductTypeIds);
+
 			ws.Cell(row, 1).Value = b.Id;
 			ws.Cell(row, 2).Value = b.Name;
 			ws.Cell(row, 3).Value = b.LogoUrl ?? string.Empty;
-			ws.Cell(row, 4).Value = b.Country ?? string.Empty;
-			ws.Cell(row, 5).Value = b.IsActive;
+			ws.Cell(row, 4).Value = b.CountryId.HasValue ? b.CountryId.Value.ToString() : string.Empty;
+			ws.Cell(row, 5).Value = typeIds;
+			ws.Cell(row, 6).Value = b.IsActive;
 			row++;
 		}
 
@@ -231,12 +291,24 @@ public static class ExcelService
 		for (int r = 2; r <= lastRow; r++)
 		{
 			var name = ws.Cell(r, 1).GetString().Trim();
-			if (string.IsNullOrEmpty(name)) continue;
+			// Skip the example/note rows and empty rows
+			if (string.IsNullOrEmpty(name) || name.StartsWith("↑")) continue;
+
+			long? countryId = long.TryParse(ws.Cell(r, 3).GetString().Trim(), out var cid) ? cid : null;
+
+			var typeIds = ws.Cell(r, 4).GetString()
+				.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+				.Select(t => long.TryParse(t, out var tid) ? (long?)tid : null)
+				.Where(id => id.HasValue)
+				.Select(id => id!.Value)
+				.ToList();
+
 			list.Add(new ItemBrand
 			{
-				Name = name,
-				LogoUrl = NullIfEmpty(ws.Cell(r, 2).GetString()),
-				Country = NullIfEmpty(ws.Cell(r, 3).GetString()),
+				Name           = name,
+				LogoUrl        = NullIfEmpty(ws.Cell(r, 2).GetString()),
+				CountryId      = countryId,
+				ProductTypeIds = typeIds,
 			});
 		}
 		return list;
