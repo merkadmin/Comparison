@@ -12,27 +12,9 @@
         <h5 class="modal-title fw-bold me-auto">
           {{ (isCreating ? 'productType.addTitle' : 'productType.editTitle') | translate }}
         </h5>
-        <div class="d-flex align-items-center gap-2 me-2">
-          <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">
-            {{ 'common.cancel' | translate }}
-          </button>
-          @if (isCreating) {
-            <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving" (click)="savedAndNew.emit()">
-              @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
-              {{ 'common.saveAndNew' | translate }}
-            </button>
-          }
-          <button type="button" class="btn btn-sm btn-primary" [disabled]="saving" (click)="saved.emit()">
-            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
-            <i class="ki-duotone ki-check fs-4"><span class="path1"></span><span class="path2"></span></i>
-            {{ 'common.save' | translate }}
-          </button>
-        </div>
-        @if (!isCreating) {
-          <button type="button" class="btn btn-icon btn-sm btn-light ms-1" [disabled]="saving" (click)="navigate.emit(1)">
-            <i class="ki-duotone ki-arrow-right fs-3"><span class="path1"></span><span class="path2"></span></i>
-          </button>
-        }
+        <button type="button" class="btn btn-icon btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">
+          <i class="ki-duotone ki-cross fs-3"><span class="path1"></span><span class="path2"></span></i>
+        </button>
       </div>
 
       <div class="modal-body">
@@ -43,6 +25,20 @@
           <input type="text" class="form-control" [(ngModel)]="editDraft.type"
             placeholder="{{ 'productType.typePlaceholder' | translate }}" />
         </div>
+      </div>
+
+      <div class="modal-footer justify-content-end gap-2">
+        <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        @if (isCreating) {
+          <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving" (click)="savedAndNew.emit()">
+            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+            {{ 'common.saveAndNew' | translate }}
+          </button>
+        }
+        <button type="button" class="btn btn-sm btn-primary" [disabled]="saving" (click)="saved.emit()">
+          @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ 'common.save' | translate }}
+        </button>
       </div>
 
     </div>

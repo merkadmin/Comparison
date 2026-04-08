@@ -5,164 +5,80 @@
 
       <div class="modal-header">
         <h5 class="modal-title fw-bold me-auto">{{ (isCreating ? 'item.addTitle' : 'item.editTitle') | translate }}</h5>
-        <div class="d-flex align-items-center gap-2 me-2">
-          <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
-          @if (isCreating) {
-            <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving" (click)="savedAndNew.emit()">
-              @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
-              {{ 'common.saveAndNew' | translate }}
-            </button>
-          }
-          <button type="button" class="btn btn-sm btn-primary" [disabled]="saving" (click)="saved.emit()">
-            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
-            {{ 'common.save' | translate }}
-          </button>
-        </div>
+        <button type="button" class="btn btn-icon btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">
+          <i class="ki-duotone ki-cross fs-3"><span class="path1"></span><span class="path2"></span></i>
+        </button>
       </div>
 
       <div class="modal-body">
         <div class="row g-5">
 
-          <!--START::Left Column-->
-          <div class="col-md-6">
+          <!--START::Top Fields-->
+          <div class="col-12">
+            <div class="row g-4">
 
-            <!--START::Name-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
-            </div>
-            <!--END::Name-->
+              <!--Name (full width)-->
+              <div class="col-12">
+                <label class="form-label fw-semibold">{{ 'common.name' | translate }} <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="editDraft.name" />
+              </div>
 
-            <!--START::Barcode + Model Name-->
-            <div class="row mb-4">
-              <div class="col-6">
+              <!--Barcode | Model Name-->
+              <div class="col-md-6">
                 <label class="form-label fw-semibold">{{ 'common.barcode' | translate }}</label>
                 <input type="text" class="form-control" [(ngModel)]="editDraft.barcode" />
               </div>
-              <div class="col-6">
+              <div class="col-md-6">
                 <label class="form-label fw-semibold">{{ 'item.modelName' | translate }}</label>
                 <input type="text" class="form-control" [(ngModel)]="editDraft.modelName" />
               </div>
-            </div>
-            <!--END::Barcode + Model Name-->
 
-            <!--START::Dates-->
-            <div class="row mb-4">
-              <div class="col-6">
+              <!--Announced Date | Release Date-->
+              <div class="col-md-6">
                 <label class="form-label fw-semibold">{{ 'item.announcedDate' | translate }}</label>
                 <input type="date" class="form-control" [(ngModel)]="editDraft.announcedDate" />
               </div>
-              <div class="col-6">
+              <div class="col-md-6">
                 <label class="form-label fw-semibold">{{ 'item.releaseDate' | translate }}</label>
                 <input type="date" class="form-control" [(ngModel)]="editDraft.releaseDate" />
               </div>
-            </div>
-            <!--END::Dates-->
 
-            <!--START::Brand-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ 'item.brand' | translate }}</label>
-              <select class="form-select" [(ngModel)]="editDraft.brandId">
-                @for (b of brands; track b.id) {
-                  <option [ngValue]="b.id">{{ b.name }}</option>
-                }
-              </select>
-            </div>
-            <!--END::Brand-->
-
-            <!--START::Product Types-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ 'item.type' | translate }}</label>
-              @if (productTypes.length > 0) {
-                <div class="d-flex flex-wrap gap-2 mt-1">
-                  @for (t of productTypes; track t.id) {
-                    <button type="button"
-                      class="btn btn-sm"
-                      [class.btn-primary]="isProductTypeSelected(t.id!)"
-                      [class.btn-light]="!isProductTypeSelected(t.id!)"
-                      (click)="toggleProductType(t.id!)">
-                      {{ t.type }}
-                    </button>
+              <!--Brand (full width)-->
+              <div class="col-12">
+                <label class="form-label fw-semibold">{{ 'item.brand' | translate }} <span class="text-danger">*</span></label>
+                <select class="form-select" [(ngModel)]="editDraft.brandId"
+                  [class.border-danger]="!editDraft.brandId">
+                  <option [ngValue]="0" disabled>— {{ 'item.selectBrand' | translate }} —</option>
+                  @for (b of brands; track b.id) {
+                    <option [ngValue]="b.id">{{ b.name }}</option>
                   }
-                </div>
-              } @else {
-                <div class="text-muted fs-7">—</div>
-              }
-            </div>
-            <!--END::Product Types-->
-
-          </div>
-          <!--END::Left Column-->
-
-          <!--START::Right Column-->
-          <div class="col-md-6">
-
-            <!--START::Images-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ 'common.images' | translate }}</label>
-
-              <!--START::Image Thumbnails-->
-              @if ((editDraft.images && editDraft.images.length > 0) || pendingPreviewUrls.length > 0) {
-                <div class="d-flex flex-wrap gap-3 mb-3">
-                  @for (img of editDraft.images; track img; let i = $index) {
-                    <div class="position-relative">
-                      <img [src]="imgUrl(img)" class="item-img-thumb" />
-                      <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0 item-img-remove-btn"
-                        (click)="imageRemoved.emit(i)">
-                        <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
-                      </button>
-                    </div>
-                  }
-                  @for (url of pendingPreviewUrls; track url; let i = $index) {
-                    <div class="position-relative">
-                      <img [src]="url" class="item-img-thumb" />
-                      <span class="badge badge-light-warning position-absolute bottom-0 start-0 fs-9">{{ 'common.new' | translate }}</span>
-                      <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0 item-img-remove-btn"
-                        (click)="removePendingImage(i)">
-                        <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
-                      </button>
-                    </div>
-                  }
-                </div>
-              }
-              <!--END::Image Thumbnails-->
-
-              <!--START::Upload Button-->
-              <div class="d-flex gap-2">
-                <input #imgFileInput type="file" accept="image/*" multiple class="d-none"
-                  (change)="onFilesSelected($event)" />
-                <button type="button" class="btn btn-light-primary btn-sm" (click)="imgFileInput.click()">
-                  <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
-                  {{ 'common.uploadImages' | translate }}
-                </button>
+                </select>
               </div>
-              <!--END::Upload Button-->
-            </div>
-            <!--END::Images-->
 
-            <!--START::Brief Description-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ 'item.briefDescription' | translate }}</label>
-              <textarea class="form-control" rows="3" [(ngModel)]="editDraft.briefDescription"></textarea>
-            </div>
-            <!--END::Brief Description-->
+              <!--Product Types (full width)-->
+              <div class="col-12">
+                <label class="form-label fw-semibold">{{ 'item.type' | translate }} <span class="text-danger">*</span></label>
+                @if (productTypes.length > 0) {
+                  <div class="d-flex flex-wrap gap-2 mt-1 p-2 rounded"
+                    [class.border]="!editDraft.productTypeIds.length"
+                    [class.border-danger]="!editDraft.productTypeIds.length">
+                    @for (t of productTypes; track t.id) {
+                      <button type="button" class="btn btn-sm"
+                        [class.btn-primary]="isProductTypeSelected(t.id!)"
+                        [class.btn-light]="!isProductTypeSelected(t.id!)"
+                        (click)="toggleProductType(t.id!)">
+                        {{ t.type }}
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <div class="text-muted fs-7">—</div>
+                }
+              </div>
 
-            <!--START::Description-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
-              <textarea class="form-control" rows="4" [(ngModel)]="editDraft.description"></textarea>
             </div>
-            <!--END::Description-->
-
-            <!--START::About This Item-->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">{{ 'item.aboutThisItem' | translate }}</label>
-              <textarea class="form-control" rows="4" [(ngModel)]="editDraft.aboutThisItem"></textarea>
-            </div>
-            <!--END::About This Item-->
-
           </div>
-          <!--END::Right Column-->
+          <!--END::Top Fields-->
 
           <!--START::Category-->
           <div class="col-12">
@@ -246,6 +162,49 @@
             </button>
           </div>
           <!--END::Category-->
+
+          <!--START::Images-->
+          <div class="col-12">
+            <label class="form-label fw-semibold">{{ 'common.images' | translate }}</label>
+
+            <!--START::Image Thumbnails-->
+            @if ((editDraft.images && editDraft.images.length > 0) || pendingPreviewUrls.length > 0) {
+              <div class="d-flex flex-wrap gap-3 mb-3">
+                @for (img of editDraft.images; track img; let i = $index) {
+                  <div class="position-relative">
+                    <img [src]="imgUrl(img)" class="item-img-thumb" />
+                    <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0 item-img-remove-btn"
+                      (click)="imageRemoved.emit(i)">
+                      <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+                    </button>
+                  </div>
+                }
+                @for (url of pendingPreviewUrls; track url; let i = $index) {
+                  <div class="position-relative">
+                    <img [src]="url" class="item-img-thumb" />
+                    <span class="badge badge-light-warning position-absolute bottom-0 start-0 fs-9">{{ 'common.new' | translate }}</span>
+                    <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0 item-img-remove-btn"
+                      (click)="removePendingImage(i)">
+                      <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+            <!--END::Image Thumbnails-->
+
+            <!--START::Upload Button-->
+            <div class="d-flex gap-2">
+              <input #imgFileInput type="file" accept="image/*" multiple class="d-none"
+                (change)="onFilesSelected($event)" />
+              <button type="button" class="btn btn-light-primary btn-sm" (click)="imgFileInput.click()">
+                <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+                {{ 'common.uploadImages' | translate }}
+              </button>
+            </div>
+            <!--END::Upload Button-->
+          </div>
+          <!--END::Images-->
 
           <!--START::Specifications-->
           @if (specCategories.length > 0) {
@@ -381,8 +340,38 @@
           }
           <!--END::Specifications-->
 
+          <!--START::Descriptions-->
+          <div class="col-12">
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ 'item.aboutThisItem' | translate }}</label>
+              <textarea class="form-control" rows="4" [(ngModel)]="editDraft.aboutThisItem"></textarea>
+            </div>
+            <div class="mb-4">
+              <label class="form-label fw-semibold">{{ 'item.briefDescription' | translate }}</label>
+              <textarea class="form-control" rows="4" [(ngModel)]="editDraft.briefDescription"></textarea>
+            </div>
+            <div class="mb-0">
+              <label class="form-label fw-semibold">{{ 'common.description' | translate }}</label>
+              <textarea class="form-control" rows="4" [(ngModel)]="editDraft.description"></textarea>
+            </div>
+          </div>
+          <!--END::Descriptions-->
 
         </div>
+      </div>
+
+      <div class="modal-footer justify-content-end gap-2">
+        <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
+        @if (isCreating) {
+          <button type="button" class="btn btn-sm btn-light-primary" [disabled]="saving || !editDraft.brandId || !editDraft.productTypeIds.length" (click)="savedAndNew.emit()">
+            @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+            {{ 'common.saveAndNew' | translate }}
+          </button>
+        }
+        <button type="button" class="btn btn-sm btn-primary" [disabled]="saving || !editDraft.brandId || !editDraft.productTypeIds.length" (click)="saved.emit()">
+          @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ 'common.save' | translate }}
+        </button>
       </div>
 
     </div>

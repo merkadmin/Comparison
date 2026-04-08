@@ -250,6 +250,7 @@ export const ar: TranslationDict = {
     brand: 'الماركة',
     category: 'التصنيف',
     selectCategory: 'اختر تصنيفاً',
+    selectBrand: 'اختر علامة تجارية',
     selectLastCategory: 'استمر في الاختيار حتى تصل إلى أدق تصنيف.',
     categories: 'التصنيفات',
     filterByCategory: 'تصفية حسب التصنيف',

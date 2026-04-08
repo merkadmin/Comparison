@@ -250,6 +250,7 @@ export const en: TranslationDict = {
     brand: 'Brand',
     category: 'Category',
     selectCategory: 'Select category',
+    selectBrand: 'Select brand',
     selectLastCategory: 'Keep selecting until you reach the most specific category.',
     categories: 'Categories',
     filterByCategory: 'Filter by Category',
