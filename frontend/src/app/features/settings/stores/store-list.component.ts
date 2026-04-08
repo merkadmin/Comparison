@@ -69,12 +69,27 @@ export class StoreListComponent implements OnInit {
   importError = signal<string | null>(null);
   importSuccess = signal(false);
   selectedIds = signal<Set<number>>(new Set());
+  selectedTypeFilter = signal<StoreType | null>(null);
+  selectedCountryFilter = signal<string | null>(null);
 
   filteredStores = computed<Store[]>(() => {
-    const q = this.searchQuery().trim().toLowerCase();
-    const list = q ? this.stores().filter(s => s.name.toLowerCase().includes(q)) : this.stores();
+    const q       = this.searchQuery().trim().toLowerCase();
+    const typeF   = this.selectedTypeFilter();
+    const countryF = this.selectedCountryFilter();
+    let list = this.stores();
+    if (q)       list = list.filter(s => s.name.toLowerCase().includes(q));
+    if (typeF)   list = list.filter(s => s.storeTypeIds.includes(typeF));
+    if (countryF) list = list.filter(s => s.country === countryF);
     return [...list].sort((a, b) => a.name.localeCompare(b.name));
   });
+
+  /** Distinct country values from loaded stores, sorted. */
+  storeCountries = computed<string[]>(() => {
+    const set = new Set(this.stores().map(s => s.country).filter(c => !!c));
+    return [...set].sort((a, b) => a.localeCompare(b));
+  });
+
+  readonly storeTypes: StoreType[] = [StoreType.Online, StoreType.Physical];
 
   // ── Bulk actions ──────────────────────────────────────────────────────────
   importMenuItems: ActionMenuItem[] = [

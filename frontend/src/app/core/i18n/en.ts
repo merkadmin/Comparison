@@ -123,6 +123,10 @@ export const en: TranslationDict = {
     saveSuccess: 'Store saved successfully.',
     saveError: 'Failed to save store.',
     duplicateName: 'A store with this name already exists.',
+    filterByType: 'Type',
+    filterByCountry: 'Country',
+    allTypes: 'All Types',
+    allCountries: 'All Countries',
   },
 
   storeOperation:{

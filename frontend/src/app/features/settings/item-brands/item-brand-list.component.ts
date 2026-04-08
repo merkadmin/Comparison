@@ -100,6 +100,12 @@ export class ItemBrandListComponent implements OnInit {
   /** All available countries for the filter dropdown and operation modal. */
   countries = signal<Country[]>([]);
 
+  /** Only the countries that appear on at least one brand — used in the filter dropdown. */
+  brandCountries = computed<Country[]>(() => {
+    const usedIds = new Set(this.brands().map(b => b.countryId).filter(id => id != null));
+    return this.countries().filter(c => c.id != null && usedIds.has(c.id));
+  });
+
   /** Subset of `brands` matching the current search term, product type, and country filters. */
   visibleBrands = computed<ItemBrand[]>(() => {
     const term = this.searchTerm().toLowerCase().trim();

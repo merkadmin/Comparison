@@ -38,6 +38,40 @@
   </app-common-list-header-actions>
   <!--END::Header Actions-->
 
+  <!--START::Filters-->
+  @if (!loading() && !error() && stores().length > 0) {
+  <div class="mx-6 mb-4 p-4 border rounded">
+    <div class="fw-bold text-gray-700 fs-6 mb-3">{{ 'common.filterBy' | translate }}</div>
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      <div class="d-flex align-items-center gap-2">
+        <label class="fw-semibold text-gray-600 fs-7 mb-0">{{ 'store.filterByType' | translate }}</label>
+        <select class="form-select form-select-sm" style="min-width: 160px;"
+          [ngModel]="selectedTypeFilter()"
+          (ngModelChange)="selectedTypeFilter.set($event === '' ? null : $event)">
+          <option value="">{{ 'store.allTypes' | translate }}</option>
+          @for (t of storeTypes; track t) {
+          <option [value]="t">{{ (t === 'Online' ? 'store.online' : 'store.physical') | translate }}</option>
+          }
+        </select>
+      </div>
+      @if (storeCountries().length > 0) {
+      <div class="d-flex align-items-center gap-2">
+        <label class="fw-semibold text-gray-600 fs-7 mb-0">{{ 'store.filterByCountry' | translate }}</label>
+        <select class="form-select form-select-sm" style="min-width: 160px;"
+          [ngModel]="selectedCountryFilter()"
+          (ngModelChange)="selectedCountryFilter.set($event === '' ? null : $event)">
+          <option value="">{{ 'store.allCountries' | translate }}</option>
+          @for (c of storeCountries(); track c) {
+          <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+      }
+    </div>
+  </div>
+  }
+  <!--END::Filters-->
+
   <div class="card-body py-4">
 
     <!--START::Loading-->

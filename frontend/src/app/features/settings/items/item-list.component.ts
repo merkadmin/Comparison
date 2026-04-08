@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed, ViewChild } from '@angular/core';
-import { SelectOption } from '../../../shared/components/common-select/common-select.component';
 import { Subscription } from 'rxjs';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
@@ -21,7 +20,6 @@ import { ProductType } from '../../../core/models/product-type.model';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
-import { CommonSelectComponent } from '../../../shared/components/common-select/common-select.component';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
 import { GridColumns } from '../../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
@@ -34,7 +32,7 @@ import { IconConfigService } from '../../../core/services/icon-config.service';
 @Component({
   selector: 'app-item-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, CommonSelectComponent, CommonListHeaderActions, ItemListOperationComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, CommonListHeaderActions, ItemListOperationComponent],
   templateUrl: './item-list.component.html',
   styleUrl: './item-list.component.less',
 })
@@ -255,12 +253,6 @@ export class ItemListComponent implements OnInit, OnDestroy {
     return buildRowMenuItems(() => this.delete(id));
   }
 
-  categoryOptions = computed<SelectOption[]>(() =>
-    this.categories().map(c => ({ value: c.id, label: this.localize(c.name) }))
-  );
-  brandOptions = computed<SelectOption[]>(() =>
-    this.brands().map(b => ({ value: b.id, label: b.name }))
-  );
   private categoryMap = computed<Map<number, IItemCategory>>(() =>
     new Map(this.categories().map(c => [c.id!, c]))
   );

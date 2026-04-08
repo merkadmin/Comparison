@@ -11,18 +11,6 @@
     (fileSelected)="onFileSelected($event)" (importSuccessClose)="importSuccess.set(false)"
     (importErrorClose)="importError.set(null)">
 
-    <!--START::Category & Brand Filters-->
-    @if (!favoritesOnly) {
-      <app-common-select [options]="categoryOptions()" [placeholder]="'item.allCategories' | translate"
-        [selected]="selectedCategoryId()"
-        (selectedChange)="selectedCategoryId.set($event); selectedBrandId.set(null); loadItems()">
-      </app-common-select>
-      <app-common-select [options]="brandOptions()" [placeholder]="'item.allBrands' | translate"
-        [selected]="selectedBrandId()"
-        (selectedChange)="selectedBrandId.set($event); selectedCategoryId.set(null); loadItems()">
-      </app-common-select>
-    }
-    <!--END::Category & Brand Filters-->
 
     <!--START::Add Button (Admin)-->
     <div slot="add">
@@ -37,6 +25,42 @@
 
   </app-common-list-header-actions>
   <!--END::Header Actions-->
+
+  <!--START::Filters-->
+  @if (!favoritesOnly && !loading() && !error()) {
+  <div class="mx-6 mb-4 p-4 border rounded">
+    <div class="fw-bold text-gray-700 fs-6 mb-3">{{ 'common.filterBy' | translate }}</div>
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      @if (categories().length > 0) {
+      <div class="d-flex align-items-center gap-2">
+        <label class="fw-semibold text-gray-600 fs-7 mb-0">{{ 'item.category' | translate }}</label>
+        <select class="form-select form-select-sm" style="min-width: 160px;"
+          [ngModel]="selectedCategoryId()"
+          (ngModelChange)="selectedCategoryId.set($event === '' ? null : +$event); selectedBrandId.set(null); loadItems()">
+          <option value="">{{ 'item.allCategories' | translate }}</option>
+          @for (c of categories(); track c.id) {
+          <option [value]="c.id">{{ localize(c.name) }}</option>
+          }
+        </select>
+      </div>
+      }
+      @if (brands().length > 0) {
+      <div class="d-flex align-items-center gap-2">
+        <label class="fw-semibold text-gray-600 fs-7 mb-0">{{ 'item.brand' | translate }}</label>
+        <select class="form-select form-select-sm" style="min-width: 160px;"
+          [ngModel]="selectedBrandId()"
+          (ngModelChange)="selectedBrandId.set($event === '' ? null : +$event); selectedCategoryId.set(null); loadItems()">
+          <option value="">{{ 'item.allBrands' | translate }}</option>
+          @for (b of brands(); track b.id) {
+          <option [value]="b.id">{{ b.name }}</option>
+          }
+        </select>
+      </div>
+      }
+    </div>
+  </div>
+  }
+  <!--END::Filters-->
 
   <div class="card-body py-4">
 

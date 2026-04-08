@@ -123,6 +123,10 @@ export const fr: TranslationDict = {
     saveSuccess: 'Magasin enregistré avec succès.',
     saveError: "Échec de l'enregistrement du magasin.",
     duplicateName: 'Un magasin avec ce nom existe déjà.',
+    filterByType: 'Type',
+    filterByCountry: 'Pays',
+    allTypes: 'Tous les types',
+    allCountries: 'Tous les pays',
   },
 
   storeOperation:{

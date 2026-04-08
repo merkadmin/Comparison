@@ -123,6 +123,10 @@ export const ar: TranslationDict = {
     saveSuccess: 'تم حفظ المتجر بنجاح.',
     saveError: 'فشل حفظ المتجر.',
     duplicateName: 'يوجد متجر بهذا الاسم مسبقاً.',
+    filterByType: 'النوع',
+    filterByCountry: 'الدولة',
+    allTypes: 'جميع الأنواع',
+    allCountries: 'جميع الدول',
   },
 
   storeOperation:{
