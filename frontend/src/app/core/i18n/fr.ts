@@ -105,8 +105,6 @@ export const fr: TranslationDict = {
   store: {
     title: 'Magasins',
     addNew: 'Ajouter un magasin',
-    addTitle: 'Ajouter un nouveau magasin',
-    editTitle: 'Modifier le magasin',
     type: 'Type',
     online: 'En ligne',
     physical: 'Physique',
@@ -125,6 +123,11 @@ export const fr: TranslationDict = {
     saveSuccess: 'Magasin enregistré avec succès.',
     saveError: "Échec de l'enregistrement du magasin.",
     duplicateName: 'Un magasin avec ce nom existe déjà.',
+  },
+
+  storeOperation:{
+    addTitle: 'Ajouter un nouveau magasin',
+    editTitle: 'Modifier le magasin',
   },
 
   storeVariantOrder: {

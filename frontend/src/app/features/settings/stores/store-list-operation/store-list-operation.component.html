@@ -5,7 +5,7 @@
 
       <div class="modal-header">
         <h5 class="modal-title fw-bold me-auto">
-          {{ (isCreating ? 'store.addTitle' : 'store.editTitle') | translate }}
+          {{ (isCreating ? 'storeOperation.addTitle' : 'storeOperation.editTitle') | translate }}
         </h5>
         <div class="d-flex align-items-center gap-2 me-2">
           <button type="button" class="btn btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">{{ 'common.cancel' | translate }}</button>
@@ -34,18 +34,37 @@
         <!--START::Type-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'store.type' | translate }}</label>
-          <select class="form-select" [(ngModel)]="editDraft.storeTypeId">
+          <div class="d-flex gap-2 mt-1">
             @for (t of storeTypes; track t) {
-              <option [value]="t">{{ t }}</option>
+              <input class="btn-check" type="checkbox"
+                [id]="'storeType_' + t"
+                [checked]="hasType(t)"
+                (change)="toggleType(t)"
+                autocomplete="off" />
+              <label class="btn btn-sm"
+                [class.btn-primary]="hasType(t)"
+                [class.btn-light]="!hasType(t)"
+                [for]="'storeType_' + t">
+                {{ t }}
+              </label>
             }
-          </select>
+          </div>
         </div>
         <!--END::Type-->
 
         <!--START::Country-->
         <div class="mb-3">
           <label class="form-label fw-semibold">{{ 'common.country' | translate }}</label>
-          <input type="text" class="form-control" [(ngModel)]="editDraft.country" />
+          @if (countries.length > 0) {
+            <select class="form-select" [(ngModel)]="editDraft.country">
+              <option [ngValue]="null">—</option>
+              @for (c of countries; track c.id) {
+                <option [value]="c.name">{{ c.name }}</option>
+              }
+            </select>
+          } @else {
+            <input type="text" class="form-control" [(ngModel)]="editDraft.country" />
+          }
         </div>
         <!--END::Country-->
 

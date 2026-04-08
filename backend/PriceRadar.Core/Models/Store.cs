@@ -6,7 +6,7 @@ public class Store
 {
 	public long Id { get; set; }
 	public string Name { get; set; } = string.Empty;
-	public DBStoreType StoreTypeId { get; set; }
+	public List<DBStoreType> StoreTypeIds { get; set; } = new();
 	public DBStore StoreId { get; set; }
 	public string? WebsiteUrl { get; set; }
 	public string? LogoUrl { get; set; }

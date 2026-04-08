@@ -6,7 +6,7 @@ import { Item } from '../../../core/models/item.model';
 import { ItemBrand } from '../../../core/models/item-brand.model';
 import { ProductItemVariantMap } from '../../../core/models/product-item-variant-map.model';
 import { ItemBestPrice } from '../../../core/models/store-item.model';
-import { Store } from '../../../core/models/store.model';
+import { Store, StoreType } from '../../../core/models/store.model';
 import { IconConfigService } from '../../../core/services/icon-config.service';
 import { ItemBrandService } from '../../../core/services/item-brand.service';
 import { ItemImageService } from '../../../core/services/item-image.service';
@@ -85,7 +85,7 @@ export class ShopByBrandComponent implements OnInit, OnDestroy {
   }
 
   isStoreOnline(storeId: number): boolean {
-    return this.stores().find(s => s.id === storeId)?.storeTypeId === 'Online';
+    return this.stores().find(s => s.id === storeId)?.storeTypeIds.includes(StoreType.Online) ?? false;
   }
 
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }

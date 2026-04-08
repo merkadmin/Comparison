@@ -5,6 +5,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { Store, StoreType } from '../../../../core/models/store.model';
 import { StoreItem } from '../../../../core/models/store-item.model';
 import { Item } from '../../../../core/models/item.model';
+import { Country } from '../../../../core/models/country.model';
 import { StoreService } from '../../../../core/services/store.service';
 
 export interface StoreItemRow {
@@ -26,9 +27,21 @@ export class StoreListOperationComponent {
 
   @Input() editDraft!: Store;
   @Input() isCreating = false;
-  @Input() storeTypes: StoreType[] = [];
+  readonly storeTypes: StoreType[] = [StoreType.Online, StoreType.Physical];
+
+  hasType(t: StoreType): boolean {
+    return (this.editDraft.storeTypeIds ?? []).includes(t);
+  }
+
+  toggleType(t: StoreType): void {
+    const current = this.editDraft.storeTypeIds ?? [];
+    this.editDraft.storeTypeIds = current.includes(t)
+      ? current.filter(x => x !== t)
+      : [...current, t];
+  }
   @Input() saving = false;
   @Input() productItems: Item[] = [];
+  @Input() countries: Country[] = [];
 
   @Input() set existingStoreItems(items: StoreItem[]) {
     if (!this.isCreating && items.length > 0) {

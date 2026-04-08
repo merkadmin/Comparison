@@ -455,7 +455,7 @@ public static class ExcelService
 		{
 			ws.Cell(row, 1).Value = s.Id;
 			ws.Cell(row, 2).Value = s.Name;
-			ws.Cell(row, 3).Value = s.StoreTypeId.ToString();
+			ws.Cell(row, 3).Value = string.Join(", ", s.StoreTypeIds.Select(t => t.ToString()));
 			ws.Cell(row, 4).Value = s.Country;
 			ws.Cell(row, 5).Value = s.WebsiteUrl ?? string.Empty;
 			ws.Cell(row, 6).Value = s.LogoUrl ?? string.Empty;
@@ -481,14 +481,16 @@ public static class ExcelService
 			if (string.IsNullOrEmpty(name)) continue;
 
 			var typeStr = ws.Cell(r, 2).GetString().Trim();
-			var storeType = typeStr.Equals("Physical", StringComparison.OrdinalIgnoreCase)
-				? DBStoreType.Physical
-				: DBStoreType.Online;
+			var storeTypes = typeStr.Split(',', StringSplitOptions.RemoveEmptyEntries)
+				.Select(t => t.Trim().Equals("Physical", StringComparison.OrdinalIgnoreCase)
+					? DBStoreType.Physical : DBStoreType.Online)
+				.Distinct()
+				.ToList();
 
 			list.Add(new Store
 			{
-				Name       = name,
-				StoreTypeId = storeType,
+				Name         = name,
+				StoreTypeIds = storeTypes,
 				Country    = NullIfEmpty(ws.Cell(r, 3).GetString()) ?? string.Empty,
 				WebsiteUrl = NullIfEmpty(ws.Cell(r, 4).GetString()),
 				LogoUrl    = NullIfEmpty(ws.Cell(r, 5).GetString()),

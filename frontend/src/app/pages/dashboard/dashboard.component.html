@@ -52,9 +52,13 @@
         </div>
         <div class="p-3">
           <span class="fw-bold text-gray-800 fs-6 d-block text-truncate">{{ store.name }}</span>
-          <span class="badge fs-9 mt-1" [class.badge-light-primary]="store.storeTypeId === 'Online'" [class.badge-light-success]="store.storeTypeId !== 'Online'">
-            {{ (store.storeTypeId === 'Online' ? 'store.online' : 'store.physical') | translate }}
-          </span>
+          <div class="d-flex flex-wrap gap-1 mt-1">
+            @for (t of store.storeTypeIds; track t) {
+              <span class="badge fs-9" [class.badge-light-success]="t === 'Online'" [class.badge-light-primary]="t !== 'Online'">
+                {{ (t === 'Online' ? 'store.online' : 'store.physical') | translate }}
+              </span>
+            }
+          </div>
           @if (store.country) {
           <span class="text-muted fs-8">{{ store.country }}</span>
           }

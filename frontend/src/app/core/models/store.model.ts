@@ -5,7 +5,7 @@ export interface Store {
   id?: number;
   isActive?: boolean;
   name: string;
-  storeTypeId: StoreType;
+  storeTypeIds: StoreType[];
   websiteUrl?: string;
   logoUrl?: string;
   storeImage?: string;

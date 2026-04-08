@@ -105,8 +105,6 @@ export const ar: TranslationDict = {
   store: {
     title: 'المتاجر',
     addNew: 'إضافة متجر',
-    addTitle: 'إضافة متجر جديد',
-    editTitle: 'تعديل المتجر',
     type: 'النوع',
     online: 'إلكتروني',
     physical: 'فيزيائي',
@@ -125,6 +123,11 @@ export const ar: TranslationDict = {
     saveSuccess: 'تم حفظ المتجر بنجاح.',
     saveError: 'فشل حفظ المتجر.',
     duplicateName: 'يوجد متجر بهذا الاسم مسبقاً.',
+  },
+
+  storeOperation:{
+    addTitle: 'إضافة متجر جديد',
+    editTitle: 'تعديل المتجر',
   },
 
   storeVariantOrder: {

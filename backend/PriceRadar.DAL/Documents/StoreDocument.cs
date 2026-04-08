@@ -9,7 +9,7 @@ public class StoreDocument : IDocument<Store>
 	[BsonId]
 	public long Id { get; set; }
 	public string Name { get; set; } = string.Empty;
-	public DBStoreType StoreTypeId { get; set; }
+	public List<DBStoreType> StoreTypeIds { get; set; } = new();
 	public DBStore StoreId { get; set; }
 	public string? WebsiteUrl { get; set; }
 	public string? LogoUrl { get; set; }
@@ -25,7 +25,7 @@ public class StoreDocument : IDocument<Store>
 		IsActive = IsActive,
 		IsDeleted = IsDeleted,
 		Name = Name,
-		StoreTypeId = StoreTypeId,
+		StoreTypeIds = StoreTypeIds,
 		StoreId = StoreId,
 		WebsiteUrl = WebsiteUrl,
 		LogoUrl = LogoUrl,
@@ -40,7 +40,7 @@ public class StoreDocument : IDocument<Store>
 		IsActive = s.IsActive,
 		IsDeleted = s.IsDeleted,
 		Name = s.Name,
-		StoreTypeId = s.StoreTypeId,
+		StoreTypeIds = s.StoreTypeIds,
 		StoreId = s.StoreId,
 		WebsiteUrl = s.WebsiteUrl,
 		LogoUrl = s.LogoUrl,

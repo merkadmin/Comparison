@@ -105,8 +105,6 @@ export const en: TranslationDict = {
   store: {
     title: 'Stores',
     addNew: 'Add Store',
-    addTitle: 'Adding new Store',
-    editTitle: 'Edit Store',
     type: 'Type',
     online: 'Online',
     physical: 'Physical',
@@ -125,6 +123,11 @@ export const en: TranslationDict = {
     saveSuccess: 'Store saved successfully.',
     saveError: 'Failed to save store.',
     duplicateName: 'A store with this name already exists.',
+  },
+
+  storeOperation:{
+    addTitle: 'Adding new Store',
+    editTitle: 'Edit Store',
   },
 
   storeVariantOrder: {

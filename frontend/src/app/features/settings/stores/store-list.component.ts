@@ -10,6 +10,8 @@ import { StoreItem } from '../../../core/models/store-item.model';
 import { StoreItemService } from '../../../core/services/store-item.service';
 import { ItemService } from '../../../core/services/item.service';
 import { Item } from '../../../core/models/item.model';
+import { CountryService } from '../../../core/services/country.service';
+import { Country } from '../../../core/models/country.model';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -35,15 +37,15 @@ export class StoreListComponent implements OnInit {
   private service = inject(StoreService);
   private storeItemService = inject(StoreItemService);
   private itemService = inject(ItemService);
+  private countryService = inject(CountryService);
   private translate = inject(TranslateService);
   private toast = inject(ToastService);
 
   /** Resolves a stored relative image path to a full URL for display. */
   imgUrl(path: string): string { return this.service.resolveImageUrl(path); }
 
-  readonly storeTypes: StoreType[] = [StoreType.Online, StoreType.Physical];
-
   productItems = signal<Item[]>([]);
+  countries = signal<Country[]>([]);
   existingStoreItems = signal<StoreItem[]>([]);
   draftStoreItems: StoreItemRow[] = [];
 
@@ -56,7 +58,7 @@ export class StoreListComponent implements OnInit {
   editingId = signal<number | null>(null);
   isCreating = signal(false);
   saving = signal(false);
-  editDraft: Store = { name: '', storeTypeId: StoreType.Online, country: '' };
+  editDraft: Store = { name: '', storeTypeIds: [], country: '' };
 
   // ── Data ──────────────────────────────────────────────────────────────────
   stores = signal<Store[]>([]);
@@ -85,7 +87,7 @@ export class StoreListComponent implements OnInit {
   ];
 
   openCreate(): void {
-    this.editDraft = { name: '', storeTypeId: StoreType.Online, country: '' };
+    this.editDraft = { name: '', storeTypeIds: [], country: '' };
     this.draftStoreItems = [];
     this.existingStoreItems.set([]);
     this.isCreating.set(true);
@@ -204,7 +206,7 @@ export class StoreListComponent implements OnInit {
       })
     ).subscribe({
       next: () => this.finalizeAfterSave(createdId, () => {
-        this.editDraft = { name: '', storeTypeId: StoreType.Online, country: '' };
+        this.editDraft = { name: '', storeTypeIds: [], country: '' };
         this.draftStoreItems = [];
         this.existingStoreItems.set([]);
       }),
@@ -237,6 +239,7 @@ export class StoreListComponent implements OnInit {
   ngOnInit(): void {
     this.load();
     this.itemService.getAll().subscribe({ next: items => this.productItems.set(items) });
+    this.countryService.getAll().subscribe({ next: list => this.countries.set([...list].sort((a, b) => a.name.localeCompare(b.name))) });
   }
 
   load(): void {
