@@ -196,7 +196,7 @@ public static class ExcelService
 		// ── Sheet 1: Import data ─────────────────────────────────────────────
 		var ws = wb.AddWorksheet("ItemBrands");
 		// Col 1:Name*  2:LogoUrl  3:CountryId  4:ProductTypeIds(comma-separated IDs)
-		string[] headers = ["Name*", "LogoUrl", "CountryId", "ProductTypeIds"];
+		string[] headers = { "Name*", "LogoUrl", "CountryId", "ProductTypeIds" } ;
 		WriteHeaders(ws, headers);
 
 		// Example row (muted/italic)
@@ -320,7 +320,7 @@ public static class ExcelService
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("ItemPackages");
-		string[] headers = ["Name*", "Description", "OriginalPrice*", "OfferPrice*", "StartDate", "EndDate", "IsActive"];
+		string[] headers = { "Name*", "Description", "OriginalPrice*", "OfferPrice*", "StartDate", "EndDate", "IsActive" };
 		WriteHeaders(ws, headers);
 		using var ms = new MemoryStream();
 		wb.SaveAs(ms);
@@ -390,7 +390,7 @@ public static class ExcelService
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("StoreItems");
-		string[] headers = ["ItemId*", "StoreId*", "SellingPrice*", "PriceType (Regular/Premium/Offer)*"];
+		string[] headers = { "ItemId*", "StoreId*", "SellingPrice*", "PriceType (Regular/Premium/Offer)*" };
 		WriteHeaders(ws, headers);
 
 		// Example row
@@ -419,7 +419,7 @@ public static class ExcelService
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("Stores");
-		string[] headers = ["Name*", "Type (Online/Physical)*", "Country", "WebsiteUrl", "LogoUrl"];
+		string[] headers = { "Name*", "Type (Online/Physical)*", "Country", "WebsiteUrl", "LogoUrl" };
 		WriteHeaders(ws, headers);
 
 		// Example row
@@ -499,13 +499,101 @@ public static class ExcelService
 		return list;
 	}
 
+	// ── Product Item Variants ────────────────────────────────────────────────
+
+	public static byte[] GetVariantTemplate()
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("Variants");
+		string[] headers = { "VariantTypeId* (e.g. Color, Size)", "VariantValue*", "Abbreviation", "Color (hex)" };
+		WriteHeaders(ws, headers);
+
+		// Example row
+		ws.Cell(2, 1).Value = "Color";
+		ws.Cell(2, 2).Value = "Red";
+		ws.Cell(2, 3).Value = "R";
+		ws.Cell(2, 4).Value = "#FF0000";
+		ws.Row(2).Style.Fill.BackgroundColor = XLColor.FromHtml("#FFF2CC");
+		ws.Row(2).Style.Font.Italic = true;
+
+		// Note row
+		ws.Cell(3, 1).Value = "↑ Example row — delete before importing. VariantTypeId must match one of the valid types listed in the Types sheet.";
+		ws.Cell(3, 1).Style.Font.FontColor = XLColor.Gray;
+		ws.Cell(3, 1).Style.Font.Italic = true;
+
+		// Reference sheet: valid variant types
+		var wsTypes = wb.AddWorksheet("Types");
+		wsTypes.Cell(1, 1).Value = "ValidVariantTypes";
+		wsTypes.Cell(1, 1).Style.Font.Bold = true;
+		var types = Enum.GetNames<DBVariantType>();
+		for (int i = 0; i < types.Length; i++)
+			wsTypes.Cell(i + 2, 1).Value = types[i];
+		wsTypes.Column(1).AdjustToContents();
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static byte[] ExportVariantList(IEnumerable<Variant> variants)
+	{
+		using var wb = new XLWorkbook();
+		var ws = wb.AddWorksheet("Variants");
+		string[] headers = { "Id", "VariantTypeId", "VariantValue", "Abbreviation", "Color", "IsActive" };
+		WriteHeaders(ws, headers);
+
+		int row = 2;
+		foreach (var v in variants)
+		{
+			ws.Cell(row, 1).Value = v.Id;
+			ws.Cell(row, 2).Value = v.VariantTypeId.ToString();
+			ws.Cell(row, 3).Value = v.VariantValue;
+			ws.Cell(row, 4).Value = v.Abbreviation ?? string.Empty;
+			ws.Cell(row, 5).Value = v.Color ?? string.Empty;
+			ws.Cell(row, 6).Value = v.IsActive;
+			row++;
+		}
+
+		ws.Columns().AdjustToContents();
+		using var ms = new MemoryStream();
+		wb.SaveAs(ms);
+		return ms.ToArray();
+	}
+
+	public static List<Variant> ParseVariants(Stream stream)
+	{
+		using var wb = new XLWorkbook(stream);
+		var ws = wb.Worksheet(1);
+		var list = new List<Variant>();
+		int lastRow = ws.LastRowUsed()?.RowNumber() ?? 1;
+		for (int r = 2; r <= lastRow; r++)
+		{
+			var typeStr = ws.Cell(r, 1).GetString().Trim();
+			if (string.IsNullOrEmpty(typeStr) || typeStr.StartsWith("↑")) continue;
+			if (!Enum.TryParse<DBVariantType>(typeStr, true, out var variantType)) continue;
+
+			var value = ws.Cell(r, 2).GetString().Trim();
+			if (string.IsNullOrEmpty(value)) continue;
+
+			list.Add(new Variant
+			{
+				VariantTypeId = variantType,
+				VariantValue  = value,
+				Abbreviation  = NullIfEmpty(ws.Cell(r, 3).GetString()),
+				Color         = NullIfEmpty(ws.Cell(r, 4).GetString()),
+			});
+		}
+		return list;
+	}
+
 	// ── Store Variant Orders ─────────────────────────────────────────────────
 
 	public static byte[] GetStoreVariantOrderTemplate()
 	{
 		using var wb = new XLWorkbook();
 		var ws = wb.AddWorksheet("StoreVariantOrders");
-		string[] headers = ["StoreId*", "VariantTypeId* (e.g. Color, Size, RamSize)", "OrderIndex*"];
+		string[] headers = { "StoreId*", "VariantTypeId* (e.g. Color, Size, RamSize)", "OrderIndex*" };
 		WriteHeaders(ws, headers);
 
 		// Example row
