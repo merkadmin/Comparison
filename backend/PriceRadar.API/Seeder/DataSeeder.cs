@@ -32,10 +32,44 @@ public class DataSeeder
 		await SeedCountriesAsync();
 		await SeedOnlineWebSitesAsync();
 		await SeedProductTypesAsync();
+		await SeedRootUserAsync();
 		//await SeedCategoriesAsync();
 		//await SeedBrandsAsync();
 		//await SeedItemsAsync();
 		//await SeedPackagesAsync();
+	}
+
+	// ─── Root User ────────────────────────────────────────────────────────────
+	// Creates the root superuser if it does not already exist.
+	// Username: rayad  |  Password: G0d!sL0v3  |  Privilege: Root
+	private async Task SeedRootUserAsync()
+	{
+		var exists = await _context.Users
+			.Find(u => u.Login == "rayad" || u.UserName == "rayad")
+			.AnyAsync();
+
+		if (exists)
+		{
+			Console.WriteLine("[Seed] Root user already exists — skipping.");
+			return;
+		}
+
+		var id = await _context.GetNextSequenceAsync("users");
+		var doc = new UserDocument
+		{
+			Id           = id,
+			UserName     = "rayad",
+			Login        = "rayad",
+			Email        = "rayad@priceradar.local",
+			PasswordHash = BCrypt.Net.BCrypt.HashPassword("G0d!sL0v3"),
+			Privilege    = DBUserPrivilege.Root,
+			IsActive     = true,
+			IsDeleted    = false,
+			CreatedAt    = DateTime.UtcNow,
+		};
+
+		await _context.Users.InsertOneAsync(doc);
+		Console.WriteLine($"[Seed] Root user 'rayad' created with Id={id}.");
 	}
 
 	// ─── Migration ────────────────────────────────────────────────────────────

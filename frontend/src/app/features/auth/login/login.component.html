@@ -70,10 +70,11 @@
         <!--begin::Login Form-->
         @if (mode() === 'login') {
           <div class="mb-5">
-            <label class="form-label fw-semibold required">{{ 'auth.email' | translate }}</label>
-            <input type="email" class="form-control form-control-lg bg-transparent"
-                   [(ngModel)]="loginEmail"
-                   [placeholder]="'auth.emailPlaceholder' | translate"
+            <label class="form-label fw-semibold required">{{ 'auth.loginName' | translate }}</label>
+            <input type="text" class="form-control form-control-lg bg-transparent"
+                   [(ngModel)]="loginIdentifier"
+                   [placeholder]="'auth.loginNamePlaceholder' | translate"
+                   autocomplete="username"
                    (keyup.enter)="onLogin()" />
           </div>
           <div class="mb-8">

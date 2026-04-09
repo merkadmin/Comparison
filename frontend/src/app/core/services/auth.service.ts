@@ -21,7 +21,8 @@ export class AuthService {
 
   readonly currentUser = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._user() !== null);
-  readonly isAdmin = computed(() => this._user()?.privilege === 'Admin');
+  readonly isRoot  = computed(() => this._user()?.privilege === 'Root');
+  readonly isAdmin = computed(() => this._user()?.privilege === 'Admin' || this._user()?.privilege === 'Root');
 
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.base}/auth/login`, { email, password })
@@ -74,8 +75,9 @@ export class AuthService {
     this.globalStatic.CurrentLoggeduserName = user.userName;
     this.globalStatic.CurrentLoggedUserID = user.id;
     this.globalStatic.currentLoggedUserRole =
-      user.privilege === 'Admin' ? UserRole.Admin :
-        user.privilege === 'Premium' ? UserRole.Premium :
-          UserRole.Regular;
+      user.privilege === 'Root'    ? UserRole.Root :
+      user.privilege === 'Admin'   ? UserRole.Admin :
+      user.privilege === 'Premium' ? UserRole.Premium :
+                                     UserRole.Regular;
   }
 }

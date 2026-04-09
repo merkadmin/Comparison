@@ -43,8 +43,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     this.langOpen.set(false);
   }
 
-  loginEmail    = '';
-  loginPassword = '';
+  loginIdentifier = '';
+  loginPassword   = '';
 
   signupUserName = '';
   signupEmail    = '';
@@ -91,10 +91,10 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onLogin(): void {
-    if (!this.loginEmail || !this.loginPassword) return;
+    if (!this.loginIdentifier || !this.loginPassword) return;
     this.loading.set(true);
     this.error.set(null);
-    this.auth.login(this.loginEmail, this.loginPassword).subscribe({
+    this.auth.login(this.loginIdentifier, this.loginPassword).subscribe({
       next: () => this.router.navigate(['/']),
       error: (e) => { this.error.set(e?.error?.message ?? 'auth.invalidCredentials'); this.loading.set(false); },
     });

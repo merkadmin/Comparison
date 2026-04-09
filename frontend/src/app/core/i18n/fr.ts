@@ -411,6 +411,7 @@ export const fr: TranslationDict = {
     createAccount: 'Créer un compte',
     email: 'E-mail',
     emailPlaceholder: 'Saisissez votre e-mail',
+    loginNamePlaceholder: "Saisissez votre nom d'utilisateur",
     password: 'Mot de passe',
     passwordPlaceholder: 'Saisissez votre mot de passe',
     confirmPassword: 'Confirmer le mot de passe',

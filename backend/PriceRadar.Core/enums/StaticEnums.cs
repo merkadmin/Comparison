@@ -59,7 +59,8 @@
 	{
 		Regular = 0,
 		Premium = 1,
-		Admin = 2
+		Admin = 2,
+		Root = 3,
 	}
 
 	public enum DBNetworkTechnology

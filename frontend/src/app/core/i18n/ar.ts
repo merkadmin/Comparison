@@ -411,6 +411,7 @@ export const ar: TranslationDict = {
     createAccount: 'إنشاء الحساب',
     email: 'البريد الإلكتروني',
     emailPlaceholder: 'أدخل بريدك الإلكتروني',
+    loginNamePlaceholder: 'أدخل اسم المستخدم',
     password: 'كلمة المرور',
     passwordPlaceholder: 'أدخل كلمة المرور',
     confirmPassword: 'تأكيد كلمة المرور',

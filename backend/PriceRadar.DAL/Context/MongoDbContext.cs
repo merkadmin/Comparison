@@ -44,6 +44,9 @@ public IMongoCollection<ItemPackageDocument> ItemPackages =>
 	public IMongoCollection<UserDocument> Users =>
 		_database.GetCollection<UserDocument>("Users");
 
+	public IMongoCollection<LoggedInUserDocument> LoggedInUsers =>
+		_database.GetCollection<LoggedInUserDocument>("LoggedInUser");
+
 	public IMongoCollection<CustomerCommentDocument> CustomerComments =>
 		_database.GetCollection<CustomerCommentDocument>("CustomerComment");
 

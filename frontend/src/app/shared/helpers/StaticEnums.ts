@@ -13,6 +13,7 @@ export enum UserRole {
   Regular = 0,
   Premium = 1,
   Admin = 2,
+  Root = 3,
 }
 
 // ── Network Lookups ──────────────────────────────────────────────

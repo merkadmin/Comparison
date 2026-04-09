@@ -1,4 +1,4 @@
-export type UserPrivilege = 'Regular' | 'Premium' | 'Admin';
+export type UserPrivilege = 'Regular' | 'Premium' | 'Admin' | 'Root';
 
 export interface UserDto {
   id: number;
