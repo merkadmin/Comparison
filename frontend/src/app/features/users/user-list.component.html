@@ -1,0 +1,79 @@
+<div class="card">
+
+  <!--Header-->
+  <div class="card-header border-0 pt-6 d-flex align-items-center gap-3 flex-wrap">
+    <h3 class="card-title fw-bold text-gray-800 me-auto mb-0">{{ 'nav.users' | translate }}</h3>
+    <div class="input-group input-group-sm w-250px">
+      <span class="input-group-text border-end-0 bg-transparent">
+        <i class="ki-duotone ki-magnifier fs-5 text-muted"><span class="path1"></span><span class="path2"></span></i>
+      </span>
+      <input type="text" class="form-control border-start-0 ps-0"
+             [placeholder]="'common.search' | translate"
+             [value]="searchTerm()" (input)="searchTerm.set($any($event.target).value)" />
+    </div>
+  </div>
+
+  <div class="card-body py-4">
+
+    @if (loading()) {
+    <div class="d-flex justify-content-center py-10">
+      <span class="spinner-border text-primary"></span>
+      <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
+    </div>
+    }
+
+    @if (!loading() && error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+    }
+
+    @if (!loading() && !error()) {
+    <table class="table align-middle table-row-dashed fs-6 gy-5">
+      <thead>
+        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+          <th class="w-40px">#</th>
+          <th class="min-w-150px">{{ 'auth.userName' | translate }}</th>
+          <th class="min-w-180px">{{ 'auth.email' | translate }}</th>
+          <th class="min-w-100px">{{ 'common.login' | translate }}</th>
+          <th class="min-w-100px">{{ 'common.privilege' | translate }}</th>
+          <th class="min-w-80px">{{ 'common.status' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-600 fw-semibold">
+        @if (visibleUsers().length === 0) {
+        <tr>
+          <td colspan="6" class="text-center text-muted py-10">{{ 'common.noData' | translate }}</td>
+        </tr>
+        }
+        @for (user of visibleUsers(); track user.id; let i = $index) {
+        <tr>
+          <td class="text-muted">{{ i + 1 }}</td>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <div class="symbol symbol-35px">
+                @if (user.avatarUrl) {
+                <img [src]="user.avatarUrl" class="rounded-circle object-fit-cover" [alt]="user.userName" />
+                } @else {
+                <div class="symbol-label bg-light-primary text-primary fw-bold fs-6 rounded-circle">
+                  {{ user.userName.charAt(0).toUpperCase() }}
+                </div>
+                }
+              </div>
+              <span class="text-gray-800 fw-bold">{{ user.userName }}</span>
+            </div>
+          </td>
+          <td class="text-muted">{{ user.email }}</td>
+          <td class="text-muted">{{ user.login }}</td>
+          <td>
+            <span class="badge {{ privilegeBadge(user.privilege) }}">{{ user.privilege }}</span>
+          </td>
+          <td>
+            <span class="badge badge-light-success">{{ 'common.active' | translate }}</span>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    }
+
+  </div>
+</div>

@@ -26,6 +26,8 @@ export const en: TranslationDict = {
     status: 'Status',
     number: '#',
     logo: 'Logo',
+    login: 'Login',
+    privilege: 'Privilege',
     country: 'Country',
     image: 'Image',
     barcode: 'Barcode',
@@ -79,6 +81,8 @@ export const en: TranslationDict = {
     productTypes: 'Type',
     productItemVariants: 'Variants',
     itemVariantMap: 'Product Variants',
+    users: 'Users',
+    shopping: 'Shopping',
   },
 
   home: {

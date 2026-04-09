@@ -79,6 +79,8 @@ export const fr: TranslationDict = {
     productTypes: 'Types de produits',
     productItemVariants: 'Variantes',
     itemVariantMap: "Variantes d'articles",
+    users: 'Utilisateurs',
+    shopping: 'Boutique',
   },
 
   home: {

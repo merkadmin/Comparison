@@ -79,6 +79,8 @@ export const ar: TranslationDict = {
     productTypes: 'أنواع المنتجات',
     productItemVariants: 'المتغيرات',
     itemVariantMap: 'متغيرات المنتج',
+    users: 'المستخدمون',
+    shopping: 'التسوق',
   },
 
   home: {

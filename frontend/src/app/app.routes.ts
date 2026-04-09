@@ -23,6 +23,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { OnlineWebsiteListComponent } from './features/settings/online-websites/online-website-list.component';
 import { ProductTypeListComponent } from './features/settings/product-types/product-type-list.component';
+import { UserListComponent } from './features/users/user-list.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -60,6 +61,7 @@ export const routes: Routes = [
       { path: 'store-variant-orders', component: StoreVariantOrderListComponent },
       { path: 'online-websites', component: OnlineWebsiteListComponent, canActivate: [adminGuard] },
       { path: 'product-types', component: ProductTypeListComponent, canActivate: [adminGuard] },
+      { path: 'users', component: UserListComponent, canActivate: [adminGuard] },
     ],
   },
   { path: '**', redirectTo: '' },

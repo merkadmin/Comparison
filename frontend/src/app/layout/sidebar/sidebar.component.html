@@ -77,6 +77,69 @@
         }
         <!--END::Dynamic nav items-->
 
+        <!--START::Shopping (Root only — same links as non-admin, in an accordion)-->
+        @if (auth.isRoot()) {
+        <div class="menu-item menu-accordion" [class.show]="expandedSection() === 'shopping'">
+          <span class="menu-link" (click)="toggleSection('shopping')" style="cursor:pointer">
+            <span class="menu-icon">
+              <i class="ki-duotone ki-shop fs-2">
+                <span class="path1"></span><span class="path2"></span>
+                <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+              </i>
+            </span>
+            <span class="menu-title">{{ 'nav.shopping' | translate }}</span>
+            <span class="menu-arrow"></span>
+          </span>
+          <div class="menu-sub menu-sub-accordion" [class.show]="expandedSection() === 'shopping'">
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/shop-by-store" routerLinkActive="active">
+                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                <span class="menu-title">{{ 'nav.shopByStore' | translate }}</span>
+              </a>
+            </div>
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/shop-by-category" routerLinkActive="active">
+                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                <span class="menu-title">{{ 'nav.shopByCategory' | translate }}</span>
+              </a>
+            </div>
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/shop-by-brand" routerLinkActive="active">
+                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                <span class="menu-title">{{ 'nav.shopByBrand' | translate }}</span>
+              </a>
+            </div>
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/shop-by-type" routerLinkActive="active">
+                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                <span class="menu-title">{{ 'nav.shopByType' | translate }}</span>
+              </a>
+            </div>
+            <div class="menu-item">
+              <a class="menu-link" routerLink="/shop-by-specs" routerLinkActive="active">
+                <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
+                <span class="menu-title">{{ 'nav.shopBySpecs' | translate }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!--START::Users (Root only)-->
+        <div class="menu-item">
+          <a class="menu-link" routerLink="/users" routerLinkActive="active">
+            <span class="menu-icon">
+              <i class="ki-duotone ki-people fs-2">
+                <span class="path1"></span><span class="path2"></span>
+                <span class="path3"></span><span class="path4"></span><span class="path5"></span>
+              </i>
+            </span>
+            <span class="menu-title">{{ 'nav.users' | translate }}</span>
+          </a>
+        </div>
+        <!--END::Users-->
+        }
+        <!--END::Shopping (Root only)-->
+
         <!-- Shop by Store / Category / Brand -->
         @if (!auth.isAdmin()) {
         <div class="menu-item">
