@@ -1,6 +1,8 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslateService } from '../../../core/services/translate.service';
 
 const ALL_ICONS: string[] = [
   'abstract','abstract-1','abstract-10','abstract-11','abstract-12','abstract-13','abstract-14',
@@ -93,11 +95,12 @@ const ALL_ICONS: string[] = [
 @Component({
   selector: 'app-set-icons',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './set-icons.component.html',
   styleUrl: './set-icons.component.less',
 })
 export class SetIconsComponent {
+  translate   = inject(TranslateService);
   readonly allIcons = ALL_ICONS;
 
   searchQuery = signal('');

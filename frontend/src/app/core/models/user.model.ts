@@ -6,10 +6,20 @@ export interface UserDto {
   email: string;
   login: string;
   privilege: UserPrivilege;
+  isActive: boolean;
   avatarUrl?: string;
+  createdAt?: string;
 }
 
 export interface AuthResponse {
   token: string;
   user: UserDto;
+}
+
+export interface CreateUserRequest {
+  userName: string;
+  email: string;
+  password: string;
+  privilege: UserPrivilege;
+  login?: string;
 }

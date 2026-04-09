@@ -1,8 +1,8 @@
 <div class="card">
 
-  <app-common-list-header-actions
-    titleKey="variant.title"
-    [viewMode]="viewMode()"
+  <app-entity-list-header-actions
+    entityPrefix="variant"
+    [viewMode]="auth.isAdmin() ? viewMode() : undefined"
     (viewModeChange)="viewMode.set($event)"
     [columns]="colsPerRow()"
     (columnsChange)="colsPerRow.set($event)"
@@ -13,63 +13,34 @@
     [bulkMenuItems]="bulkMenuItems"
     [importing]="importing()"
     [importMenuItems]="importMenuItems"
-    importSuccessKey="variant.importSuccess"
     [importSuccess]="importSuccess()"
     [importErrorMessage]="importError()"
-    searchPlaceholderKey="common.search"
     (bulkMainClick)="deactivateSelected()"
     (fileSelected)="onFileSelected($event)"
     (searchChange)="searchQuery.set($event)"
     (importSuccessClose)="importSuccess.set(false)"
-    (importErrorClose)="importError.set(null)">
+    (importErrorClose)="importError.set(null)"
+    (create)="openCreate()">
+  </app-entity-list-header-actions>
 
-    <!--START::Add Button (Admin)-->
-    <div slot="add">
-      @if (auth.isAdmin()) {
-        <button class="btn btn-sm btn-primary" (click)="openCreate()">
-          <i class="ki-duotone ki-{{ addIcon() }} fs-2">
-            <span class="path1"></span><span class="path2"></span>
-          </i>
-          {{ 'variant.addNew' | translate }}
-        </button>
-      }
-    </div>
-    <!--END::Add Button (Admin)-->
-
-  </app-common-list-header-actions>
-
-  <!--START::Type Filter-->
-  <div class="card-header border-0 pt-4 pb-0">
-    <div class="d-flex flex-wrap gap-2">
-      <button class="btn btn-sm"
-        [class.btn-primary]="selectedType() === null"
-        [class.btn-light]="selectedType() !== null"
-        (click)="selectedType.set(null)">
-        {{ 'common.all' | translate }}
-        <span class="badge ms-1"
-          [class.badge-light]="selectedType() === null"
-          [class.badge-secondary]="selectedType() !== null">
-          {{ variants().length }}
-        </span>
-      </button>
-      @for (type of variantTypes; track type) {
-        <button class="btn btn-sm"
-          [class.btn-primary]="selectedType() === type"
-          [class.btn-light]="selectedType() !== type"
-          (click)="selectedType.set(selectedType() === type ? null : type)">
-          {{ 'variant.type.' + type | translate }}
-          @if (typeCount()[type]) {
-            <span class="badge ms-1"
-              [class.badge-light]="selectedType() === type"
-              [class.badge-secondary]="selectedType() !== type">
-              {{ typeCount()[type] }}
-            </span>
+  <!--START::Filters-->
+  <div class="mx-6 mb-4 p-4 border rounded">
+    <div class="fw-bold text-gray-700 fs-6 mb-3">{{ 'common.filterBy' | translate }}</div>
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      <div class="d-flex align-items-center gap-2">
+        <label class="fw-semibold text-gray-600 fs-7 mb-0">{{ 'variant.variantType' | translate }}</label>
+        <select class="form-select form-select-sm" style="min-width: 160px;"
+          [ngModel]="selectedType()"
+          (ngModelChange)="selectedType.set($event === '' ? null : $event)">
+          <option value="">{{ 'common.all' | translate }}</option>
+          @for (type of variantTypes; track type) {
+            <option [value]="type">{{ 'variant.type.' + type | translate }}</option>
           }
-        </button>
-      }
+        </select>
+      </div>
     </div>
   </div>
-  <!--END::Type Filter-->
+  <!--END::Filters-->
 
   <div class="card-body py-4">
 

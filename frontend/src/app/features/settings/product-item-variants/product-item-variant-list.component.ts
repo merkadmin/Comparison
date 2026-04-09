@@ -10,7 +10,7 @@ import { TranslateService } from '../../../core/services/translate.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ActionMenuItem } from '../../../shared/components/commonActions/common-drop-down-menu-action-button/common-drop-down-menu-action-button';
 import { buildRowMenuItems } from '../../../shared/helpers/row-menu.helper';
-import { CommonListHeaderActions } from '../../../shared/components/common-list-header-actions/common-list-header-actions';
+import { EntityListHeaderActionsComponent } from '../../../shared/components/entity-list-header-actions/entity-list-header-actions.component';
 import { GridColumns } from '../../../shared/components/commonActions/common-grid-columns-button/common-grid-columns-button';
 import { computedColClass } from '../../../shared/helpers/grid-columns.helper';
 import { ProductItemVariantListOperationComponent } from './product-item-variant-list-operation/product-item-variant-list-operation.component';
@@ -21,7 +21,7 @@ import { IconConfigService } from '../../../core/services/icon-config.service';
   standalone: true,
   imports: [
     CommonModule, FormsModule, TranslatePipe,
-    CommonListHeaderActions,
+    EntityListHeaderActionsComponent,
     ProductItemVariantListOperationComponent,
   ],
   templateUrl: './product-item-variant-list.component.html',

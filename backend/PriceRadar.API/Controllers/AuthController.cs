@@ -178,7 +178,10 @@ public class AuthController : ControllerBase
 			return Conflict(new { message = "Email already in use." });
 
 		if (!Enum.TryParse<DBUserPrivilege>(req.Privilege, ignoreCase: true, out var privilege))
-			return BadRequest(new { message = $"Unknown privilege '{req.Privilege}'. Valid values: Regular, Premium, Admin, Root." });
+			return BadRequest(new { message = $"Unknown privilege '{req.Privilege}'. Valid values: Regular, Premium, Admin." });
+
+		if (privilege == DBUserPrivilege.Root)
+			return BadRequest(new { message = "There can only be one root user. Root privilege cannot be assigned." });
 
 		var user = new User
 		{

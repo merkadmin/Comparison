@@ -19,7 +19,7 @@ export class GlobalStaticService {
   public setNavigationBarItem() {
     this._navigationBarItem = [
       {
-        routerLink: '/item-brands',
+        routerLink: undefined,
         title: 'nav.settings',
         menuIcon: 'ki-setting-2',
         isForAdminUser: true,
@@ -30,7 +30,7 @@ export class GlobalStaticService {
           { routerLink: '/item-categories', title: 'nav.itemCategories', menuIcon: 'ki-category', isForAdminUser: true },
           { routerLink: '/variants', title: 'nav.productItemVariants', menuIcon: 'ki-setting-3', isForAdminUser: true },
           { routerLink: '/store-variant-orders', title: 'nav.storeVariantOrders', menuIcon: 'ki-some-files', isForAdminUser: true },
-          { routerLink: '/items', title: 'nav.items', menuIcon: 'ki-package', isForAdminUser: true },
+          { routerLink: '/products', title: 'nav.items', menuIcon: 'ki-package', isForAdminUser: true },
           { routerLink: '/productItem-variants', title: 'nav.itemVariantMap', menuIcon: 'ki-data', isForAdminUser: true },
           { routerLink: '/online-websites', title: 'nav.onlineWebsites', menuIcon: 'ki-globe', isForAdminUser: true },
         ]

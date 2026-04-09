@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IconConfigService, AppPage, IconSlot, APP_PAGES } from '../../../core/services/icon-config.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+import { TranslateService } from '../../../core/services/translate.service';
 
 const ALL_ICONS: string[] = [
   'abstract','abstract-1','abstract-2','abstract-3','abstract-4','abstract-5','abstract-6',
@@ -101,6 +102,7 @@ const ALL_ICONS: string[] = [
 })
 export class PagesComponent {
   iconConfig = inject(IconConfigService);
+  translate  = inject(TranslateService);
 
   readonly pages = APP_PAGES;
   readonly allIcons = ALL_ICONS;

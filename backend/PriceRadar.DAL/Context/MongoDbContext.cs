@@ -74,6 +74,12 @@ public IMongoCollection<ItemPackageDocument> ItemPackages =>
 	public IMongoCollection<CountryDocument> Countries =>
 		_database.GetCollection<CountryDocument>("Country_s");
 
+	public IMongoCollection<AppPageDocument> AppPages =>
+		_database.GetCollection<AppPageDocument>("AppPage_s");
+
+	public IMongoCollection<UserPageDocument> UserPages =>
+		_database.GetCollection<UserPageDocument>("User_Page");
+
 	// ── Static lookup collections (_s = static/seed) ─────────────────────────
 	public IMongoCollection<StaticLookupDocument> StoreTypes =>
 		_database.GetCollection<StaticLookupDocument>("StoreType_s");

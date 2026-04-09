@@ -33,6 +33,7 @@ public class DataSeeder
 		await SeedOnlineWebSitesAsync();
 		await SeedProductTypesAsync();
 		await SeedRootUserAsync();
+		await SeedAppPagesAsync();
 		//await SeedCategoriesAsync();
 		//await SeedBrandsAsync();
 		//await SeedItemsAsync();
@@ -41,7 +42,7 @@ public class DataSeeder
 
 	// ─── Root User ────────────────────────────────────────────────────────────
 	// Creates the root superuser if it does not already exist.
-	// Username: rayad  |  Password: G0d!sL0v3  |  Privilege: Root
+	// Username: rayad  |  Privilege: Root
 	private async Task SeedRootUserAsync()
 	{
 		var exists = await _context.Users
@@ -57,19 +58,59 @@ public class DataSeeder
 		var id = await _context.GetNextSequenceAsync("users");
 		var doc = new UserDocument
 		{
-			Id           = id,
-			UserName     = "rayad",
-			Login        = "rayad",
-			Email        = "rayad@priceradar.local",
+			Id = id,
+			UserName = "rayad",
+			Login = "rayad",
+			Email = "rayad@priceradar.local",
 			PasswordHash = BCrypt.Net.BCrypt.HashPassword("G0d!sL0v3"),
-			Privilege    = DBUserPrivilege.Root,
-			IsActive     = true,
-			IsDeleted    = false,
-			CreatedAt    = DateTime.UtcNow,
+			Privilege = DBUserPrivilege.Root,
+			IsActive = true,
+			IsDeleted = false,
+			CreatedAt = DateTime.UtcNow,
 		};
 
 		await _context.Users.InsertOneAsync(doc);
 		Console.WriteLine($"[Seed] Root user 'rayad' created with Id={id}.");
+	}
+
+	// ─── App Pages ───────────────────────────────────────────────────────────
+	// Seeds the admin settings pages into AppPage_s if not already present.
+	private async Task SeedAppPagesAsync()
+	{
+		var existing = await _context.AppPages.CountDocumentsAsync(_ => true);
+		if (existing > 0) return;
+
+		var pages = new[]
+		{
+			new { Name = "Product Types",         Route = "/product-types",          Icon = "ki-category",    Order = 1  },
+			new { Name = "Brands",                Route = "/item-brands",             Icon = "ki-badge",       Order = 2  },
+			new { Name = "Stores",                Route = "/stores",                  Icon = "ki-shop",        Order = 3  },
+			new { Name = "Item Categories",       Route = "/item-categories",         Icon = "ki-category",    Order = 4  },
+			new { Name = "Variants",              Route = "/variants",                Icon = "ki-setting-3",   Order = 5  },
+			new { Name = "Store Variant Orders",  Route = "/store-variant-orders",    Icon = "ki-some-files",  Order = 6  },
+			new { Name = "Items",                 Route = "/products",                Icon = "ki-package",     Order = 7  },
+			new { Name = "Product Item Variants", Route = "/productItem-variants",    Icon = "ki-data",        Order = 8  },
+			new { Name = "Online Websites",       Route = "/online-websites",         Icon = "ki-globe",       Order = 9  },
+		};
+
+		var docs = new List<AppPageDocument>();
+		foreach (var p in pages)
+		{
+			docs.Add(new AppPageDocument
+			{
+				Id = await _context.GetNextSequenceAsync("apppages"),
+				Name = p.Name,
+				Route = p.Route,
+				Icon = p.Icon,
+				OrderIndex = p.Order,
+				IsActive = true,
+				IsDeleted = false,
+				CreatedAt = DateTime.UtcNow,
+			});
+		}
+
+		await _context.AppPages.InsertManyAsync(docs);
+		Console.WriteLine($"[Seed] {docs.Count} app pages seeded.");
 	}
 
 	// ─── Migration ────────────────────────────────────────────────────────────
@@ -1089,12 +1130,12 @@ public class DataSeeder
 				var domain = new Uri(url).Host.Replace("www.", "");
 				docs.Add(new OnlineWebSiteDocument
 				{
-					Id        = await _context.GetNextSequenceAsync("onlinewebsites"),
-					Name      = name,
-					Url       = url,
-					LogoUrl   = $"https://logo.clearbit.com/{domain}",
-					Type      = type,
-					Country   = country,
+					Id = await _context.GetNextSequenceAsync("onlinewebsites"),
+					Name = name,
+					Url = url,
+					LogoUrl = $"https://logo.clearbit.com/{domain}",
+					Type = type,
+					Country = country,
 					CountryId = Resolve(country),
 				});
 			}

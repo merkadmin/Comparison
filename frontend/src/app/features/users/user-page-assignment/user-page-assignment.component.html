@@ -1,0 +1,96 @@
+<!--START::Page Assignment Modal-->
+<div class="modal fade show d-block modal-inline-backdrop" tabindex="-1" (keydown.escape)="closed.emit()">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title fw-bold mb-0">{{ 'userPage.title' | translate }}</h5>
+          <span class="text-muted fs-7">{{ user.userName }}</span>
+        </div>
+        <button type="button" class="btn btn-icon btn-sm btn-light ms-auto" (click)="closed.emit()">
+          <i class="ki-duotone ki-cross fs-3"><span class="path1"></span><span class="path2"></span></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        @if (loading()) {
+        <div class="d-flex justify-content-center py-6">
+          <span class="spinner-border text-primary"></span>
+        </div>
+        } @else {
+
+        <!--START::Select All / Clear All-->
+        <div class="d-flex gap-2 mb-4">
+          <button class="btn btn-sm btn-light-primary" (click)="selectAll()">
+            <i class="ki-duotone ki-check-circle fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'userPage.selectAll' | translate }}
+          </button>
+          <button class="btn btn-sm btn-light-danger" (click)="clearAll()">
+            <i class="ki-duotone ki-cross-circle fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'userPage.clearAll' | translate }}
+          </button>
+          <span class="ms-auto text-muted fs-7 align-self-center">
+            {{ assignedIds().size }} / {{ allPages().length }} {{ 'userPage.selected' | translate }}
+          </span>
+        </div>
+        <!--END::Select All / Clear All-->
+
+        <!--START::Pages Checklist-->
+        <div class="border rounded p-3">
+          @if (allPages().length === 0) {
+          <div class="text-center text-muted py-4">{{ 'common.noData' | translate }}</div>
+          }
+          @for (page of allPages(); track page.id) {
+          <div class="d-flex align-items-center gap-3 py-2 border-bottom last-child-no-border">
+            <div class="form-check form-check-custom form-check-solid">
+              <input class="form-check-input" type="checkbox"
+                [id]="'page-' + page.id"
+                [checked]="isAssigned(page.id)"
+                (change)="toggle(page.id)" />
+            </div>
+            <label class="d-flex align-items-center gap-3 flex-grow-1 cursor-pointer mb-0"
+              [for]="'page-' + page.id">
+              @if (page.icon) {
+              <span class="symbol symbol-35px">
+                <span class="symbol-label bg-light-primary">
+                  <i class="ki-duotone ki-{{ page.icon }} fs-4 text-primary">
+                    <span class="path1"></span><span class="path2"></span>
+                    <span class="path3"></span><span class="path4"></span>
+                  </i>
+                </span>
+              </span>
+              }
+              <div class="d-flex flex-column">
+                <span class="fw-semibold text-gray-800 fs-6">{{ page.name }}</span>
+                <span class="text-muted fs-8 font-monospace">{{ page.route }}</span>
+              </div>
+            </label>
+            @if (isAssigned(page.id)) {
+            <span class="badge badge-light-success fs-8">{{ 'common.active' | translate }}</span>
+            }
+          </div>
+          }
+        </div>
+        <!--END::Pages Checklist-->
+
+        }
+
+      </div>
+
+      <div class="modal-footer justify-content-end gap-2">
+        <button type="button" class="btn btn-sm btn-light" [disabled]="saving()" (click)="closed.emit()">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button type="button" class="btn btn-sm btn-primary" [disabled]="saving() || loading()"
+          (click)="save()">
+          @if (saving()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ 'common.save' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--END::Page Assignment Modal-->

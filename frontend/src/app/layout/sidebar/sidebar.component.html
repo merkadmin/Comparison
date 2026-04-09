@@ -18,7 +18,7 @@
 
         <!--START::Dynamic nav items-->
         @for (item of globalStaticService.navigationBarItem; track $index) {
-          @if (!item.isForAdminUser || auth.isAdmin()) {
+          @if ((!item.isForAdminUser || auth.isAdmin()) && hasVisibleChildren(item)) {
             @if (item.ChildrenList && item.ChildrenList.length > 0) {
               <!-- Parent with children — accordion controlled by Angular -->
               @let sectionKey = 'dynamic-' + $index;
@@ -35,7 +35,7 @@
                 </span>
                 <div class="menu-sub menu-sub-accordion" [class.show]="expandedSection() === sectionKey">
                   @for (child of item.ChildrenList; track $index) {
-                    @if (!child.isForAdminUser || auth.isAdmin()) {
+                    @if (isChildVisible(child)) {
                       <div class="menu-item">
                         <a class="menu-link" routerLink="{{ child.routerLink }}" routerLinkActive="active">
                           @if (child.menuIcon) {
@@ -197,8 +197,8 @@
         </div>
         }
 
-        <!--START::Application Setup (Admin only)-->
-        @if (auth.isAdmin()) {
+        <!--START::Application Setup (Root only)-->
+        @if (auth.isRoot()) {
         <div class="menu-item menu-accordion" [class.show]="expandedSection() === 'appSetup'">
           <span class="menu-link" (click)="toggleSection('appSetup')" style="cursor:pointer">
             <span class="menu-icon">
@@ -226,7 +226,7 @@
           </div>
         </div>
         }
-        <!--END::Application Setup (Admin only)-->
+        <!--END::Application Setup (Root only)-->
 
         <!-- Price Comparison -->
         <div class="menu-item menu-accordion" [class.show]="expandedSection() === 'prices'">

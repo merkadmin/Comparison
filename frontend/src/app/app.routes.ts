@@ -21,6 +21,7 @@ import { ItemVariantMapListComponent } from './features/settings/item-variant-ma
 import { StoreVariantOrderListComponent } from './features/settings/store-variant-orders/store-variant-order-list.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { rootGuard } from './core/guards/root.guard';
 import { OnlineWebsiteListComponent } from './features/settings/online-websites/online-website-list.component';
 import { ProductTypeListComponent } from './features/settings/product-types/product-type-list.component';
 import { UserListComponent } from './features/users/user-list.component';
@@ -37,6 +38,7 @@ export const routes: Routes = [
       { path: 'item-categories', component: ItemCategoryListComponent },
       { path: 'item-brands', component: ItemBrandListComponent },
       { path: 'items', component: ItemListComponent },
+      { path: 'products', component: ItemListComponent },
       { path: 'item-packages', component: ItemPackageListComponent },
       { path: 'favorites', component: FavoritesListComponent },
       { path: 'stores', component: StoreListComponent },
@@ -54,14 +56,14 @@ export const routes: Routes = [
       { path: 'shop-by-type/by-type/:typeId/item/:itemId', component: ItemDetailPageComponent },
       { path: 'shop-by-specs', component: ShopBySpecsComponent },
       { path: 'shop-by-specs/item/:itemId', component: ItemDetailPageComponent },
-      { path: 'app-setup/set-icons', component: SetIconsComponent },
-      { path: 'app-setup/pages', component: PagesComponent },
+      { path: 'app-setup/set-icons', component: SetIconsComponent, canActivate: [rootGuard] },
+      { path: 'app-setup/pages', component: PagesComponent, canActivate: [rootGuard] },
       { path: 'variants', component: ProductItemVariantListComponent },
       { path: 'productItem-variants', component: ItemVariantMapListComponent },
       { path: 'store-variant-orders', component: StoreVariantOrderListComponent },
       { path: 'online-websites', component: OnlineWebsiteListComponent, canActivate: [adminGuard] },
       { path: 'product-types', component: ProductTypeListComponent, canActivate: [adminGuard] },
-      { path: 'users', component: UserListComponent, canActivate: [adminGuard] },
+      { path: 'users', component: UserListComponent, canActivate: [rootGuard] },
     ],
   },
   { path: '**', redirectTo: '' },
