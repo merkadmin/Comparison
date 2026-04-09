@@ -23,6 +23,13 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   categories = signal<IItemCategory[]>([]);
 
+  /** Key of the currently expanded accordion section. Default: first dynamic section (Settings). */
+  expandedSection = signal<string | null>('dynamic-0');
+
+  toggleSection(key: string): void {
+    this.expandedSection.update(v => v === key ? null : key);
+  }
+
   ngOnInit(): void {
     this.catSvc.getAll().subscribe({
       next: data => this.categories.set(data.slice(0, 10)),
@@ -33,10 +40,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Metronic's KTMenu initialises before Angular renders, so re-init here
-    // to pick up the conditionally rendered admin menu items.
     const kt = (window as any);
-    kt.KTMenu?.init();
     kt.KTDrawer?.init();
   }
 

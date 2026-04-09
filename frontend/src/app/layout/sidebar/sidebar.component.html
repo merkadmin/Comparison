@@ -14,16 +14,16 @@
       data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_app_sidebar_logo, #kt_app_sidebar_footer"
       data-kt-scroll-wrappers="#kt_app_sidebar_menu" data-kt-scroll-offset="5px">
 
-      <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" id="kt_app_sidebar_menu"
-        data-kt-menu="true" data-kt-menu-expand="false">
+      <div class="menu menu-column menu-rounded menu-sub-indention fw-semibold fs-6" id="kt_app_sidebar_menu">
 
         <!--START::Dynamic nav items-->
         @for (item of globalStaticService.navigationBarItem; track $index) {
           @if (!item.isForAdminUser || auth.isAdmin()) {
             @if (item.ChildrenList && item.ChildrenList.length > 0) {
-              <!-- Parent with children -->
-              <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-                <span class="menu-link">
+              <!-- Parent with children — accordion controlled by Angular -->
+              @let sectionKey = 'dynamic-' + $index;
+              <div class="menu-item menu-accordion" [class.show]="expandedSection() === sectionKey">
+                <span class="menu-link" (click)="toggleSection(sectionKey)" style="cursor:pointer">
                   <span class="menu-icon">
                     <i class="ki-duotone {{ item.menuIcon ?? 'ki-setting-2' }} fs-2">
                       <span class="path1"></span><span class="path2"></span>
@@ -33,7 +33,7 @@
                   <span class="menu-title">{{ item.title | translate }}</span>
                   <span class="menu-arrow"></span>
                 </span>
-                <div class="menu-sub menu-sub-accordion">
+                <div class="menu-sub menu-sub-accordion" [class.show]="expandedSection() === sectionKey">
                   @for (child of item.ChildrenList; track $index) {
                     @if (!child.isForAdminUser || auth.isAdmin()) {
                       <div class="menu-item">
@@ -125,8 +125,8 @@
 
         <!--START::Application Setup (Admin only)-->
         @if (auth.isAdmin()) {
-        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-          <span class="menu-link">
+        <div class="menu-item menu-accordion" [class.show]="expandedSection() === 'appSetup'">
+          <span class="menu-link" (click)="toggleSection('appSetup')" style="cursor:pointer">
             <span class="menu-icon">
               <i class="ki-duotone ki-setting-3 fs-2">
                 <span class="path1"></span><span class="path2"></span>
@@ -136,7 +136,7 @@
             <span class="menu-title">{{ 'nav.appSetup' | translate }}</span>
             <span class="menu-arrow"></span>
           </span>
-          <div class="menu-sub menu-sub-accordion">
+          <div class="menu-sub menu-sub-accordion" [class.show]="expandedSection() === 'appSetup'">
             <div class="menu-item">
               <a class="menu-link" routerLink="/app-setup/pages" routerLinkActive="active">
                 <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
@@ -155,8 +155,8 @@
         <!--END::Application Setup (Admin only)-->
 
         <!-- Price Comparison -->
-        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-          <span class="menu-link">
+        <div class="menu-item menu-accordion" [class.show]="expandedSection() === 'prices'">
+          <span class="menu-link" (click)="toggleSection('prices')" style="cursor:pointer">
             <span class="menu-icon">
               <i class="ki-duotone ki-chart-simple fs-2">
                 <span class="path1"></span><span class="path2"></span>
@@ -166,7 +166,7 @@
             <span class="menu-title">{{ 'nav.prices' | translate }}</span>
             <span class="menu-arrow"></span>
           </span>
-          <div class="menu-sub menu-sub-accordion">
+          <div class="menu-sub menu-sub-accordion" [class.show]="expandedSection() === 'prices'">
             <div class="menu-item">
               <a class="menu-link" routerLink="/prices" routerLinkActive="active">
                 <span class="menu-bullet"><span class="bullet bullet-dot"></span></span>
