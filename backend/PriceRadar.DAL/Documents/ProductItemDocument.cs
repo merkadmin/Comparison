@@ -17,8 +17,6 @@ public class ProductItemDocument : IDocument<ProductItem>
 	public string? AboutThisItem { get; set; }
 	public string? ModelName { get; set; }
 	public string? Barcode { get; set; }
-	public DateTime? AnnouncedDate { get; set; }
-	public DateTime? ReleaseDate { get; set; }
 
 	/// <summary>
 	/// Stored as raw BsonDocument to avoid BSON discriminator issues with untyped object? values.
@@ -45,8 +43,6 @@ public class ProductItemDocument : IDocument<ProductItem>
 		AboutThisItem = AboutThisItem,
 		ModelName = ModelName,
 		Barcode = Barcode,
-		AnnouncedDate = AnnouncedDate,
-		ReleaseDate = ReleaseDate,
 		Specifications = Specifications != null ? BsonToSpecification(Specifications) : null,
 		ImageUrl = ImageUrl,
 		Images = Images,
@@ -68,8 +64,6 @@ public class ProductItemDocument : IDocument<ProductItem>
 		AboutThisItem = item.AboutThisItem,
 		ModelName = item.ModelName,
 		Barcode = item.Barcode,
-		AnnouncedDate = item.AnnouncedDate,
-		ReleaseDate = item.ReleaseDate,
 		Specifications = item.Specifications != null ? SpecificationToBson(item.Specifications) : null,
 		ImageUrl = item.ImageUrl,
 		Images = item.Images,

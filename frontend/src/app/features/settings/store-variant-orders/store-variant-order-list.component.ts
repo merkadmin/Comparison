@@ -5,8 +5,11 @@ import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
 import { StoreVariantOrderService } from '../../../core/services/store-variant-order.service';
 import { StoreService } from '../../../core/services/store.service';
+import { ItemCategoryService } from '../../../core/services/item-category.service';
 import { StoreVariantOrder } from '../../../core/models/store-variant-order.model';
 import { Store } from '../../../core/models/store.model';
+import { IItemCategory } from '../../../core/models/interfaces/IItemCategory';
+import { MultiLangString } from '../../../core/models/interfaces/LocalizedString';
 import { VariantType, ProductItemVariant } from '../../../core/models/product-item-variant.model';
 import { ProductItemVariantService } from '../../../core/services/product-item-variant.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
@@ -33,12 +36,13 @@ import { IconConfigService } from '../../../core/services/icon-config.service';
 })
 export class StoreVariantOrderListComponent implements OnInit {
   auth            = inject(AuthService);
-  private service = inject(StoreVariantOrderService);
+  private service     = inject(StoreVariantOrderService);
   private storeSvc    = inject(StoreService);
+  private categorySvc = inject(ItemCategoryService);
   private variantSvc  = inject(ProductItemVariantService);
   private translate   = inject(TranslateService);
-  private toast      = inject(ToastService);
-  private iconConfig = inject(IconConfigService);
+  private toast       = inject(ToastService);
+  private iconConfig  = inject(IconConfigService);
 
   addIcon    = this.iconConfig.iconSignal('global.add',    'plus');
   editIcon   = this.iconConfig.iconSignal('global.edit',   'pencil');
@@ -46,12 +50,21 @@ export class StoreVariantOrderListComponent implements OnInit {
 
   orders          = signal<StoreVariantOrder[]>([]);
   stores          = signal<Store[]>([]);
+  categories      = signal<IItemCategory[]>([]);
   variants        = signal<ProductItemVariant[]>([]);
   loading         = signal(false);
   error           = signal<string | null>(null);
   searchQuery     = signal('');
   selectedIds     = signal<Set<number>>(new Set());
-  selectedStoreId = signal<number | null>(null);
+  selectedStoreId    = signal<number | null>(null);
+  selectedCategoryId = signal<number | null>(null);
+  selectedScopeMode  = signal<'store' | 'category' | null>(null);
+
+  onScopeModeFilterChange(value: string): void {
+    this.selectedScopeMode.set(value === '' ? null : value as 'store' | 'category');
+    this.selectedStoreId.set(null);
+    this.selectedCategoryId.set(null);
+  }
 
   viewMode   = signal<'list' | 'cards'>('list');
   colsPerRow = signal<GridColumns>(5);
@@ -66,22 +79,53 @@ export class StoreVariantOrderListComponent implements OnInit {
   saving     = signal(false);
   editDraft: StoreVariantOrder = { storeId: 0, variantTypeId: 'Color', orderIndex: 0 };
 
-  private storeMap = computed(() => new Map(this.stores().map(s => [s.id!, s])));
+  private storeMap    = computed(() => new Map(this.stores().map(s => [s.id!, s])));
+  private categoryMap = computed(() => new Map(this.categories().map(c => [c.id!, c])));
 
-  getStoreName(id: number): string { return this.storeMap().get(id)?.name ?? String(id); }
+  getStoreName(id: number): string { return this.storeMap().get(+id)?.name ?? String(id); }
+
+  getCategoryPath(id: number): string {
+    const parts: string[] = [];
+    let current = this.categoryMap().get(+id);
+    while (current) {
+      parts.unshift(this.localize(current.name));
+      current = current.parentCategoryId
+        ? this.categoryMap().get(current.parentCategoryId)
+        : undefined;
+    }
+    return parts.join(' › ');
+  }
+
+  getScopeLabel(o: StoreVariantOrder): string {
+    if (o.categoryId) return this.getCategoryPath(o.categoryId);
+    return this.getStoreName(o.storeId);
+  }
+
+  localize(ls: MultiLangString): string {
+    const lang = this.translate.currentLang();
+    return ls[lang] || ls.en;
+  }
 
   getTypeColor(type: VariantType): string | null {
     return this.variants().find(v => v.variantTypeId === type && !!v.color)?.color ?? null;
   }
 
   filteredOrders = computed<StoreVariantOrder[]>(() => {
-    const q       = this.searchQuery().trim().toLowerCase();
-    const storeId = this.selectedStoreId();
+    const q          = this.searchQuery().trim().toLowerCase();
+    const storeId    = this.selectedStoreId();
+    const categoryId = this.selectedCategoryId();
+    const scopeMode  = this.selectedScopeMode();
     return this.orders()
-      .filter(o => storeId === null || o.storeId === storeId)
+      .filter(o => {
+        if (scopeMode === 'store')    return !o.categoryId;
+        if (scopeMode === 'category') return !!o.categoryId;
+        return true;
+      })
+      .filter(o => storeId    === null || (!o.categoryId && o.storeId === storeId))
+      .filter(o => categoryId === null || o.categoryId === categoryId)
       .filter(o => {
         if (!q) return true;
-        return this.getStoreName(o.storeId).toLowerCase().includes(q)
+        return this.getScopeLabel(o).toLowerCase().includes(q)
           || String(o.variantTypeId).toLowerCase().includes(q);
       })
       .sort((a, b) => a.orderIndex - b.orderIndex);
@@ -161,6 +205,7 @@ export class StoreVariantOrderListComponent implements OnInit {
   ngOnInit(): void {
     this.load();
     this.storeSvc.getAll().subscribe({ next: d => this.stores.set(d), error: () => {} });
+    this.categorySvc.getAll().subscribe({ next: d => this.categories.set(d), error: () => {} });
     this.variantSvc.getAll().subscribe({ next: d => this.variants.set(d), error: () => {} });
   }
 

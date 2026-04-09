@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { Item } from '../models/item.model';
+import { Item, ParsedItemResult, ParsedDomResult } from '../models/item.model';
 import { ItemBestPrice } from '../models/store-item.model';
 
 @Injectable({ providedIn: 'root' })
@@ -72,5 +72,13 @@ export class ItemService {
 
   exportList(): Observable<Blob> {
     return this.api.getBlob('/items/export-list');
+  }
+
+  parseText(text: string): Observable<ParsedItemResult> {
+    return this.api.post<ParsedItemResult>('/items/parse-text', { text });
+  }
+
+  parseDom(html: string): Observable<ParsedDomResult> {
+    return this.api.post<ParsedDomResult>('/items/parse-dom', { html });
   }
 }

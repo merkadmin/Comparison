@@ -4,23 +4,27 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TranslateService } from '../../../../core/services/translate.service';
 import { ItemImageService } from '../../../../core/services/item-image.service';
-import { Item } from '../../../../core/models/item.model';
+import { Item, ParsedItemResult, ParsedDomResult } from '../../../../core/models/item.model';
+
 import { SpecificationCategory, SpecificationFieldDef } from '../../../../core/services/static-lookup.service';
 import { IItemCategory } from '../../../../core/models/interfaces/IItemCategory';
 import { MultiLangString } from '../../../../core/models/interfaces/LocalizedString';
 import { ItemBrand } from '../../../../core/models/item-brand.model';
 import { ProductType } from '../../../../core/models/product-type.model';
+import { TranslateTextModalComponent } from './translate-text-modal/translate-text-modal.component';
+import { TranslateDomModalComponent } from './translate-dom-modal/translate-dom-modal.component';
 
 @Component({
   selector: 'app-item-list-operation',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, TranslateTextModalComponent, TranslateDomModalComponent],
   templateUrl: './item-list-operation.component.html',
   styleUrl: './item-list-operation.component.less',
 })
 export class ItemListOperationComponent implements OnChanges {
   private translate = inject(TranslateService);
   private imageSvc  = inject(ItemImageService);
+
 
   @Input() editDraft!: Item;
   @Input() isCreating = false;
@@ -34,6 +38,8 @@ export class ItemListOperationComponent implements OnChanges {
   pendingFiles: File[] = [];
   /** Object URLs for previewing pending files. */
   pendingPreviewUrls: string[] = [];
+  /** Index of the pending file the user wants as cover image (null = none chosen). */
+  pendingCoverIndex: number | null = null;
 
   /** Rows in the categories table — each row has its own drill-down navigator state. */
   categoryRows: {
@@ -135,10 +141,19 @@ export class ItemListOperationComponent implements OnChanges {
     }
   }
 
+  setCoverImage(img: string): void {
+    this.editDraft.imageUrl = img;
+  }
+
+  isCover(img: string): boolean {
+    return this.editDraft.imageUrl === img;
+  }
+
   private clearPendingFiles(): void {
     this.pendingPreviewUrls.forEach(url => URL.revokeObjectURL(url));
     this.pendingFiles = [];
     this.pendingPreviewUrls = [];
+    this.pendingCoverIndex = null;
   }
 
   onFilesSelected(event: Event): void {
@@ -155,6 +170,8 @@ export class ItemListOperationComponent implements OnChanges {
     URL.revokeObjectURL(this.pendingPreviewUrls[index]);
     this.pendingFiles = this.pendingFiles.filter((_, i) => i !== index);
     this.pendingPreviewUrls = this.pendingPreviewUrls.filter((_, i) => i !== index);
+    if (this.pendingCoverIndex === index) this.pendingCoverIndex = null;
+    else if (this.pendingCoverIndex !== null && this.pendingCoverIndex > index) this.pendingCoverIndex--;
   }
 
   private emptyRow(): (typeof this.categoryRows)[number] {
@@ -249,10 +266,38 @@ export class ItemListOperationComponent implements OnChanges {
     return this.editDraft.productTypeIds.includes(id);
   }
 
-@Output() closed       = new EventEmitter<void>();
+  @Output() closed       = new EventEmitter<void>();
   @Output() saved        = new EventEmitter<void>();
   @Output() savedAndNew  = new EventEmitter<void>();
   @Output() imageRemoved = new EventEmitter<number>();
+
+  showTextModal = false;
+  showDomModal  = false;
+
+  onTextFilled(result: ParsedItemResult): void {
+    if (result.name)             this.editDraft.name             = result.name;
+    if (result.modelName)        this.editDraft.modelName        = result.modelName;
+    if (result.barcode)          this.editDraft.barcode          = result.barcode;
+    if (result.aboutThisItem)    this.editDraft.aboutThisItem    = result.aboutThisItem;
+    if (result.briefDescription) this.editDraft.briefDescription = result.briefDescription;
+    if (result.brandId)          this.editDraft.brandId          = result.brandId;
+  }
+
+  onDomFilled(result: ParsedDomResult): void {
+    if (result.name)             this.editDraft.name             = result.name;
+    if (result.modelName)        this.editDraft.modelName        = result.modelName;
+    if (result.barcode)          this.editDraft.barcode          = result.barcode;
+    if (result.brandId)          this.editDraft.brandId          = result.brandId;
+    if (result.aboutThisItem)    this.editDraft.aboutThisItem    = result.aboutThisItem;
+    if (result.briefDescription) this.editDraft.briefDescription = result.briefDescription;
+    if (result.description)      this.editDraft.description      = result.description;
+    if (result.specifications) {
+      this.editDraft.specifications = {
+        ...(this.editDraft.specifications ?? {}),
+        ...result.specifications,
+      };
+    }
+  }
 
   imgUrl(path: string): string {
     return this.imageSvc.resolveUrl(path);

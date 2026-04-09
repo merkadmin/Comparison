@@ -120,7 +120,13 @@ export class ItemListComponent implements OnInit, OnDestroy {
       if (!pending.length) { done(); return; }
       this.imageService.upload(itemId, baseItem.categoryIds[0], pending).subscribe({
         next: paths => {
-          const updated = { ...baseItem, images: [...(baseItem.images ?? []), ...paths] };
+          const coverIdx = this.operationComp?.pendingCoverIndex ?? null;
+          const coverPath = coverIdx !== null && coverIdx < paths.length ? paths[coverIdx] : null;
+          const updated = {
+            ...baseItem,
+            images: [...(baseItem.images ?? []), ...paths],
+            ...(coverPath ? { imageUrl: coverPath } : {}),
+          };
           this.itemService.update(itemId, updated).subscribe({ next: done, error: onError });
         },
         error: onError
@@ -159,7 +165,13 @@ export class ItemListComponent implements OnInit, OnDestroy {
         if (!pending.length) { reset(); return; }
         this.imageService.upload(savedItem.id!, savedItem.categoryIds[0], pending).subscribe({
           next: paths => {
-            const updated = { ...savedItem, images: [...(savedItem.images ?? []), ...paths] };
+            const coverIdx = this.operationComp?.pendingCoverIndex ?? null;
+            const coverPath = coverIdx !== null && coverIdx < paths.length ? paths[coverIdx] : null;
+            const updated = {
+              ...savedItem,
+              images: [...(savedItem.images ?? []), ...paths],
+              ...(coverPath ? { imageUrl: coverPath } : {}),
+            };
             this.itemService.update(savedItem.id!, updated).subscribe({ next: reset, error: onError });
           },
           error: onError
@@ -171,6 +183,19 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
   /** Resolve a stored relative path to a full URL for display. */
   imgUrl(path: string): string { return this.imageService.resolveUrl(path); }
+
+  /**
+   * Returns the cover image URL for an item.
+   * Prefers imageUrl (user-designated cover) over images[0].
+   * Handles both external URLs (http) and internal relative paths.
+   */
+  coverUrl(item: Item): string | null {
+    if (item.imageUrl) {
+      return item.imageUrl.startsWith('http') ? item.imageUrl : this.imgUrl(item.imageUrl);
+    }
+    if (item.images?.length) return this.imgUrl(item.images[0]);
+    return null;
+  }
 
   onImagesUploaded(itemId: number, newPaths: string[]): void {
     const item = this.items().find(i => i.id === itemId);
@@ -188,6 +213,9 @@ export class ItemListComponent implements OnInit, OnDestroy {
 
     if (id !== null) {
       this.imageService.delete(id, path).subscribe({ error: () => { } });
+    }
+    if (this.editDraft.imageUrl === path) {
+      this.editDraft.imageUrl = undefined;
     }
     this.editDraft.images = (this.editDraft.images ?? []).filter((_, i) => i !== index);
   }

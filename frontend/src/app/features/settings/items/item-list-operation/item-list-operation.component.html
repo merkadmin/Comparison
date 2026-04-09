@@ -5,12 +5,36 @@
 
       <div class="modal-header">
         <h5 class="modal-title fw-bold me-auto">{{ (isCreating ? 'item.addTitle' : 'item.editTitle') | translate }}</h5>
+        <div class="dropdown me-2">
+          <button type="button" class="btn btn-sm btn-light-primary dropdown-toggle"
+            data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="ki-duotone ki-translate fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+            {{ 'item.translate' | translate }}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item" href="javascript:void(0)"
+                (click)="showTextModal = true">
+                <i class="ki-duotone ki-text fs-5 me-2"><span class="path1"></span><span class="path2"></span></i>
+                {{ 'item.translateFromText' | translate }}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="javascript:void(0)"
+                (click)="showDomModal = true">
+                <i class="ki-duotone ki-code fs-5 me-2"><span class="path1"></span><span class="path2"></span></i>
+                {{ 'item.translateFromDom' | translate }}
+              </a>
+            </li>
+          </ul>
+        </div>
         <button type="button" class="btn btn-icon btn-sm btn-light" [disabled]="saving" (click)="closed.emit()">
           <i class="ki-duotone ki-cross fs-3"><span class="path1"></span><span class="path2"></span></i>
         </button>
       </div>
 
       <div class="modal-body">
+
         <div class="row g-5">
 
           <!--START::Top Fields-->
@@ -31,16 +55,6 @@
               <div class="col-md-6">
                 <label class="form-label fw-semibold">{{ 'item.modelName' | translate }}</label>
                 <input type="text" class="form-control" [(ngModel)]="editDraft.modelName" />
-              </div>
-
-              <!--Announced Date | Release Date-->
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">{{ 'item.announcedDate' | translate }}</label>
-                <input type="date" class="form-control" [(ngModel)]="editDraft.announcedDate" />
-              </div>
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">{{ 'item.releaseDate' | translate }}</label>
-                <input type="date" class="form-control" [(ngModel)]="editDraft.releaseDate" />
               </div>
 
               <!--Brand (full width)-->
@@ -172,7 +186,19 @@
               <div class="d-flex flex-wrap gap-3 mb-3">
                 @for (img of editDraft.images; track img; let i = $index) {
                   <div class="position-relative">
-                    <img [src]="imgUrl(img)" class="item-img-thumb" />
+                    <img [src]="imgUrl(img)" [class.item-img-thumb--cover]="isCover(img)" class="item-img-thumb" />
+                    @if (isCover(img)) {
+                      <span class="badge badge-primary position-absolute top-0 start-0 fs-9 m-1">
+                        <i class="ki-duotone ki-crown-2 fs-9"><span class="path1"></span><span class="path2"></span></i>
+                      </span>
+                    } @else {
+                      <button type="button"
+                        class="btn btn-icon btn-xs btn-light position-absolute top-0 start-0 m-1 item-img-cover-btn"
+                        [title]="'item.setCover' | translate"
+                        (click)="setCoverImage(img)">
+                        <i class="ki-duotone ki-crown-2 fs-9"><span class="path1"></span><span class="path2"></span></i>
+                      </button>
+                    }
                     <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0 item-img-remove-btn"
                       (click)="imageRemoved.emit(i)">
                       <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
@@ -181,7 +207,19 @@
                 }
                 @for (url of pendingPreviewUrls; track url; let i = $index) {
                   <div class="position-relative">
-                    <img [src]="url" class="item-img-thumb" />
+                    <img [src]="url" [class.item-img-thumb--cover]="pendingCoverIndex === i" class="item-img-thumb" />
+                    @if (pendingCoverIndex === i) {
+                      <span class="badge badge-primary position-absolute top-0 start-0 fs-9 m-1">
+                        <i class="ki-duotone ki-crown-2 fs-9"><span class="path1"></span><span class="path2"></span></i>
+                      </span>
+                    } @else {
+                      <button type="button"
+                        class="btn btn-icon btn-xs btn-light position-absolute top-0 start-0 m-1 item-img-cover-btn"
+                        [title]="'item.setCover' | translate"
+                        (click)="pendingCoverIndex = i">
+                        <i class="ki-duotone ki-crown-2 fs-9"><span class="path1"></span><span class="path2"></span></i>
+                      </button>
+                    }
                     <span class="badge badge-light-warning position-absolute bottom-0 start-0 fs-9">{{ 'common.new' | translate }}</span>
                     <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0 item-img-remove-btn"
                       (click)="removePendingImage(i)">
@@ -377,4 +415,18 @@
     </div>
   </div>
 </div>
+
+@if (showTextModal) {
+  <app-translate-text-modal
+    (filled)="onTextFilled($event)"
+    (closed)="showTextModal = false">
+  </app-translate-text-modal>
+}
+
+@if (showDomModal) {
+  <app-translate-dom-modal
+    (filled)="onDomFilled($event)"
+    (closed)="showDomModal = false">
+  </app-translate-dom-modal>
+}
 <!--END::Edit Modal-->

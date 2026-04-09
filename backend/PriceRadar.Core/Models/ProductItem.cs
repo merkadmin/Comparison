@@ -9,8 +9,6 @@ public class ProductItem
 	public string? AboutThisItem { get; set; }
 	public string? ModelName { get; set; }
 	public string? Barcode { get; set; }
-	public DateTime? AnnouncedDate { get; set; }
-	public DateTime? ReleaseDate { get; set; }
 	public ProductItemSpecification? Specifications { get; set; }
 	public string? ImageUrl { get; set; }
 	public List<string> Images { get; set; } = new();

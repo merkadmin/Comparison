@@ -97,6 +97,30 @@ public class ItemsController : BaseController<ProductItem, IProductItemRepositor
 		return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "items.xlsx");
 	}
 
+	[HttpPost("parse-dom")]
+	public async Task<IActionResult> ParseDom([FromBody] ParseDomRequest request)
+	{
+		if (string.IsNullOrWhiteSpace(request?.Html))
+			return BadRequest("Html is required.");
+		var brands = await _brands.GetAllAsync();
+		var result = DomParserService.Parse(request.Html, brands);
+		return Ok(result);
+	}
+
+	public record ParseDomRequest(string Html);
+
+	[HttpPost("parse-text")]
+	public async Task<IActionResult> ParseText([FromBody] ParseTextRequest request)
+	{
+		if (string.IsNullOrWhiteSpace(request?.Text))
+			return BadRequest("Text is required.");
+		var brands = await _brands.GetAllAsync();
+		var result = ProductTextParserService.Parse(request.Text, brands);
+		return Ok(result);
+	}
+
+	public record ParseTextRequest(string Text);
+
 	[HttpPost("import")]
 	[Consumes("multipart/form-data")]
 	public async Task<IActionResult> Import(IFormFile file)

@@ -91,10 +91,8 @@
 
               <!--START::Card Image-->
               <div class="item-card__img-wrap bg-light d-flex align-items-center justify-content-center">
-                @if (item.images && item.images.length > 0) {
-                  <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="item-card__img" />
-                } @else if (item.imageUrl) {
-                  <img [src]="item.imageUrl" [alt]="item.name" class="item-card__img" />
+                @if (coverUrl(item); as url) {
+                  <img [src]="url" [alt]="item.name" class="item-card__img" />
                 } @else {
                   <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
                 }
@@ -222,13 +220,9 @@
 
               <!--START::Image-->
               <td>
-                @if (item.images && item.images.length > 0) {
+                @if (coverUrl(item); as url) {
                   <div class="symbol symbol-40px">
-                    <img [src]="imgUrl(item.images[0])" [alt]="item.name" class="object-fit-contain" />
-                  </div>
-                } @else if (item.imageUrl) {
-                  <div class="symbol symbol-40px">
-                    <img [src]="item.imageUrl" [alt]="item.name" class="object-fit-contain" />
+                    <img [src]="url" [alt]="item.name" class="object-fit-contain" />
                   </div>
                 } @else {
                   <div class="symbol symbol-40px symbol-light">

@@ -10,6 +10,7 @@ namespace PriceRadar.DAL.Documents
 		[BsonId]
 		public long Id { get; set; }
 		public long StoreId { get; set; }
+		public long? CategoryId { get; set; }
 		public DBVariantType VariantTypeId { get; set; }
 		public int OrderIndex { get; set; }
 		public bool IsActive { get; set; } = true;
@@ -20,6 +21,7 @@ namespace PriceRadar.DAL.Documents
 		{
 			Id = Id,
 			StoreId = StoreId,
+			CategoryId = CategoryId,
 			VariantTypeId = VariantTypeId,
 			OrderIndex = OrderIndex,
 			IsActive = IsActive,
@@ -31,6 +33,7 @@ namespace PriceRadar.DAL.Documents
 		{
 			Id = m.Id,
 			StoreId = m.StoreId,
+			CategoryId = m.CategoryId,
 			VariantTypeId = m.VariantTypeId,
 			OrderIndex = m.OrderIndex,
 			IsActive = m.IsActive,

@@ -1,0 +1,37 @@
+<!--START::Translate from DOM Modal-->
+<div class="modal fade show d-block modal-inline-backdrop" tabindex="-1" style="z-index: 1060;"
+  (keydown.escape)="closed.emit()">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold me-auto">
+          <i class="ki-duotone ki-code fs-4 me-2"><span class="path1"></span><span class="path2"></span></i>
+          {{ 'item.translateFromDom' | translate }}
+        </h5>
+        <button type="button" class="btn btn-icon btn-sm btn-light" [disabled]="parsing()" (click)="closed.emit()">
+          <i class="ki-duotone ki-cross fs-3"><span class="path1"></span><span class="path2"></span></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="text-muted fs-7 mb-3">{{ 'item.pasteDomHtmlHint' | translate }}</p>
+        <label class="form-label fw-semibold">{{ 'item.pasteDomHtml' | translate }}</label>
+        <textarea class="form-control font-monospace" rows="12" [(ngModel)]="domText"
+          placeholder="{{ 'item.pasteDomHtmlPlaceholder' | translate }}"></textarea>
+      </div>
+
+      <div class="modal-footer justify-content-end gap-2">
+        <button type="button" class="btn btn-sm btn-light" [disabled]="parsing()" (click)="closed.emit()">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button type="button" class="btn btn-sm btn-primary" [disabled]="parsing() || !domText.trim()" (click)="fill()">
+          @if (parsing()) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ 'item.fill' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!--END::Translate from DOM Modal-->
