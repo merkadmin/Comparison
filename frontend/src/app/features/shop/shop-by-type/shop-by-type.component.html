@@ -1,0 +1,249 @@
+<div class="card">
+
+  <!--START::Header-->
+  <div class="card-header border-0 pt-6 pb-4 d-flex align-items-center gap-3 flex-wrap">
+
+    <!--Back / breadcrumb-->
+    <div class="d-flex align-items-center gap-2 me-auto">
+      <button class="btn btn-icon btn-sm btn-light" routerLink="/">
+        <i class="ki-duotone ki-arrow-left fs-3"><span class="path1"></span><span class="path2"></span></i>
+      </button>
+      <div class="d-flex flex-column">
+        <div class="d-flex align-items-center gap-1 flex-nowrap">
+          <a routerLink="/" class="fw-semibold text-muted fs-7 text-hover-primary text-nowrap text-decoration-none">{{ 'nav.home' | translate }}</a>
+          <i class="ki-duotone ki-right fs-8 text-muted flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+          @if (selectedType()) {
+            <a class="fw-semibold text-muted fs-7 text-hover-primary text-nowrap text-decoration-none cursor-pointer" (click)="goToRoot()">{{ 'nav.shopByType' | translate }}</a>
+            <i class="ki-duotone ki-right fs-8 text-muted flex-shrink-0"><span class="path1"></span><span class="path2"></span></i>
+            <span class="fw-bold text-gray-800 fs-7 text-nowrap">{{ selectedType()!.type }}</span>
+          } @else {
+            <span class="fw-bold text-gray-800 fs-7 text-nowrap">{{ 'nav.shopByType' | translate }}</span>
+          }
+        </div>
+        <h3 class="card-title fw-bold text-gray-800 mb-0 mt-1">
+          @if (selectedType()) {
+            {{ selectedType()!.type }}
+          } @else {
+            {{ 'nav.shopByType' | translate }}
+          }
+        </h3>
+      </div>
+    </div>
+
+    <!--Search + view controls (only when type selected)-->
+    @if (selectedType()) {
+      <div class="ms-auto">
+        <div class="input-group input-group-sm w-250px">
+          <span class="input-group-text border-end-0 bg-transparent">
+            <i class="ki-duotone ki-magnifier fs-4 text-muted"><span class="path1"></span><span class="path2"></span></i>
+          </span>
+          <input type="text" class="form-control border-start-0 ps-0"
+                 [placeholder]="'common.search' | translate"
+                 [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <div class="btn-group btn-group-sm">
+          <button class="btn btn-icon"
+                  [class.btn-success]="viewMode() === 'list'"
+                  [class.btn-light]="viewMode() !== 'list'"
+                  (click)="viewMode.set('list')" title="List view">
+            <i class="ki-duotone ki-row-horizontal fs-3"><span class="path1"></span><span class="path2"></span></i>
+          </button>
+          <button class="btn btn-icon"
+                  [class.btn-success]="viewMode() === 'grid'"
+                  [class.btn-light]="viewMode() !== 'grid'"
+                  (click)="viewMode.set('grid')" title="Grid view">
+            <i class="ki-duotone ki-element-equal fs-3"><span class="path1"></span><span class="path2"></span></i>
+          </button>
+        </div>
+        @if (viewMode() === 'grid') {
+          <app-common-grid-columns-button [columns]="colsPerRow()" (columnsChange)="colsPerRow.set($event)" />
+        }
+      </div>
+    }
+
+  </div>
+  <!--END::Header-->
+
+  <div class="card-body py-4">
+
+    <!--Loading types-->
+    @if (loadingTypes()) {
+      <div class="d-flex justify-content-center py-10">
+        <span class="spinner-border text-primary"></span>
+        <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
+      </div>
+    }
+
+    <!--START::Type Tiles-->
+    @if (!loadingTypes() && !selectedType()) {
+      @if (allTypes().length === 0) {
+        <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
+      }
+      <div class="row g-4">
+        @for (type of allTypes(); track type.id) {
+          <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+            <div class="type-tile card border-0 shadow-sm h-100 text-center cursor-pointer"
+                 (click)="selectType(type)">
+              <div class="type-tile__icon-wrap bg-light d-flex align-items-center justify-content-center">
+                @if (typeImgUrl(type)) {
+                <img [src]="typeImgUrl(type)!" [alt]="type.type" class="w-100 h-100 object-fit-cover" />
+                } @else {
+                <i class="ki-duotone ki-category fs-2x text-primary">
+                  <span class="path1"></span><span class="path2"></span>
+                  <span class="path3"></span><span class="path4"></span>
+                </i>
+                }
+              </div>
+              <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
+                <span class="fw-bold text-gray-800 fs-6 lh-sm">{{ type.type }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+    <!--END::Type Tiles-->
+
+    <!--START::Items View-->
+    @if (selectedType()) {
+
+      <!--Loading items-->
+      @if (loadingItems()) {
+        <div class="d-flex justify-content-center py-10">
+          <span class="spinner-border text-primary"></span>
+          <span class="ms-3 text-muted">{{ 'common.loading' | translate }}</span>
+        </div>
+      }
+
+      <!--Empty-->
+      @if (!loadingItems() && filteredItems().length === 0) {
+        <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
+      }
+
+      <!--Grid-->
+      @if (!loadingItems() && filteredItems().length > 0 && viewMode() === 'grid') {
+        <div class="row g-4">
+          @for (item of filteredItems(); track item.id) {
+            <div [class]="colClass()">
+              <div class="item-card card h-100 shadow-sm border-0">
+
+                <!--Image-->
+                <div class="item-card__img-wrap bg-white d-flex align-items-center justify-content-center position-relative">
+                  @if (coverUrl(item); as url) {
+                    <img [src]="url" [alt]="item.name" class="item-card__img" />
+                  } @else {
+                    <span class="item-card__placeholder fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
+                  }
+                  <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-1 bg-white bg-opacity-75 border-0 rounded-circle"
+                          (click)="toggleFavorite(item.id!); $event.stopPropagation()">
+                    <i class="ki-duotone ki-{{ favoriteIcon() }} fs-4"
+                       [class.text-danger]="isFavorite(item.id!)"
+                       [class.text-gray-400]="!isFavorite(item.id!)">
+                      <span class="path1"></span><span class="path2"></span>
+                    </i>
+                  </button>
+                </div>
+
+                <div class="card-body d-flex flex-column gap-3 p-4">
+                  <h6 class="fw-bold text-gray-800 mb-0 lh-sm fs-2">{{ item.name }}</h6>
+                  @if (item.briefDescription || item.description) {
+                    <p class="text-muted fs-7 mb-0 item-card__desc">{{ item.briefDescription || item.description }}</p>
+                  }
+                  @if (getBestPrice(item.id!) !== null) {
+                    <div class="d-flex align-items-center gap-1 mt-auto pt-2 border-top">
+                      <span class="text-muted fs-6">{{ 'item.bestPrice' | translate }}:</span>
+                      <span class="fw-bold text-primary fs-1 best-price">{{ getBestPrice(item.id!) | number:'1.2-2' }}</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="card-footer bg-transparent border-top-0 d-flex flex-column gap-2 p-3">
+                  <button class="btn btn-sm btn-success" (click)="openDetail(item)">
+                    <i class="ki-duotone ki-{{ compareIcon() }} fs-1"><span class="path1"></span><span class="path2"></span></i>
+                    Radar
+                  </button>
+                  @if (getItemStoreItems(item.id!).length > 0) {
+                    <div class="border rounded p-2 d-flex flex-column gap-1">
+                      @for (si of getItemStoreItems(item.id!); track si.id) {
+                        <div class="d-flex align-items-center justify-content-between px-2 py-1 rounded">
+                          <div class="d-flex align-items-center gap-1">
+                            <span class="fw-semibold text-gray-800 fs-7">{{ getStoreName(si.storeId) }}</span>
+                            <span class="badge fs-9" [class.badge-light-primary]="isStoreOnline(si.storeId)" [class.badge-light-success]="!isStoreOnline(si.storeId)">
+                              {{ (isStoreOnline(si.storeId) ? 'store.online' : 'store.physical') | translate }}
+                            </span>
+                          </div>
+                          <span class="fw-bold text-primary fs-7">{{ si.sellingPrice | number:'1.2-2' }}</span>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!--List-->
+      @if (!loadingItems() && filteredItems().length > 0 && viewMode() === 'list') {
+        <div class="d-flex flex-column gap-3">
+          @for (item of filteredItems(); track item.id) {
+            <div class="item-list-row card border shadow-sm d-flex flex-row align-items-stretch gap-0 overflow-hidden">
+
+              <div class="item-list-row__img-wrap bg-white d-flex align-items-center justify-content-center flex-shrink-0 position-relative"
+                   style="width:110px;min-height:90px;">
+                @if (coverUrl(item); as url) {
+                  <img [src]="url" [alt]="item.name" style="max-width:100px;max-height:80px;object-fit:contain;" />
+                } @else {
+                  <span class="fw-bold text-info fs-1">{{ item.name.charAt(0).toUpperCase() }}</span>
+                }
+                <button class="btn btn-icon btn-sm position-absolute top-0 end-0 m-1 p-0 bg-white bg-opacity-75 border-0 rounded-circle"
+                        (click)="toggleFavorite(item.id!); $event.stopPropagation()">
+                  <i class="ki-duotone ki-{{ favoriteIcon() }} fs-5"
+                     [class.text-danger]="isFavorite(item.id!)"
+                     [class.text-gray-400]="!isFavorite(item.id!)">
+                    <span class="path1"></span><span class="path2"></span>
+                  </i>
+                </button>
+              </div>
+
+              <div class="d-flex flex-grow-1 align-items-center gap-4 px-4 py-3 flex-wrap">
+                <div class="d-flex flex-column gap-1 flex-grow-1 min-w-0">
+                  <span class="fw-bold text-gray-800 fs-5 lh-sm">{{ item.name }}</span>
+                  @if (item.briefDescription || item.description) {
+                    <span class="text-muted fs-7 item-card__desc">{{ item.briefDescription || item.description }}</span>
+                  }
+                </div>
+                @if (getItemStoreItems(item.id!).length > 0) {
+                  <div class="d-flex flex-column gap-1 flex-shrink-0">
+                    @for (si of getItemStoreItems(item.id!); track si.id) {
+                      <div class="d-flex align-items-center gap-3">
+                        <span class="fw-semibold text-gray-700 fs-7" style="min-width:80px;">{{ getStoreName(si.storeId) }}</span>
+                        <span class="badge fs-9" [class.badge-light-primary]="isStoreOnline(si.storeId)" [class.badge-light-success]="!isStoreOnline(si.storeId)">
+                          {{ (isStoreOnline(si.storeId) ? 'store.online' : 'store.physical') | translate }}
+                        </span>
+                        <span class="fw-bold text-primary fs-6">{{ si.sellingPrice | number:'1.2-2' }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+                <button class="btn btn-sm btn-success flex-shrink-0" (click)="openDetail(item)">
+                  <i class="ki-duotone ki-{{ compareIcon() }} fs-4"><span class="path1"></span><span class="path2"></span></i>
+                  Radar
+                </button>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+
+    }
+    <!--END::Items View-->
+
+  </div>
+</div>

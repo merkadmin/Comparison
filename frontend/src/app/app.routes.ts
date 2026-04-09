@@ -11,6 +11,7 @@ import { StoreListComponent } from './features/settings/stores/store-list.compon
 import { ShopByCategoryComponent } from './features/shop/shop-by-category/shop-by-category.component';
 import { ShopByBrandComponent } from './features/shop/shop-by-brand/shop-by-brand.component';
 import { ShopByStoreComponent } from './features/shop/shop-by-store/shop-by-store.component';
+import { ShopByTypeComponent } from './features/shop/shop-by-type/shop-by-type.component';
 import { ShopBySpecsComponent } from './features/shop/shop-by-specs/shop-by-specs.component';
 import { ItemDetailPageComponent } from './features/shop/item-detail/item-detail-page.component';
 import { SetIconsComponent } from './features/app-setup/set-icons/set-icons.component';
@@ -47,6 +48,9 @@ export const routes: Routes = [
       { path: 'shop-by-brand', component: ShopByBrandComponent },
       { path: 'shop-by-brand/by-brand/:brandId', component: ShopByBrandComponent },
       { path: 'shop-by-brand/by-brand/:brandId/item/:itemId', component: ItemDetailPageComponent },
+      { path: 'shop-by-type', component: ShopByTypeComponent },
+      { path: 'shop-by-type/by-type/:typeId', component: ShopByTypeComponent },
+      { path: 'shop-by-type/by-type/:typeId/item/:itemId', component: ItemDetailPageComponent },
       { path: 'shop-by-specs', component: ShopBySpecsComponent },
       { path: 'shop-by-specs/item/:itemId', component: ItemDetailPageComponent },
       { path: 'app-setup/set-icons', component: SetIconsComponent },

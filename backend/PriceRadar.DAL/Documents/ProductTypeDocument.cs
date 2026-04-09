@@ -11,6 +11,7 @@ public class ProductTypeDocument : IDocument<ProductType>
     public bool     IsActive  { get; set; } = true;
     public bool     IsDeleted { get; set; } = false;
     public string   Type      { get; set; } = string.Empty;
+    public string?  TypeImage { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ProductType ToModel() => new()
@@ -19,6 +20,7 @@ public class ProductTypeDocument : IDocument<ProductType>
         IsActive  = IsActive,
         IsDeleted = IsDeleted,
         Type      = Type,
+        TypeImage = TypeImage,
         CreatedAt = CreatedAt,
     };
 
@@ -28,6 +30,7 @@ public class ProductTypeDocument : IDocument<ProductType>
         IsActive  = p.IsActive,
         IsDeleted = p.IsDeleted,
         Type      = p.Type,
+        TypeImage = p.TypeImage,
         CreatedAt = p.CreatedAt,
     };
 }

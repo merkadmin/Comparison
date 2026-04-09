@@ -28,6 +28,10 @@ export class ItemService {
     return this.api.get<Item[]>(`/items/by-brand/${brandId}`);
   }
 
+  getByType(typeId: number): Observable<Item[]> {
+    return this.api.get<Item[]>(`/items/by-type/${typeId}`);
+  }
+
   getBestPrices(): Observable<ItemBestPrice[]> {
     return this.api.get<ItemBestPrice[]>('/items/best-prices');
   }

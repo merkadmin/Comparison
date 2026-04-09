@@ -41,6 +41,10 @@ public class ItemsController : BaseController<ProductItem, IProductItemRepositor
 	public async Task<IActionResult> GetByBrand(long brandId) =>
 		Ok(await Repo.GetByBrandAsync(brandId));
 
+	[HttpGet("by-type/{typeId:long}")]
+	public async Task<IActionResult> GetByType(long typeId) =>
+		Ok(await Repo.GetByTypeAsync(typeId));
+
 	/// <summary>
 	/// Returns the single best (minimum) selling price per item across all stores.
 	/// </summary>

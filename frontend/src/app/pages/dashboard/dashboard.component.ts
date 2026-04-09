@@ -13,6 +13,8 @@ import { ProductItemVariantService } from '../../core/services/product-item-vari
 import { ProductItemVariantMapService } from '../../core/services/product-item-variant-map.service';
 import { TranslateService } from '../../core/services/translate.service';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { ProductType } from '../../core/models/product-type.model';
+import { ProductTypeService } from '../../core/services/product-type.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,6 +30,7 @@ export class DashboardComponent implements OnInit {
   private storeSvc   = inject(StoreService);
   private variantSvc = inject(ProductItemVariantService);
   private mapSvc     = inject(ProductItemVariantMapService);
+  private typeSvc    = inject(ProductTypeService);
   translate          = inject(TranslateService);
 
   // ── Data ──────────────────────────────────────────────────────────────────
@@ -36,11 +39,13 @@ export class DashboardComponent implements OnInit {
   allCategories  = signal<IItemCategory[]>([]);
   allVariants    = signal<ProductItemVariant[]>([]);
   variantMaps    = signal<ProductItemVariantMap[]>([]);
+  productTypes   = signal<ProductType[]>([]);
 
   loading = signal(true);
   storeSearch = signal('');
   catSearch   = signal('');
   brandSearch = signal('');
+  typeSearch  = signal('');
 
   // ── Derived ───────────────────────────────────────────────────────────────
 
@@ -64,6 +69,11 @@ export class DashboardComponent implements OnInit {
   filteredBrands = computed<ItemBrand[]>(() => {
     const q = this.brandSearch().trim().toLowerCase();
     return q ? this.brands().filter(b => b.name.toLowerCase().includes(q)) : this.brands();
+  });
+
+  filteredProductTypes = computed<ProductType[]>(() => {
+    const q = this.typeSearch().trim().toLowerCase();
+    return q ? this.productTypes().filter(t => t.type.toLowerCase().includes(q)) : this.productTypes();
   });
 
   /** Variant types that are actually used in active maps. */
@@ -221,6 +231,15 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/shop-by-category/by-category', cat.id]);
   }
 
+  goToProductType(type: ProductType): void {
+    this.router.navigate(['/shop-by-type/by-type', type.id]);
+  }
+
+  typeImgUrl(type: ProductType): string | null {
+    if (type.typeImage) return this.typeSvc.resolveImageUrl(type.typeImage);
+    return null;
+  }
+
   // ── Scroll ────────────────────────────────────────────────────────────────
 
   scroll(el: HTMLElement, dir: 1 | -1): void {
@@ -232,6 +251,11 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.storeSvc.getAll().subscribe({
       next: s => this.stores.set(s.filter(x => x.isActive !== false).sort((a, b) => a.name.localeCompare(b.name))),
+      error: () => {}
+    });
+
+    this.typeSvc.getAll().subscribe({
+      next: t => this.productTypes.set(t.filter(x => x.isActive !== false).sort((a, b) => a.type.localeCompare(b.type))),
       error: () => {}
     });
 

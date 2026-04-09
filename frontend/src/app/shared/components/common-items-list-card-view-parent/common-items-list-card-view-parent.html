@@ -76,13 +76,13 @@
         }
         <!--END::Loading Categories-->
 
-        <!--START::Category Tiles (root level — no category selected)-->
+        <!--START::Category Tiles (root level — show all leaf categories like brands/stores)-->
         @if (!loadingCats() && !selectedLeaf() && !isSearchMode()) {
-        @if (visibleCategories().length === 0) {
+        @if (leafCategories().length === 0) {
         <div class="text-center text-muted py-10">{{ 'common.noData' | translate }}</div>
         }
         <div class="row g-4">
-            @for (cat of visibleCategories(); track cat.id) {
+            @for (cat of leafCategories(); track cat.id) {
             <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                 <div class="category-tile card border-0 shadow-sm h-100 text-center cursor-pointer"
                     (click)="selectCategory(cat)">
@@ -98,14 +98,8 @@
                         </div>
                         }
                     </div>
-                    <div class="card-body d-flex flex-column align-items-center justify-content-center gap-2 p-3">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center p-3">
                         <span class="fw-bold text-gray-800 fs-6 lh-sm">{{ localize(cat) }}</span>
-                        @if (hasChildren(cat)) {
-                        <span class="badge badge-light-primary fs-5 px-3 py-2">
-                            <i class="ki-duotone ki-right fs-5"><span class="path1"></span><span class="path2"></span></i>
-                            {{ 'nav.showAll' | translate }}
-                        </span>
-                        }
                     </div>
                 </div>
             </div>

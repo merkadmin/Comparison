@@ -41,4 +41,11 @@ public class ProductItemRepository : BaseRepository<ProductItem, ProductItemDocu
         var docs = await _collection.Find(i => i.BrandId == brandId).ToListAsync();
         return docs.Select(d => d.ToModel());
     }
+
+    public async Task<IEnumerable<ProductItem>> GetByTypeAsync(long typeId)
+    {
+        var filter = Builders<ProductItemDocument>.Filter.AnyIn(i => i.ProductTypeIds, new[] { typeId });
+        var docs = await _collection.Find(filter).ToListAsync();
+        return docs.Select(d => d.ToModel());
+    }
 }

@@ -18,6 +18,8 @@
       </div>
 
       <div class="modal-body">
+
+        <!--START::Type Name-->
         <div class="mb-3">
           <label class="form-label fw-semibold">
             {{ 'productType.type' | translate }} <span class="text-danger">*</span>
@@ -25,6 +27,41 @@
           <input type="text" class="form-control" [(ngModel)]="editDraft.type"
             placeholder="{{ 'productType.typePlaceholder' | translate }}" />
         </div>
+        <!--END::Type Name-->
+
+        <!--START::Type Image-->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ 'productType.typeImage' | translate }}</label>
+
+          @if (pendingPreviewUrl || editDraft.typeImage) {
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <div class="position-relative">
+              <img [src]="pendingPreviewUrl ?? imgUrl(editDraft.typeImage!)"
+                class="rounded border object-fit-cover" style="width: 120px; height: 120px;" />
+              @if (pendingPreviewUrl) {
+              <span class="badge badge-light-warning position-absolute bottom-0 start-0 fs-9">
+                {{ 'common.new' | translate }}</span>
+              }
+              <button type="button" class="btn btn-icon btn-xs btn-danger position-absolute top-0 end-0"
+                (click)="pendingPreviewUrl ? removePendingFile() : imageRemoved.emit()">
+                <i class="ki-duotone ki-cross fs-9"><span class="path1"></span><span class="path2"></span></i>
+              </button>
+            </div>
+          </div>
+          }
+
+          @if (!pendingPreviewUrl && !editDraft.typeImage) {
+          <div>
+            <input #imgInput type="file" accept="image/*" class="d-none" (change)="onFileSelected($event)" />
+            <button type="button" class="btn btn-light-primary btn-sm" (click)="imgInput.click()">
+              <i class="ki-duotone ki-picture fs-5 me-1"><span class="path1"></span><span class="path2"></span></i>
+              {{ 'common.uploadImages' | translate }}
+            </button>
+          </div>
+          }
+        </div>
+        <!--END::Type Image-->
+
       </div>
 
       <div class="modal-footer justify-content-end gap-2">

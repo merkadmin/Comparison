@@ -89,6 +89,15 @@ export class CommonItemsListCardViewParent implements OnInit, OnDestroy {
     this.allCategories().filter(c => (c.parentCategoryId ?? null) === this.currentParentId())
   );
 
+  /** All leaf categories (no children) — shown at root level so "Show All" works like brands/stores. */
+  leafCategories = computed<IItemCategory[]>(() => {
+    const all = this.allCategories();
+    const parentIds = new Set(all.map(c => c.parentCategoryId).filter(Boolean));
+    return all.filter(c => !parentIds.has(c.id)).sort((a, b) =>
+      (a.name['en'] ?? '').localeCompare(b.name['en'] ?? '')
+    );
+  });
+
   filteredItems = computed<Item[]>(() => {
     const q = this.searchQuery().trim().toLowerCase();
     const brandId = this.selectedBrandId();

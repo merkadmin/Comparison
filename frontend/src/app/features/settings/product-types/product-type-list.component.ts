@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -21,6 +21,8 @@ import { ProductTypeListOperationComponent } from './product-type-list-operation
   styleUrl: './product-type-list.component.less',
 })
 export class ProductTypeListComponent implements OnInit {
+
+  @ViewChild(ProductTypeListOperationComponent) operationComp?: ProductTypeListOperationComponent;
 
   auth = inject(AuthService);
   private service = inject(ProductTypeService);
@@ -96,8 +98,15 @@ export class ProductTypeListComponent implements OnInit {
   }
 
   closeEdit(): void {
+    this.operationComp?.removePendingFile();
     this.editingId.set(null);
     this.isCreating.set(false);
+  }
+
+  removeImage(): void {
+    const id = this.editingId();
+    if (id) this.service.deleteImage(id).subscribe({ error: () => {} });
+    this.editDraft = { ...this.editDraft, typeImage: undefined };
   }
 
   navigateType(dir: 1 | -1): void {
@@ -115,24 +124,41 @@ export class ProductTypeListComponent implements OnInit {
     const creating = this.isCreating();
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('productType.saveError')); };
 
+    const finalize = (savedId: number) => {
+      const pendingFile = this.operationComp?.pendingFile ?? null;
+      if (pendingFile) {
+        this.service.uploadImage(savedId, pendingFile).subscribe({
+          next: relativePath => {
+            this.service.update(savedId, { ...this.editDraft, id: savedId, typeImage: relativePath }).subscribe({
+              next: () => {
+                this.saving.set(false);
+                this.toast.success(this.translate.translate('productType.saveSuccess'));
+                this.operationComp?.removePendingFile();
+                this.load();
+                if (creating) this.closeEdit();
+              },
+              error: onError,
+            });
+          },
+          error: onError,
+        });
+      } else {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('productType.saveSuccess'));
+        this.load();
+        if (creating) this.closeEdit();
+      }
+    };
+
     if (creating) {
       this.service.create(this.editDraft).subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.toast.success(this.translate.translate('productType.saveSuccess'));
-          this.load();
-          this.closeEdit();
-        },
+        next: created => finalize(created.id!),
         error: onError,
       });
     } else {
       const id = this.editingId()!;
       this.service.update(id, this.editDraft).subscribe({
-        next: () => {
-          this.saving.set(false);
-          this.toast.success(this.translate.translate('productType.saveSuccess'));
-          this.load();
-        },
+        next: () => finalize(id),
         error: onError,
       });
     }
@@ -144,11 +170,31 @@ export class ProductTypeListComponent implements OnInit {
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('productType.saveError')); };
 
     this.service.create(this.editDraft).subscribe({
-      next: () => {
-        this.saving.set(false);
-        this.toast.success(this.translate.translate('productType.saveSuccess'));
-        this.load();
-        this.editDraft = { type: '' };
+      next: created => {
+        const savedId = created.id!;
+        const pendingFile = this.operationComp?.pendingFile ?? null;
+        if (pendingFile) {
+          this.service.uploadImage(savedId, pendingFile).subscribe({
+            next: relativePath => {
+              this.service.update(savedId, { ...this.editDraft, id: savedId, typeImage: relativePath }).subscribe({
+                next: () => {
+                  this.saving.set(false);
+                  this.toast.success(this.translate.translate('productType.saveSuccess'));
+                  this.operationComp?.removePendingFile();
+                  this.load();
+                  this.editDraft = { type: '' };
+                },
+                error: onError,
+              });
+            },
+            error: onError,
+          });
+        } else {
+          this.saving.set(false);
+          this.toast.success(this.translate.translate('productType.saveSuccess'));
+          this.load();
+          this.editDraft = { type: '' };
+        }
       },
       error: onError,
     });
