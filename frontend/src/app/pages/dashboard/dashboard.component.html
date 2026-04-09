@@ -301,8 +301,7 @@
       @for (v of variantsForType(); track v.id) {
       @let sel = isPickerSelected(v.id!);
       <span class="badge fs-5 px-4 py-3 cursor-pointer user-select-none spec-chip"
-            [class.badge-light-secondary]="!v.color && !sel"
-            [class.badge-secondary]="!v.color && sel"
+            [class.spec-chip--plain]="!v.color"
             [style.background-color]="v.color ?? null"
             [style.color]="v.color ? '#fff' : null"
             [style.box-shadow]="sel ? '0 0 0 2.5px #009ef7' : 'none'"
