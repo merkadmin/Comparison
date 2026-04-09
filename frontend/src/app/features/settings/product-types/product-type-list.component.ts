@@ -135,7 +135,7 @@ export class ProductTypeListComponent implements OnInit {
                 this.toast.success(this.translate.translate('productType.saveSuccess'));
                 this.operationComp?.removePendingFile();
                 this.load();
-                if (creating) this.closeEdit();
+                this.closeEdit();
               },
               error: onError,
             });
@@ -146,7 +146,7 @@ export class ProductTypeListComponent implements OnInit {
         this.saving.set(false);
         this.toast.success(this.translate.translate('productType.saveSuccess'));
         this.load();
-        if (creating) this.closeEdit();
+        this.closeEdit();
       }
     };
 
@@ -167,37 +167,47 @@ export class ProductTypeListComponent implements OnInit {
   saveEditAndNew(): void {
     if (!this.isCreating()) return;
     this.saving.set(true);
+    const creating = this.isCreating();
+    const id = this.editingId()!;
     const onError = () => { this.saving.set(false); this.toast.error(this.translate.translate('productType.saveError')); };
 
-    this.service.create(this.editDraft).subscribe({
-      next: created => {
-        const savedId = created.id!;
-        const pendingFile = this.operationComp?.pendingFile ?? null;
-        if (pendingFile) {
-          this.service.uploadImage(savedId, pendingFile).subscribe({
-            next: relativePath => {
-              this.service.update(savedId, { ...this.editDraft, id: savedId, typeImage: relativePath }).subscribe({
-                next: () => {
-                  this.saving.set(false);
-                  this.toast.success(this.translate.translate('productType.saveSuccess'));
-                  this.operationComp?.removePendingFile();
-                  this.load();
-                  this.editDraft = { type: '' };
-                },
-                error: onError,
-              });
-            },
-            error: onError,
-          });
-        } else {
-          this.saving.set(false);
-          this.toast.success(this.translate.translate('productType.saveSuccess'));
-          this.load();
-          this.editDraft = { type: '' };
-        }
-      },
-      error: onError,
-    });
+    const afterSave = (savedId: number) => {
+      const pendingFile = this.operationComp?.pendingFile ?? null;
+      const doFinish = () => {
+        this.saving.set(false);
+        this.toast.success(this.translate.translate('productType.saveSuccess'));
+        this.operationComp?.removePendingFile();
+        this.load();
+        this.editDraft = { type: '' };
+        this.isCreating.set(true);
+        this.editingId.set(0);
+      };
+      if (pendingFile) {
+        this.service.uploadImage(savedId, pendingFile).subscribe({
+          next: relativePath => {
+            this.service.update(savedId, { ...this.editDraft, id: savedId, typeImage: relativePath }).subscribe({
+              next: doFinish,
+              error: onError,
+            });
+          },
+          error: onError,
+        });
+      } else {
+        doFinish();
+      }
+    };
+
+    if (creating) {
+      this.service.create(this.editDraft).subscribe({
+        next: created => afterSave(created.id!),
+        error: onError,
+      });
+    } else {
+      this.service.update(id, this.editDraft).subscribe({
+        next: () => afterSave(id),
+        error: onError,
+      });
+    }
   }
 
   // ── Row actions ──────────────────────────────────────────────────────────
